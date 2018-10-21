@@ -65,3 +65,19 @@ rule select_strains:
         """
 
 
+rule filter:
+    input:
+        metadata = rules.parse.output.metadata,
+        sequences = 'results/sequences_{lineage}_{segment}.fasta',
+        strains = rules.select_strains.output.strains
+    output:
+        sequences = 'results/sequences_{build}_{lineage}_{segment}_{resolution}.fasta'
+    run:
+        from Bio import SeqIO
+        with open(input.strains) as infile:
+            strains = set(map(lambda x:x.strip(), infile.readlines()))
+        with open(output.sequences, 'w') as outfile:
+            for seq in SeqIO.parse(input.sequences, 'fasta'):
+                if seq.name in strains:
+                    SeqIO.write(seq, outfile, 'fasta')
+

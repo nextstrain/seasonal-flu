@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 from collections import defaultdict
 from augur.utils import read_metadata, get_numerical_dates
+from datetime import datetime, timedelta, date
 
 vpm_dict = {
     2: 92,
@@ -92,6 +93,13 @@ def flu_subsampling(strains, viruses_per_month, titer_values=None):
         "threshold": threshold
     }
 
+def cat_valid(cat, time_interval):
+    if cat[-2]<time_interval[1].year or cat[-2]>time_interval[0].year:
+        return False
+    if (cat[-2]==time_interval[1].year and cat[-1]<time_interval[1].month) or\
+       (cat[-2]==time_interval[0].year and cat[-1]>time_interval[0].month):
+        return False
+    return True
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -106,7 +114,7 @@ if __name__ == '__main__':
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
 
     parser.add_argument('-l', '--lineage', choices=['h3n2', 'h1n1pdm', 'vic', 'yam'], default='h3n2', type=str, help="single lineage to include (default: h3n2)")
-    parser.add_argument('-r', '--resolution', choices=['2y', '3y', '6y', '12y'], default=['3y'], type = str,  help = "single resolution to include (default: 3y)")
+    parser.add_argument('-r', '--resolution',default='3y', type = str,  help = "single resolution to include (default: 3y)")
     parser.add_argument('--ensure_all_segments', action="store_true", default=False,  help = "exclude all strains that don't have the full set of segments")
     parser.add_argument('-s', '--segments', default=['ha'], nargs='+', type = str,  help = "list of segments to include (default: ha)")
     parser.add_argument('--sampling', default = 'even', type=str,
@@ -118,6 +126,18 @@ if __name__ == '__main__':
     parser.add_argument('--complete_frequencies', action='store_true', help="compute mutation frequences from entire dataset")
 
     args = parser.parse_args()
+
+
+    if args.time_interval:
+        time_interval = sorted([datetime.strptime(x, '%Y-%m-%d').date() for x in args.time_interval], reverse=True)
+    else:
+        if args.resolution:
+            years_back = int(args.resolution[:-1])
+        else:
+            years_back = 3
+        time_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]
+    reference_cutoff = date(year = time_interval[1].year - 4, month=1, day=1)
+
 
     metadata = {}
     for segment, fname in zip(args.segments, args.metadata):
@@ -139,8 +159,10 @@ if __name__ == '__main__':
         virus_by_category[subsampling["category"](metadata[guide_segment][v])].append(v)
 
     selected_strains = []
+    print(time_interval)
     for cat, val in virus_by_category.items():
-        selected_strains.extend(val[:args.viruses_per_month])
+        if cat_valid(cat, time_interval):
+            selected_strains.extend(val[:args.viruses_per_month])
 
     with open(args.output, 'w') as ofile:
         ofile.write('\n'.join(selected_strains))
