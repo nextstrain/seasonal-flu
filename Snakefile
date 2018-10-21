@@ -11,7 +11,7 @@ def reference_strain(v):
 
 
 def vpm(v):
-    vpm = {'3y':15, '6y':12, '12y':5}
+    vpm = {'3y':2, '6y':2, '12y':1}
     return vpm[v.resolution] if v.resolution in vpm else 5
 
 
@@ -24,7 +24,7 @@ rule files:
     params:
         input_fasta = path_to_fauna+"/{lineage}_{segment}.fasta",
         # dropped_strains = "config/dropped_strains_{lineage}.txt",
-        reference = "config/outgroup_{lineage}_{segment}.gb"
+        reference = "config/{lineage}_{segment}_outgroup.gb"
 
 files = rules.files.params
 
@@ -55,12 +55,13 @@ rule select_strains:
     output:
         strains = "results/strains_{build}_{lineage}_{resolution}.txt",
     params:
-        virus_per_month = vpm
+        viruses_per_month = vpm
     shell:
         """
         python scripts/prepare.py --metadata {input.metadata} \
                                   --segments {segments} \
                                   --resolution {wildcards.resolution} --lineage {wildcards.lineage} \
+                                  --viruses_per_month {params.viruses_per_month} \
                                   --output {output.strains}
         """
 
@@ -81,3 +82,107 @@ rule filter:
                 if seq.name in strains:
                     SeqIO.write(seq, outfile, 'fasta')
 
+
+
+rule align:
+    message:
+        """
+        Aligning sequences to {input.reference}
+          - filling gaps with N
+        """
+    input:
+        sequences = rules.filter.output.sequences,
+        reference = files.reference
+    output:
+        alignment = "results/aligned_{build}_{lineage}_{segment}_{resolution}.fasta"
+    shell:
+        """
+        augur align \
+            --sequences {input.sequences} \
+            --reference-sequence {input.reference} \
+            --output {output.alignment} \
+            --fill-gaps
+        """
+
+rule tree:
+    message: "Building tree"
+    input:
+        alignment = rules.align.output.alignment
+    output:
+        tree = "results/treeraw_{build}_{lineage}_{segment}_{resolution}.nwk"
+    shell:
+        """
+        augur tree \
+            --alignment {input.alignment} \
+            --output {output.tree}
+        """
+
+rule refine:
+    message:
+        """
+        Refining tree
+          - estimate timetree
+          - use {params.coalescent} coalescent timescale
+          - estimate {params.date_inference} node dates
+          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
+        """
+    input:
+        tree = rules.tree.output.tree,
+        alignment = rules.align.output,
+        metadata = rules.parse.output.metadata
+    output:
+        tree = "results/tree_{build}_{lineage}_{segment}_{resolution}.nwk",
+        node_data = "results/branchlengths_{build}_{lineage}_{segment}_{resolution}.json"
+    params:
+        coalescent = "const",
+        date_inference = "marginal",
+        clock_filter_iqd = 4
+    shell:
+        """
+        augur refine \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.node_data} \
+            --timetree \
+            --coalescent {params.coalescent} \
+            --date-confidence \
+            --date-inference {params.date_inference} \
+            --clock-filter-iqd {params.clock_filter_iqd}
+        """
+
+rule ancestral:
+    message: "Reconstructing ancestral sequences and mutations"
+    input:
+        tree = rules.refine.output.tree,
+        alignment = rules.align.output
+    output:
+        node_data = "results/ntmuts_{build}_{lineage}_{segment}_{resolution}.json"
+    params:
+        inference = "joint"
+    shell:
+        """
+        augur ancestral \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --output {output.node_data} \
+            --inference {params.inference}
+        """
+
+rule translate:
+    message: "Translating amino acid sequences"
+    input:
+        tree = rules.refine.output.tree,
+        node_data = rules.ancestral.output.node_data,
+        reference = files.reference
+    output:
+        node_data = "results/aamuts_{build}_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur translate \
+            --tree {input.tree} \
+            --ancestral-sequences {input.node_data} \
+            --reference-sequence {input.reference} \
+            --output {output.node_data} \
+        """

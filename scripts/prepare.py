@@ -5,10 +5,10 @@ from augur.utils import read_metadata, get_numerical_dates
 from datetime import datetime, timedelta, date
 
 vpm_dict = {
-    2: 92,
-    3: 62,
-    6: 32,
-    12: 18,
+    2: 3,
+    3: 2,
+    6: 2,
+    12: 1,
 }
 
 regions = [
