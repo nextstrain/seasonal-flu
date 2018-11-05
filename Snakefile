@@ -1,6 +1,7 @@
 path_to_fauna = '../fauna/data'
 segments = ['ha', 'na']
 
+
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992",
                   'h1n1pdm':"A/California/07/2009",
@@ -8,6 +9,24 @@ def reference_strain(v):
                   'yam':"B/Singapore/11/1994"}
     return references[v.lineage]
 
+def titer_data(w):
+    titers = {'h1n1':path_to_fauna + '/h1n1_crick_hi_titers.tsv',
+            'h3n2':path_to_fauna + '/h3n2_crick_hi_titers.tsv',
+            'yam':path_to_fauna + '/yam_crick_hi_titers.tsv',
+            'vic':path_to_fauna + '/vic_crick_hi_titers.tsv',
+            'Ball':path_to_fauna + '/Ball_crick_hi_titers.tsv',
+            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_titers.tsv'}
+    return titers[w.lineage]
+
+def priority_files(w):
+    priorty = {'h1n1':path_to_fauna + '/h1n1_crick_hi_strains.tsv',
+            'h3n2':path_to_fauna + '/h3n2_crick_hi_strains.tsv',
+            'yam':path_to_fauna + '/yam_crick_hi_strains.tsv',
+            'vic':path_to_fauna + '/vic_crick_hi_strains.tsv',
+            'Ball':path_to_fauna + '/Ball_crick_hi_strains.tsv',
+            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_strains.tsv'}
+
+    return priorty[w.lineage]
 
 
 def vpm(v):
@@ -24,7 +43,9 @@ rule files:
     params:
         input_fasta = path_to_fauna+"/{lineage}_{segment}.fasta",
         # dropped_strains = "config/dropped_strains_{lineage}.txt",
-        reference = "config/{lineage}_{segment}_outgroup.gb"
+        reference = "config/{lineage}_{segment}_outgroup.gb",
+        colors = "config/colors.tsv",
+        auspice_config = "config/auspice_config.json"
 
 files = rules.files.params
 
@@ -185,4 +206,42 @@ rule translate:
             --ancestral-sequences {input.node_data} \
             --reference-sequence {input.reference} \
             --output {output.node_data} \
+        """
+
+rule titers:
+    input:
+        tree = rules.refine.output.tree,
+        titers = titer_data
+    output:
+        tree_model = "results/HITreeModel_{build}_{lineage}_{segment}_{resolution}.json",
+        #subs_model = "{subtype}/results/HI_subs_model.json"
+    shell:
+        """
+        augur titers --tree {input.tree}\
+            --titers {input.titers}\
+            --titer-model tree \
+            --output {output.tree_model}
+        """
+
+rule export:
+    input:
+        tree = rules.refine.output.tree,
+        node_data = rules.refine.output.node_data,
+        metadata = rules.parse.output.metadata,
+        nt_muts = rules.ancestral.output,
+        aa_muts = rules.translate.output,
+        tree_model = rules.titers.output.tree_model,
+        auspice_config = files.auspice_config
+    output:
+        auspice_tree = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_tree.json",
+        auspice_meta = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_meta.json"
+    shell:
+        """
+        augur export \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model}\
+            --auspice-config {input.auspice_config} \
+            --output-tree {output.auspice_tree} \
+            --output-meta {output.auspice_meta}
         """
