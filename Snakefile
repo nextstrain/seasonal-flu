@@ -76,7 +76,7 @@ rule select_strains:
     input:
         metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage)
     output:
-        strains = "results/strains_{build}_{lineage}_{resolution}.txt",
+        strains = "results/strains_seasonal_{lineage}_{resolution}.txt",
     params:
         viruses_per_month = vpm
     shell:
@@ -95,7 +95,7 @@ rule filter:
         sequences = 'results/sequences_{lineage}_{segment}.fasta',
         strains = rules.select_strains.output.strains
     output:
-        sequences = 'results/sequences_{build}_{lineage}_{segment}_{resolution}.fasta'
+        sequences = 'results/sequences_seasonal_{lineage}_{segment}_{resolution}.fasta'
     run:
         from Bio import SeqIO
         with open(input.strains) as infile:
@@ -117,7 +117,7 @@ rule align:
         sequences = rules.filter.output.sequences,
         reference = files.reference
     output:
-        alignment = "results/aligned_{build}_{lineage}_{segment}_{resolution}.fasta"
+        alignment = "results/aligned_seasonal_{lineage}_{segment}_{resolution}.fasta"
     shell:
         """
         augur align \
@@ -132,7 +132,7 @@ rule tree:
     input:
         alignment = rules.align.output.alignment
     output:
-        tree = "results/treeraw_{build}_{lineage}_{segment}_{resolution}.nwk"
+        tree = "results/treeraw_seasonal_{lineage}_{segment}_{resolution}.nwk"
     shell:
         """
         augur tree \
@@ -154,8 +154,8 @@ rule refine:
         alignment = rules.align.output,
         metadata = rules.parse.output.metadata
     output:
-        tree = "results/tree_{build}_{lineage}_{segment}_{resolution}.nwk",
-        node_data = "results/branchlengths_{build}_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree_seasonal_{lineage}_{segment}_{resolution}.nwk",
+        node_data = "results/branchlengths_seasonal_{lineage}_{segment}_{resolution}.json"
     params:
         coalescent = "const",
         date_inference = "marginal",
@@ -181,7 +181,7 @@ rule ancestral:
         tree = rules.refine.output.tree,
         alignment = rules.align.output
     output:
-        node_data = "results/ntmuts_{build}_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/ntmuts_seasonal_{lineage}_{segment}_{resolution}.json"
     params:
         inference = "joint"
     shell:
@@ -200,7 +200,7 @@ rule translate:
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
     output:
-        node_data = "results/aamuts_{build}_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
     shell:
         """
         augur translate \
@@ -215,7 +215,7 @@ rule titers:
         tree = rules.refine.output.tree,
         titers = titer_data
     output:
-        tree_model = "results/HITreeModel_{build}_{lineage}_{segment}_{resolution}.json",
+        tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
         #subs_model = "{subtype}/results/HI_subs_model.json"
     shell:
         """
@@ -235,8 +235,8 @@ rule export:
         tree_model = rules.titers.output.tree_model,
         auspice_config = files.auspice_config
     output:
-        auspice_tree = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_tree.json",
-        auspice_meta = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_meta.json"
+        auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json"
     shell:
         """
         augur export \
