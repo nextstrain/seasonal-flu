@@ -1,13 +1,14 @@
-path_to_fauna = '../fauna/data'
-segments = ['ha', 'na']
+path_to_fauna = '../fauna/data/seasonal-flu'
+segments = ['ha']
+lineages = ['h3n2']
 resolutions = ['2y']
-
 
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992",
                   'h1n1pdm':"A/California/07/2009",
                   'vic':"B/HongKong/02/1993",
-                  'yam':"B/Singapore/11/1994"}
+                  'yam':"B/Singapore/11/1994"
+                  }
     return references[v.lineage]
 
 def titer_data(w):
