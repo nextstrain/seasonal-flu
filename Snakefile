@@ -1,5 +1,6 @@
 path_to_fauna = '../fauna/data'
 segments = ['ha', 'na']
+resolutions = ['2y']
 
 
 def reference_strain(v):
