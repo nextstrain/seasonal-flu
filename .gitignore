@@ -1,0 +1,6 @@
+# Snakemake directory
+.snakemake/
+
+# Data files
+auspice/*.json
+results/*
