@@ -20,8 +20,16 @@
       "type":"discrete"
     },
     "country": {
+      "key":"country",
+      "legendTitle":"Country",
+      "menuItem":"country",
+      "type":"discrete"
     },
     "region": {
+      "key":"region",
+      "legendTitle":"Region",
+      "menuItem":"region",
+      "type":"discrete"
     }
   },
   "geo": [
@@ -30,7 +38,7 @@
   ],
   "defaults": {
     "mapTriplicate": true
-  },  
+  },
   "maintainer": [
     "Trevor Bedford",
     "http://bedford.io/team/trevor-bedford/"
