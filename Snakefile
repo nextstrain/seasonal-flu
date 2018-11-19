@@ -12,21 +12,21 @@ def reference_strain(v):
     return references[v.lineage]
 
 def titer_data(w):
-    titers = {'h1n1':path_to_fauna + '/h1n1_crick_hi_titers.tsv',
-            'h3n2':path_to_fauna + '/h3n2_crick_hi_titers.tsv',
-            'yam':path_to_fauna + '/yam_crick_hi_titers.tsv',
-            'vic':path_to_fauna + '/vic_crick_hi_titers.tsv',
-            'Ball':path_to_fauna + '/Ball_crick_hi_titers.tsv',
-            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_titers.tsv'}
+    titers = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_titers.tsv',
+            'h3n2':path_to_fauna + '/h3n2_crick_hi_cell_titers.tsv',
+            'yam':path_to_fauna + '/yam_crick_hi_cell_titers.tsv',
+            'vic':path_to_fauna + '/vic_crick_hi_cell_titers.tsv',
+            'Ball':path_to_fauna + '/Ball_crick_hi_cell_titers.tsv',
+            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_cell_titers.tsv'}
     return titers[w.lineage]
 
 def priority_files(w):
-    priorty = {'h1n1':path_to_fauna + '/h1n1_crick_hi_strains.tsv',
-            'h3n2':path_to_fauna + '/h3n2_crick_hi_strains.tsv',
-            'yam':path_to_fauna + '/yam_crick_hi_strains.tsv',
-            'vic':path_to_fauna + '/vic_crick_hi_strains.tsv',
-            'Ball':path_to_fauna + '/Ball_crick_hi_strains.tsv',
-            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_strains.tsv'}
+    priorty = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_strains.tsv',
+            'h3n2':path_to_fauna + '/h3n2_crick_hi_cell_strains.tsv',
+            'yam':path_to_fauna + '/yam_crick_hi_cell_strains.tsv',
+            'vic':path_to_fauna + '/vic_crick_hi_cell_strains.tsv',
+            'Ball':path_to_fauna + '/Ball_crick_hi_cell_strains.tsv',
+            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_cell_strains.tsv'}
 
     return priorty[w.lineage]
 
