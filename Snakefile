@@ -38,8 +38,8 @@ def vpm(v):
 
 rule all:
     input:
-        auspice_tree = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_tree.json",
-        auspice_meta = "auspice/flu_{build}_{lineage}_{segment}_{resolution}_meta.json"
+        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
 
 rule files:
     params:
