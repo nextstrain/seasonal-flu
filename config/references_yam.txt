@@ -1,0 +1,16 @@
+B/Beijing/184/1993
+B/Sichuan/379/1999
+B/Shanghai/361/2002
+B/Florida/4/2006
+B/Wisconsin/1/2010
+B/Massachusetts/2/2012
+B/Phuket/3073/2013
+B/Utah/9/2014
+B/Brisbane/9/2014
+B/Guangdong-Liwan/1133/2014
+B/California/12/2015
+B/Arizona/10/2015
+B/Sapporo/2/2015
+B/Hyogo/3210/2015
+B/NewHampshire/1/2016
+B/Texas/81/2016
