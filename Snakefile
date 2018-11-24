@@ -84,7 +84,7 @@ rule select_strains:
         include = files.references
     shell:
         """
-        python scripts/prepare.py --metadata {input.metadata} \
+        python scripts/select_strains.py --metadata {input.metadata} \
                                   --segments {segments} \
                                   --exclude {params.exclude} --include {params.include} \
                                   --resolution {wildcards.resolution} --lineage {wildcards.lineage} \
