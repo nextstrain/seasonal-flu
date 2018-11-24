@@ -31,6 +31,12 @@ def priority_files(w):
     return priorty[w.lineage]
 
 
+def substitution_rates(w):
+    references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028,
+                  }
+    return references[(w.lineage, w.segment)]
+
+
 def vpm(v):
     vpm = {'3y':2, '6y':2, '12y':1}
     return vpm[v.resolution] if v.resolution in vpm else 5
