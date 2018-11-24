@@ -201,12 +201,14 @@ rule translate:
         reference = files.reference
     output:
         node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
+        aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
     shell:
         """
         augur translate \
             --tree {input.tree} \
             --ancestral-sequences {input.node_data} \
             --reference-sequence {input.reference} \
+            --alignment_output {output.aa_alignment} \
             --output {output.node_data} \
         """
 
@@ -216,14 +218,20 @@ rule titers:
         titers = titer_data
     output:
         tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
-        #subs_model = "{subtype}/results/HI_subs_model.json"
+        subs_model = "results/HISubsModel_seasonal_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur titers --tree {input.tree}\
             --titers {input.titers}\
             --titer-model tree \
-            --output {output.tree_model}
+            --output {output.tree_model} &
+        augur titers --tree {input.tree}\
+            --titers {input.titers}\
+            --titer-model substitution \
+            --output {output.subs_model}
         """
+
+
 
 rule export:
     input:
