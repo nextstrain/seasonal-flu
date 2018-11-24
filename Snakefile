@@ -1,5 +1,5 @@
-path_to_fauna = '../fauna/data/seasonal-flu'
-segments = ['ha']
+path_to_fauna = '../fauna/data'
+segments = ['ha', 'na']
 lineages = ['h3n2']
 resolutions = ['2y']
 
@@ -44,10 +44,11 @@ rule all:
 rule files:
     params:
         input_fasta = path_to_fauna+"/{lineage}_{segment}.fasta",
-        # dropped_strains = "config/dropped_strains_{lineage}.txt",
+        outliers = "config/outliers_{lineage}.txt",
+        references = "config/references_{lineage}.txt",
         reference = "config/{lineage}_{segment}_outgroup.gb",
         colors = "config/colors.tsv",
-        auspice_config = "config/auspice_config.json"
+        auspice_config = "config/auspice_config.json",
 
 files = rules.files.params
 
@@ -78,11 +79,14 @@ rule select_strains:
     output:
         strains = "results/strains_seasonal_{lineage}_{resolution}.txt",
     params:
-        viruses_per_month = vpm
+        viruses_per_month = vpm,
+        exclude = files.outliers,
+        include = files.references
     shell:
         """
         python scripts/prepare.py --metadata {input.metadata} \
                                   --segments {segments} \
+                                  --exclude {params.exclude} --include {params.include} \
                                   --resolution {wildcards.resolution} --lineage {wildcards.lineage} \
                                   --viruses_per_month {params.viruses_per_month} \
                                   --output {output.strains}
@@ -200,7 +204,7 @@ rule translate:
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
     output:
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
         aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
     shell:
         """

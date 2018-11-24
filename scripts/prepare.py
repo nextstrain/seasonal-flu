@@ -1,4 +1,4 @@
-import argparse
+import argparse, sys, os
 import numpy as np
 from collections import defaultdict
 from augur.utils import read_metadata, get_numerical_dates
@@ -24,74 +24,124 @@ regions = [
     ('west_asia',         "AS", 0.75)
 ]
 
-def populate_counts(seqs_to_count):
-    sequence_count_total = defaultdict(int)
-    sequence_count_region = defaultdict(int)
-    for seq in seqs_to_count:
-        sequence_count_total[(seq.attributes['date'].year,
-                              seq.attributes['date'].month)]+=1
-        sequence_count_region[(seq.attributes['region'],
-                              seq.attributes['date'].year,
-                              seq.attributes['date'].month)]+=1
-    return (sequence_count_total, sequence_count_region)
+subcats = [r[0] for r in regions]
+
+def read_strain_list(fname):
+    """
+    read strain names from a file assuming there is one strain name per line
+
+    Parameters:
+    -----------
+    fname : str
+        file name
+
+    Returns:
+    --------
+    strain_list : list
+        strain names
+
+    """
+    if os.path.isfile(fname):
+        with open(fname, 'r') as fh:
+            strain_list = [x.strip() for x in fh.readlines() if x[0]!='#']
+    else:
+        print("ERROR: file %s containing strain list not found"%fname)
+        sys.exit(1)
+
+    return strain_list
 
 
-def flu_subsampling(strains, viruses_per_month, titer_values=None):
+def count_titer_measurements(fname):
+    """
+    read how many titer measurements exist for each virus
+
+    Parameters:
+    -----------
+    fname : str
+        file name
+
+    Returns:
+    --------
+    titer_count : defaultdict(int)
+        dictionary with titer count for each strain
+    """
+    titer_count = defaultdict(int)
+    if os.path.isfile(fname):
+        with open(fname, 'r') as fh:
+            for line in fh:
+                titer_count[line.split()[0]] += 1
+    else:
+        print("ERROR: file %s containing strain list not found"%fname)
+        sys.exit(1)
+
+    return titer_count
+
+
+def populate_categories(metadata):
+    super_category = lambda x: (x['year'],
+                                x['month'])
+
     category = lambda x: (x['region'],
                           x['year'],
                           x['month'])
 
+    virus_by_category = defaultdict(list)
+    virus_by_super_category = defaultdict(list)
+    for v in metadata:
+        virus_by_category[category(metadata[v])].append(v)
+        virus_by_super_category[super_category(metadata[v])].append(v)
+
+    return virus_by_super_category, virus_by_category
+
+
+def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None):
+
     #### DEFINE THE PRIORITY
-    if titer_values is not None:
-        HI_titer_count = TiterCollection.count_strains(titer_values)
+    if titer_fname:
+        HI_titer_count = count_titer_measurements(titer_fname)
+        def priority(strain):
+            return HI_titer_count(strain)
     else:
-        print("Couldn't load titer information - using random priorities")
-        HI_titer_count = False
-        def priority(seq):
-            return np.random.random() + int(seq.name in reference_viruses[params.lineage])
+        print("No titer counts provided - using random priorities")
+        def priority(strain):
+            return np.random.random()
 
-    if HI_titer_count:
-        def priority(seq):
-            sname = seq.attributes['strain']
-            if sname in HI_titer_count:
-                pr = HI_titer_count[sname]
+    subcat_threshold = int(np.ceil(1.0*viruses_per_month/len(subcats)))
+
+    virus_by_super_category, virus_by_category = populate_categories(metadata)
+    def threshold_fn(x):
+        #x is the subsampling category, in this case a tuple of (region, year, month)
+
+        # if there are not enough viruses by super category, take everything
+        if len(virus_by_super_category[x[1:]]) < viruses_per_month:
+            return viruses_per_month
+
+        # otherwise, sort sub categories by strain count
+        sub_counts = sorted([(r, virus_by_super_category[(r, x[1], x[2])]) for r in subcats],
+                             key=lambda y:len(y[1]))
+
+        # if all (the smallest) subcat has more strains than the threshold, return threshold
+        if len(sub_counts[0][1]) > subcat_threshold:
+            return subcat_threshold
+
+
+        strains_selected = 0
+        tmp_subcat_threshold = subcat_threshold
+        for ri, (r, strains) in enumerate(sub_counts):
+            current_threshold = int(np.ceil(1.0*(viruses_per_month-strains_selected)/(len(subcats)-ri)))
+            if r==x[0]:
+                return current_threshold
             else:
-                pr = 0
-            return (pr + len(seq.seq)*0.0001 - 0.01*np.sum([seq.seq.count(nuc) for nuc in 'NRWYMKSHBVD']) +
-                    1e6*int(seq.name in reference_viruses[params.lineage]))
+                strains_selected += min(len(strains, current_threshold))
+        return subcat_threshold
 
+    selected_strains = []
+    for cat, val in virus_by_category.items():
+        if cat_valid(cat, time_interval):
+            selected_strains.extend(val[:args.viruses_per_month])
 
-    region_threshold = int(np.ceil(1.0*viruses_per_month/len(regions)))
-    def threshold(obj):
-        """
-        a higher order function which returns a fn which has access to
-        some summary stats about the sequences (closure)
-        """
-        sequence_count_total, sequence_count_region = populate_counts(obj)
-        def threshold_fn(x):
-            #x is the collection key, in this case a tuple of (region, year, month)
-            if sequence_count_total[(x[1], x[2])] < viruses_per_month:
-                return viruses_per_month
-            region_counts = sorted([sequence_count_region[(r[0], x[1], x[2])] for r in regions])
-            if region_counts[0] > region_threshold:
-                return region_threshold
-            left_to_fill = viruses_per_month - len(regions)*region_counts[0]
-            thres = region_counts[0]
-            for ri, rc in zip(range(len(regions)-1, 0, -1), region_counts[1:]):
-                if left_to_fill - ri*(rc-thres)>0:
-                    left_to_fill-=ri*(rc-thres)
-                    thres = rc
-                else:
-                    thres += left_to_fill/ri
-                    break
-            return max(1, int(thres))
-        return threshold_fn
+    return selected_strains
 
-    return {
-        "category": category,
-        "priority": priority,
-        "threshold": threshold
-    }
 
 def cat_valid(cat, time_interval):
     if cat[-2]<time_interval[1].year or cat[-2]>time_interval[0].year:
@@ -110,38 +160,49 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--viruses_per_month', type = int, default=15,
                         help='Subsample x viruses per country per month. Set to 0 to disable subsampling.')
     parser.add_argument('--metadata', nargs='+', help="FASTA file of virus sequences from fauna (e.g., zika.fasta)")
-    parser.add_argument('--output', help="name of the file with selected strains")
+    parser.add_argument('--output', help="name of the file to write selected strains to")
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
 
     parser.add_argument('-l', '--lineage', choices=['h3n2', 'h1n1pdm', 'vic', 'yam'], default='h3n2', type=str, help="single lineage to include (default: h3n2)")
     parser.add_argument('-r', '--resolution',default='3y', type = str,  help = "single resolution to include (default: 3y)")
-    parser.add_argument('--ensure_all_segments', action="store_true", default=False,  help = "exclude all strains that don't have the full set of segments")
     parser.add_argument('-s', '--segments', default=['ha'], nargs='+', type = str,  help = "list of segments to include (default: ha)")
     parser.add_argument('--sampling', default = 'even', type=str,
                         help='sample evenly over regions (even) (default), or prioritize one region (region name), otherwise sample randomly')
-    parser.add_argument('--time_interval', nargs=2, help="explicit time interval to use -- overrides resolutions"
+    parser.add_argument('--time-interval', nargs=2, help="explicit time interval to use -- overrides resolutions"
                                                                      " expects YYYY-MM-DD YYYY-MM-DD")
-    parser.add_argument('--strains', help="a text file containing a list of strains (one per line) to prepare without filtering or subsampling")
-    parser.add_argument('--titers', help="tab-delimited file of titer strains and values from fauna (e.g., h3n2_hi_titers.tsv)")
+    parser.add_argument('--titers', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
+                                          " and use this count as a priority for inclusion during subsampling.")
+    parser.add_argument('--include', help="a text file containing strains (one per line) that will be included regardless of subsampling")
+    parser.add_argument('--max-include-range', type=float,default=5, help="number of years prior to the lower date limit for reference strain inclusion")
+    parser.add_argument('--exclude', help="a text file containing strains (one per line) that will be excluded")
     parser.add_argument('--complete_frequencies', action='store_true', help="compute mutation frequences from entire dataset")
 
     args = parser.parse_args()
 
-
-    if args.time_interval:
+    # determine date range to include strains from
+    if args.time_interval: # explicitly specified
         time_interval = sorted([datetime.strptime(x, '%Y-%m-%d').date() for x in args.time_interval], reverse=True)
-    else:
+    else: # derived from resolution arguments (explicit takes precedence)
         if args.resolution:
             years_back = int(args.resolution[:-1])
         else:
             years_back = 3
         time_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]
-    reference_cutoff = date(year = time_interval[1].year - 4, month=1, day=1)
 
+    # derive additional lower inclusion date for "force-included strains"
+    reference_cutoff = date(year = time_interval[1].year - args.max_include_range, month=1, day=1)
 
+    # read strains to exclude
+    excluded_strains = read_strain_list(args.exclude) if args.exclude else []
+    # read strains to include
+    included_strains = read_strain_list(args.include) if args.include else []
+
+    # read in meta data, parse numeric dates, and exclude outlier strains
     metadata = {}
     for segment, fname in zip(args.segments, args.metadata):
         tmp_meta, columns = read_metadata(fname)
+        tmp_meta = {k:v for k,v in tmp_meta.items() if k not in excluded_strains}
+
         numerical_dates = get_numerical_dates(tmp_meta, fmt='%Y-%m-%d')
         for x in tmp_meta:
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
@@ -149,20 +210,18 @@ if __name__ == '__main__':
             tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
         metadata[segment] = tmp_meta
 
+    # filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
     strains_with_all_segments = set.intersection(*(set(metadata[x].keys()) for x in args.segments))
-    subsampling = flu_subsampling({x:metadata[guide_segment][x] for x in strains_with_all_segments},
-                                  args.viruses_per_month)
+    selected_strains = flu_subsampling({x:metadata[guide_segment][x] for x in strains_with_all_segments},
+                                  args.viruses_per_month, time_interval, titer_fname=args.titers)
 
-    virus_by_category = defaultdict(list)
-    for v in strains_with_all_segments:
-        virus_by_category[subsampling["category"](metadata[guide_segment][v])].append(v)
+    # add strains that need to be included
+    for strain in included_strains:
+        if strain in strains_with_all_segments and strain not in selected_strains:
+            if metadata[guide_segment][strain]['year']>=reference_cutoff.year:
+                selected_strains.append(strain)
 
-    selected_strains = []
-    print(time_interval)
-    for cat, val in virus_by_category.items():
-        if cat_valid(cat, time_interval):
-            selected_strains.extend(val[:args.viruses_per_month])
-
+    # write the list of selected strains to file
     with open(args.output, 'w') as ofile:
         ofile.write('\n'.join(selected_strains))
