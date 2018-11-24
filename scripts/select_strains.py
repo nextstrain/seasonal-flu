@@ -100,7 +100,7 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
     if titer_fname:
         HI_titer_count = count_titer_measurements(titer_fname)
         def priority(strain):
-            return HI_titer_count(strain)
+            return HI_titer_count[strain]
     else:
         print("No titer counts provided - using random priorities")
         def priority(strain):
@@ -132,13 +132,14 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
             if r==x[0]:
                 return current_threshold
             else:
-                strains_selected += min(len(strains, current_threshold))
+                strains_selected += min(len(strains), current_threshold)
         return subcat_threshold
 
     selected_strains = []
     for cat, val in virus_by_category.items():
         if cat_valid(cat, time_interval):
-            selected_strains.extend(val[:args.viruses_per_month])
+            val.sort(key=priority, reverse=True)
+            selected_strains.extend(val[:threshold_fn(cat)])
 
     return selected_strains
 

@@ -87,7 +87,8 @@ rule select_strains:
     params:
         viruses_per_month = vpm,
         exclude = files.outliers,
-        include = files.references
+        include = files.references,
+        titers = titer_data
     shell:
         """
         python scripts/select_strains.py --metadata {input.metadata} \
@@ -95,6 +96,7 @@ rule select_strains:
                                   --exclude {params.exclude} --include {params.include} \
                                   --resolution {wildcards.resolution} --lineage {wildcards.lineage} \
                                   --viruses_per_month {params.viruses_per_month} \
+                                  --titers {params.titers} \
                                   --output {output.strains}
         """
 
@@ -209,23 +211,28 @@ rule translate:
         tree = rules.refine.output.tree,
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
-    output:
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
+    params:
         aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
+    output:
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
     shell:
         """
         augur translate \
             --tree {input.tree} \
             --ancestral-sequences {input.node_data} \
             --reference-sequence {input.reference} \
-            --alignment_output {output.aa_alignment} \
+            --alignment-output {params.aa_alignment} \
             --output {output.node_data} \
         """
 
 rule titers:
     input:
         tree = rules.refine.output.tree,
-        titers = titer_data
+        titers = titer_data,
+        aa_muts = rules.translate.output
+    params:
+        sequences = "results/aaseq_seasonal-HA1_{lineage}_{segment}_{resolution}.fasta",
+        genes = "HA1"
     output:
         tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
         subs_model = "results/HISubsModel_seasonal_{lineage}_{segment}_{resolution}.json",
@@ -238,6 +245,8 @@ rule titers:
         augur titers --tree {input.tree}\
             --titers {input.titers}\
             --titer-model substitution \
+            --sequences {params.sequences} \
+            --gene-names {params.genes} \
             --output {output.subs_model}
         """
 
