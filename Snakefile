@@ -2,6 +2,9 @@ path_to_fauna = '../fauna/data'
 segments = ['ha', 'na']
 lineages = ['h3n2']
 resolutions = ['2y']
+frequency_regions = ['global', 'north_america', 'south_america', 'europe', 'china',
+                     'south_east_asia', 'japan_korea', 'south_asia', 'africa']
+
 
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992",
@@ -279,12 +282,15 @@ rule tree_frequencies:
     input:
         metadata = rules.parse.output.metadata,
         tree = rules.refine.output.tree
+    params:
+        regions = frequency_regions
     output:
-        tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
+        tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur frequencies --tree {input.tree} \
                           --metadata {input.metadata} \
+                          --regions {params.regions} \
                           --output {output.tree_freq}
         """
 
