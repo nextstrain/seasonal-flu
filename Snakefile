@@ -275,6 +275,19 @@ rule mutation_frequencies:
                           --output {output.mut_freq}
         """
 
+rule tree_frequencies:
+    input:
+        metadata = rules.parse.output.metadata,
+        tree = rules.refine.output.tree
+    output:
+        tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur frequencies --tree {input.tree} \
+                          --metadata {input.metadata} \
+                          --output {output.tree_freq}
+        """
+
 rule export:
     input:
         tree = rules.refine.output.tree,
