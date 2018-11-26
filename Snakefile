@@ -12,24 +12,33 @@ def reference_strain(v):
     return references[v.lineage]
 
 def titer_data(w):
-    titers = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_titers.tsv',
-            'h3n2':path_to_fauna + '/h3n2_crick_hi_cell_titers.tsv',
-            'yam':path_to_fauna + '/yam_crick_hi_cell_titers.tsv',
-            'vic':path_to_fauna + '/vic_crick_hi_cell_titers.tsv',
-            'Ball':path_to_fauna + '/Ball_crick_hi_cell_titers.tsv',
-            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_cell_titers.tsv'}
+    titers = {'h1n1':path_to_fauna + '/h1n1_cdc_hi_cell_titers.tsv',
+            'h3n2':path_to_fauna + '/h3n2_cdc_hi_cell_titers.tsv',
+            'yam':path_to_fauna + '/yam_cdc_hi_cell_titers.tsv',
+            'vic':path_to_fauna + '/vic_cdc_hi_cell_titers.tsv',
+            'Ball':path_to_fauna + '/Ball_cdc_hi_cell_titers.tsv',
+            'h1n1pdm':path_to_fauna + '/h1n1pdm_cdc_hi_cell_titers.tsv'}
     return titers[w.lineage]
 
+# this can go
 def priority_files(w):
-    priorty = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_strains.tsv',
+    priority = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_strains.tsv',
             'h3n2':path_to_fauna + '/h3n2_crick_hi_cell_strains.tsv',
             'yam':path_to_fauna + '/yam_crick_hi_cell_strains.tsv',
             'vic':path_to_fauna + '/vic_crick_hi_cell_strains.tsv',
             'Ball':path_to_fauna + '/Ball_crick_hi_cell_strains.tsv',
             'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_cell_strains.tsv'}
 
-    return priorty[w.lineage]
+    return priority[w.lineage]
 
+def gene_names(w):
+    genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
+    return genes_to_translate[w.segment]
+
+def translations(w):
+    genes = gene_names(w)
+    return ["results/aaseq_seasonal-%s_%s_%s_%s.fasta"%(g, w.lineage, w.segment, w.resolution)
+            for g in genes]
 
 def substitution_rates(w):
     references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028,
@@ -214,7 +223,7 @@ rule translate:
     params:
         aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
     output:
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur translate \
@@ -229,10 +238,10 @@ rule titers:
     input:
         tree = rules.refine.output.tree,
         titers = titer_data,
-        aa_muts = rules.translate.output
+        aa_muts = rules.translate.output,
+        alignment = translations
     params:
-        sequences = "results/aaseq_seasonal-HA1_{lineage}_{segment}_{resolution}.fasta",
-        genes = "HA1"
+        genes = gene_names
     output:
         tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
         subs_model = "results/HISubsModel_seasonal_{lineage}_{segment}_{resolution}.json",
@@ -245,12 +254,26 @@ rule titers:
         augur titers --tree {input.tree}\
             --titers {input.titers}\
             --titer-model substitution \
-            --sequences {params.sequences} \
+            --alignment {input.alignment} \
             --gene-names {params.genes} \
             --output {output.subs_model}
         """
 
-
+rule mutation_frequencies:
+    input:
+        metadata = rules.parse.output.metadata,
+        alignment = translations
+    params:
+        genes = gene_names
+    output:
+        mut_freq = "results/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur frequencies --alignments {input.alignment} \
+                          --metadata {input.metadata} \
+                          --gene-names {params.genes} \
+                          --output {output.mut_freq}
+        """
 
 rule export:
     input:
