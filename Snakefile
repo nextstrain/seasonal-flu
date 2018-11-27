@@ -223,8 +223,6 @@ rule translate:
         tree = rules.refine.output.tree,
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
-    params:
-        aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
     output:
         node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
     shell:
@@ -233,16 +231,35 @@ rule translate:
             --tree {input.tree} \
             --ancestral-sequences {input.node_data} \
             --reference-sequence {input.reference} \
-            --alignment-output {params.aa_alignment} \
             --output {output.node_data} \
         """
+
+rule reconstruct_translations:
+    message: "Reconstructing translations required for titer models and frequencies"
+    input:
+        tree = rules.refine.output.tree,
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
+    params:
+        genes = gene_names,
+        aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
+    output:
+        aa_alignment = "results/aaseq_seasonal-{gene}_{lineage}_{segment}_{resolution}.fasta"
+    shell:
+        """
+        augur reconstruct-sequences \
+            --tree {input.tree} \
+            --mutations {input.node_data} \
+            --genes {params.genes} \
+            --output {params.aa_alignment}
+        """
+
 
 rule titers:
     input:
         tree = rules.refine.output.tree,
         titers = titer_data,
         aa_muts = rules.translate.output,
-        alignment = translations
+        alignments = translations
     params:
         genes = gene_names
     output:
@@ -257,7 +274,7 @@ rule titers:
         augur titers --tree {input.tree}\
             --titers {input.titers}\
             --titer-model substitution \
-            --alignment {input.alignment} \
+            --alignment {input.alignments} \
             --gene-names {params.genes} \
             --output {output.subs_model}
         """
