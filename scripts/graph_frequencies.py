@@ -43,7 +43,7 @@ def sample_counts(tree_frequencies, fname, drop=3):
                     label=region, color=c, clip_on=False)
             tmpcounts += np.array(counts[region][drop:])
     ax.set_xlim([date_bins[drop-1], date_bins[-1]])
-    ax.set_ylim(0,ymax)
+    ax.set_ylim(0,min(max(counts['global']), ymax))
     ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
     ax.tick_params(axis='x', which='minor', pad=7)
     ax.xaxis.set_major_locator(years)

@@ -37,6 +37,16 @@ def region_translations(w):
     return ["results/full-aaseq-seasonal-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
             for g in genes]
 
+def pivots_per_year(w):
+    pivots_per_year = {'2y':12, '3y':6, '6y':4, '12y':2}
+    return pivots_per_year[w.resolution]
+
+def min_date(w):
+    from datetime import date
+    from treetime.utils import numeric_date
+    now = numeric_date(date.today())
+    return now - int(w.resolution[:-1])
+
 def substitution_rates(w):
     references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028,
                   }
@@ -327,7 +337,8 @@ rule mutation_frequencies:
         metadata = rules.parse.output.metadata,
         alignment = translations
     params:
-        genes = gene_names
+        genes = gene_names,
+        pivots_per_year = pivots_per_year
     output:
         mut_freq = "results/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
     shell:
@@ -335,6 +346,7 @@ rule mutation_frequencies:
         augur frequencies --alignments {input.alignment} \
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
+                          --pivots-per-year {params.pivots_per_year} \
                           --output {output.mut_freq}
         """
 
@@ -343,7 +355,8 @@ rule complete_mutation_frequencies:
         metadata = rules.parse.output.metadata,
         alignment = region_translations
     params:
-        genes = gene_names
+        genes = gene_names,
+        pivots_per_year = pivots_per_year
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
     shell:
@@ -351,6 +364,7 @@ rule complete_mutation_frequencies:
         augur frequencies --alignments {input.alignment} \
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
+                          --pivots-per-year {params.pivots_per_year} \
                           --output {output.mut_freq}
         """
 
@@ -361,13 +375,15 @@ rule tree_frequencies:
         tree = rules.refine.output.tree
     params:
         regions = frequency_regions + ['global'],
-        min_date = 2016.8
+        min_date = min_date,
+        pivots_per_year = pivots_per_year
     output:
         tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur frequencies --tree {input.tree} \
                           --metadata {input.metadata} \
+                          --pivots-per-year {params.pivots_per_year} \
                           --regions {params.regions} \
                           --min-date {params.min_date} \
                           --output {output.tree_freq}
