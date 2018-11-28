@@ -53,6 +53,11 @@ def substitution_rates(w):
                   }
     return references[(w.lineage, w.segment)]
 
+def mutations_to_plot(v):
+    mutations = {'h3n2':["HA1:135K", "HA1:131T"]
+                  }
+    return mutations[v.lineage]
+
 
 def vpm(v):
     vpm = {'3y':2, '6y':2, '12y':1}
@@ -63,6 +68,21 @@ rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+
+
+rule frequency_graphs:
+    input:
+        expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
+                region=['north_america', 'europe', 'china'])
+    params:
+        mutations = mutations_to_plot
+    output:
+        "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        python scripts/graph_frequencies.py --frequencies {input} --mutations {params.mutations} --output {output}
+        """
+
 
 
 rule files:
