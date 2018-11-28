@@ -2,8 +2,8 @@ path_to_fauna = '../fauna/data'
 segments = ['ha', 'na']
 lineages = ['h3n2']
 resolutions = ['2y']
-frequency_regions = ['global', 'north_america', 'south_america', 'europe', 'china',
-                     'south_east_asia', 'japan_korea', 'south_asia', 'africa']
+frequency_regions = ['north_america', 'south_america', 'europe', 'china',
+                     'southeast_asia', 'japan_korea', 'south_asia', 'africa']
 
 
 def reference_strain(v):
@@ -143,9 +143,9 @@ rule full_region_alignments:
         reference = "config/{lineage}_{segment}_outgroup.gb"
     params:
         genes = gene_names,
-        aa_alignment = "results/full-aaseq-seasonal-%GENE_{region}_{lineage}_{segment}_{resolution}.fasta"
+        aa_alignment = "results/full-aaseq-seasonal-%GENE_%REGION_{lineage}_{segment}_{resolution}.fasta"
     output:
-        alignments = "results/full-aaseq-seasonal-{gene}_{region}_{lineage}_{segment}_{resolution}.fasta"
+        alignments = expand("results/full-aaseq-seasonal-{{gene}}_{region}_{{lineage}}_{{segment}}_{{resolution}}.fasta", region=frequency_regions)
     shell:
         """
         python scripts/full_region_alignments.py  --sequences {input.sequences}\
@@ -153,7 +153,7 @@ rule full_region_alignments:
                                              --exclude {input.exclude} \
                                              --genes {params.genes} \
                                              --reference {input.reference} \
-                                             --output {output.alignments}
+                                             --output {params.aa_alignment}
         """
 
 
