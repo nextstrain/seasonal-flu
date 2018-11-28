@@ -152,15 +152,40 @@ def cat_valid(cat, time_interval):
         return False
     return True
 
+def determine_time_interval(time_interval, resolution):
+    # determine date range to include strains from
+    if time_interval: # explicitly specified
+        datetime_interval = sorted([datetime.strptime(x, '%Y-%m-%d').date() for x in args.time_interval], reverse=True)
+    else: # derived from resolution arguments (explicit takes precedence)
+        if resolution:
+            years_back = int(resolution[:-1])
+        else:
+            years_back = 3
+        datetime_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]
+    return datetime_interval
+
+def parse_metadata(segments, metadata_files):
+    metadata = {}
+    for segment, fname in zip(segments, metadata_files):
+        tmp_meta, columns = read_metadata(fname)
+
+        numerical_dates = get_numerical_dates(tmp_meta, fmt='%Y-%m-%d')
+        for x in tmp_meta:
+            tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
+            tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
+            tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
+        metadata[segment] = tmp_meta
+    return metadata
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Prepare fauna FASTA for analysis",
+        description="Select strains for downstream analysis",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     parser.add_argument('-v', '--viruses_per_month', type = int, default=15,
                         help='Subsample x viruses per country per month. Set to 0 to disable subsampling.')
-    parser.add_argument('--metadata', nargs='+', help="FASTA file of virus sequences from fauna (e.g., zika.fasta)")
+    parser.add_argument('--metadata', nargs='+', help="file with metadata associated with viral sequences, one for each segment")
     parser.add_argument('--output', help="name of the file to write selected strains to")
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
 
@@ -174,21 +199,11 @@ if __name__ == '__main__':
     parser.add_argument('--titers', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
                                           " and use this count as a priority for inclusion during subsampling.")
     parser.add_argument('--include', help="a text file containing strains (one per line) that will be included regardless of subsampling")
-    parser.add_argument('--max-include-range', type=float,default=5, help="number of years prior to the lower date limit for reference strain inclusion")
+    parser.add_argument('--max-include-range', type=float, default=5, help="number of years prior to the lower date limit for reference strain inclusion")
     parser.add_argument('--exclude', help="a text file containing strains (one per line) that will be excluded")
-    parser.add_argument('--complete_frequencies', action='store_true', help="compute mutation frequences from entire dataset")
 
     args = parser.parse_args()
-
-    # determine date range to include strains from
-    if args.time_interval: # explicitly specified
-        time_interval = sorted([datetime.strptime(x, '%Y-%m-%d').date() for x in args.time_interval], reverse=True)
-    else: # derived from resolution arguments (explicit takes precedence)
-        if args.resolution:
-            years_back = int(args.resolution[:-1])
-        else:
-            years_back = 3
-        time_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]
+    time_interval = determine_time_interval(args.time_interval, args.resolution)
 
     # derive additional lower inclusion date for "force-included strains"
     reference_cutoff = date(year = time_interval[1].year - args.max_include_range, month=1, day=1)
@@ -198,22 +213,14 @@ if __name__ == '__main__':
     # read strains to include
     included_strains = read_strain_list(args.include) if args.include else []
 
-    # read in meta data, parse numeric dates, and exclude outlier strains
-    metadata = {}
-    for segment, fname in zip(args.segments, args.metadata):
-        tmp_meta, columns = read_metadata(fname)
-        tmp_meta = {k:v for k,v in tmp_meta.items() if k not in excluded_strains}
-
-        numerical_dates = get_numerical_dates(tmp_meta, fmt='%Y-%m-%d')
-        for x in tmp_meta:
-            tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
-            tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
-            tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
-        metadata[segment] = tmp_meta
-
+    # read in meta data, parse numeric dates
+    metadata = parse_metadata()
     # filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
     strains_with_all_segments = set.intersection(*(set(metadata[x].keys()) for x in args.segments))
+    # exclude outlier strains
+    strains_with_all_segments.difference_update(set(excluded_strains))
+    # subsample by region, month, year
     selected_strains = flu_subsampling({x:metadata[guide_segment][x] for x in strains_with_all_segments},
                                   args.viruses_per_month, time_interval, titer_fname=args.titers)
 

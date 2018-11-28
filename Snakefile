@@ -40,7 +40,12 @@ def gene_names(w):
 
 def translations(w):
     genes = gene_names(w)
-    return ["results/aaseq_seasonal-%s_%s_%s_%s.fasta"%(g, w.lineage, w.segment, w.resolution)
+    return ["results/aaseq-seasonal-%s_%s_%s_%s.fasta"%(g, w.lineage, w.segment, w.resolution)
+            for g in genes]
+
+def region_translations(w):
+    genes = gene_names(w)
+    return ["results/full-aaseq-seasonal-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
             for g in genes]
 
 def substitution_rates(w):
@@ -58,6 +63,7 @@ rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+
 
 rule files:
     params:
@@ -112,7 +118,6 @@ rule select_strains:
                                   --output {output.strains}
         """
 
-
 rule filter:
     input:
         metadata = rules.parse.output.metadata,
@@ -129,6 +134,27 @@ rule filter:
                 if seq.name in strains:
                     SeqIO.write(seq, outfile, 'fasta')
 
+
+rule full_region_alignments:
+    input:
+        metadata = rules.parse.output.metadata,
+        sequences = 'results/sequences_{lineage}_{segment}.fasta',
+        exclude = files.outliers,
+        reference = "config/{lineage}_{segment}_outgroup.gb"
+    params:
+        genes = gene_names,
+        aa_alignment = "results/full-aaseq-seasonal-%GENE_{region}_{lineage}_{segment}_{resolution}.fasta"
+    output:
+        alignments = "results/full-aaseq-seasonal-{gene}_{region}_{lineage}_{segment}_{resolution}.fasta"
+    shell:
+        """
+        python scripts/full_region_alignments.py  --sequences {input.sequences}\
+                                             --metadata {input.metadata} \
+                                             --exclude {input.exclude} \
+                                             --genes {params.genes} \
+                                             --reference {input.reference} \
+                                             --output {output.alignments}
+        """
 
 
 rule align:
@@ -241,9 +267,9 @@ rule reconstruct_translations:
         node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
     params:
         genes = gene_names,
-        aa_alignment = "results/aaseq_seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
+        aa_alignment = "results/aaseq-seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
     output:
-        aa_alignment = "results/aaseq_seasonal-{gene}_{lineage}_{segment}_{resolution}.fasta"
+        aa_alignment = "results/aaseq-seasonal-{gene}_{lineage}_{segment}_{resolution}.fasta"
     shell:
         """
         augur reconstruct-sequences \
@@ -294,6 +320,23 @@ rule mutation_frequencies:
                           --gene-names {params.genes} \
                           --output {output.mut_freq}
         """
+
+rule complete_mutation_frequencies:
+    input:
+        metadata = rules.parse.output.metadata,
+        alignment = region_translations
+    params:
+        genes = gene_names
+    output:
+        mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur frequencies --alignments {input.alignment} \
+                          --metadata {input.metadata} \
+                          --gene-names {params.genes} \
+                          --output {output.mut_freq}
+        """
+
 
 rule tree_frequencies:
     input:
