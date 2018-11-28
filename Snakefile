@@ -23,17 +23,6 @@ def titer_data(w):
             'h1n1pdm':path_to_fauna + '/h1n1pdm_cdc_hi_cell_titers.tsv'}
     return titers[w.lineage]
 
-# this can go
-def priority_files(w):
-    priority = {'h1n1':path_to_fauna + '/h1n1_crick_hi_cell_strains.tsv',
-            'h3n2':path_to_fauna + '/h3n2_crick_hi_cell_strains.tsv',
-            'yam':path_to_fauna + '/yam_crick_hi_cell_strains.tsv',
-            'vic':path_to_fauna + '/vic_crick_hi_cell_strains.tsv',
-            'Ball':path_to_fauna + '/Ball_crick_hi_cell_strains.tsv',
-            'h1n1pdm':path_to_fauna + '/h1n1pdm_crick_hi_cell_strains.tsv'}
-
-    return priority[w.lineage]
-
 def gene_names(w):
     genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
     return genes_to_translate[w.segment]
@@ -72,15 +61,23 @@ rule all:
 
 rule frequency_graphs:
     input:
-        expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
-                region=['north_america', 'europe', 'china'])
+        mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
+                    region=['north_america', 'europe', 'china']),
+        tree = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
     params:
-        mutations = mutations_to_plot
+        mutations = mutations_to_plot,
+        regions = ['north_america', 'europe', 'china']
     output:
-        "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
+        mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
+        counts = "figures/sample-count_{lineage}_{segment}_{resolution}.png"
     shell:
         """
-        python scripts/graph_frequencies.py --frequencies {input} --mutations {params.mutations} --output {output}
+        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
+                                            --tree-frequencies {input.tree} \
+                                            --mutations {params.mutations} \
+                                            --regions {params.regions} \
+                                            --output-mutations {output.mutations} \
+                                            --output-counts {output.counts}
         """
 
 
@@ -363,7 +360,8 @@ rule tree_frequencies:
         metadata = rules.parse.output.metadata,
         tree = rules.refine.output.tree
     params:
-        regions = frequency_regions
+        regions = frequency_regions + ['global'],
+        min_date = 2016.8
     output:
         tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
@@ -371,6 +369,7 @@ rule tree_frequencies:
         augur frequencies --tree {input.tree} \
                           --metadata {input.metadata} \
                           --regions {params.regions} \
+                          --min-date {params.min_date} \
                           --output {output.tree_freq}
         """
 

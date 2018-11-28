@@ -214,7 +214,7 @@ if __name__ == '__main__':
     included_strains = read_strain_list(args.include) if args.include else []
 
     # read in meta data, parse numeric dates
-    metadata = parse_metadata()
+    metadata = parse_metadata(args.segments, args.metadata)
     # filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
     strains_with_all_segments = set.intersection(*(set(metadata[x].keys()) for x in args.segments))
