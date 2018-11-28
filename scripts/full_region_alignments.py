@@ -56,6 +56,9 @@ if __name__ == '__main__':
                sequences_by_region[metadata[seq.name]["region"]].append(seq)
 
     tmp_str = "".join(sample('ABCDEFGHILKLMOPQRSTUVWXYZ', 20))
+    if not os.path.isdir('tmp'):
+        os.mkdir('tmp')
+
     features_to_translate = load_features(args.reference_sequence, args.genes)
     for region in sequences_by_region:
         tmp_file = "tmp/sequence_file_%s_%s.fasta"%(region, tmp_str)
