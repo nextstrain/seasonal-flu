@@ -50,6 +50,7 @@ rule complete_mutation_frequencies:
         genes = gene_names,
         min_date = min_date,
         max_date = max_date,
+        min_freq = 0.01,
         pivots_per_year = pivots_per_year
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
@@ -61,6 +62,7 @@ rule complete_mutation_frequencies:
                           --pivots-per-year {params.pivots_per_year} \
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
+                          --minimal-frequency {params.min_freq} \
                           --output {output.mut_freq}
         """
 
@@ -88,3 +90,20 @@ rule frequency_graphs:
                                             --output-tree-counts {output.tree_counts}
         """
 
+
+rule mutation_statistics:
+    input:
+        mutations = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
+    params:
+    	offset = 4,
+    	n_out=20
+    output:
+    	rising = "results/rising_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
+    	recurring_mut = "results/recurring_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
+    	recurring_pos = "results/recurring_positions_{region}_{lineage}_{segment}_{resolution}.txt"
+    run:
+    	from scripts.mutation_statistics import rising_mutations, recurring_mutations
+    	rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
+
+    	recurring_mutations(input.node_data, fname_by_position=output.recurring_pos, fname_by_mutation=output.recurring_mut, n_out=params.n_out)

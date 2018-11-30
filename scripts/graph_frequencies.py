@@ -18,17 +18,36 @@ def load_frequencies(fname):
         return json.load(fh)
 
 
-def plot_mutations_by_region(frequencies, mutations, fname):
+def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True, n_std_dev=2, n_smooth=3):
     regions = sorted(frequencies.keys())
+    smoothed_count_by_region = {}
+    for region, freqs in frequencies.items():
+        for n, f in freqs.items():
+            if 'count' in n:
+                gene = n.split(':')[0]
+                smoothed_count_by_region[(gene, region)] = np.convolve(np.ones(n_smooth, dtype=float)/n_smooth, f, mode='same')
 
-    fig, axs = plt.subplots(len(mutations), 1, sharex=True, figsize=(5+3*len(mutations), 6))
+    fig, axs = plt.subplots(len(mutations), 1, sharex=True, figsize=(8,3+3*len(mutations)))
 
-    for mut, ax in zip(mutations, axs):
-        for region in regions:
+    for mi,(mut, ax) in enumerate(zip(mutations, axs)):
+        gene = mut.split(':')[0]
+        for ri,region in enumerate(regions):
+            col = 'C%d'%(ri+1)
+            pivots = frequencies[region]["pivots"]
             if mut in frequencies[region]:
-                ax.plot(frequencies[region]["pivots"], frequencies[region][mut])
+                tmp_freq = np.array(frequencies[region][mut])
+                ax.plot(pivots, tmp_freq, label=region, lw=2, c=col)
+                std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
+                if show_errorbars:
+                    ax.fill_between(pivots, tmp_freq-n_std_dev*std_dev, tmp_freq+n_std_dev*std_dev, facecolor=col, linewidth=0, alpha=0.1)
             else:
                 print("Mutation %s not calculated in region %s"%(mut, region))
+            if mi==0:
+                ax.legend()
+            if mi==len(mutations)-1:
+                ax.set_xlabel('time')
+            ax.set_ylabel(mut)
+            ax.set_ylim(0,1)
 
     plt.savefig(fname)
 
@@ -74,10 +93,6 @@ def plot_counts(counts, date_bins, fname, drop=3):
     ax.set_ylim(0,min(max(counts['global']), ymax))
     ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
     ax.tick_params(axis='x', which='minor', pad=7)
-    ax.xaxis.set_major_locator(years)
-    ax.xaxis.set_major_formatter(yearsFmt)
-    ax.xaxis.set_minor_locator(months)
-    ax.xaxis.set_minor_formatter(monthsFmt)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
     ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.02, 0.53))
     plt.subplots_adjust(left=0.1, right=0.82, top=0.94, bottom=0.22)
