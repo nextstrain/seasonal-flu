@@ -1,3 +1,6 @@
+from datetime import date
+from treetime.utils import numeric_date
+
 path_to_fauna = '../fauna/data'
 segments = ['ha', 'na']
 lineages = ['h3n2']
@@ -23,8 +26,9 @@ def titer_data(w):
             'h1n1pdm':path_to_fauna + '/h1n1pdm_cdc_hi_cell_titers.tsv'}
     return titers[w.lineage]
 
+
+genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
 def gene_names(w):
-    genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
     return genes_to_translate[w.segment]
 
 def translations(w):
@@ -32,31 +36,21 @@ def translations(w):
     return ["results/aaseq-seasonal-%s_%s_%s_%s.fasta"%(g, w.lineage, w.segment, w.resolution)
             for g in genes]
 
-def region_translations(w):
-    genes = gene_names(w)
-    return ["results/full-aaseq-seasonal-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
-            for g in genes]
-
 def pivots_per_year(w):
     pivots_per_year = {'2y':12, '3y':6, '6y':4, '12y':2}
     return pivots_per_year[w.resolution]
 
 def min_date(w):
-    from datetime import date
-    from treetime.utils import numeric_date
     now = numeric_date(date.today())
     return now - int(w.resolution[:-1])
+
+def max_date(w):
+    return numeric_date(date.today())
 
 def substitution_rates(w):
     references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028,
                   }
     return references[(w.lineage, w.segment)]
-
-def mutations_to_plot(v):
-    mutations = {'h3n2':["HA1:135K", "HA1:131T"]
-                  }
-    return mutations[v.lineage]
-
 
 def vpm(v):
     vpm = {'3y':2, '6y':2, '12y':1}
@@ -67,29 +61,6 @@ rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
-
-
-rule frequency_graphs:
-    input:
-        mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
-                    region=['north_america', 'europe', 'china']),
-        tree = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
-    params:
-        mutations = mutations_to_plot,
-        regions = ['north_america', 'europe', 'china']
-    output:
-        mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
-        counts = "figures/sample-count_{lineage}_{segment}_{resolution}.png"
-    shell:
-        """
-        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
-                                            --tree-frequencies {input.tree} \
-                                            --mutations {params.mutations} \
-                                            --regions {params.regions} \
-                                            --output-mutations {output.mutations} \
-                                            --output-counts {output.counts}
-        """
-
 
 
 rule files:
@@ -160,28 +131,6 @@ rule filter:
             for seq in SeqIO.parse(input.sequences, 'fasta'):
                 if seq.name in strains:
                     SeqIO.write(seq, outfile, 'fasta')
-
-
-rule full_region_alignments:
-    input:
-        metadata = rules.parse.output.metadata,
-        sequences = 'results/sequences_{lineage}_{segment}.fasta',
-        exclude = files.outliers,
-        reference = "config/{lineage}_{segment}_outgroup.gb"
-    params:
-        genes = gene_names,
-        aa_alignment = "results/full-aaseq-seasonal-%GENE_%REGION_{lineage}_{segment}_{resolution}.fasta"
-    output:
-        alignments = expand("results/full-aaseq-seasonal-{{gene}}_{region}_{{lineage}}_{{segment}}_{{resolution}}.fasta", region=frequency_regions)
-    shell:
-        """
-        python scripts/full_region_alignments.py  --sequences {input.sequences}\
-                                             --metadata {input.metadata} \
-                                             --exclude {input.exclude} \
-                                             --genes {params.genes} \
-                                             --reference {input.reference} \
-                                             --output {params.aa_alignment}
-        """
 
 
 rule align:
@@ -338,6 +287,8 @@ rule mutation_frequencies:
         alignment = translations
     params:
         genes = gene_names,
+        min_date = min_date,
+        max_date = max_date,
         pivots_per_year = pivots_per_year
     output:
         mut_freq = "results/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
@@ -346,28 +297,11 @@ rule mutation_frequencies:
         augur frequencies --alignments {input.alignment} \
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
+                          --min-date {params.min_date} \
+                          --max-date {params.max_date} \
                           --pivots-per-year {params.pivots_per_year} \
                           --output {output.mut_freq}
         """
-
-rule complete_mutation_frequencies:
-    input:
-        metadata = rules.parse.output.metadata,
-        alignment = region_translations
-    params:
-        genes = gene_names,
-        pivots_per_year = pivots_per_year
-    output:
-        mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
-    shell:
-        """
-        augur frequencies --alignments {input.alignment} \
-                          --metadata {input.metadata} \
-                          --gene-names {params.genes} \
-                          --pivots-per-year {params.pivots_per_year} \
-                          --output {output.mut_freq}
-        """
-
 
 rule tree_frequencies:
     input:
@@ -376,6 +310,7 @@ rule tree_frequencies:
     params:
         regions = frequency_regions + ['global'],
         min_date = min_date,
+        max_date = max_date,
         pivots_per_year = pivots_per_year
     output:
         tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json",
@@ -386,6 +321,7 @@ rule tree_frequencies:
                           --pivots-per-year {params.pivots_per_year} \
                           --regions {params.regions} \
                           --min-date {params.min_date} \
+                          --max-date {params.max_date} \
                           --output {output.tree_freq}
         """
 

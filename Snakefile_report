@@ -1,0 +1,90 @@
+include: "Snakefile"
+
+
+def mutations_to_plot(v):
+    mutations = {('h3n2', 'ha'):["HA1:135K", "HA1:135N", "HA1:212T", "HA1:128A", "HA1:214T"],
+    			 ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
+    			 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
+    			 ('h1n1pdm', 'na'):["NA:77A","NA:93H", "NA:416N"],
+                  }
+    return mutations[(v.lineage, v.segment)]
+
+
+def region_translations(w):
+    genes = gene_names(w)
+    return ["results/full-aaseq-seasonal-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
+            for g in genes]
+
+regions_to_graph = ['north_america', 'europe', 'china']
+
+for seg, genes in genes_to_translate.items():
+	rule:
+	    input:
+	        metadata = rules.parse.output.metadata,
+	        sequences = 'results/sequences_{lineage}_{segment}.fasta', #.format(seg=seg),
+	        exclude = files.outliers,
+	        reference = "config/{lineage}_{segment}_outgroup.gb" #.format(seg=seg)
+	    params:
+	    	genes=genes,
+	    	region="{region}"
+	    output:
+	        alignments = expand("results/full-aaseq-seasonal-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
+	        					gene=genes)
+	    shell:
+	        """
+	        python scripts/full_region_alignments.py  --sequences {input.sequences}\
+	                                             --metadata {input.metadata} \
+	                                             --exclude {input.exclude} \
+	                                             --genes {params.genes} \
+	                                             --region {params.region} \
+	                                             --reference {input.reference} \
+	                                             --output {output.alignments}
+	        """
+
+
+rule complete_mutation_frequencies:
+    input:
+        metadata = rules.parse.output.metadata,
+        alignment = region_translations
+    params:
+        genes = gene_names,
+        min_date = min_date,
+        max_date = max_date,
+        pivots_per_year = pivots_per_year
+    output:
+        mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur frequencies --alignments {input.alignment} \
+                          --metadata {input.metadata} \
+                          --gene-names {params.genes} \
+                          --pivots-per-year {params.pivots_per_year} \
+                          --min-date {params.min_date} \
+                          --max-date {params.max_date} \
+                          --output {output.mut_freq}
+        """
+
+
+rule frequency_graphs:
+    input:
+        mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
+                    region=regions_to_graph),
+        tree = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
+    params:
+        mutations = mutations_to_plot,
+        regions = regions_to_graph
+    output:
+        mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
+        total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.png",
+        tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.png"
+    shell:
+        """
+        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
+                                            --tree-frequencies {input.tree} \
+                                            --mutations {params.mutations} \
+                                            --regions {params.regions} \
+                                            --output-mutations {output.mutations} \
+                                            --output-total-counts {output.total_counts} \
+                                            --output-tree-counts {output.tree_counts}
+        """
+

@@ -12,9 +12,11 @@ months = MonthLocator(range(1, 13), bymonthday=1, interval=2)
 yearsFmt = DateFormatter('%Y')
 monthsFmt = DateFormatter("%b")
 
+
 def load_frequencies(fname):
     with open(fname) as fh:
         return json.load(fh)
+
 
 def plot_mutations_by_region(frequencies, mutations, fname):
     regions = sorted(frequencies.keys())
@@ -23,19 +25,45 @@ def plot_mutations_by_region(frequencies, mutations, fname):
 
     for mut, ax in zip(mutations, axs):
         for region in regions:
-            #ax.plot(frequencies[region][mut])
-            ax.plot(frequencies[region]["pivots"], frequencies[region][mut])
+            if mut in frequencies[region]:
+                ax.plot(frequencies[region]["pivots"], frequencies[region][mut])
+            else:
+                print("Mutation %s not calculated in region %s"%(mut, region))
 
     plt.savefig(fname)
 
-def sample_counts(tree_frequencies, fname, drop=3):
-    fig, ax = plt.subplots(figsize=(8, 3))
+
+def sample_count_by_region(frequencies, fname):
+    regions = sorted(frequencies.keys())
+    counts = {}
+    for region in frequencies:
+        date_bins = frequencies[region]["pivots"]
+        tmp = [frequencies[region][x] for x in frequencies[region] if 'counts' in x]
+        if len(tmp):
+            counts[region] = tmp[0]
+
+    if 'global' not in counts:
+        if len(counts)>1:
+            counts["global"] = np.sum([x for x in counts.values()], axis=0)
+        else:
+            counts["global"] = list(counts.values())[0]
+    plot_counts(counts, date_bins, fname, drop=3)
+
+
+def tree_sample_counts(tree_frequencies, fname):
     date_bins = tree_frequencies["pivots"]
-    tmpcounts = np.zeros(len(date_bins)-drop)
     counts = {x.split(':')[0]:tree_frequencies[x] for x in tree_frequencies
               if 'counts' in x}
+    if 'global' not in counts:
+        counts["global"] = np.sum([x for x in counts.values()], axis=1)
+
+    plot_counts(counts, date_bins, fname, drop=3)
+
+
+def plot_counts(counts, date_bins, fname, drop=3):
+    fig, ax = plt.subplots(figsize=(8, 3))
     regions = sorted(counts.keys())
-    print(counts)
+    tmpcounts = np.zeros(len(date_bins)-drop)
     plt.bar(date_bins[drop:], counts['global'][drop:], width=1.0/13, linewidth=0, label="Other", color="#bbbbbb", clip_on=False)
     for c,region in zip(cols, regions):
         if region!='global':
@@ -53,7 +81,8 @@ def sample_counts(tree_frequencies, fname, drop=3):
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
     ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.02, 0.53))
     plt.subplots_adjust(left=0.1, right=0.82, top=0.94, bottom=0.22)
-    plt.savefig(fname)
+    if fname:
+        plt.savefig(fname)
 
 
 if __name__ == '__main__':
@@ -69,16 +98,19 @@ if __name__ == '__main__':
     parser.add_argument('--mutations',nargs='+', required=True, help="mutations to graph")
     parser.add_argument('--regions',nargs='+', required=True, help="regions corresponding to alignment files")
     parser.add_argument('--output-mutations', help="file name to save figure to")
-    parser.add_argument('--output-counts', help="file name to save figure to")
+    parser.add_argument('--output-total-counts', help="file name to save figure to")
+    parser.add_argument('--output-tree-counts', help="file name to save figure to")
 
     args=parser.parse_args()
 
-    frequencies = {}
-    for region, fname in zip(args.regions, args.mutation_frequencies):
-        frequencies[region] = load_frequencies(fname)
+    if args.mutation_frequencies:
+        frequencies = {}
+        for region, fname in zip(args.regions, args.mutation_frequencies):
+            frequencies[region] = load_frequencies(fname)
+        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations)
+        sample_count_by_region(frequencies, args.output_total_counts)
+
 
     if args.tree_frequencies:
         tree_frequencies = load_frequencies(args.tree_frequencies)
-        sample_counts(tree_frequencies, args.output_counts)
-
-    plot_mutations_by_region(frequencies, args.mutations, args.output_mutations)
+        tree_sample_counts(tree_frequencies, args.output_tree_counts)
