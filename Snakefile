@@ -325,6 +325,24 @@ rule tree_frequencies:
                           --output {output.tree_freq}
         """
 
+rule clades:
+    message: "Annotating clades"
+    input:
+        tree = rules.refine.output.tree,
+        nt_muts = rules.ancestral.output,
+        aa_muts = rules.translate.output,
+        clade_definitions = "config/clades_{lineage}_{segment}.tsv"
+    output:
+        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur clades \
+            --tree {input.tree} \
+            --mutations {input.nt_muts} {input.aa_muts} \
+            --clades {input.clade_definitions} \
+            --output {output}
+        """
+
 rule export:
     input:
         tree = rules.refine.output.tree,
@@ -333,6 +351,7 @@ rule export:
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
         tree_model = rules.titers.output.tree_model,
+        clades = rules.clades.output.clades,
         auspice_config = files.auspice_config
     output:
         auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
@@ -342,7 +361,7 @@ rule export:
         augur export \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model}\
+            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model} {input.clades}\
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
