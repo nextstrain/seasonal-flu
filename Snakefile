@@ -256,30 +256,36 @@ rule reconstruct_translations:
         """
 
 
-rule titers:
+rule titers_sub:
     input:
-        tree = rules.refine.output.tree,
         titers = titer_data,
         aa_muts = rules.translate.output,
         alignments = translations
     params:
         genes = gene_names
     output:
-        tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
         subs_model = "results/HISubsModel_seasonal_{lineage}_{segment}_{resolution}.json",
     shell:
         """
-        augur titers --tree {input.tree}\
-            --titers {input.titers}\
-            --titer-model tree \
-            --output {output.tree_model} &
-        augur titers --tree {input.tree}\
-            --titers {input.titers}\
-            --titer-model substitution \
+        augur titers sub --titers {input.titers}\
             --alignment {input.alignments} \
             --gene-names {params.genes} \
             --output {output.subs_model}
         """
+
+rule titers_tree:
+    input:
+        tree = rules.refine.output.tree,
+        titers = titer_data,
+    output:
+        tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
+    shell:
+        """
+        augur titers tree --tree {input.tree}\
+            --titers {input.titers}\
+            --output {output.tree_model}
+        """
+
 
 rule mutation_frequencies:
     input:
@@ -350,7 +356,7 @@ rule export:
         metadata = rules.parse.output.metadata,
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
-        tree_model = rules.titers.output.tree_model,
+        tree_model = rules.titers_tree.output.tree_model,
         clades = rules.clades.output.clades,
         auspice_config = files.auspice_config
     output:
