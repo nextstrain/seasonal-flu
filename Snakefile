@@ -17,16 +17,6 @@ def reference_strain(v):
                   }
     return references[v.lineage]
 
-def titer_data(w):
-    titers = {'h1n1':path_to_fauna + '/data/h1n1_cdc_hi_cell_titers.tsv',
-            'h3n2':path_to_fauna + '/data/h3n2_cdc_hi_cell_titers.tsv',
-            'yam':path_to_fauna + '/data/yam_cdc_hi_cell_titers.tsv',
-            'vic':path_to_fauna + '/data/vic_cdc_hi_cell_titers.tsv',
-            'Ball':path_to_fauna + '/data/Ball_cdc_hi_cell_titers.tsv',
-            'h1n1pdm':path_to_fauna + '/data/h1n1pdm_cdc_hi_cell_titers.tsv'}
-    return titers[w.lineage]
-
-
 genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
 def gene_names(w):
     return genes_to_translate[w.segment]
@@ -71,7 +61,7 @@ rule files:
 
 files = rules.files.params
 
-rule download:
+rule download_sequences:
     message: "Downloading sequences from fauna"
     output:
         sequences = "data/{lineage}_{segment}.fasta"
@@ -86,14 +76,32 @@ rule download:
                 --fasta_fields {params.fasta_fields} \
                 --resolve_method split_passage \
                 --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
-                --path $(dirname {output.sequences}) \
-                --fstem $(basename {output.sequences} .fasta)
+                --path data \
+                --fstem {wildcards.lineage}_{wildcards.segment}
+        """
+
+rule download_titers:
+    message: "Downloading titers from fauna"
+    output:
+        titers = "data/{lineage}_hi_titers.tsv"
+    params:
+        fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
+    shell:
+        """
+        env PYTHONPATH={path_to_fauna} \
+            python2 {path_to_fauna}/tdb/download.py \
+                --database tdb cdc_tdb \
+                --virus flu \
+                --subtype {wildcards.lineage} \
+                --select assay_type:hi \
+                --path data \
+                --fstem {wildcards.lineage}_hi
         """
 
 rule parse:
     message: "Parsing fasta into sequences and metadata"
     input:
-        sequences = rules.download.output.sequences
+        sequences = rules.download_sequences.output.sequences
     output:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
@@ -110,14 +118,14 @@ rule parse:
 
 rule select_strains:
     input:
-        metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage)
+        metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage),
+        titers = rules.download_titers.output.titers
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
     params:
         viruses_per_month = vpm,
         exclude = files.outliers,
-        include = files.references,
-        titers = titer_data
+        include = files.references
     shell:
         """
         python scripts/select_strains.py \
@@ -128,7 +136,7 @@ rule select_strains:
             --lineage {wildcards.lineage} \
             --resolution {wildcards.resolution} \
             --viruses_per_month {params.viruses_per_month} \
-            --titers {params.titers} \
+            --titers {input.titers} \
             --output {output.strains}
         """
 
@@ -273,7 +281,7 @@ rule reconstruct_translations:
 
 rule titers_sub:
     input:
-        titers = titer_data,
+        titers = rules.download_titers.output.titers,
         aa_muts = rules.translate.output,
         alignments = translations
     params:
@@ -291,8 +299,8 @@ rule titers_sub:
 
 rule titers_tree:
     input:
-        tree = rules.refine.output.tree,
-        titers = titer_data,
+        titers = rules.download_titers.output.titers,
+        tree = rules.refine.output.tree
     output:
         tree_model = "results/titers-tree-model_{lineage}_{segment}_{resolution}.json",
     shell:
