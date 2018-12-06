@@ -4,7 +4,7 @@ from treetime.utils import numeric_date
 path_to_fauna = '../fauna'
 segments = ['ha', 'na']
 lineages = ['h3n2']
-resolutions = ['2y']
+resolutions = ['2y', '3y']
 frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
 
@@ -18,12 +18,12 @@ def reference_strain(v):
     return references[v.lineage]
 
 def titer_data(w):
-    titers = {'h1n1':path_to_fauna + '/h1n1_cdc_hi_cell_titers.tsv',
-            'h3n2':path_to_fauna + '/h3n2_cdc_hi_cell_titers.tsv',
-            'yam':path_to_fauna + '/yam_cdc_hi_cell_titers.tsv',
-            'vic':path_to_fauna + '/vic_cdc_hi_cell_titers.tsv',
-            'Ball':path_to_fauna + '/Ball_cdc_hi_cell_titers.tsv',
-            'h1n1pdm':path_to_fauna + '/h1n1pdm_cdc_hi_cell_titers.tsv'}
+    titers = {'h1n1':path_to_fauna + '/data/h1n1_cdc_hi_cell_titers.tsv',
+            'h3n2':path_to_fauna + '/data/h3n2_cdc_hi_cell_titers.tsv',
+            'yam':path_to_fauna + '/data/yam_cdc_hi_cell_titers.tsv',
+            'vic':path_to_fauna + '/data/vic_cdc_hi_cell_titers.tsv',
+            'Ball':path_to_fauna + '/data/Ball_cdc_hi_cell_titers.tsv',
+            'h1n1pdm':path_to_fauna + '/data/h1n1pdm_cdc_hi_cell_titers.tsv'}
     return titers[w.lineage]
 
 
@@ -33,7 +33,7 @@ def gene_names(w):
 
 def translations(w):
     genes = gene_names(w)
-    return ["results/aaseq-seasonal-%s_%s_%s_%s.fasta"%(g, w.lineage, w.segment, w.resolution)
+    return ["results/aa-seq_%s_%s_%s_%s.fasta"%(w.lineage, w.segment, w.resolution, g)
             for g in genes]
 
 def pivots_per_year(w):
@@ -48,12 +48,11 @@ def max_date(w):
     return numeric_date(date.today())
 
 def substitution_rates(w):
-    references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028,
-                  }
+    references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028}
     return references[(w.lineage, w.segment)]
 
 def vpm(v):
-    vpm = {'3y':2, '6y':2, '12y':1}
+    vpm = {'2y':2, '3y':2, '6y':2, '12y':1}
     return vpm[v.resolution] if v.resolution in vpm else 5
 
 
@@ -61,7 +60,6 @@ rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
-
 
 rule files:
     params:
@@ -100,8 +98,7 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus isolate_id date region country division passage authors age gender"
-
+        fasta_fields =  "strain virus isolate_id date region country division location passage authors age gender"
     shell:
         """
         augur parse \
@@ -111,12 +108,11 @@ rule parse:
             --fields {params.fasta_fields}
         """
 
-
 rule select_strains:
     input:
         metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage)
     output:
-        strains = "results/strains_seasonal_{lineage}_{resolution}.txt",
+        strains = "results/strains_{lineage}_{resolution}.txt",
     params:
         viruses_per_month = vpm,
         exclude = files.outliers,
@@ -124,13 +120,16 @@ rule select_strains:
         titers = titer_data
     shell:
         """
-        python scripts/select_strains.py --metadata {input.metadata} \
-                                  --segments {segments} \
-                                  --exclude {params.exclude} --include {params.include} \
-                                  --resolution {wildcards.resolution} --lineage {wildcards.lineage} \
-                                  --viruses_per_month {params.viruses_per_month} \
-                                  --titers {params.titers} \
-                                  --output {output.strains}
+        python scripts/select_strains.py \
+            --metadata {input.metadata} \
+            --segments {segments} \
+            --exclude {params.exclude} \
+            --include {params.include} \
+            --lineage {wildcards.lineage} \
+            --resolution {wildcards.resolution} \
+            --viruses_per_month {params.viruses_per_month} \
+            --titers {params.titers} \
+            --output {output.strains}
         """
 
 rule filter:
@@ -139,7 +138,7 @@ rule filter:
         sequences = 'results/sequences_{lineage}_{segment}.fasta',
         strains = rules.select_strains.output.strains
     output:
-        sequences = 'results/sequences_seasonal_{lineage}_{segment}_{resolution}.fasta'
+        sequences = 'results/filtered_{lineage}_{segment}_{resolution}.fasta'
     run:
         from Bio import SeqIO
         with open(input.strains) as infile:
@@ -148,7 +147,6 @@ rule filter:
             for seq in SeqIO.parse(input.sequences, 'fasta'):
                 if seq.name in strains:
                     SeqIO.write(seq, outfile, 'fasta')
-
 
 rule align:
     message:
@@ -160,14 +158,15 @@ rule align:
         sequences = rules.filter.output.sequences,
         reference = files.reference
     output:
-        alignment = "results/aligned_seasonal_{lineage}_{segment}_{resolution}.fasta"
+        alignment = "results/aligned_{lineage}_{segment}_{resolution}.fasta"
     shell:
         """
         augur align \
             --sequences {input.sequences} \
             --reference-sequence {input.reference} \
             --output {output.alignment} \
-            --fill-gaps
+            --fill-gaps \
+            --remove-reference
         """
 
 rule tree:
@@ -175,7 +174,7 @@ rule tree:
     input:
         alignment = rules.align.output.alignment
     output:
-        tree = "results/treeraw_seasonal_{lineage}_{segment}_{resolution}.nwk"
+        tree = "results/tree-raw_{lineage}_{segment}_{resolution}.nwk"
     shell:
         """
         augur tree \
@@ -197,8 +196,8 @@ rule refine:
         alignment = rules.align.output,
         metadata = rules.parse.output.metadata
     output:
-        tree = "results/tree_seasonal_{lineage}_{segment}_{resolution}.nwk",
-        node_data = "results/branchlengths_seasonal_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree_{lineage}_{segment}_{resolution}.nwk",
+        node_data = "results/branch-lengths_{lineage}_{segment}_{resolution}.json"
     params:
         coalescent = "const",
         date_inference = "marginal",
@@ -224,7 +223,7 @@ rule ancestral:
         tree = rules.refine.output.tree,
         alignment = rules.align.output
     output:
-        node_data = "results/ntmuts_seasonal_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/nt-muts_{lineage}_{segment}_{resolution}.json"
     params:
         inference = "joint"
     shell:
@@ -243,7 +242,7 @@ rule translate:
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
     output:
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur translate \
@@ -257,12 +256,12 @@ rule reconstruct_translations:
     message: "Reconstructing translations required for titer models and frequencies"
     input:
         tree = rules.refine.output.tree,
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
     params:
         genes = gene_names,
-        aa_alignment = "results/aaseq-seasonal-%GENE_{lineage}_{segment}_{resolution}.fasta"
+        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_%GENE.fasta"
     output:
-        aa_alignment = "results/aaseq-seasonal-{gene}_{lineage}_{segment}_{resolution}.fasta"
+        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{gene}.fasta"
     shell:
         """
         augur reconstruct-sequences \
@@ -272,7 +271,6 @@ rule reconstruct_translations:
             --output {params.aa_alignment}
         """
 
-
 rule titers_sub:
     input:
         titers = titer_data,
@@ -281,10 +279,11 @@ rule titers_sub:
     params:
         genes = gene_names
     output:
-        subs_model = "results/HISubsModel_seasonal_{lineage}_{segment}_{resolution}.json",
+        subs_model = "results/titers-sub-model_{lineage}_{segment}_{resolution}.json",
     shell:
         """
-        augur titers sub --titers {input.titers}\
+        augur titers sub \
+            --titers {input.titers} \
             --alignment {input.alignments} \
             --gene-names {params.genes} \
             --output {output.subs_model}
@@ -295,14 +294,14 @@ rule titers_tree:
         tree = rules.refine.output.tree,
         titers = titer_data,
     output:
-        tree_model = "results/HITreeModel_seasonal_{lineage}_{segment}_{resolution}.json",
+        tree_model = "results/titers-tree-model_{lineage}_{segment}_{resolution}.json",
     shell:
         """
-        augur titers tree --tree {input.tree}\
-            --titers {input.titers}\
+        augur titers tree \
+            --titers {input.titers} \
+            --tree {input.tree} \
             --output {output.tree_model}
         """
-
 
 rule mutation_frequencies:
     input:
@@ -314,16 +313,17 @@ rule mutation_frequencies:
         max_date = max_date,
         pivots_per_year = pivots_per_year
     output:
-        mut_freq = "results/mutation_frequencies_{lineage}_{segment}_{resolution}.json"
+        mut_freq = "results/mutation-frequencies_{lineage}_{segment}_{resolution}.json"
     shell:
         """
-        augur frequencies --alignments {input.alignment} \
-                          --metadata {input.metadata} \
-                          --gene-names {params.genes} \
-                          --min-date {params.min_date} \
-                          --max-date {params.max_date} \
-                          --pivots-per-year {params.pivots_per_year} \
-                          --output {output.mut_freq}
+        augur frequencies \
+            --alignments {input.alignment} \
+            --metadata {input.metadata} \
+            --gene-names {params.genes} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --pivots-per-year {params.pivots_per_year} \
+            --output {output.mut_freq}
         """
 
 rule tree_frequencies:
@@ -336,16 +336,17 @@ rule tree_frequencies:
         max_date = max_date,
         pivots_per_year = pivots_per_year
     output:
-        tree_freq = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json",
+        tree_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
         """
-        augur frequencies --tree {input.tree} \
-                          --metadata {input.metadata} \
-                          --pivots-per-year {params.pivots_per_year} \
-                          --regions {params.regions} \
-                          --min-date {params.min_date} \
-                          --max-date {params.max_date} \
-                          --output {output.tree_freq}
+        augur frequencies \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pivots-per-year {params.pivots_per_year} \
+            --regions {params.regions} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output.tree_freq}
         """
 
 rule clades:
@@ -363,7 +364,7 @@ rule clades:
             --tree {input.tree} \
             --mutations {input.nt_muts} {input.aa_muts} \
             --clades {input.clade_definitions} \
-            --output {output}
+            --output {output.clades}
         """
 
 rule export:
@@ -384,8 +385,16 @@ rule export:
         augur export \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model} {input.clades}\
+            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model} {input.clades} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
         """
+
+rule clean:
+    message: "Removing directories: {params}"
+    params:
+        "results ",
+        "auspice"
+    shell:
+        "rm -rfv {params}"

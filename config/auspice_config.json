@@ -30,6 +30,12 @@
       "legendTitle":"Region",
       "menuItem":"region",
       "type":"discrete"
+    },
+    "clade_membership": {
+      "key": "clade_membership",
+      "legendTitle": "Clade",            
+      "menuItem": "clade",
+      "type": "discrete"
     }
   },
   "geo": [
@@ -37,7 +43,8 @@
     "region"
   ],
   "defaults": {
-    "mapTriplicate": true
+    "mapTriplicate": true,
+    "colorBy": "clade_membership"
   },
   "maintainer": [
     "Trevor Bedford",
