@@ -1,7 +1,7 @@
 from datetime import date
 from treetime.utils import numeric_date
 
-path_to_fauna = '../fauna/data'
+path_to_fauna = '../fauna'
 segments = ['ha', 'na']
 lineages = ['h3n2']
 resolutions = ['2y']
@@ -65,7 +65,6 @@ rule all:
 
 rule files:
     params:
-        input_fasta = path_to_fauna+"/{lineage}_{segment}.fasta",
         outliers = "config/outliers_{lineage}.txt",
         references = "config/references_{lineage}.txt",
         reference = "config/{lineage}_{segment}_outgroup.gb",
@@ -74,11 +73,29 @@ rule files:
 
 files = rules.files.params
 
+rule download:
+    message: "Downloading sequences from fauna"
+    output:
+        sequences = "data/{lineage}_{segment}.fasta"
+    params:
+        fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
+    shell:
+        """
+        env PYTHONPATH={path_to_fauna} \
+            python2 {path_to_fauna}/vdb/download.py \
+                --database vdb \
+                --virus flu \
+                --fasta_fields {params.fasta_fields} \
+                --resolve_method split_passage \
+                --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
+                --path $(dirname {output.sequences}) \
+                --fstem $(basename {output.sequences} .fasta)
+        """
 
 rule parse:
     message: "Parsing fasta into sequences and metadata"
     input:
-        sequences = files.input_fasta
+        sequences = rules.download.output.sequences
     output:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
