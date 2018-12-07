@@ -172,7 +172,7 @@ rule select_strains:
         include = files.references
     shell:
         """
-        python scripts/select_strains.py \
+        python3 scripts/select_strains.py \
             --metadata {input.metadata} \
             --segments {segments} \
             --exclude {params.exclude} \
