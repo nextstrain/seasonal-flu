@@ -90,7 +90,7 @@ rule download_titers:
         """
         env PYTHONPATH={path_to_fauna} \
             python2 {path_to_fauna}/tdb/download.py \
-                --database tdb cdc_tdb \
+                --database cdc_tdb \
                 --virus flu \
                 --subtype {wildcards.lineage} \
                 --select assay_type:hi \
@@ -266,8 +266,7 @@ rule reconstruct_translations:
         tree = rules.refine.output.tree,
         node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
     params:
-        genes = gene_names,
-        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_%GENE.fasta"
+        gene = "{gene}",
     output:
         aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{gene}.fasta"
     shell:
@@ -275,8 +274,8 @@ rule reconstruct_translations:
         augur reconstruct-sequences \
             --tree {input.tree} \
             --mutations {input.node_data} \
-            --genes {params.genes} \
-            --output {params.aa_alignment}
+            --gene {params.gene} \
+            --output {output.aa_alignment}
         """
 
 rule traits:
@@ -316,7 +315,7 @@ rule titers_sub:
             --titers {input.titers} \
             --alignment {input.alignments} \
             --gene-names {params.genes} \
-            --output {output.sub_model}
+            --output {output.titers_model}
         """
 
 rule titers_tree:
