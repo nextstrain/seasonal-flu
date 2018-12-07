@@ -279,6 +279,28 @@ rule reconstruct_translations:
             --output {params.aa_alignment}
         """
 
+rule traits:
+    message:
+        """
+        Inferring ancestral traits for {params.columns!s}
+        """
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata
+    output:
+        node_data = "results/traits_{lineage}_{segment}_{resolution}.json",
+    params:
+        columns = "region"
+    shell:
+        """
+        augur traits \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --output {output.node_data} \
+            --columns {params.columns} \
+            --confidence
+        """
+
 rule titers_sub:
     input:
         titers = rules.download_titers.output.titers,
@@ -287,14 +309,14 @@ rule titers_sub:
     params:
         genes = gene_names
     output:
-        subs_model = "results/titers-sub-model_{lineage}_{segment}_{resolution}.json",
+        titers_model = "results/titers-sub-model_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur titers sub \
             --titers {input.titers} \
             --alignment {input.alignments} \
             --gene-names {params.genes} \
-            --output {output.subs_model}
+            --output {output.sub_model}
         """
 
 rule titers_tree:
@@ -302,7 +324,7 @@ rule titers_tree:
         titers = rules.download_titers.output.titers,
         tree = rules.refine.output.tree
     output:
-        tree_model = "results/titers-tree-model_{lineage}_{segment}_{resolution}.json",
+        titers_model = "results/titers-tree-model_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur titers tree \
@@ -382,8 +404,9 @@ rule export:
         metadata = rules.parse.output.metadata,
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
-        tree_model = rules.titers_tree.output.tree_model,
+        titers_tree_model = rules.titers_tree.output.titers_model,
         clades = rules.clades.output.clades,
+        traits = rules.traits.output.node_data,
         auspice_config = files.auspice_config
     output:
         auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
@@ -393,7 +416,7 @@ rule export:
         augur export \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.tree_model} {input.clades} \
+            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.titers_tree_model} {input.clades} {input.traits} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}

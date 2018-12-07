@@ -13,18 +13,6 @@
       "type": "continuous",
       "key": "num_date"
     },
-    "authors": {
-      "key":"authors",
-      "legendTitle":"Authors",
-      "menuItem":"authors",
-      "type":"discrete"
-    },
-    "country": {
-      "key":"country",
-      "legendTitle":"Country",
-      "menuItem":"country",
-      "type":"discrete"
-    },
     "region": {
       "key":"region",
       "legendTitle":"Region",
@@ -33,9 +21,15 @@
     },
     "clade_membership": {
       "key": "clade_membership",
-      "legendTitle": "Clade",            
+      "legendTitle": "Clade",
       "menuItem": "clade",
       "type": "discrete"
+    },
+    "cTiter": {
+      "key": "cTiter",
+      "legendTitle": "Antigenic advance (tree model)",
+      "menuItem": "antigenic advance (tree model)",
+      "type": "continuous"
     }
   },
   "geo": [
@@ -47,12 +41,13 @@
     "colorBy": "clade_membership"
   },
   "maintainer": [
-    "Trevor Bedford",
-    "http://bedford.io/team/trevor-bedford/"
+    "Trevor Bedford and Barney Potter",
+    "http://bedford.io/"
   ],
   "filters": [
-    "country",
+    "clade_membership",
     "region",
+    "country",
     "authors"
   ]
 }
