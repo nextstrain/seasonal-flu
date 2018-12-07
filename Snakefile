@@ -4,7 +4,7 @@ from treetime.utils import numeric_date
 path_to_fauna = '../fauna'
 segments = ['ha', 'na']
 lineages = ['h3n2']
-resolutions = ['2y', '3y']
+resolutions = ['2y', '3y', '6y', '12y']
 frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
 
@@ -330,7 +330,7 @@ rule titers_tree:
         augur titers tree \
             --titers {input.titers} \
             --tree {input.tree} \
-            --output {output.tree_model}
+            --output {output.titers_model}
         """
 
 rule mutation_frequencies:
