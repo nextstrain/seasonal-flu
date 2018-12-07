@@ -30,6 +30,14 @@
       "legendTitle": "Antigenic advance (tree model)",
       "menuItem": "antigenic advance (tree model)",
       "type": "continuous"
+    },
+    "lbi": {
+      "vmin": 0,
+      "vmax": 0.7,
+      "legendTitle": "local branching index",
+      "key": "lbi",
+      "menuItem": "local branching index",
+      "type": "continuous"
     }
   },
   "geo": [

@@ -45,6 +45,25 @@ def vpm(v):
     vpm = {'2y':2, '3y':2, '6y':2, '12y':1}
     return vpm[v.resolution] if v.resolution in vpm else 5
 
+#
+# Define LBI parameters and functions.
+#
+LBI_params = {
+    '2y': {"tau": 0.3, "time_window": 0.5},
+    '3y': {"tau": 0.4, "time_window": 0.6},
+    '6y': {"tau": 0.25, "time_window": 0.75},
+    '12y': {"tau": 0.25, "time_window": 0.75}
+}
+
+def _get_lbi_tau_for_wildcards(wildcards):
+    return LBI_params[wildcards.resolution]["tau"]
+
+def _get_lbi_window_for_wildcards(wildcards):
+    return LBI_params[wildcards.resolution]["time_window"]
+
+#
+# Define rules.
+#
 
 rule all:
     input:
@@ -396,6 +415,28 @@ rule clades:
             --output {output.clades}
         """
 
+rule lbi:
+    message: "Calculating LBI"
+    input:
+        tree = rules.refine.output.tree,
+        branch_lengths = rules.refine.output.node_data
+    params:
+        tau = _get_lbi_tau_for_wildcards,
+        window = _get_lbi_window_for_wildcards,
+        names = "lbi"
+    output:
+        lbi = "results/lbi_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur lbi \
+            --tree {input.tree} \
+            --branch-lengths {input.branch_lengths} \
+            --output {output} \
+            --attribute-names {params.names} \
+            --tau {params.tau} \
+            --window {params.window}
+        """
+
 rule export:
     input:
         tree = rules.refine.output.tree,
@@ -406,6 +447,7 @@ rule export:
         titers_tree_model = rules.titers_tree.output.titers_model,
         clades = rules.clades.output.clades,
         traits = rules.traits.output.node_data,
+        lbi = rules.lbi.output.lbi,
         auspice_config = files.auspice_config
     output:
         auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
@@ -416,6 +458,7 @@ rule export:
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.titers_tree_model} {input.clades} {input.traits} \
+                        {input.lbi} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
