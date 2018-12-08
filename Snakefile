@@ -17,7 +17,7 @@ def reference_strain(v):
                   }
     return references[v.lineage]
 
-genes_to_translate = {'ha':['HA1', 'HA2'], 'na':['NA']}
+genes_to_translate = {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA']}
 def gene_names(w):
     return genes_to_translate[w.segment]
 
@@ -60,6 +60,24 @@ def _get_lbi_tau_for_wildcards(wildcards):
 
 def _get_lbi_window_for_wildcards(wildcards):
     return LBI_params[wildcards.resolution]["time_window"]
+
+#
+# Configure amino acid distance masks.
+#
+mask_attributes_by_segment = {
+    "ha": "ep ne rb",
+    "na": "ep"
+}
+mask_names_by_segment = {
+    "ha": "wolf wolf_nonepitope koel",
+    "na": "bhatt"
+}
+
+def _get_mask_attribute_names_by_wildcards(wildcards):
+    return mask_attributes_by_segment[wildcards.segment]
+
+def _get_mask_names_by_wildcards(wildcards):
+    return mask_names_by_segment[wildcards.segment]
 
 #
 # Define rules.
@@ -284,8 +302,6 @@ rule reconstruct_translations:
     input:
         tree = rules.refine.output.tree,
         node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
-    params:
-        gene = "{gene}",
     output:
         aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{gene}.fasta"
     shell:
@@ -293,8 +309,9 @@ rule reconstruct_translations:
         augur reconstruct-sequences \
             --tree {input.tree} \
             --mutations {input.node_data} \
-            --gene {params.gene} \
-            --output {output.aa_alignment}
+            --gene {wildcards.gene} \
+            --output {output.aa_alignment} \
+            --internal-nodes
         """
 
 rule traits:
@@ -415,6 +432,29 @@ rule clades:
             --output {output.clades}
         """
 
+rule distances:
+    input:
+        tree = rules.refine.output.tree,
+        alignments = translations,
+        masks = "config/{segment}_masks.tsv"
+    params:
+        genes = gene_names,
+        attribute_names = _get_mask_attribute_names_by_wildcards,
+        mask_names = _get_mask_names_by_wildcards
+    output:
+        distances = "results/distances_{lineage}_{segment}_{resolution}.json",
+    shell:
+        """
+        augur distance \
+            --tree {input.tree} \
+            --alignment {input.alignments} \
+            --gene-names {params.genes} \
+            --masks {input.masks} \
+            --output {output} \
+            --attribute-names {params.attribute_names} \
+            --mask-names {params.mask_names}
+        """
+
 rule lbi:
     message: "Calculating LBI"
     input:
@@ -448,6 +488,7 @@ rule export:
         clades = rules.clades.output.clades,
         traits = rules.traits.output.node_data,
         lbi = rules.lbi.output.lbi,
+        distances = rules.distances.output.distances,
         auspice_config = files.auspice_config
     output:
         auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
@@ -458,7 +499,7 @@ rule export:
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.titers_tree_model} {input.clades} {input.traits} \
-                        {input.lbi} \
+                        {input.lbi} {input.distances} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}

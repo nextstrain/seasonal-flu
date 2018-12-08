@@ -38,6 +38,24 @@
       "key": "lbi",
       "menuItem": "local branching index",
       "type": "continuous"
+    },
+    "ep": {
+      "menuItem": "epitope mutations",
+      "legendTitle": "Epitope mutations",
+      "type": "continuous",
+      "key": "ep"
+    },
+    "ne": {
+      "menuItem": "non-epitope mutations",
+      "legendTitle": "Non-epitope mutations",
+      "type": "continuous",
+      "key": "ne"
+    },
+    "rb": {
+      "menuItem": "RBS-adjacent mutations",
+      "legendTitle": "RBS-adjacent mutations",
+      "type": "continuous",
+      "key": "rb"
     }
   },
   "geo": [
