@@ -1,0 +1,7 @@
+lineage	segment	attribute	mask
+h3n2	ha	ep	wolf
+h3n2	ha	ne	wolf_nonepitope
+h3n2	ha	rb	koel
+h3n2	na	ep	bhatt
+h3n2	na	ne	bhatt_nonepitope
+h1n1pdm	ha	ep	canton

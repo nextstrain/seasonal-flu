@@ -1,4 +1,5 @@
 from datetime import date
+import pandas as pd
 from treetime.utils import numeric_date
 
 path_to_fauna = '../fauna'
@@ -64,20 +65,26 @@ def _get_lbi_window_for_wildcards(wildcards):
 #
 # Configure amino acid distance masks.
 #
-mask_attributes_by_segment = {
-    "ha": "ep ne rb",
-    "na": "ep"
-}
-mask_names_by_segment = {
-    "ha": "wolf wolf_nonepitope koel",
-    "na": "bhatt"
-}
+
+# Load mask configuration including which masks map to which attributes per
+# lineage and segment.
+masks_config = pd.read_table("config/mask_config.tsv")
+
+def _get_build_mask_config(wildcards):
+    config = masks_config[(masks_config["lineage"] == wildcards.lineage) &
+                          (masks_config["segment"] == wildcards.segment)]
+    if config.shape[0] > 0:
+        return config
+    else:
+        return None
 
 def _get_mask_attribute_names_by_wildcards(wildcards):
-    return mask_attributes_by_segment[wildcards.segment]
+    config = _get_build_mask_config(wildcards)
+    return " ".join(config.loc[:, "attribute"].values)
 
 def _get_mask_names_by_wildcards(wildcards):
-    return mask_names_by_segment[wildcards.segment]
+    config = _get_build_mask_config(wildcards)
+    return " ".join(config.loc[:, "mask"].values)
 
 #
 # Define rules.
@@ -477,19 +484,35 @@ rule lbi:
             --window {params.window}
         """
 
+def _get_node_data_for_export(wildcards):
+    """Return a list of node data files to include for a given build's wildcards.
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.refine.output.node_data,
+        rules.ancestral.output.node_data,
+        rules.translate.output.node_data,
+        rules.titers_tree.output.titers_model,
+        rules.clades.output.clades,
+        rules.traits.output.node_data,
+        rules.lbi.output.lbi
+    ]
+
+    # Only request a distance file for builds that have mask configurations
+    # defined.
+    if _get_build_mask_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
+
 rule export:
     input:
         tree = rules.refine.output.tree,
-        node_data = rules.refine.output.node_data,
         metadata = rules.parse.output.metadata,
-        nt_muts = rules.ancestral.output,
-        aa_muts = rules.translate.output,
-        titers_tree_model = rules.titers_tree.output.titers_model,
-        clades = rules.clades.output.clades,
-        traits = rules.traits.output.node_data,
-        lbi = rules.lbi.output.lbi,
-        distances = rules.distances.output.distances,
-        auspice_config = files.auspice_config
+        auspice_config = files.auspice_config,
+        node_data = _get_node_data_for_export
     output:
         auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
         auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json"
@@ -498,8 +521,7 @@ rule export:
         augur export \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} {input.nt_muts} {input.aa_muts} {input.titers_tree_model} {input.clades} {input.traits} \
-                        {input.lbi} {input.distances} \
+            --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
