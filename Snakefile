@@ -93,7 +93,8 @@ def _get_mask_names_by_wildcards(wildcards):
 rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json", lineage=lineages, segment=segments, resolution=resolutions)
 
 rule files:
     params:
@@ -162,7 +163,7 @@ rule parse:
 
 rule select_strains:
     input:
-        metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage),
+        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
         titers = rules.download_titers.output.titers
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
@@ -398,27 +399,36 @@ rule mutation_frequencies:
             --output {output.mut_freq}
         """
 
-rule tree_frequencies:
+rule tip_frequencies:
     input:
+        tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        tree = rules.refine.output.tree
+        weights = "config/frequency_weights_by_region.json"
     params:
-        regions = frequency_regions + ['global'],
+        narrow_bandwidth = 1 / 12.0,
+        wide_bandwidth = 3 / 12.0,
+        proportion_wide = 0.0,
+        weight_attribute = "region",
         min_date = min_date,
         max_date = max_date,
         pivots_per_year = pivots_per_year
     output:
-        tree_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        tip_freq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
     shell:
         """
         augur frequencies \
+            --method kde \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --wide-bandwidth {params.wide_bandwidth} \
+            --proportion-wide {params.proportion_wide} \
+            --weights {input.weights} \
+            --weights-attribute {params.weight_attribute} \
             --pivots-per-year {params.pivots_per_year} \
-            --regions {params.regions} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
-            --output {output.tree_freq}
+            --output {output}
         """
 
 rule clades:
