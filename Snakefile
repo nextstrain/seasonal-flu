@@ -27,9 +27,11 @@ def translations(w):
     return ["results/aa-seq_%s_%s_%s_%s.fasta"%(w.lineage, w.segment, w.resolution, g)
             for g in genes]
 
-def pivots_per_year(w):
-    pivots_per_year = {'2y':12, '3y':6, '6y':4, '12y':2}
-    return pivots_per_year[w.resolution]
+def pivot_interval(w):
+    """Returns the number of months between pivots by build resolution.
+    """
+    pivot_intervals_by_resolution = {'2y': 1, '3y': 2, '6y': 3, '12y': 6}
+    return pivot_intervals_by_resolution[w.resolution]
 
 def min_date(w):
     now = numeric_date(date.today())
@@ -384,7 +386,7 @@ rule mutation_frequencies:
         genes = gene_names,
         min_date = min_date,
         max_date = max_date,
-        pivots_per_year = pivots_per_year
+        pivot_interval = pivot_interval
     output:
         mut_freq = "results/mutation-frequencies_{lineage}_{segment}_{resolution}.json"
     shell:
@@ -395,7 +397,7 @@ rule mutation_frequencies:
             --gene-names {params.genes} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
-            --pivots-per-year {params.pivots_per_year} \
+            --pivot-interval {params.pivot_interval} \
             --output {output.mut_freq}
         """
 
@@ -411,7 +413,7 @@ rule tip_frequencies:
         weight_attribute = "region",
         min_date = min_date,
         max_date = max_date,
-        pivots_per_year = pivots_per_year
+        pivot_interval = pivot_interval
     output:
         tip_freq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
     shell:
@@ -425,7 +427,7 @@ rule tip_frequencies:
             --proportion-wide {params.proportion_wide} \
             --weights {input.weights} \
             --weights-attribute {params.weight_attribute} \
-            --pivots-per-year {params.pivots_per_year} \
+            --pivot-interval {params.pivot_interval} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
             --output {output}
