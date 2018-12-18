@@ -347,7 +347,8 @@ rule titers_sub:
     input:
         titers = rules.download_titers.output.titers,
         aa_muts = rules.translate.output,
-        alignments = translations
+        alignments = translations,
+        tree = rules.refine.output.tree
     params:
         genes = gene_names
     output:
@@ -358,6 +359,7 @@ rule titers_sub:
             --titers {input.titers} \
             --alignment {input.alignments} \
             --gene-names {params.genes} \
+            --tree {input.tree} \
             --output {output.titers_model}
         """
 
@@ -493,6 +495,7 @@ def _get_node_data_for_export(wildcards):
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
         rules.clades.output.clades,
         rules.traits.output.node_data,
         rules.lbi.output.lbi
