@@ -27,9 +27,11 @@ def translations(w):
     return ["results/aa-seq_%s_%s_%s_%s.fasta"%(w.lineage, w.segment, w.resolution, g)
             for g in genes]
 
-def pivots_per_year(w):
-    pivots_per_year = {'2y':12, '3y':6, '6y':4, '12y':2}
-    return pivots_per_year[w.resolution]
+def pivot_interval(w):
+    """Returns the number of months between pivots by build resolution.
+    """
+    pivot_intervals_by_resolution = {'2y': 1, '3y': 2, '6y': 3, '12y': 6}
+    return pivot_intervals_by_resolution[w.resolution]
 
 def min_date(w):
     now = numeric_date(date.today())
@@ -93,7 +95,8 @@ def _get_mask_names_by_wildcards(wildcards):
 rule all:
     input:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json", lineage=lineages, segment=segments, resolution=resolutions)
 
 rule files:
     params:
@@ -113,15 +116,14 @@ rule download_sequences:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
         """
-        env PYTHONPATH={path_to_fauna} \
-            python2 {path_to_fauna}/vdb/download.py \
-                --database vdb \
-                --virus flu \
-                --fasta_fields {params.fasta_fields} \
-                --resolve_method split_passage \
-                --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
-                --path data \
-                --fstem {wildcards.lineage}_{wildcards.segment}
+        python3 {path_to_fauna}/vdb/download.py \
+            --database vdb \
+            --virus flu \
+            --fasta_fields {params.fasta_fields} \
+            --resolve_method split_passage \
+            --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
+            --path data \
+            --fstem {wildcards.lineage}_{wildcards.segment}
         """
 
 rule download_titers:
@@ -132,14 +134,13 @@ rule download_titers:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
         """
-        env PYTHONPATH={path_to_fauna} \
-            python2 {path_to_fauna}/tdb/download.py \
-                --database cdc_tdb \
-                --virus flu \
-                --subtype {wildcards.lineage} \
-                --select assay_type:hi \
-                --path data \
-                --fstem {wildcards.lineage}_hi
+        python3 {path_to_fauna}/tdb/download.py \
+            --database cdc_tdb \
+            --virus flu \
+            --subtype {wildcards.lineage} \
+            --select assay_type:hi \
+            --path data \
+            --fstem {wildcards.lineage}_hi
         """
 
 rule parse:
@@ -162,7 +163,7 @@ rule parse:
 
 rule select_strains:
     input:
-        metadata = lambda w:expand("results/metadata_{lineage}_{segment}.tsv", segment=segments, lineage=w.lineage),
+        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
         titers = rules.download_titers.output.titers
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
@@ -385,7 +386,7 @@ rule mutation_frequencies:
         genes = gene_names,
         min_date = min_date,
         max_date = max_date,
-        pivots_per_year = pivots_per_year
+        pivot_interval = pivot_interval
     output:
         mut_freq = "results/mutation-frequencies_{lineage}_{segment}_{resolution}.json"
     shell:
@@ -396,31 +397,40 @@ rule mutation_frequencies:
             --gene-names {params.genes} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
-            --pivots-per-year {params.pivots_per_year} \
+            --pivot-interval {params.pivot_interval} \
             --output {output.mut_freq}
         """
 
-rule tree_frequencies:
+rule tip_frequencies:
     input:
+        tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        tree = rules.refine.output.tree
+        weights = "config/frequency_weights_by_region.json"
     params:
-        regions = frequency_regions + ['global'],
+        narrow_bandwidth = 1 / 12.0,
+        wide_bandwidth = 3 / 12.0,
+        proportion_wide = 0.0,
+        weight_attribute = "region",
         min_date = min_date,
         max_date = max_date,
-        pivots_per_year = pivots_per_year
+        pivot_interval = pivot_interval
     output:
-        tree_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        tip_freq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
     shell:
         """
         augur frequencies \
+            --method kde \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --pivots-per-year {params.pivots_per_year} \
-            --regions {params.regions} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --wide-bandwidth {params.wide_bandwidth} \
+            --proportion-wide {params.proportion_wide} \
+            --weights {input.weights} \
+            --weights-attribute {params.weight_attribute} \
+            --pivot-interval {params.pivot_interval} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
-            --output {output.tree_freq}
+            --output {output}
         """
 
 rule clades:
