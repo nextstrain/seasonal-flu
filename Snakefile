@@ -116,15 +116,14 @@ rule download_sequences:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
         """
-        env PYTHONPATH={path_to_fauna} \
-            python2 {path_to_fauna}/vdb/download.py \
-                --database vdb \
-                --virus flu \
-                --fasta_fields {params.fasta_fields} \
-                --resolve_method split_passage \
-                --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
-                --path data \
-                --fstem {wildcards.lineage}_{wildcards.segment}
+        python3 {path_to_fauna}/vdb/download.py \
+            --database vdb \
+            --virus flu \
+            --fasta_fields {params.fasta_fields} \
+            --resolve_method split_passage \
+            --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
+            --path data \
+            --fstem {wildcards.lineage}_{wildcards.segment}
         """
 
 rule download_titers:
@@ -135,14 +134,13 @@ rule download_titers:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
         """
-        env PYTHONPATH={path_to_fauna} \
-            python2 {path_to_fauna}/tdb/download.py \
-                --database cdc_tdb \
-                --virus flu \
-                --subtype {wildcards.lineage} \
-                --select assay_type:hi \
-                --path data \
-                --fstem {wildcards.lineage}_hi
+        python3 {path_to_fauna}/tdb/download.py \
+            --database cdc_tdb \
+            --virus flu \
+            --subtype {wildcards.lineage} \
+            --select assay_type:hi \
+            --path data \
+            --fstem {wildcards.lineage}_hi
         """
 
 rule parse:
