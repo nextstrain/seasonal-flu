@@ -31,6 +31,12 @@
       "menuItem": "antigenic advance (tree model)",
       "type": "continuous"
     },
+    "cTiterSub": {
+      "key": "cTiterSub",
+      "legendTitle": "Antigenic advance (sub model)",
+      "menuItem": "antigenic advance (sub model)",
+      "type": "continuous"
+    },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
