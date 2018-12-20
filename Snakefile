@@ -172,7 +172,7 @@ rule filter:
         """
     input:
         metadata = rules.parse.output.metadata,
-        sequences = 'results/sequences_{lineage}_{segment}.fasta',
+        sequences = rules.parse.output.sequences,
         exclude = files.outliers
     output:
         sequences = 'results/filtered_{lineage}_{segment}.fasta'
@@ -193,19 +193,19 @@ rule select_strains:
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}.fasta", segment=segments),
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
-        titers = rules.download_titers.output.titers
+        titers = rules.download_titers.output.titers,
+        include = files.references
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
     params:
-        viruses_per_month = vpm,
-        include = files.references
+        viruses_per_month = vpm
     shell:
         """
         python3 scripts/select_strains.py \
             --sequences {input.sequences} \
             --metadata {input.metadata} \
             --segments {segments} \
-            --include {params.include} \
+            --include {input.include} \
             --lineage {wildcards.lineage} \
             --resolution {wildcards.resolution} \
             --viruses_per_month {params.viruses_per_month} \
@@ -215,7 +215,7 @@ rule select_strains:
 
 rule extract:
     input:
-        sequences = 'results/filtered_{lineage}_{segment}.fasta',
+        sequences = rules.filter.output.sequences,
         strains = rules.select_strains.output.strains
     output:
         sequences = 'results/filtered_{lineage}_{segment}_{resolution}.fasta'
