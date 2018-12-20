@@ -1,8 +1,12 @@
 import argparse, sys, os
-import numpy as np
-from collections import defaultdict
 from augur.utils import read_metadata, get_numerical_dates
+import Bio
+import Bio.SeqIO
+from collections import defaultdict
 from datetime import datetime, timedelta, date
+import numpy as np
+from treetime.utils import numeric_date
+
 
 vpm_dict = {
     2: 3,
@@ -177,6 +181,19 @@ def parse_metadata(segments, metadata_files):
         metadata[segment] = tmp_meta
     return metadata
 
+def parse_sequences(segments, sequence_files):
+    """Load sequence names into a dictionary of sets indexed by segment.
+    """
+    sequences = {}
+    for segment, filename in zip(segments, sequence_files):
+        sequence_set = Bio.SeqIO.parse(filename, "fasta")
+        sequences[segment] = set()
+        for seq in sequence_set:
+            sequences[segment].add(seq.name)
+
+    return sequences
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Select strains for downstream analysis",
@@ -185,6 +202,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-v', '--viruses_per_month', type = int, default=15,
                         help='Subsample x viruses per country per month. Set to 0 to disable subsampling.')
+    parser.add_argument('--sequences', nargs='+', help="FASTA file with viral sequences, one for each segment")
     parser.add_argument('--metadata', nargs='+', help="file with metadata associated with viral sequences, one for each segment")
     parser.add_argument('--output', help="name of the file to write selected strains to")
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
@@ -206,28 +224,44 @@ if __name__ == '__main__':
     time_interval = determine_time_interval(args.time_interval, args.resolution)
 
     # derive additional lower inclusion date for "force-included strains"
-    reference_cutoff = date(year = time_interval[1].year - args.max_include_range, month=1, day=1)
+    lower_reference_cutoff = date(year = time_interval[1].year - args.max_include_range, month=1, day=1)
+    upper_reference_cutoff = time_interval[0]
 
     # read strains to exclude
     excluded_strains = read_strain_list(args.exclude) if args.exclude else []
     # read strains to include
     included_strains = read_strain_list(args.include) if args.include else []
 
+    # read in sequence names to determine which sequences already passed upstream filters
+    sequence_names_by_segment = parse_sequences(args.segments, args.sequences)
+
     # read in meta data, parse numeric dates
     metadata = parse_metadata(args.segments, args.metadata)
+
+    # eliminate all metadata entries that do not have sequences
+    filtered_metadata = {}
+    for segment in metadata:
+        filtered_metadata[segment] = {}
+        for name in metadata[segment]:
+            if name in sequence_names_by_segment[segment]:
+                filtered_metadata[segment][name] = metadata[segment][name]
+
     # filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
-    strains_with_all_segments = set.intersection(*(set(metadata[x].keys()) for x in args.segments))
+    strains_with_all_segments = set.intersection(*(set(filtered_metadata[x].keys()) for x in args.segments))
     # exclude outlier strains
     strains_with_all_segments.difference_update(set(excluded_strains))
     # subsample by region, month, year
-    selected_strains = flu_subsampling({x:metadata[guide_segment][x] for x in strains_with_all_segments},
+    selected_strains = flu_subsampling({x:filtered_metadata[guide_segment][x] for x in strains_with_all_segments},
                                   args.viruses_per_month, time_interval, titer_fname=args.titers)
 
     # add strains that need to be included
     for strain in included_strains:
         if strain in strains_with_all_segments and strain not in selected_strains:
-            if metadata[guide_segment][strain]['year']>=reference_cutoff.year:
+            # Do not include strains sampled too far in the past or strains
+            # sampled from the future relative to the requested build interval.
+            if (filtered_metadata[guide_segment][strain]['year'] >= lower_reference_cutoff.year and
+                filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)):
                 selected_strains.append(strain)
 
     # write the list of selected strains to file
