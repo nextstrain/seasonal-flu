@@ -168,7 +168,6 @@ rule filter:
         Filtering {wildcards.lineage} {wildcards.segment} sequences:
           - less than {params.min_length} bases
           - outliers
-          - samples with missing region and country metadata
         """
     input:
         metadata = rules.parse.output.metadata,
@@ -185,7 +184,6 @@ rule filter:
             --metadata {input.metadata} \
             --min-length {params.min_length} \
             --exclude {input.exclude} \
-            --exclude-where country=? region=? \
             --output {output}
         """
 
