@@ -23,7 +23,7 @@ for seg, genes in genes_to_translate.items():
 	        metadata = rules.parse.output.metadata,
 	        sequences = 'results/sequences_{lineage}_{segment}.fasta', #.format(seg=seg),
 	        exclude = files.outliers,
-	        reference = "config/{lineage}_{segment}_outgroup.gb" #.format(seg=seg)
+	        reference = "config/reference_{lineage}_{segment}.gb" #.format(seg=seg)
 	    params:
 	    	genes=genes,
 	    	region="{region}"

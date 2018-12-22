@@ -102,7 +102,7 @@ rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
         references = "config/references_{lineage}.txt",
-        reference = "config/{lineage}_{segment}_outgroup.gb",
+        reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
         auspice_config = "config/auspice_config.json",
 
