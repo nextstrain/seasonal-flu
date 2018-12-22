@@ -4,7 +4,7 @@ from treetime.utils import numeric_date
 
 path_to_fauna = '../fauna'
 segments = ['ha', 'na']
-lineages = ['h3n2']
+lineages = ['h3n2', 'h1n1pdm']
 resolutions = ['2y', '3y', '6y', '12y']
 frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
