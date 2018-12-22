@@ -58,8 +58,8 @@
       "key": "ne"
     },
     "rb": {
-      "menuItem": "RBS-adjacent mutations",
-      "legendTitle": "RBS-adjacent mutations",
+      "menuItem": "RBS adjacent mutations",
+      "legendTitle": "RBS adjacent mutations",
       "type": "continuous",
       "key": "rb"
     }
