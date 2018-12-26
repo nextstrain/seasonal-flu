@@ -1,34 +1,16 @@
-import argparse, sys, os
-from augur.utils import read_metadata, get_numerical_dates
-import Bio
-import Bio.SeqIO
+import argparse
+import sys
+import os
 from collections import defaultdict
 from datetime import datetime, timedelta, date
+import Bio
+import Bio.SeqIO
 import numpy as np
 from treetime.utils import numeric_date
+from augur.utils import read_metadata, get_numerical_dates
 
-
-vpm_dict = {
-    2: 3,
-    3: 2,
-    6: 2,
-    12: 1,
-}
-
-regions = [
-    ('africa',            "",   1.02),
-    ('europe',            "EU", 0.74),
-    ('north_america',     "NA", 0.54),
-    ('china',             "AS", 1.36),
-    ('south_asia',        "AS", 1.45),
-    ('japan_korea',       "AS", 0.20),
-    ('oceania',           "OC", 0.04),
-    ('south_america',     "SA", 0.41),
-    ('southeast_asia',    "AS", 0.62),
-    ('west_asia',         "AS", 0.75)
-]
-
-subcats = [r[0] for r in regions]
+regions = ['africa', 'europe', 'north_america', 'china', 'south_asia', 'japan_korea', 'oceania', 'south_america', 'southeast_asia', 'west_asia']
+subcats = regions
 
 def read_strain_list(fname):
     """
@@ -104,7 +86,7 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
     if titer_fname:
         HI_titer_count = count_titer_measurements(titer_fname)
         def priority(strain):
-            return HI_titer_count[strain]
+            return HI_titer_count[strain] + np.random.random()
     else:
         print("No titer counts provided - using random priorities")
         def priority(strain):
@@ -193,6 +175,22 @@ def parse_sequences(segments, sequence_files):
 
     return sequences
 
+def summary(strains, metadata, segments, keys):
+    print("Summary of strain counts by category")
+    for segment in segments:
+        print("Categories for segment", segment)
+        category_counts = {}
+        for strain in strains:
+            if all([key in metadata[segment][strain] for key in keys]):
+                category = "-".join([str(metadata[segment][strain][key]) for key in keys])
+                if category not in category_counts:
+                    category_counts[category] = 1
+                else:
+                    category_counts[category] += 1
+        sorted_categories = sorted(category_counts.keys())
+        for category in sorted_categories:
+            print(category, category_counts[category])
+        print("total", len(strains))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -263,6 +261,9 @@ if __name__ == '__main__':
             if (filtered_metadata[guide_segment][strain]['year'] >= lower_reference_cutoff.year and
                 filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)):
                 selected_strains.append(strain)
+
+    # summary of selected strains by region
+    summary(selected_strains, filtered_metadata, args.segments, ['region'])
 
     # write the list of selected strains to file
     with open(args.output, 'w') as ofile:

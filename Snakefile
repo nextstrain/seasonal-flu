@@ -168,6 +168,7 @@ rule filter:
         Filtering {wildcards.lineage} {wildcards.segment} sequences:
           - less than {params.min_length} bases
           - outliers
+          - samples with missing region and country metadata
         """
     input:
         metadata = rules.parse.output.metadata,
@@ -184,6 +185,7 @@ rule filter:
             --metadata {input.metadata} \
             --min-length {params.min_length} \
             --exclude {input.exclude} \
+            --exclude-where country=? region=? \
             --output {output}
         """
 
@@ -216,7 +218,7 @@ rule extract:
         sequences = rules.filter.output.sequences,
         strains = rules.select_strains.output.strains
     output:
-        sequences = 'results/filtered_{lineage}_{segment}_{resolution}.fasta'
+        sequences = 'results/extracted_{lineage}_{segment}_{resolution}.fasta'
     shell:
         """
         python3 scripts/extract_sequences.py \
