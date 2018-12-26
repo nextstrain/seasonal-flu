@@ -64,7 +64,8 @@ def count_titer_measurements(fname):
 
 
 def populate_categories(metadata):
-    super_category = lambda x: (x['year'],
+    super_category = lambda x: (x['region'],
+                                x['year'],
                                 x['month'])
 
     category = lambda x: (x['region'],
