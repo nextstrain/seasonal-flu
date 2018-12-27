@@ -64,8 +64,7 @@ def count_titer_measurements(fname):
 
 
 def populate_categories(metadata):
-    super_category = lambda x: (x['region'],
-                                x['year'],
+    super_category = lambda x: (x['year'],
                                 x['month'])
 
     category = lambda x: (x['region'],
@@ -104,13 +103,12 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
             return viruses_per_month
 
         # otherwise, sort sub categories by strain count
-        sub_counts = sorted([(r, virus_by_super_category[(r, x[1], x[2])]) for r in subcats],
+        sub_counts = sorted([(r, virus_by_category[(r, x[1], x[2])]) for r in subcats],
                              key=lambda y:len(y[1]))
 
         # if all (the smallest) subcat has more strains than the threshold, return threshold
         if len(sub_counts[0][1]) > subcat_threshold:
             return subcat_threshold
-
 
         strains_selected = 0
         tmp_subcat_threshold = subcat_threshold
@@ -123,10 +121,10 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
         return subcat_threshold
 
     selected_strains = []
-    for cat, val in virus_by_category.items():
+    for cat, val in list(virus_by_category.items()):
         if cat_valid(cat, time_interval):
-            val.sort(key=priority, reverse=True)
-            selected_strains.extend(val[:threshold_fn(cat)])
+            tmp = sorted(val, key=priority, reverse=True)
+            selected_strains.extend(tmp[:threshold_fn(cat)])
 
     return selected_strains
 
@@ -265,6 +263,7 @@ if __name__ == '__main__':
 
     # summary of selected strains by region
     summary(selected_strains, filtered_metadata, args.segments, ['region'])
+    summary(selected_strains, filtered_metadata, args.segments, ['year', 'month'])
 
     # write the list of selected strains to file
     with open(args.output, 'w') as ofile:
