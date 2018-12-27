@@ -50,6 +50,15 @@ def vpm(v):
     return vpm[v.resolution] if v.resolution in vpm else 5
 
 #
+# Define clades functions
+#
+def _get_clades_file_for_wildcards(wildcards):
+    if wildcards.segment == "ha":
+        return "config/clades_%s_ha.tsv"%(wildcards.lineage)
+    else:
+        return "results/clades_%s_ha_%s.json"%(wildcards.lineage, wildcards.resolution)
+
+#
 # Define LBI parameters and functions.
 #
 LBI_params = {
@@ -467,17 +476,24 @@ rule clades:
         tree = rules.refine.output.tree,
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
-        clade_definitions = "config/clades_{lineage}_{segment}.tsv"
+        clades = _get_clades_file_for_wildcards
     output:
         clades = "results/clades_{lineage}_{segment}_{resolution}.json"
-    shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.nt_muts} {input.aa_muts} \
-            --clades {input.clade_definitions} \
-            --output {output.clades}
-        """
+    run:
+        if wildcards.segment == 'ha':
+            shell("""
+                augur clades \
+                    --tree {input.tree} \
+                    --mutations {input.nt_muts} {input.aa_muts} \
+                    --clades {input.clades} \
+                    --output {output.clades}
+            """)
+        else:
+            shell("""
+                python scripts/import_tip_clades.py \
+                    --clades {input.clades} \
+                    --output {output.clades}
+            """)
 
 rule distances:
     input:
