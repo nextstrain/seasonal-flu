@@ -245,7 +245,8 @@ rule align:
             --reference-sequence {input.reference} \
             --output {output.alignment} \
             --fill-gaps \
-            --remove-reference
+            --remove-reference \
+            --nthreads auto
         """
 
 rule tree:
@@ -258,7 +259,8 @@ rule tree:
         """
         augur tree \
             --alignment {input.alignment} \
-            --output {output.tree}
+            --output {output.tree} \
+            --nthreads auto
         """
 
 rule refine:

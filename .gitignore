@@ -4,6 +4,7 @@ data/
 results/
 auspice/
 build/
+logs/
 
 # Sensitive environment variables
 environment*
