@@ -55,6 +55,16 @@ FEATURES             Location/Qualifiers
                      LAVLLSNEGIINSEDEHLLALERKLKKMLGPSAVDIGNGCFETKHKCNQTCLDRIAAGT
                      FNAGEFSLPTFDSLNITAASLNDDGLDNHTILLYYSTAASSLAVTLMIAIFIVYMVSRD
                      NVSCSICL"
+     CDS             12..57
+                     /product="Signal peptide"
+                     /gene="SigPep"
+     CDS             57..1095
+                     /product="HA1 protein"
+                     /gene="HA1"
+     CDS             1095..1766
+                     /product="HA2 protein"
+                     /gene="HA2"                     
+                     
 ORIGIN
         1 atatccacaa aatgaaggca ataattgtac tactcatggt agtaacatcc aatgcagatc
        61 gaatctgcac tgggataaca tcttcaaact cacctcatgt ggtcaaaaca gctactcaag

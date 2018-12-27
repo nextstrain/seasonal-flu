@@ -1,0 +1,72 @@
+{
+  "title": "Real-time tracking of influenza B/Yam evolution",
+  "color_options": {
+    "gt": {
+      "menuItem": "genotype",
+      "legendTitle": "Genotype",
+      "type": "discrete",
+      "key": "genotype"
+    },
+    "num_date": {
+      "menuItem": "date",
+      "legendTitle": "Sampling date",
+      "type": "continuous",
+      "key": "num_date"
+    },
+    "region": {
+      "key":"region",
+      "legendTitle":"Region",
+      "menuItem":"region",
+      "type":"discrete"
+    },
+    "clade_membership": {
+      "key": "clade_membership",
+      "legendTitle": "Clade",
+      "menuItem": "clade",
+      "type": "discrete"
+    },
+    "cTiter": {
+      "key": "cTiter",
+      "legendTitle": "Antigenic advance (tree model)",
+      "menuItem": "antigenic advance (tree model)",
+      "type": "continuous"
+    },
+    "cTiterSub": {
+      "key": "cTiterSub",
+      "legendTitle": "Antigenic advance (sub model)",
+      "menuItem": "antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    "lbi": {
+      "vmin": 0,
+      "vmax": 0.7,
+      "legendTitle": "local branching index",
+      "key": "lbi",
+      "menuItem": "local branching index",
+      "type": "continuous"
+    }
+  },
+  "geo": [
+    "country",
+    "region"
+  ],
+  "defaults": {
+    "mapTriplicate": true,
+    "colorBy": "clade_membership"
+  },
+  "maintainer": [
+    "Trevor Bedford and Barney Potter",
+    "http://bedford.io/"
+  ],
+  "filters": [
+    "clade_membership",
+    "region",
+    "country",
+    "authors"
+  ],
+  "panels": [
+    "tree",
+    "entropy",
+    "frequencies"
+  ]
+}

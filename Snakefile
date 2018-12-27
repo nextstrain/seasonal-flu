@@ -5,7 +5,7 @@ from treetime.utils import numeric_date
 path_to_fauna = '../fauna'
 min_length = 900
 segments = ['ha', 'na']
-lineages = ['h3n2', 'h1n1pdm']
+lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 resolutions = ['2y', '3y', '6y', '12y']
 frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
@@ -105,7 +105,7 @@ rule files:
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
-        auspice_config = "config/auspice_config.json",
+        auspice_config = "config/auspice_config_{lineage}.json",
 
 files = rules.files.params
 

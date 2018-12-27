@@ -1,5 +1,5 @@
 {
-  "title": "Real-time tracking of influenza virus evolution",
+  "title": "Real-time tracking of influenza A/H1N1pdm evolution",
   "color_options": {
     "gt": {
       "menuItem": "genotype",
@@ -56,12 +56,6 @@
       "legendTitle": "Non-epitope mutations",
       "type": "continuous",
       "key": "ne"
-    },
-    "rb": {
-      "menuItem": "RBS adjacent mutations",
-      "legendTitle": "RBS adjacent mutations",
-      "type": "continuous",
-      "key": "rb"
     }
   },
   "geo": [
