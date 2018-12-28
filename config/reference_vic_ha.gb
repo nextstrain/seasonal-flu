@@ -37,22 +37,6 @@ FEATURES             Location/Qualifiers
                      /strain="Influenza B virus (B/Hong Kong/02/1993)"
      gene            12..1769
                      /gene="HA"
-     CDS             12..1769
-                     /codon_start=1
-                     /gene="HA"
-                     /product="hemagglutinin"
-                     /protein_id="ABL77321.1"
-                     /translation="MKAIIVLLMVVTSNADRICTGITSSNSPHVVKTATQGEVNVTGVI
-                     PLTTTPTKSHFANLKGTKTRGKLCPKCLNCTDLDVALGRPKCTGTIPSAKVSILHEVKP
-                     VTSGCFPIMHDRTKIRQLPNLLRGYEHIRLSTHNVINAEKAPGGPYKIGTSGSCPNITN
-                     GNGFFATMAWAVPKNDNNKTATNSLTVEVPYICTEGEDQITVWGFHSDNETQMAKLYGD
-                     SKPQKFTSSANGVTTHYVSQIGGFPNQAEDGGLPQSGRIVVDYMVQKSGKTGTITYQRG
-                     ILLPQKVWCASGRSKVIKGSLPLIGEADCLHEKYGGLNKSKPYYTGEHAKAIGNCPIWV
-                     KTPLNLANGTKYRPPAKLLKERGFFGAIAGFLEGGWEGMIAGWHGYTSHGAHGVAVAAD
-                     LKSTQEAINKITKNLNSLSELEVKNLQRLSGAMDELHNEILELDEKVDDLRADTISSQI
-                     ELAVLLSNEGIINSEDEHLLALERKLKKMLGPSAVEIGNGCFETKHKCNQTCLDRIAAG
-                     TFNAGEFSLPTFDSLNITAASLNDDGLDNHTILLYYSTAASSLAVTLMIAIFIVYMVSR
-                     DNVSCSICL"
      CDS             12..57
                      /product="Signal peptide"
                      /gene="SigPep"

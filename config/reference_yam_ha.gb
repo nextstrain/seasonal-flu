@@ -38,23 +38,6 @@ FEATURES             Location/Qualifiers
                      /strain="Influenza B virus (B/Singapore/11/1994)"
      gene            12..1766
                      /gene="HA"
-     CDS             12..1766
-                     /codon_start=1
-                     /function="receptor binding and fusion protein"
-                     /gene="HA"
-                     /product="hemagglutinin"
-                     /protein_id="ABN50712.1"
-                     /translation="MKAIIVLLMVVTSNADRICTGITSSNSPHVVKTATQGEVNVTGVI
-                     PLTTTPTKSHFANLKGTKTRGKLCPNCLNCTDLDVALGRPMCVGTTPSAKASILHEVRP
-                     VTSGCFPIMHDRTKIRQLPNLLRGYENIRLSTQNVINAEKAPGGPYRLGTSGSCPNATS
-                     RSGFFATMAWAVPRDNNKTATNPLTVEVPYVCTEGEDQITVWGFHSDNKTQMKNLYGDS
-                     NPQKFTSSANGVTTHYVSQIGGFPDQTEDGGLPQSGRIVVDYMVQKPGKTGTIVYQRGV
-                     LLPQKVWCASGRSKVIKGSLPLIGEADCLHEKYGGLNKSKPYYTGEHAKAIGNCPIWVK
-                     TPLKLANGTKYRPPAKLLKERGFFGAIAGFLEGGWEGMIAGWHGYTSHGAHGVAVAADL
-                     KSTQEAINKITKNLNSLSELEVKNLQRLSGAMDELHNEILELDEKVDDLRADTISSQIE
-                     LAVLLSNEGIINSEDEHLLALERKLKKMLGPSAVDIGNGCFETKHKCNQTCLDRIAAGT
-                     FNAGEFSLPTFDSLNITAASLNDDGLDNHTILLYYSTAASSLAVTLMIAIFIVYMVSRD
-                     NVSCSICL"
      CDS             12..57
                      /product="Signal peptide"
                      /gene="SigPep"
