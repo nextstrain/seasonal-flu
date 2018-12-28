@@ -192,6 +192,7 @@ rule filter:
             --sequences {input.sequences} \
             --metadata {input.metadata} \
             --min-length {params.min_length} \
+            --non-nucleotide \
             --exclude {input.exclude} \
             --exclude-where country=? region=? \
             --output {output}
