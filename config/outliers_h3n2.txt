@@ -105,6 +105,7 @@ A/Indiana/113/2012
 A/Indiana/115/2012
 A/Indiana/123/2012
 A/Indiana/125/2012
+A/Indiana/12/2012
 A/Indiana/13/2012
 A/Indiana/13/2012-egg
 A/Indiana/132/2012
@@ -227,6 +228,7 @@ A/Ohio/36/2012
 A/Ohio/41/2012
 A/Ohio/4319/2014
 A/Ohio/44/2012
+A/Ohio/47/2012
 A/Ohio/5/2013
 A/Ohio/52/2012
 A/Ohio/56/2012
