@@ -242,6 +242,8 @@ if __name__ == '__main__':
         for name in metadata[segment]:
             if name in sequence_names_by_segment[segment]:
                 filtered_metadata[segment][name] = metadata[segment][name]
+            if name in included_strains:
+                filtered_metadata[segment][name] = metadata[segment][name]
 
     # filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
@@ -253,8 +255,9 @@ if __name__ == '__main__':
                                   args.viruses_per_month, time_interval, titer_fname=args.titers)
 
     # add strains that need to be included
+    # these strains don't have to exist in all segments, just the guide segment
     for strain in included_strains:
-        if strain in strains_with_all_segments and strain not in selected_strains:
+        if strain not in selected_strains and strain in filtered_metadata[guide_segment]:
             # Do not include strains sampled too far in the past or strains
             # sampled from the future relative to the requested build interval.
             if (filtered_metadata[guide_segment][strain]['year'] >= lower_reference_cutoff.year and
