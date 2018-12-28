@@ -180,7 +180,7 @@ def summary(strains, metadata, segments, keys):
         print("Categories for segment", segment)
         category_counts = {}
         for strain in strains:
-            if all([key in metadata[segment][strain] for key in keys]):
+            if strain in metadata[segment] and all([key in metadata[segment][strain] for key in keys]):
                 category = "-".join([str(metadata[segment][strain][key]) for key in keys])
                 if category not in category_counts:
                     category_counts[category] = 1
