@@ -99,6 +99,14 @@ rule all:
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json", lineage=lineages, segment=segments, resolution=resolutions)
 
+
+# separate rule for interaction with fauna
+rule download_all:
+    input:
+        titers = expand("data/{lineage}_hi_titers.tsv", lineage=lineages),
+        sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
+
+
 rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
