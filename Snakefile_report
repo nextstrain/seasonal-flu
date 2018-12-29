@@ -1,5 +1,7 @@
 include: "Snakefile"
 
+resolutions = ['2y']
+segments = ['ha', 'na']
 
 def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:135K", "HA1:135N", "HA1:212T", "HA1:128A", "HA1:214T"],
@@ -16,7 +18,8 @@ def mutations_to_plot(v):
 def clades_to_plot(v):
     clades = {('h3n2', 'ha'):["A2/re", "A1b/135K", "A1b/135N", '3c3.A', 'A3'],
               ('h1n1pdm', 'ha'):["6b1.A", "6b1.A1", "6b1.A2","6b1.A3","6b1.A4","6b1.A5"],
-
+              ('vic', 'ha'):["V1A", "V1A.1", "V1A/165N"],
+              ('yam', 'ha'):["172Q"],
               }
     return clades[(v.lineage, v.segment)]
 
@@ -26,6 +29,13 @@ def region_translations(w):
             for g in genes]
 
 regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea']
+
+
+rule figures:
+    input:
+        expand("figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png", segment=segments, lineage=lineages, resolution=resolutions),
+        expand("figures/clade-frequencies_{lineage}_ha_{resolution}.png", lineage=lineages, resolution=resolutions)
+
 
 for seg, genes in genes_to_translate.items():
 	rule:
@@ -78,32 +88,42 @@ rule complete_mutation_frequencies:
         """
 
 
-rule frequency_graphs:
+rule mutation_frequency_graphs:
     input:
         mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
                     region=regions_to_graph),
-        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
-        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
     params:
         mutations = mutations_to_plot,
         regions = regions_to_graph,
-        clades = clades_to_plot,
     output:
         mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
         total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.png",
+    shell:
+        """
+        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
+                                            --mutations {params.mutations} \
+                                            --regions {params.regions} \
+                                            --output-mutations {output.mutations} \
+                                            --output-total-counts {output.total_counts} \
+        """
+
+rule frequency_graphs:
+    input:
+        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+    params:
+        regions = regions_to_graph,
+        clades = clades_to_plot,
+    output:
         tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.png",
         clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}.png"
     shell:
         """
-        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
-                                            --tree-frequencies {input.tree} \
+        python scripts/graph_frequencies.py --tree-frequencies {input.tree} \
                                             --clade-annotation {input.clades} \
-                                            --mutations {params.mutations} \
                                             --clades {params.clades} \
                                             --regions {params.regions} \
-                                            --output-mutations {output.mutations} \
                                             --output-clades {output.clades} \
-                                            --output-total-counts {output.total_counts} \
                                             --output-tree-counts {output.tree_counts}
         """
 
