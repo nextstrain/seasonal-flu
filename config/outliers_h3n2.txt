@@ -33,6 +33,7 @@ A/Corsica/42/2009
 A/Corsica/7/2007
 A/Delaware/3/2011
 A/Guam/AF2771/2011
+A/Guatemala/116/2018
 A/Hawaii/3/2012
 A/Helsinki/942/2013
 A/HongKong/H090-781-V10/2009
