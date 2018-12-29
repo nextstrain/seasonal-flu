@@ -487,14 +487,16 @@ rule tree_frequencies:
         min_date = min_date,
         max_date = max_date,
         pivot_interval = pivot_interval,
+        regions = ['global'] + frequency_regions
     output:
         tip_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur frequencies \
             --method diffusion \
-            --output-format nextflu \
+            --include-internal-nodes \
             --tree {input.tree} \
+            --regions {params.regions} \
             --metadata {input.metadata} \
             --pivot-interval {params.pivot_interval} \
             --min-date {params.min_date} \

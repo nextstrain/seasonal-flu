@@ -6,16 +6,26 @@ def mutations_to_plot(v):
     			 ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
     			 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
     			 ('h1n1pdm', 'na'):["NA:77A","NA:93H", "NA:416N"],
+                 ('vic', 'ha'):["HA1:162-","HA1:175V", "HA1:209N"],
+                 ('vic', 'na'):["NA:371Q","NA:375K"],
+                 ('yam', 'ha'):["HA1:229D","HA1:232N"],
+                 ('yam', 'na'):["NA:395S", "NA:65H", "NA:402P"],
                   }
     return mutations[(v.lineage, v.segment)]
 
+def clades_to_plot(v):
+    clades = {('h3n2', 'ha'):["A2/re", "A1b/135K", "A1b/135N", '3c3.A', 'A3'],
+              ('h1n1pdm', 'ha'):["6b1.A", "6b1.A1", "6b1.A2","6b1.A3","6b1.A4","6b1.A5"],
+
+              }
+    return clades[(v.lineage, v.segment)]
 
 def region_translations(w):
     genes = gene_names(w)
     return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
             for g in genes]
 
-regions_to_graph = ['north_america', 'europe', 'china']
+regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea']
 
 for seg, genes in genes_to_translate.items():
 	rule:
@@ -72,21 +82,27 @@ rule frequency_graphs:
     input:
         mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
                     region=regions_to_graph),
-        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
     params:
         mutations = mutations_to_plot,
-        regions = regions_to_graph
+        regions = regions_to_graph,
+        clades = clades_to_plot,
     output:
         mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
         total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.png",
-        tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.png"
+        tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.png",
+        clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}.png"
     shell:
         """
         python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
                                             --tree-frequencies {input.tree} \
+                                            --clade-annotation {input.clades} \
                                             --mutations {params.mutations} \
+                                            --clades {params.clades} \
                                             --regions {params.regions} \
                                             --output-mutations {output.mutations} \
+                                            --output-clades {output.clades} \
                                             --output-total-counts {output.total_counts} \
                                             --output-tree-counts {output.tree_counts}
         """
