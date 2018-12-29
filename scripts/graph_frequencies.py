@@ -1,6 +1,9 @@
 import argparse, sys, os, glob, json
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib
+# important to use a non-interactive backend, otherwise will crash on cluster
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 
 region_label = {'NA': 'N America', 'AS': 'Asia', 'EU': 'Europe', 'OC': 'Oceania', 'global': 'Global',
@@ -152,14 +155,14 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--mutation-frequencies', nargs='+', required=True,
+    parser.add_argument('--mutation-frequencies', nargs='+',
                         help="json files containing frequencies in different regions")
-    parser.add_argument('--tree-frequencies', type=str, required=True,
+    parser.add_argument('--tree-frequencies', type=str,
                         help="json files containing frequencies of clades in the tree")
-    parser.add_argument('--clade-annotations', type=str, required=True,
+    parser.add_argument('--clade-annotations', type=str,
                         help="json files containing clade annotations to map internal nodes to clades")
-    parser.add_argument('--mutations',nargs='+', required=True, help="mutations to graph")
-    parser.add_argument('--clades',nargs='+', required=True, help="clades to graph")
+    parser.add_argument('--mutations',nargs='+', help="mutations to graph")
+    parser.add_argument('--clades',nargs='+', help="clades to graph")
     parser.add_argument('--regions',nargs='+', required=True, help="regions corresponding to alignment files")
     parser.add_argument('--output-mutations', help="file name to save figure to")
     parser.add_argument('--output-total-counts', help="file name to save figure to")
