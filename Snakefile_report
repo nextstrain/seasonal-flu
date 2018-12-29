@@ -41,9 +41,9 @@ for seg, genes in genes_to_translate.items():
 	rule:
 	    input:
 	        metadata = rules.parse.output.metadata,
-	        sequences = 'results/sequences_{lineage}_{segment}.fasta', #.format(seg=seg),
+	        sequences = rules.parse.output.sequences,
 	        exclude = files.outliers,
-	        reference = "config/reference_{lineage}_{segment}.gb" #.format(seg=seg)
+	        reference = files.reference
 	    params:
 	    	genes=genes,
 	    	region="{region}"
@@ -109,8 +109,8 @@ rule mutation_frequency_graphs:
 
 rule frequency_graphs:
     input:
-        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
-        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+        tree = rules.tree_frequencies.output,
+        clades = rules.clades.output.clades,
     params:
         regions = regions_to_graph,
         clades = clades_to_plot,
@@ -130,8 +130,8 @@ rule frequency_graphs:
 
 rule mutation_statistics:
     input:
-        mutations = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json",
-        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json"
+        mutations = rules.complete_mutation_frequencies.output.mut_freq,
+        node_data = rules.translate.output.node_data
     params:
     	offset = 4,
     	n_out=20
@@ -144,3 +144,4 @@ rule mutation_statistics:
     	rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
 
     	recurring_mutations(input.node_data, fname_by_position=output.recurring_pos, fname_by_mutation=output.recurring_mut, n_out=params.n_out)
+

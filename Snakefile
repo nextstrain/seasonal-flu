@@ -489,7 +489,7 @@ rule tree_frequencies:
         pivot_interval = pivot_interval,
         regions = ['global'] + frequency_regions
     output:
-        tip_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
     shell:
         """
         augur frequencies \

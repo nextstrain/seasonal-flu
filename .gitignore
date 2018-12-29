@@ -40,3 +40,7 @@ environment*
 Icon?
 ehthumbs.db
 Thumbs.db
+*~
+
+# cluster logs
+slurm-*
