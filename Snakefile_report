@@ -34,7 +34,8 @@ regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea'
 rule figures:
     input:
         expand("figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png", segment=segments, lineage=lineages, resolution=resolutions),
-        expand("figures/clade-frequencies_{lineage}_ha_{resolution}.png", lineage=lineages, resolution=resolutions)
+        expand("figures/clade-frequencies_{lineage}_ha_{resolution}.png", lineage=lineages, resolution=resolutions),
+        expand("figures/age-distribution_{lineage}_{resolution}.png", lineage=lineages, resolution=resolutions)
 
 
 for seg, genes in genes_to_translate.items():
@@ -144,4 +145,22 @@ rule mutation_statistics:
     	rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
 
     	recurring_mutations(input.node_data, fname_by_position=output.recurring_pos, fname_by_mutation=output.recurring_mut, n_out=params.n_out)
+
+
+rule age_distributions:
+    input:
+        metadata = "results/metadata_{lineage}_ha.tsv",
+        exclude = files.outliers
+    params:
+        resolution="{resolution}"
+    output:
+        "figures/age-distribution_{lineage}_{resolution}.png"
+    shell:
+        """
+        python scripts/age_distributions.py  --metadata {input.metadata} \
+                                             --resolution {params.resolution} \
+                                             --exclude {input.exclude} \
+                                             --output {output}
+        """
+
 

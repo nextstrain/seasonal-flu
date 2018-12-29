@@ -159,6 +159,14 @@ def parse_metadata(segments, metadata_files):
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
             tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
             tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
+            age_str = tmp_meta[x]['age']
+            if age_str[-1]=='y':
+                tmp_meta[x]['age'] = int(age_str[:-1])
+            elif tmp_meta[x]['age']=='m':
+                tmp_meta[x]['age'] = float(age_str[:-1])/12.0
+            else:
+                tmp_meta[x]['age'] = 'unknown'
+
         metadata[segment] = tmp_meta
     return metadata
 
