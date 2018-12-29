@@ -479,6 +479,30 @@ rule tip_frequencies:
             --output {output}
         """
 
+rule tree_frequencies:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+    params:
+        min_date = min_date,
+        max_date = max_date,
+        pivot_interval = pivot_interval,
+    output:
+        tip_freq = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+    shell:
+        """
+        augur frequencies \
+            --method diffusion \
+            --output-format nextflu \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pivot-interval {params.pivot_interval} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output}
+        """
+
+
 rule clades:
     message: "Annotating clades"
     input:

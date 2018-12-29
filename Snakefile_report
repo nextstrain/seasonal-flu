@@ -12,7 +12,7 @@ def mutations_to_plot(v):
 
 def region_translations(w):
     genes = gene_names(w)
-    return ["results/full-aaseq-seasonal-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
+    return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
             for g in genes]
 
 regions_to_graph = ['north_america', 'europe', 'china']
@@ -28,7 +28,7 @@ for seg, genes in genes_to_translate.items():
 	    	genes=genes,
 	    	region="{region}"
 	    output:
-	        alignments = expand("results/full-aaseq-seasonal-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
+	        alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
 	        					gene=genes)
 	    shell:
 	        """
@@ -51,15 +51,16 @@ rule complete_mutation_frequencies:
         min_date = min_date,
         max_date = max_date,
         min_freq = 0.01,
-        pivots_per_year = pivots_per_year
+        pivot_interval = pivot_interval
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
     shell:
         """
-        augur frequencies --alignments {input.alignment} \
+        augur frequencies --method diffusion \
+                          --alignments {input.alignment} \
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
-                          --pivots-per-year {params.pivots_per_year} \
+                          --pivot-interval {params.pivot_interval} \
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
                           --minimal-frequency {params.min_freq} \
@@ -71,7 +72,7 @@ rule frequency_graphs:
     input:
         mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
                     region=regions_to_graph),
-        tree = "results/tree_frequencies_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree-frequencies_{lineage}_{segment}_{resolution}.json"
     params:
         mutations = mutations_to_plot,
         regions = regions_to_graph
@@ -94,7 +95,7 @@ rule frequency_graphs:
 rule mutation_statistics:
     input:
         mutations = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json",
-        node_data = "results/aamuts_seasonal_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json"
     params:
     	offset = 4,
     	n_out=20
