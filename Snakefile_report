@@ -163,4 +163,61 @@ rule age_distributions:
                                              --output {output}
         """
 
+rule scores:
+    input:
+        metadata = rules.parse.output.metadata,
+        tree = rules.refine.output.tree
+    output:
+        scores = "results/scores_{lineage}_{segment}_{resolution}.png"
+    shell:
+        """
+        python scripts/scores.py  --metadata {input.metadata} \
+                                  --tree {input.tree} \
+                                  --output {output}
+        """
 
+
+def _get_node_data_for_report_export(wildcards):
+    """Return a list of node data files to include for a given build's wildcards.
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.refine.output.node_data,
+        rules.ancestral.output.node_data,
+        rules.translate.output.node_data,
+        rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
+        rules.clades.output.clades,
+        rules.traits.output.node_data,
+        rules.lbi.output.lbi,
+        rules.scores.output.scores,
+    ]
+
+    # Only request a distance file for builds that have mask configurations
+    # defined.
+    if _get_build_mask_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
+
+rule export:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        auspice_config = "config/auspice_config_report_{lineage}.json",
+        node_data = _get_node_data_for_report_export
+    output:
+        auspice_tree = "auspice/flu_seasonal_report_{lineage}_{segment}_{resolution}_tree.json",
+        auspice_meta = "auspice/flu_seasonal_report_{lineage}_{segment}_{resolution}_meta.json"
+    shell:
+        """
+        augur export \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --auspice-config {input.auspice_config} \
+            --output-tree {output.auspice_tree} \
+            --output-meta {output.auspice_meta}
+        """
