@@ -39,10 +39,12 @@ A/Minnesota/33/2014
 A/Minnesota/46/2015
 A/Missouri/12/2012
 A/Norway/1929/2014
+A/Novosibirsk/716/2009
 A/Ohio/1/2007
 A/Ohio/2/2007
 A/Ohio/9/2015
 A/Ontario/N163578/2012
+A/Philippines/8/2018
 A/Poland/16/2013
 A/RioGrandedoNorte/117490/2012
 A/Shandong/1/2009

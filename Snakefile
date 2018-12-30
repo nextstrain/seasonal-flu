@@ -11,6 +11,10 @@ frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
 
 
+def vpm(v):
+    vpm = {'2y':90, '3y':60, '6y':30, '12y':15}
+    return vpm[v.resolution] if v.resolution in vpm else 5
+
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992",
                   'h1n1pdm':"A/California/07/2009",
@@ -41,13 +45,14 @@ def min_date(w):
 def max_date(w):
     return numeric_date(date.today())
 
-def substitution_rates(w):
-    references = {('h3n2', 'ha'): 0.0038, ('h3n2', 'na'):0.0028}
-    return references[(w.lineage, w.segment)]
-
-def vpm(v):
-    vpm = {'2y':90, '3y':60, '6y':30, '12y':15}
-    return vpm[v.resolution] if v.resolution in vpm else 5
+def clock_rate(w):
+    rate = {
+        ('h3n2', 'ha'): 0.0043, ('h3n2', 'na'):0.0029,
+        ('h1n1pdm', 'ha'): 0.0040, ('h1n1pdm', 'na'):0.0032,
+        ('vic', 'ha'): 0.0024, ('vic', 'na'):0.0015,
+        ('yam', 'ha'): 0.0019, ('yam', 'na'):0.0013
+    }
+    return rate[(w.lineage, w.segment)]
 
 #
 # Define clades functions
@@ -153,7 +158,7 @@ rule download_titers:
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
-            --database cdc_tdb \
+            --database tdb cdc_tdb \
             --virus flu \
             --subtype {wildcards.lineage} \
             --select assay_type:hi \
@@ -300,7 +305,8 @@ rule refine:
     params:
         coalescent = "const",
         date_inference = "marginal",
-        clock_filter_iqd = 4
+        clock_filter_iqd = 4,
+        clock_rate = clock_rate
     shell:
         """
         augur refine \
@@ -310,6 +316,7 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --timetree \
+            --clock-rate {params.clock_rate} \
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \

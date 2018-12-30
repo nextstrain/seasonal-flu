@@ -1,8 +1,10 @@
 A/Malaysia/438/2016
+B/Auckland/1/2008
 B/Bangkok/SI17/2012
 B/Bangkok/SI58/2012
 B/Brisbane/14/2016
 B/Brisbine/33/2008
+B/California/87/2017-egg
 B/Cambodia/26/2011
 B/Cambodia/30/2011
 B/Cambodia/62/2011
