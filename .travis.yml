@@ -1,0 +1,17 @@
+sudo: required
+services:
+  - docker
+language: python
+python:
+  - "3.6"
+install:
+  - pip3 install git+https://github.com/nextstrain/cli
+  - nextstrain version
+  - nextstrain check-setup
+  - nextstrain update
+script:
+  - mkdir -p data/
+  - cp -v example_data/h3n2_ha.fasta data/
+  - cp -v example_data/h3n2_na.fasta data/
+  - cp -v example_data/h3n2_hi_titers.tsv data/
+  - nextstrain build . auspice/flu_seasonal_h3n2_ha_12y_tree.json auspice/flu_seasonal_h3n2_ha_12y_tip-frequencies.json
