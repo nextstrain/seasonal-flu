@@ -36,6 +36,7 @@ A/Guam/AF2771/2011
 A/Guatemala/116/2018
 A/Hawaii/3/2012
 A/Helsinki/942/2013
+A/HoChiMinh/4596/2010
 A/HongKong/H090-781-V10/2009
 A/HongKong/HK1/2008
 A/HongKong/HK10/2008
@@ -127,6 +128,7 @@ A/Indiana/27/2018
 A/Indiana/31/2012
 A/Indiana/38/2012
 A/Indiana/4/2013
+A/Indiana/46/2012
 A/Indiana/49/2012
 A/Indiana/5/2013
 A/Indiana/5/2013-egg
