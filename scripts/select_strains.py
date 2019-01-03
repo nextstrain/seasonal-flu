@@ -80,11 +80,14 @@ def populate_categories(metadata):
     return virus_by_super_category, virus_by_category
 
 
-def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None):
+def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=None):
 
     #### DEFINE THE PRIORITY
-    if titer_fname:
-        HI_titer_count = count_titer_measurements(titer_fname)
+    if titer_fnames:
+        HI_titer_count = defaultdict(int)
+        for fname in titer_fnames:
+            for s, k in count_titer_measurements(fname):
+                HI_titer_count[s] += k
         def priority(strain):
             return HI_titer_count[strain] + np.random.random()
     else:
@@ -219,7 +222,7 @@ if __name__ == '__main__':
                         help='sample evenly over regions (even) (default), or prioritize one region (region name), otherwise sample randomly')
     parser.add_argument('--time-interval', nargs=2, help="explicit time interval to use -- overrides resolutions"
                                                                      " expects YYYY-MM-DD YYYY-MM-DD")
-    parser.add_argument('--titers', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
+    parser.add_argument('--titers', nargs='+', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
                                           " and use this count as a priority for inclusion during subsampling.")
     parser.add_argument('--include', help="a text file containing strains (one per line) that will be included regardless of subsampling")
     parser.add_argument('--max-include-range', type=float, default=5, help="number of years prior to the lower date limit for reference strain inclusion")
@@ -260,7 +263,7 @@ if __name__ == '__main__':
     strains_with_all_segments.difference_update(set(excluded_strains))
     # subsample by region, month, year
     selected_strains = flu_subsampling({x:filtered_metadata[guide_segment][x] for x in strains_with_all_segments},
-                                  args.viruses_per_month, time_interval, titer_fname=args.titers)
+                                  args.viruses_per_month, time_interval, titer_fnames=args.titers)
 
     # add strains that need to be included
     # these strains don't have to exist in all segments, just the guide segment
