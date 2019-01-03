@@ -1,0 +1,67 @@
+include: "Snakefile"
+
+passages = ['cell', 'egg']
+centers = ['cdc', 'vidrl', 'crick', 'niid', 'who']
+
+#
+# Define titer data sets to be used. will be overwritten for WHO builds
+#
+def _get_titers_for_build(w):
+    if w.center=='who':
+        tmp_centers = centers + ['public']
+    else:
+        tmp_centers = [w.center, 'public']
+
+    return expand("data/{{lineage}}_{center}_{assay}_{passage}_titers.tsv",
+                   center=tmp_centers, assay=['hi'], passage=['cell'])
+
+def all_builds():
+    builds = []
+    for lineage in lineages:
+        assays = ['hi', 'fra'] if lineage=='h3n2' else ['hi']
+        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer_tree_model', 'titer_subs_model', 'entropy']:
+           builds.extend(expand("auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
+                              lineage=lineages, segment=segments, resolution=resolutions, assay=assays, f=[file_suffix]))
+    return builds
+
+
+rule all_who
+    input:
+        all_builds
+
+
+rule export_titers:
+    input:
+        sub = rule.titers_sub.output.titers_model,
+        tree = rule.titers_tree.output.titers_model
+    output:
+        raw = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
+        sub = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_tree_model.json",
+        tree = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_subs_model.json",
+    run:
+        import json
+        with open(input.sub) as fh:
+            sub = json.load(fh)
+
+        with open(output.raw) as sub_file:
+            json.dump({'avidity':sub.titers['avidity'],'potency':sub.titers['potency'],
+                       'substitution':sub.titers['substitution']},sub_file)
+
+        with open(output.sub) as raw_file:
+            json.dump(sub.titers['titers'],raw_file)
+
+        with open(input.tree) as fh:
+            tree = json.load(fh)
+        with open(output.tree) as tree_file:
+            json.dump({'avidity':tree.titers['avidity'],'potency':tree.titers['potency'],
+                       'dTiter':{k:v['dTiter'] for k,v in tree.titers['nodes'].items()}},tree_file)
+
+
+rule export_entropy:
+    input:
+        aln = rules.align.output.alignment,
+        reference = files.reference,
+    params:
+        genes = gene_names
+    output:
+        "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_entropy.json",
