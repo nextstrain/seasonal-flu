@@ -531,7 +531,7 @@ rule tree_frequencies:
 rule clades:
     message: "Annotating clades"
     input:
-        tree = rules.refine.output.tree,
+        tree = "results/tree_{lineage}_ha_{resolution}.nwk",
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
         clades = _get_clades_file_for_wildcards
@@ -549,6 +549,7 @@ rule clades:
         else:
             shell("""
                 python scripts/import_tip_clades.py \
+                    --tree {input.tree} \
                     --clades {input.clades} \
                     --output {output.clades}
             """)
