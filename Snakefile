@@ -5,10 +5,14 @@ from treetime.utils import numeric_date
 path_to_fauna = '../fauna'
 min_length = 900
 segments = ['ha', 'na']
-lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
-resolutions = ['2y', '3y', '6y', '12y']
+lineages = ['h3n2'] #, 'h1n1pdm', 'vic', 'yam']
+resolutions = ['2y'] #, '3y', '6y', '12y']
 frequency_regions = ['north_america', 'south_america', 'europe', 'china',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
+
+passages = ['cell']
+centers = ['cdc']
+assays = ['hi']
 
 
 def vpm(v):
@@ -29,7 +33,7 @@ def gene_names(w):
 
 def translations(w):
     genes = gene_names(w)
-    return ["results/aa-seq_%s_%s_%s_%s.fasta"%(w.lineage, w.segment, w.resolution, g)
+    return ["results/aa-seq_%s_%s_%s_%s_%s_%s_%s.fasta"%(w.center, w.lineage, w.segment, w.resolution, w.passage, w.assay, g)
             for g in genes]
 
 def pivot_interval(w):
@@ -61,7 +65,14 @@ def _get_clades_file_for_wildcards(wildcards):
     if wildcards.segment == "ha":
         return "config/clades_%s_ha.tsv"%(wildcards.lineage)
     else:
-        return "results/clades_%s_ha_%s.json"%(wildcards.lineage, wildcards.resolution)
+        return "results/clades_%s_%s_ha_%s_%s_%s.json"%(wildcards.center, wildcards.lineage,
+                                                        wildcards.resolution, wildcards.passage, wildcards.assay)
+
+#
+# Define titer data sets to be used. will be overwritten for WHO builds
+#
+def _get_titers_for_build(w):
+    return expand("data/{{lineage}}_{center}_{assay}_{passage}_titers.tsv", center=['cdc', 'public'], assay=['hi'], passage=['cell'])
 
 #
 # Define LBI parameters and functions.
@@ -107,17 +118,21 @@ def _get_mask_names_by_wildcards(wildcards):
 # Define rules.
 #
 
-rule all:
+rule all_live:
     input:
-        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json", lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_tree = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+                              lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_meta = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+                              lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+                              lineage=lineages, segment=segments, resolution=resolutions)
 
 
 # separate rule for interaction with fauna
 rule download_all:
     input:
-        titers = expand("data/{lineage}_hi_titers.tsv", lineage=lineages),
+        titers = expand("data/{lineage}_{center}_{assay}_{passage}_titers.tsv",
+                         lineage=lineages, center=centers+['public'], assay=assays, passage=passages),
         sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
 
 
@@ -152,18 +167,19 @@ rule download_sequences:
 rule download_titers:
     message: "Downloading titers from fauna"
     output:
-        titers = "data/{lineage}_hi_titers.tsv"
+        titers = "data/{lineage}_{center}_{assay}_{passage}_titers.tsv"
     params:
+        db = lambda w:'tdb' if w.center=='public' else '%s_tdb'%w.center,
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
-            --database tdb cdc_tdb \
+            --database  {params.db} \
             --virus flu \
             --subtype {wildcards.lineage} \
-            --select assay_type:hi \
+            --select assay_type:{wildcards.assay} serum_passage_category:{wildcards.passage} \
             --path data \
-            --fstem {wildcards.lineage}_hi
+            --fstem {wildcards.lineage}_{wildcards.center}_{wildcards.assay}_{wildcards.passage}
         """
 
 rule parse:
@@ -216,10 +232,10 @@ rule select_strains:
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}.fasta", segment=segments),
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
-        titers = rules.download_titers.output.titers,
+        titers = _get_titers_for_build,
         include = files.references
     output:
-        strains = "results/strains_{lineage}_{resolution}.txt",
+        strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
         viruses_per_month = vpm
     shell:
@@ -241,7 +257,7 @@ rule extract:
         sequences = rules.filter.output.sequences,
         strains = rules.select_strains.output.strains
     output:
-        sequences = 'results/extracted_{lineage}_{segment}_{resolution}.fasta'
+        sequences = 'results/extracted_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta'
     shell:
         """
         python3 scripts/extract_sequences.py \
@@ -260,7 +276,7 @@ rule align:
         sequences = rules.extract.output.sequences,
         reference = files.reference
     output:
-        alignment = "results/aligned_{lineage}_{segment}_{resolution}.fasta"
+        alignment = "results/aligned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta"
     shell:
         """
         augur align \
@@ -277,7 +293,7 @@ rule tree:
     input:
         alignment = rules.align.output.alignment
     output:
-        tree = "results/tree-raw_{lineage}_{segment}_{resolution}.nwk"
+        tree = "results/tree-raw_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk"
     shell:
         """
         augur tree \
@@ -300,8 +316,8 @@ rule refine:
         alignment = rules.align.output,
         metadata = rules.parse.output.metadata
     output:
-        tree = "results/tree_{lineage}_{segment}_{resolution}.nwk",
-        node_data = "results/branch-lengths_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk",
+        node_data = "results/branch-lengths_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     params:
         coalescent = "const",
         date_inference = "marginal",
@@ -329,7 +345,7 @@ rule ancestral:
         tree = rules.refine.output.tree,
         alignment = rules.align.output
     output:
-        node_data = "results/nt-muts_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/nt-muts_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     params:
         inference = "joint"
     shell:
@@ -348,7 +364,7 @@ rule translate:
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
     output:
-        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur translate \
@@ -362,9 +378,9 @@ rule reconstruct_translations:
     message: "Reconstructing translations required for titer models and frequencies"
     input:
         tree = rules.refine.output.tree,
-        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     output:
-        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{gene}.fasta"
+        aa_alignment = "results/aa-seq_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{gene}.fasta"
     shell:
         """
         augur reconstruct-sequences \
@@ -384,7 +400,7 @@ rule traits:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata
     output:
-        node_data = "results/traits_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/traits_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     params:
         columns = "region"
     shell:
@@ -399,14 +415,14 @@ rule traits:
 
 rule titers_sub:
     input:
-        titers = rules.download_titers.output.titers,
+        titers = _get_titers_for_build,
         aa_muts = rules.translate.output,
         alignments = translations,
         tree = rules.refine.output.tree
     params:
         genes = gene_names
     output:
-        titers_model = "results/titers-sub-model_{lineage}_{segment}_{resolution}.json",
+        titers_model = "results/titers-sub-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur titers sub \
@@ -419,10 +435,10 @@ rule titers_sub:
 
 rule titers_tree:
     input:
-        titers = rules.download_titers.output.titers,
+        titers = _get_titers_for_build,
         tree = rules.refine.output.tree
     output:
-        titers_model = "results/titers-tree-model_{lineage}_{segment}_{resolution}.json",
+        titers_model = "results/titers-tree-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur titers tree \
@@ -441,7 +457,7 @@ rule mutation_frequencies:
         max_date = max_date,
         pivot_interval = pivot_interval
     output:
-        mut_freq = "results/mutation-frequencies_{lineage}_{segment}_{resolution}.json"
+        mut_freq = "results/mutation-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
         augur frequencies \
@@ -468,7 +484,7 @@ rule tip_frequencies:
         max_date = max_date,
         pivot_interval = pivot_interval
     output:
-        tip_freq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+        tip_freq = "results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
     shell:
         """
         augur frequencies \
@@ -496,7 +512,7 @@ rule tree_frequencies:
         pivot_interval = pivot_interval,
         regions = ['global'] + frequency_regions
     output:
-        "results/tree-frequencies_{lineage}_{segment}_{resolution}.json",
+        "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur frequencies \
@@ -520,7 +536,7 @@ rule clades:
         aa_muts = rules.translate.output,
         clades = _get_clades_file_for_wildcards
     output:
-        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+        clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     run:
         if wildcards.segment == 'ha':
             shell("""
@@ -547,7 +563,7 @@ rule distances:
         attribute_names = _get_mask_attribute_names_by_wildcards,
         mask_names = _get_mask_names_by_wildcards
     output:
-        distances = "results/distances_{lineage}_{segment}_{resolution}.json",
+        distances = "results/distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur distance \
@@ -570,7 +586,7 @@ rule lbi:
         window = _get_lbi_window_for_wildcards,
         names = "lbi"
     output:
-        lbi = "results/lbi_{lineage}_{segment}_{resolution}.json"
+        lbi = "results/lbi_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
         augur lbi \
@@ -613,8 +629,8 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json"
+        auspice_tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json"
     shell:
         """
         augur export \
@@ -625,6 +641,22 @@ rule export:
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
         """
+
+rule link_live:
+    input:
+        tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
+        meta = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
+        frequencies = "results/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+    output:
+        tree = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        meta = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        frequencies = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+    shell:
+        '''
+        ln -s ../{input.tree} {output.tree} &
+        ln -s ../{input.meta} {output.meta} &
+        ln -s ../{input.frequencies} {output.frequencies} &
+        '''
 
 rule clean:
     message: "Removing directories: {params}"

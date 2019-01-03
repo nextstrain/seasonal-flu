@@ -86,7 +86,7 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
     if titer_fnames:
         HI_titer_count = defaultdict(int)
         for fname in titer_fnames:
-            for s, k in count_titer_measurements(fname):
+            for s, k in count_titer_measurements(fname).items():
                 HI_titer_count[s] += k
         def priority(strain):
             return HI_titer_count[strain] + np.random.random()
