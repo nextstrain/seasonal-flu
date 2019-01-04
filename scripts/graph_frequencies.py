@@ -6,11 +6,14 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 
-region_label = {'NA': 'N America', 'AS': 'Asia', 'EU': 'Europe', 'OC': 'Oceania', 'global': 'Global',
+cols = [ '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2',
+         '#7f7f7f', '#bcbd22', '#17becf']
+region_label = {'global': 'Global', #'NA': 'N America', 'AS': 'Asia', 'EU': 'Europe', 'OC': 'Oceania',
                 'north_america': 'N America', 'asia': 'Asia', 'europe': 'Europe', 'oceania': 'Oceania',
                 'south_asia': 'S Asia', 'southeast_asia':"SE Asia", 'west_asia':'W Asia', 'south_america':'S America',
-                'japan_korea':"Japan/Korea", "china":"China"}
-cols = [ '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+                'japan_korea':"Japan/Korea", "china":"China", "africa":"Africa"}
+
+region_colors = {r:cols[ri%len(cols)] for ri,r in enumerate(sorted(region_label.keys()))}
 
 fs=12
 ymax=800
@@ -25,75 +28,86 @@ def load_frequencies(fname):
         return json.load(fh)
 
 
-def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True, n_std_dev=2, n_smooth=3):
+def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
+                             n_std_dev=1, n_smooth=3, drop=3):
     regions = sorted(frequencies.keys())
     smoothed_count_by_region = {}
+    # generate a temporally smoothed sample count vector for each region.
     for region, freqs in frequencies.items():
         for n, f in freqs.items():
             if 'count' in n:
                 gene = n.split(':')[0]
                 smoothed_count_by_region[(gene, region)] = np.convolve(np.ones(n_smooth, dtype=float)/n_smooth, f, mode='same')
 
-    fig, axs = plt.subplots(len(mutations), 1, sharex=True, figsize=(8,3+3*len(mutations)))
-
+    # set up a figure and plot each mutation in a different panel
+    fig, axs = plt.subplots(len(mutations), 1, sharex=True, figsize=(8,1+2*len(mutations)))
     for mi,(mut, ax) in enumerate(zip(mutations, axs)):
         gene = mut.split(':')[0]
-        for ri,region in enumerate(regions):
-            col = cols[ri]
-            # col = 'C%d'%(ri+1)
+        for region in regions:
             pivots = frequencies[region]["pivots"]
             if mut in frequencies[region]:
                 tmp_freq = np.array(frequencies[region][mut])
-                ax.plot(pivots, tmp_freq, label=region_label.get(region, region), lw=2, c=col)
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
+                        label=region_label.get(region, region), lw=2, c=region_colors[region])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                 if show_errorbars:
-                    ax.fill_between(pivots, tmp_freq-n_std_dev*std_dev, tmp_freq+n_std_dev*std_dev, facecolor=col, linewidth=0, alpha=0.1)
+                    ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
+                                    (tmp_freq+n_std_dev*std_dev)[:-drop],
+                                    facecolor=region_colors[region], linewidth=0, alpha=0.1)
             else:
                 print("Mutation %s not calculated in region %s"%(mut, region))
             if mi==0:
                 ax.legend()
             if mi==len(mutations)-1:
-                ax.set_xlabel('time')
-            ax.set_ylabel(mut)
+                ax.set_xlabel('time', fontsize=fs)
+            ax.set_ylabel(mut, fontsize=fs)
             ax.set_ylim(0,1)
 
+    plt.subplots_adjust(hspace=0)
+    plt.tight_layout()
     plt.savefig(fname)
 
 
-def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorbars=True, n_std_dev=2, n_smooth=3):
-    regions = sorted(frequencies["counts"])
+def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorbars=True,
+                          n_std_dev=1, n_smooth=3, drop=3):
     smoothed_count_by_region = {}
+    total_count_by_region = {}
     for region in frequencies['counts']:
         smoothed_count_by_region[region] = np.convolve(np.ones(n_smooth, dtype=float)/n_smooth,
                                                        frequencies['counts'][region], mode='same')
+        total_count_by_region[region] = np.sum(frequencies['counts'][region])
 
-    fig, axs = plt.subplots(len(clades), 1, sharex=True, figsize=(8,3+3*len(clades)))
+    regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
 
+    fig, axs = plt.subplots(len(clades), 1, sharex=True, figsize=(8,1+2*len(clades)))
     for mi,(clade, ax) in enumerate(zip(clades, axs)):
         if clade not in clade_to_node:
             print("Clade %s is not annotated"%clade)
             continue
 
         node = clade_to_node[clade]
-        for ri,region in enumerate(regions):
-            col = cols[ri]
-            # col = 'C%d'%(ri+1)
+        for region in regions:
             pivots = frequencies["pivots"]
             if node in frequencies and region in frequencies[node]:
                 tmp_freq = np.array(frequencies[node][region])
-                ax.plot(pivots, tmp_freq, label=region_label.get(region, region), lw=2, c=col)
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
+                        label=region_label.get(region, region), lw=2, c=region_colors[region])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[region]+1))
                 if show_errorbars:
-                    ax.fill_between(pivots, tmp_freq-n_std_dev*std_dev, tmp_freq+n_std_dev*std_dev, facecolor=col, linewidth=0, alpha=0.1)
+                    ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
+                                    (tmp_freq+n_std_dev*std_dev)[:-drop],
+                                    facecolor=region_colors[region], linewidth=0, alpha=0.1)
             else:
                 print("region %s not present in node %s"%(region, node))
             if mi==0:
                 ax.legend()
             if mi==len(clades)-1:
-                ax.set_xlabel('time')
-            ax.set_ylabel(clade)
+                ax.set_xlabel('time', fontsize=fs)
+            ax.set_ylabel(clade, fontsize=fs)
             ax.set_ylim(0,1)
 
+    plt.subplots_adjust(hspace=0)
+    plt.tight_layout()
     plt.savefig(fname)
 
 
@@ -119,24 +133,25 @@ def tree_sample_counts(tree_frequencies, fname):
     counts = tree_frequencies["counts"]
     if 'global' not in counts:
         counts["global"] = np.sum([x for x in counts.values()], axis=1)
-    print(counts)
+
     plot_counts(counts, date_bins, fname, drop=3)
 
 
 def plot_counts(counts, date_bins, fname, drop=3):
     fig, ax = plt.subplots(figsize=(8, 3))
     regions = sorted(counts.keys())
-    tmpcounts = np.zeros(len(date_bins)-drop)
-    plt.bar(date_bins[drop:], counts['global'][drop:], width=1.0/13, linewidth=0, label="Other", color="#bbbbbb", clip_on=False)
-    ri=0
+    tmpcounts = np.zeros(len(date_bins))
+    width = 0.9*(date_bins[1] - date_bins[0])
+    plt.bar(date_bins, counts['global'], width=width, linewidth=0,
+            label="Other", color="#bbbbbb", clip_on=False)
+
     for region in regions:
         if region!='global':
-            c = cols[ri]
-            ri+=1
-            plt.bar(date_bins[drop:], counts[region][drop:], bottom=tmpcounts, width=1.0/13, linewidth=0,
-                    label=region_label.get(region, region), color=c, clip_on=False, alpha=0.8)
-            tmpcounts += np.array(counts[region][drop:])
-    ax.set_xlim([date_bins[drop-1], date_bins[-1]])
+            plt.bar(date_bins, counts[region], bottom=tmpcounts, width=width, linewidth=0,
+                    label=region_label.get(region, region), color=region_colors[region],
+                    clip_on=False, alpha=0.8)
+            tmpcounts += np.array(counts[region])
+    ax.set_xlim([date_bins[0]-width*0.5, date_bins[-1]])
     ax.set_ylim(0,min(max(counts['global']), ymax))
     ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
     ax.tick_params(axis='x', which='minor', pad=7)
@@ -187,5 +202,5 @@ if __name__ == '__main__':
             clade_annotations = load_frequencies(args.clade_annotations)
             clade_to_node = {node["clade_annotation"]:node_name for node_name, node in clade_annotations['nodes'].items()
                              if "clade_annotation" in node}
-            print(clade_to_node)
+
             plot_clades_by_region(tree_frequencies, args.clades, clade_to_node, args.output_clades)
