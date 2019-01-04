@@ -1,3 +1,4 @@
+# this code export the entropy json needed for the old deprecated auspice
 import argparse, json
 from random import sample
 import numpy as np
