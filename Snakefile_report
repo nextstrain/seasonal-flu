@@ -1,11 +1,11 @@
-include: "Snakefile"
+include: "Snakefile_WHO"
 
 resolutions = ['2y']
 lineages = ['h3n2'] #, 'h1n1pdm']
 segments = ['ha', 'na']
 centers = ['cdc']
-assays = ['hi']
-passages = ['cell']
+assays = ['hi', 'fra']
+passages = ['cell', 'egg']
 
 def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:135N",
