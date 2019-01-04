@@ -71,17 +71,23 @@ if __name__ == '__main__':
     titers = load_json(args.titers)
     clades = load_json(args.clades)["nodes"]
 
-    autologous_titers =  get_autologous_titers(titers)
+    autologous_titers = get_autologous_titers(titers)
     viruses_by_clade = get_viruses_by_clade(clades)
 
     average_titers = {}
     for antigen in args.antigens:
-        average_titers[antigen] = get_average_titer_by_clade(titers[antigen], clades,
+        if antigen in clades:
+            c = clades[antigen]['clade_membership']
+        else:
+            continue
+        average_titers[(c, antigen)] = get_average_titer_by_clade(titers[antigen], clades,
                                     normalized=True, geometric=False)
 
-    df = pd.DataFrame(average_titers)
-
-    sns.heatmap(df.T)
+    df = pd.DataFrame(average_titers).T
+    df.sort_index(inplace=True)
+    df.pop('unassigned')
+    sns.heatmap(df)
     plt.tight_layout()
+
     if args.output:
         plt.savefig(args.output)
