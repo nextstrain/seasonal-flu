@@ -1,15 +1,18 @@
 include: "Snakefile"
 
 resolutions = ['2y']
-lineages = ['h3n2']
+lineages = ['h3n2'] #, 'h1n1pdm']
 segments = ['ha', 'na']
+centers = ['cdc']
+assays = ['hi']
+passages = ['cell']
 
 def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:135N",
                                  "HA1:142G", "HA1:212T", "HA1:214T"],
-    			 ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
-    			 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
-    			 ('h1n1pdm', 'na'):["NA:77A","NA:93H", "NA:416N"],
+                 ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
+                 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
+                 ('h1n1pdm', 'na'):["NA:77A","NA:93H", "NA:416N"],
                  ('vic', 'ha'):["HA1:162-","HA1:175V", "HA1:209N"],
                  ('vic', 'na'):["NA:371Q","NA:375K"],
                  ('yam', 'ha'):["HA1:229D","HA1:232N"],
@@ -25,6 +28,31 @@ def clades_to_plot(v):
               }
     return clades[(v.lineage, v.segment)]
 
+
+def get_antigens(w):
+    antigen_list = {'h3n2':[ 'A/Texas/68/2017',
+                             'A/NewJersey/26/2014',
+                             'A/Texas/88/2016',
+                             'A/California/213/2016',
+                             'A/Nevada/22/2016',
+                             'A/SouthAustralia/135/2016',
+                             'A/Wisconsin/327/2017',
+                             'A/Florida/23/2017',
+                             'A/Afghanistan/616/2017',
+                             'A/Antananarivo/1067/2016',
+                             'A/Delaware/32/2016',
+                             'A/NorthCarolina/4/2016',
+                             'A/Washington/16/2017',
+                             'A/Singapore/Infimh-16-0019/2016',
+                             'A/Washington/106/2016',
+                             'A/Idaho/33/2016',
+                             'A/Texas/71/2017',
+                             'A/Hawaii/47/2014',
+                             'A/HongKong/7127/2014',
+                             'A/Switzerland/9715293/2013',
+                             'A/Michigan/15/2014']}
+    return antigen_list[w.lineage]
+
 def region_translations(w):
     genes = gene_names(w)
     return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
@@ -37,32 +65,34 @@ rule figures:
     input:
         expand("figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png", segment=segments, lineage=lineages, resolution=resolutions),
         expand("figures/clade-frequencies_{lineage}_ha_{resolution}.png", lineage=lineages, resolution=resolutions),
-        expand("figures/age-distribution_{lineage}_{resolution}.png", lineage=lineages, resolution=resolutions)
+        expand("figures/age-distribution_{lineage}_{resolution}.png", lineage=lineages, resolution=resolutions),
+        expand("figures/titer_matrix_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.png",
+                lineage=lineages, resolution=resolutions, center=centers, passage=passages, assay=assays)
 
 
 for seg, genes in genes_to_translate.items():
-	rule:
-	    input:
-	        metadata = rules.parse.output.metadata,
-	        sequences = rules.parse.output.sequences,
-	        exclude = files.outliers,
-	        reference = files.reference
-	    params:
-	    	genes=genes,
-	    	region="{region}"
-	    output:
-	        alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
-	        					gene=genes)
-	    shell:
-	        """
-	        python scripts/full_region_alignments.py  --sequences {input.sequences}\
-	                                             --metadata {input.metadata} \
-	                                             --exclude {input.exclude} \
-	                                             --genes {params.genes} \
-	                                             --region {params.region} \
-	                                             --reference {input.reference} \
-	                                             --output {output.alignments}
-	        """
+    rule:
+        input:
+            metadata = rules.parse.output.metadata,
+            sequences = rules.parse.output.sequences,
+            exclude = files.outliers,
+            reference = files.reference
+        params:
+            genes=genes,
+            region="{region}"
+        output:
+            alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
+                                gene=genes)
+        shell:
+            """
+            python scripts/full_region_alignments.py  --sequences {input.sequences}\
+                                                 --metadata {input.metadata} \
+                                                 --exclude {input.exclude} \
+                                                 --genes {params.genes} \
+                                                 --region {params.region} \
+                                                 --reference {input.reference} \
+                                                 --output {output.alignments}
+            """
 
 
 rule complete_mutation_frequencies:
@@ -136,17 +166,17 @@ rule mutation_statistics:
         mutations = rules.complete_mutation_frequencies.output.mut_freq,
         node_data = rules.translate.output.node_data
     params:
-    	offset = 4,
-    	n_out=20
+        offset = 4,
+        n_out=20
     output:
-    	rising = "results/rising_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
-    	recurring_mut = "results/recurring_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
-    	recurring_pos = "results/recurring_positions_{region}_{lineage}_{segment}_{resolution}.txt"
+        rising = "results/rising_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
+        recurring_mut = "results/recurring_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
+        recurring_pos = "results/recurring_positions_{region}_{lineage}_{segment}_{resolution}.txt"
     run:
-    	from scripts.mutation_statistics import rising_mutations, recurring_mutations
-    	rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
+        from scripts.mutation_statistics import rising_mutations, recurring_mutations
+        rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
 
-    	recurring_mutations(input.node_data, fname_by_position=output.recurring_pos, fname_by_mutation=output.recurring_mut, n_out=params.n_out)
+        recurring_mutations(input.node_data, fname_by_position=output.recurring_pos, fname_by_mutation=output.recurring_mut, n_out=params.n_out)
 
 
 rule age_distributions:
@@ -165,4 +195,20 @@ rule age_distributions:
                                              --output {output}
         """
 
+
+rule titer_matrix:
+    input:
+        titers = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
+        clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    params:
+        antigens = get_antigens
+    output:
+        "figures/titer_matrix_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.png"
+    shell:
+        '''
+        python3 scripts/plot_titer_matrices.py --titers {input.titers} \
+                                               --clades {input.clades} \
+                                               --antigens {params.antigens} \
+                                               --output {output}
+        '''
 
