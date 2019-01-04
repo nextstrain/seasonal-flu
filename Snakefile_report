@@ -1,10 +1,12 @@
 include: "Snakefile"
 
 resolutions = ['2y']
+lineages = ['h3n2']
 segments = ['ha', 'na']
 
 def mutations_to_plot(v):
-    mutations = {('h3n2', 'ha'):["HA1:135K", "HA1:135N", "HA1:212T", "HA1:128A", "HA1:214T"],
+    mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:135N",
+                                 "HA1:142G", "HA1:212T", "HA1:214T"],
     			 ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
     			 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
     			 ('h1n1pdm', 'na'):["NA:77A","NA:93H", "NA:416N"],
@@ -16,7 +18,7 @@ def mutations_to_plot(v):
     return mutations[(v.lineage, v.segment)]
 
 def clades_to_plot(v):
-    clades = {('h3n2', 'ha'):["A2/re", "A1b/135K", "A1b/135N", '3c3.A', 'A3'],
+    clades = {('h3n2', 'ha'):["A2/re", "A1", "A1b/131K", "A1b/135K", "A1b/135N", '3c3.A', 'A3'],
               ('h1n1pdm', 'ha'):["6b1.A", "6b1.A1", "6b1.A2","6b1.A3","6b1.A4","6b1.A5"],
               ('vic', 'ha'):["V1A", "V1A.1", "V1A/165N"],
               ('yam', 'ha'):["172Q", "3"],
@@ -110,8 +112,8 @@ rule mutation_frequency_graphs:
 
 rule frequency_graphs:
     input:
-        tree = rules.tree_frequencies.output,
-        clades = rules.clades.output.clades,
+        tree = "results/tree-frequencies_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
+        clades = "results/clades_cdc_{lineage}_{segment}_{resolution}_cell_hi.json"
     params:
         regions = regions_to_graph,
         clades = clades_to_plot,

@@ -2,6 +2,9 @@ include: "Snakefile"
 
 passages = ['cell'] #, 'egg']
 centers = ['cdc'] #, 'vidrl', 'crick', 'niid', 'who']
+resolutions = ['2y']
+lineages = ['h3n2']
+segments = ['ha', 'na']
 
 #
 # Define titer data sets to be used. will be overwritten for WHO builds
