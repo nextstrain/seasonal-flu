@@ -22,7 +22,7 @@ def all_builds(w):
     builds = []
     for lineage in lineages:
         assays = ['hi', 'fra'] if lineage=='h3n2' else ['hi']
-        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer_tree_model', 'titer_subs_model', 'entropy']:
+        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer_tree_model', 'titer_subs_model', 'entropy', 'sequences']:
            builds.extend(
                 expand("auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
                         center=centers, lineage=lineages, segment=segments,
@@ -76,6 +76,24 @@ rule export_entropy:
         python3 scripts/entropy.py --alignment {input.aln} \
                 --genes {params.genes} \
                 --reference-sequence {input.reference} \
+                --output {output}
+        '''
+
+rule export_sequence_json:
+    input:
+        aln = rules.ancestral.output.node_data,
+        tree = rules.refine.output.tree,
+        aa_seqs = translations
+    params:
+        genes = gene_names
+    output:
+        "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
+    shell:
+        '''
+        python3 scripts/sequence_export.py --alignment {input.aln} \
+                --genes {params.genes} \
+                --tree {input.tree} \
+                --translations {input.aa_seqs} \
                 --output {output}
         '''
 
