@@ -510,7 +510,8 @@ rule tree_frequencies:
         min_date = min_date,
         max_date = max_date,
         pivot_interval = pivot_interval,
-        regions = ['global'] + frequency_regions
+        regions = ['global'] + frequency_regions,
+        min_clade = 20
     output:
         "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
@@ -522,6 +523,7 @@ rule tree_frequencies:
             --regions {params.regions} \
             --metadata {input.metadata} \
             --pivot-interval {params.pivot_interval} \
+            --minimal-clade-size {params.min_clade} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
             --output {output}

@@ -57,6 +57,11 @@ def get_antigens(w):
 regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea']
 
 
+rule all_report:
+    input:
+        auspice_tree = expand("auspice/flu_seasonal-report_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_meta = expand("auspice/flu_seasonal-report_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
+
 rule figures:
     input:
         expand("figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png", segment=segments, lineage=lineages, resolution=resolutions),
@@ -140,7 +145,6 @@ rule age_distributions:
                                              --exclude {input.exclude} \
                                              --output {output}
         """
-
 
 rule titer_matrix:
     input:

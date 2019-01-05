@@ -97,7 +97,8 @@ rule complete_mutation_frequencies_by_region:
 rule global_mutation_frequencies:
     input:
         frequencies = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
-                             region = frequency_regions)
+                             region = frequency_regions),
+        tree_freq = rules.tree_frequencies.output
     params:
         regions = frequency_regions
     output:
@@ -106,8 +107,23 @@ rule global_mutation_frequencies:
         '''
         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
                                               --regions {params.regions} \
+                                              --tree-frequencies {input.tree_freq} \
                                               --output {output}
         '''
+
+
+rule scores:
+    input:
+        metadata = rules.parse.output.metadata,
+        tree = rules.refine.output.tree
+    output:
+        scores = "results/scores_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    shell:
+        """
+        python scripts/scores.py  --metadata {input.metadata} \
+                                  --tree {input.tree} \
+                                  --output {output}
+        """
 
 
 rule export_titers:
@@ -172,15 +188,49 @@ rule export_sequence_json:
                 --output {output}
         '''
 
-rule link_who:
+
+def _get_node_data_for_report_export(wildcards):
+    """Return a list of node data files to include for a given build's wildcards.
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.refine.output.node_data,
+        rules.ancestral.output.node_data,
+        rules.translate.output.node_data,
+        rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
+        rules.clades.output.clades,
+        rules.traits.output.node_data,
+        rules.lbi.output.lbi,
+        rules.scores.output.scores,
+    ]
+
+    # Only request a distance file for builds that have mask configurations
+    # defined.
+    if _get_build_mask_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
+
+
+rule export_who:
     input:
-        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        auspice_config = "config/auspice_config_report_{lineage}.json",
+        node_data = _get_node_data_for_report_export,
     output:
         tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
     shell:
-        '''
-        ln -s ../{input.tree} {output.tree} &
-        ln -s ../{input.meta} {output.meta}
-        '''
+        """
+        augur export \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --auspice-config {input.auspice_config} \
+            --output-tree {output.tree} \
+            --output-meta {output.meta}
+        """

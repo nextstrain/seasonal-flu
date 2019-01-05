@@ -38,6 +38,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--region-frequencies', nargs='+', type=str, help="regions with frequency estimates")
     parser.add_argument('--regions', nargs='+', type=str, help="region names corresponding to estimated frequencies")
+    parser.add_argument('--tree-frequencies', type=str, help="json file with tree frequencies")
     parser.add_argument('--output', type=str,  help="names of file to save age_distribution histogram to ")
 
     args = parser.parse_args()
@@ -82,6 +83,10 @@ if __name__ == '__main__':
         for mutation in frequencies[region]:
             key = '%s_%s'%(region_abbreviations.get(region, region), mutation)
             json_for_export[key] = frequencies[region][mutation]
+
+    if args.tree_frequencies:
+        with open(args.tree_frequencies) as fh:
+            json_for_export.update(json.load(fh))
 
     with open(args.output, 'wt') as fh:
         json.dump(json_for_export, fh)
