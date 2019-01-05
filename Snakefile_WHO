@@ -24,15 +24,86 @@ def all_builds(w):
         assays = ['hi', 'fra'] if lineage=='h3n2' else ['hi']
         for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer_tree_model', 'titer_subs_model', 'entropy', 'sequences']:
            builds.extend(
-                expand("auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
+                expand("auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
                         center=centers, lineage=lineages, segment=segments,
                         resolution=resolutions, assay=assays, passage=passages, f=[file_suffix]))
     return builds
 
 
+def region_translations(w):
+    genes = gene_names(w)
+    return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
+            for g in genes]
+
 rule all_who:
     input:
         all_builds
+
+
+for seg, genes in genes_to_translate.items():
+    rule:
+        input:
+            metadata = rules.parse.output.metadata,
+            sequences = rules.parse.output.sequences,
+            exclude = files.outliers,
+            reference = files.reference
+        params:
+            genes=genes,
+            region="{region}"
+        output:
+            alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
+                                gene=genes)
+        shell:
+            """
+            python scripts/full_region_alignments.py  --sequences {input.sequences}\
+                                                 --metadata {input.metadata} \
+                                                 --exclude {input.exclude} \
+                                                 --genes {params.genes} \
+                                                 --region {params.region} \
+                                                 --reference {input.reference} \
+                                                 --output {output.alignments}
+            """
+
+
+rule complete_mutation_frequencies_by_region:
+    input:
+        metadata = rules.parse.output.metadata,
+        alignment = region_translations
+    params:
+        genes = gene_names,
+        min_date = min_date,
+        max_date = max_date,
+        min_freq = 0.01,
+        pivot_interval = pivot_interval
+    output:
+        mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        augur frequencies --method diffusion \
+                          --alignments {input.alignment} \
+                          --metadata {input.metadata} \
+                          --gene-names {params.genes} \
+                          --pivot-interval {params.pivot_interval} \
+                          --min-date {params.min_date} \
+                          --max-date {params.max_date} \
+                          --minimal-frequency {params.min_freq} \
+                          --output {output.mut_freq}
+        """
+
+rule global_mutation_frequencies:
+    input:
+        frequencies = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
+                             region = frequency_regions)
+    params:
+        regions = frequency_regions
+    output:
+        "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
+    shell:
+        '''
+        python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
+                                              --regions {params.regions} \
+                                              --output {output}
+        '''
 
 
 rule export_titers:
@@ -40,9 +111,9 @@ rule export_titers:
         sub = rules.titers_sub.output.titers_model,
         tree = rules.titers_tree.output.titers_model
     output:
-        raw = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
-        sub = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_tree_model.json",
-        tree = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_subs_model.json",
+        raw = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
+        tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_tree_model.json",
+        sub = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_subs_model.json",
     run:
         import json
         with open(input.sub) as fh:
@@ -70,7 +141,7 @@ rule export_entropy:
     params:
         genes = gene_names
     output:
-        "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_entropy.json",
+        "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_entropy.json",
     shell:
         '''
         python3 scripts/entropy.py --alignment {input.aln} \
@@ -87,7 +158,7 @@ rule export_sequence_json:
     params:
         genes = gene_names
     output:
-        "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
+        "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
     shell:
         '''
         python3 scripts/sequence_export.py --alignment {input.aln} \
@@ -101,14 +172,11 @@ rule link_who:
     input:
         tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
-        frequencies = "results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json"
     output:
-        tree = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        meta = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
-        frequencies = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
+        tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
     shell:
         '''
         ln -s ../{input.tree} {output.tree} &
-        ln -s ../{input.meta} {output.meta} &
-        ln -s ../{input.frequencies} {output.frequencies} &
+        ln -s ../{input.meta} {output.meta}
         '''
