@@ -52,27 +52,29 @@ if __name__ == '__main__':
     pivots = frequencies[args.regions[0]]['pivots']
 
     seasonal_profile = {}
+    total_weights = {}
     for region in frequencies:
-        all_counts = sorted(filter(lambda x:'counts' in x, frequencies[region].keys()))
+        all_genes = sorted(filter(lambda x:'counts' in x, frequencies[region].keys()))
         seasonal_profile[region] = {}
-        for x in all_counts:
+        for x in all_genes:
             gene = x.split(':')[0]
             tmp = np.array(frequencies[region][x])
             seasonal_profile[region][gene] = (tmp+0.05*tmp.max())/(tmp.mean()+0.05*tmp.max())
+            total_weights[gene].append(seasonal_profile[region][gene])
 
+    for gene in total_weights:
+        total_weights[gene] = np.sum(total_weights[gene], axis=0)
 
     for mutation in all_mutations:
         gene = mutation.split(':')[0]
         freqs = []
-        weights = []
         for region in frequencies:
             if mutation in frequencies[region]:
                 freqs.append(frequencies[region][mutation])
-                weights.append(seasonal_profile[region][gene]*population_sizes[region])
 
-        frequencies['global'][mutation] = format_frequencies(np.sum(np.array(freqs)*np.array(weights), axis=0)/np.sum(weights, axis=0))
+        frequencies['global'][mutation] = format_frequencies(np.sum(np.array(freqs)*np.array(weights), axis=0)/total_weights[gene])
 
-    json_for_export = {}
+    json_for_export = {'pivots':format_frequencies(pivots)}
     for region in frequencies:
         for mutation in frequencies[region]:
             key = '%s_%s'%(region_abbreviations.get(region, region), mutation)
