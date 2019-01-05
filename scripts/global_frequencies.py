@@ -58,8 +58,8 @@ if __name__ == '__main__':
         seasonal_profile[region] = {}
         for x in all_genes:
             gene = x.split(':')[0]
-            tmp = np.array(frequencies[region][x])
-            seasonal_profile[region][gene] = (tmp+0.05*tmp.max())/(tmp.mean()+0.05*tmp.max())
+            tmp_counts = np.array(frequencies[region][x])
+            seasonal_profile[region][gene] = np.maximum(0.1, tmp_counts/tmp_counts.max())
             if gene not in total_weights: total_weights[gene]=[]
             total_weights[gene].append(seasonal_profile[region][gene])
 
