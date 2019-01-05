@@ -1,9 +1,9 @@
 include: "Snakefile"
 
-passages = ['cell'] #, 'egg']
-centers = ['cdc'] #, 'vidrl', 'crick', 'niid', 'who']
-resolutions = ['2y']
-lineages = ['h3n2']
+passages = ['cell', 'egg']
+centers = ['cdc', 'who'] #, 'vidrl', 'crick', 'niid', 'who']
+resolutions = ['2y', '6y']
+lineages = ['h3n2', 'h1n1pdm']
 segments = ['ha', 'na']
 
 #
@@ -74,7 +74,9 @@ rule complete_mutation_frequencies_by_region:
         min_date = min_date,
         max_date = max_date,
         min_freq = 0.01,
-        pivot_interval = pivot_interval
+        pivot_interval = pivot_interval,
+        stiffness = 20,
+        inertia = 0.2
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
     shell:
@@ -84,6 +86,8 @@ rule complete_mutation_frequencies_by_region:
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
                           --pivot-interval {params.pivot_interval} \
+                          --stiffness {params.stiffness} \
+                          --inertia {params.inertia} \
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
                           --minimal-frequency {params.min_freq} \
