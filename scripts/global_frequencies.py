@@ -60,6 +60,7 @@ if __name__ == '__main__':
             gene = x.split(':')[0]
             tmp = np.array(frequencies[region][x])
             seasonal_profile[region][gene] = (tmp+0.05*tmp.max())/(tmp.mean()+0.05*tmp.max())
+            if gene not in total_weights: total_weights[gene]=[]
             total_weights[gene].append(seasonal_profile[region][gene])
 
     for gene in total_weights:
@@ -68,9 +69,11 @@ if __name__ == '__main__':
     for mutation in all_mutations:
         gene = mutation.split(':')[0]
         freqs = []
+        weights = []
         for region in frequencies:
             if mutation in frequencies[region]:
                 freqs.append(frequencies[region][mutation])
+                weights.append(seasonal_profile[region][gene])
 
         frequencies['global'][mutation] = format_frequencies(np.sum(np.array(freqs)*np.array(weights), axis=0)/total_weights[gene])
 
