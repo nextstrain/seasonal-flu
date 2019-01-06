@@ -68,11 +68,18 @@ def _get_clades_file_for_wildcards(wildcards):
         return "results/clades_%s_%s_ha_%s_%s_%s.json"%(wildcards.center, wildcards.lineage,
                                                         wildcards.resolution, wildcards.passage, wildcards.assay)
 
+
 #
-# Define titer data sets to be used. will be overwritten for WHO builds
+# Define titer data sets to be used.
 #
 def _get_titers_for_build(w):
-    return expand("data/{{lineage}}_{center}_{assay}_{passage}_titers.tsv", center=['cdc', 'public'], assay=['hi'], passage=['cell'])
+    if w.center=='who':
+        tmp_centers = centers + ['public']
+    else:
+        tmp_centers = [w.center, 'public']
+
+    return expand("data/{{lineage}}_{center}_{{assay}}_{{passage}}_titers.tsv",
+                   center=tmp_centers)
 
 #
 # Define LBI parameters and functions.

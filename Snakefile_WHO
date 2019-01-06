@@ -6,17 +6,6 @@ resolutions = ['2y', '6y']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
 
-#
-# Define titer data sets to be used. will be overwritten for WHO builds
-#
-def _get_titers_for_build(w):
-    if w.center=='who':
-        tmp_centers = centers + ['public']
-    else:
-        tmp_centers = [w.center, 'public']
-
-    return expand("data/{{lineage}}_{center}_{assay}_{passage}_titers.tsv",
-                   center=tmp_centers, assay=['hi'], passage=['cell'])
 
 def all_builds(w):
     builds = []
