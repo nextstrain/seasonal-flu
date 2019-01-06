@@ -3,7 +3,7 @@ include: "Snakefile"
 passages = ['cell', 'egg']
 centers = ['cdc', 'who'] #, 'vidrl', 'crick', 'niid', 'who']
 resolutions = ['2y', '6y']
-lineages = ['h3n2', 'h1n1pdm']
+lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
 
 #
