@@ -28,32 +28,6 @@ def clades_to_plot(v):
               }
     return clades[(v.lineage, v.segment)]
 
-
-def get_antigens(w):
-    antigen_list = {'h3n2':[ 'A/Texas/68/2017',
-                             'A/NewJersey/26/2014',
-                             'A/Texas/88/2016',
-                             'A/California/213/2016',
-                             'A/Nevada/22/2016',
-                             'A/SouthAustralia/135/2016',
-                             'A/Wisconsin/327/2017',
-                             'A/Florida/23/2017',
-                             'A/Afghanistan/616/2017',
-                             'A/Antananarivo/1067/2016',
-                             'A/Delaware/32/2016',
-                             'A/NorthCarolina/4/2016',
-                             'A/Washington/16/2017',
-                             'A/Singapore/Infimh-16-0019/2016',
-                             'A/Washington/106/2016',
-                             'A/Idaho/33/2016',
-                             'A/Texas/71/2017',
-                             'A/Hawaii/47/2014',
-                             'A/HongKong/7127/2014',
-                             'A/Switzerland/9715293/2013',
-                             'A/Michigan/15/2014']}
-    return antigen_list[w.lineage]
-
-
 regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea']
 
 
@@ -63,7 +37,7 @@ rule figures:
         expand("figures/clade-frequencies_{lineage}_ha_{resolution}.png", lineage=lineages, resolution=resolutions),
         expand("figures/age-distribution_{lineage}_{resolution}.png", lineage=lineages, resolution=resolutions),
         expand("figures/titer_matrix_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.png",
-                lineage=['h3n2'], resolution=resolutions, center=centers, passage=passages, assay=assays)
+                lineage=lineages, resolution=resolutions, center=centers, passage=passages, assay=assays)
 
 
 
@@ -143,17 +117,14 @@ rule age_distributions:
 
 rule titer_matrix:
     input:
-        titers = "auspice-who/flu_seasonal_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
+        titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
         clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
-    params:
-        antigens = get_antigens
     output:
         "figures/titer_matrix_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.png"
     shell:
         '''
         python3 scripts/plot_titer_matrices.py --titers {input.titers} \
                                                --clades {input.clades} \
-                                               --antigens {params.antigens} \
                                                --output {output}
         '''
 

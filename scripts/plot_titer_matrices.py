@@ -74,8 +74,15 @@ if __name__ == '__main__':
     autologous_titers = get_autologous_titers(titers)
     viruses_by_clade = get_viruses_by_clade(clades)
 
+    # if no antigens are specified, take the top 15
+    if args.antigens:
+        antigens = args.antigens
+    else:
+        antigens = sorted(titers.keys(), key=lambda x:len(titers[x]), reverse=True)[:15]
+
+    # summarize titers for each antigen
     average_titers = {}
-    for antigen in args.antigens:
+    for antigen in antigens:
         if antigen in clades:
             c = clades[antigen]['clade_membership']
         else:
@@ -86,7 +93,11 @@ if __name__ == '__main__':
     df = pd.DataFrame(average_titers).T
     df.sort_index(inplace=True)
     df.pop('unassigned')
-    sns.heatmap(df)
+
+    plt.figure()
+    sns.heatmap(df, center=0, vmin=-1, vmax=5, cmap='seismic')
+    plt.ylabel('')
+    plt.xlabel('')
     plt.tight_layout()
 
     if args.output:

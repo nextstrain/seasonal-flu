@@ -1,9 +1,10 @@
 include: "Snakefile"
 
 passages = ['cell', 'egg']
-centers = ['cdc', 'who'] #, 'vidrl', 'crick', 'niid', 'who']
-resolutions = ['2y', '6y']
-lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
+assays = ['hi', 'fra']
+centers = ['cdc'] #, 'who'] #, 'vidrl', 'crick', 'niid', 'who']
+resolutions = ['2y'] #, '6y']
+lineages = ['h3n2' , 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
 
 
@@ -27,6 +28,13 @@ def region_translations(w):
 rule all_who:
     input:
         all_builds
+
+# separate rule for interaction with fauna
+rule download_all:
+    input:
+        titers = expand("data/{lineage}_{center}_{assay}_{passage}_titers.tsv",
+                         lineage=lineages, center=centers+['public'], assay=assays, passage=passages),
+        sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
 
 
 for seg, genes in genes_to_translate.items():
