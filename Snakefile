@@ -270,7 +270,6 @@ rule align:
     message:
         """
         Aligning sequences to {input.reference}
-          - filling gaps with N
         """
     input:
         sequences = rules.extract.output.sequences,
@@ -283,7 +282,6 @@ rule align:
             --sequences {input.sequences} \
             --reference-sequence {input.reference} \
             --output {output.alignment} \
-            --fill-gaps \
             --remove-reference \
             --nthreads auto
         """

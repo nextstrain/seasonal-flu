@@ -88,6 +88,7 @@ rule complete_mutation_frequencies_by_region:
                           --pivot-interval {params.pivot_interval} \
                           --stiffness {params.stiffness} \
                           --inertia {params.inertia} \
+                          --ignore-char X \
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
                           --minimal-frequency {params.min_freq} \

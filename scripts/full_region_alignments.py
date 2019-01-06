@@ -74,6 +74,14 @@ if __name__ == '__main__':
         sys.exit(fail)
 
     aln = AlignIO.read(tmp_file_out, 'fasta')
+    for seq in aln:
+        seq_str = str(seq.seq)
+        seq_str = seq_str.lstrip('-')
+        seq_str = 'X'*(len(seq)-len(seq_str)) + seq_str
+
+        seq_str = seq_str.rstrip('-')
+        seq_str = seq_str + 'X'*(len(seq)-len(seq_str))
+
     for gene, fname in zip(args.genes, args.output):
         if gene not in features_to_translate:
             continue
