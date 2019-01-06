@@ -92,7 +92,10 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(average_titers).T
     df.sort_index(inplace=True)
-    df.pop('unassigned')
+    try:
+        df.pop('unassigned')
+    except:
+        pass
 
     plt.figure()
     sns.heatmap(df, center=0, vmin=-1, vmax=5, cmap='seismic')

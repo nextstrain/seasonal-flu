@@ -11,12 +11,12 @@ def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:135N",
                                  "HA1:142G", "HA1:212T", "HA1:214T"],
                  ('h3n2', 'na'):["NA:329S", "NA:386S", "NA:126L"],
-                 ('h1n1pdm', 'ha'):["HA1:164T","HA1:183P", "HA1:235D", "HA1:233I"],
+                 ('h1n1pdm', 'ha'):["HA1:164T","HA1:120A", "HA1:183P", "HA1:235D", "HA1:233I"],
                  ('h1n1pdm', 'na'):["NA:77R", "NA:93H", "NA:74L", "NA:416N"],
-                 ('vic', 'ha'):["HA1:163-","HA1:175V", "HA1:209N"],
+                 ('vic', 'ha'):["HA1:163-", "HA1:165N", "HA1:175V", "HA1:209N"],
                  ('vic', 'na'):["NA:371Q","NA:375K"],
                  ('yam', 'ha'):["HA1:229N","HA1:232N"],
-                 ('yam', 'na'):["NA:395S", "NA:65H", "NA:402P"],
+                 ('yam', 'na'):["NA:342K", "NA:395S", "NA:65H"],
                   }
     return mutations[(v.lineage, v.segment)]
 
