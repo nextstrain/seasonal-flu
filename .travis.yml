@@ -15,4 +15,4 @@ script:
   - cp -v example_data/h3n2_na.fasta data/
   - cp -v example_data/h3n2_hi_titers.tsv data/h3n2_public_hi_cell_titers.tsv
   - cp -v example_data/h3n2_hi_titers.tsv data/h3n2_cdc_hi_cell_titers.tsv
-  - nextstrain build . auspice-live/flu_seasonal_h3n2_ha_12y_tree.json auspice-live/flu_seasonal_h3n2_ha_12y_tip-frequencies.json
+  - nextstrain build . auspice/flu_cdc_h3n2_ha_12y_cell_hi_tree.json "results/flu_cdc_h3n2_ha_12y_cell_hi_tip-frequencies.json"
