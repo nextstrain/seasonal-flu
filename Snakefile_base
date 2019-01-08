@@ -463,7 +463,7 @@ rule tip_frequencies:
         max_date = max_date,
         pivot_interval = pivot_interval
     output:
-        tip_freq = "results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
+        tip_freq = "results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json"
     shell:
         """
         augur frequencies \
