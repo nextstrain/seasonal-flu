@@ -42,5 +42,8 @@ ehthumbs.db
 Thumbs.db
 *~
 
+# nohup output
+nohup.out
+
 # cluster logs
 slurm-*
