@@ -280,6 +280,7 @@ A/StPetersburg/5/2009-egg
 A/Sydney/53/2015
 A/Taiwan/937/2009
 A/WestVirginia/9/2012
+A/WestVirginia/16/2012
 A/Wisconsin/12/2010
 A/Wisconsin/24/2014
 A/Wisconsin/27/2012
