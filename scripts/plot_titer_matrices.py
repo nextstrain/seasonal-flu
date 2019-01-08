@@ -101,6 +101,15 @@ if __name__ == '__main__':
     sns.heatmap(df, center=0, vmin=-1, vmax=5, cmap='seismic')
     plt.ylabel('')
     plt.xlabel('')
+    tick_labels = []
+    for x in df.T:
+        median_auto = np.median([y[1] for y in autologous_titers[x[1]].values()])
+        if np.isnan(median_auto):
+            tick_labels.append("%s - %s  NaN"%(x[1], x[0]))
+        else:
+            tick_labels.append("%s - %s % 4d"%(x[1], x[0], median_auto))
+    plt.yticks(0.5+np.arange(len(df)), tick_labels)
+    plt.xticks(0.5+np.arange(len(df.columns)), [x for x in df.columns], rotation=60, horizontalalignment='right')
     plt.tight_layout()
 
     if args.output:

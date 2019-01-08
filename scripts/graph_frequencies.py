@@ -47,8 +47,8 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
             pivots = frequencies[region]["pivots"]
             if mut in frequencies[region]:
                 tmp_freq = np.array(frequencies[region][mut])
-                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
-                        label=region_label.get(region, region), lw=2, c=region_colors[region])
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o', lw=4 if region=='global' else 2,
+                        label=region_label.get(region, region), c=region_colors[region])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                 if show_errorbars:
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
@@ -57,7 +57,7 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
             else:
                 print("Mutation %s not calculated in region %s"%(mut, region))
             if mi==0:
-                ax.legend()
+                ax.legend(ncol=2)
             if mi==len(mutations)-1:
                 ax.set_xlabel('time', fontsize=fs)
             ax.set_ylabel(mut, fontsize=fs)
@@ -90,8 +90,8 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
             pivots = frequencies["pivots"]
             if node in frequencies and region in frequencies[node]:
                 tmp_freq = np.array(frequencies[node][region])
-                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
-                        label=region_label.get(region, region), lw=2, c=region_colors[region])
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o', lw=4 if region=='global' else 2,
+                        label=region_label.get(region, region), c=region_colors[region])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[region]+1))
                 if show_errorbars:
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
@@ -100,7 +100,7 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
             else:
                 print("region %s not present in node %s"%(region, node))
             if mi==0:
-                ax.legend()
+                ax.legend(ncol=2)
             if mi==len(clades)-1:
                 ax.set_xlabel('time', fontsize=fs)
             ax.set_ylabel(clade, fontsize=fs)

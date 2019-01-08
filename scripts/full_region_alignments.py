@@ -63,6 +63,7 @@ if __name__ == '__main__':
     if not os.path.isdir('tmp'):
         os.mkdir('tmp')
 
+    print("selected %d for region %s and date interval %f-%f"%(len(sequences), region, time_interval[0], time_interval[1]))
     features_to_translate = load_features(args.reference_sequence, args.genes)
     tmp_file = "tmp/sequence_file_%s_%s.fasta"%(region, tmp_str)
     tmp_file_out = "tmp/sequence_file_%s_%s_aln.fasta"%(region, tmp_str)

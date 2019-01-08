@@ -21,14 +21,14 @@ def mutations_to_plot(v):
     return mutations[(v.lineage, v.segment)]
 
 def clades_to_plot(v):
-    clades = {('h3n2', 'ha'):["A2/re", "A1", "A1b/131K", "A1b/135K", "A1b/135N", '3c3.A', 'A3'],
+    clades = {('h3n2', 'ha'):["A1b/131K", "A1b/135K", "A1b/135N", "A1", "A2/re", '3c3.A', 'A3'],
               ('h1n1pdm', 'ha'):["6b1.A", "6b1.A1", "6b1.A2","6b1.A3","6b1.A4","6b1.A5"],
               ('vic', 'ha'):["V1A", "V1A.1", "V1A/165N"],
               ('yam', 'ha'):["172Q", "3"],
               }
     return clades[(v.lineage, v.segment)]
 
-regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea']
+regions_to_graph = ['north_america', 'europe', 'china', 'oceania', 'japan_korea', 'south_america']
 
 
 rule figures:
@@ -47,7 +47,7 @@ rule mutation_frequency_graphs:
                     region=regions_to_graph),
     params:
         mutations = mutations_to_plot,
-        regions = regions_to_graph,
+        regions = regions_to_graph+['global'],
     output:
         mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.png",
         total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.png",
@@ -65,7 +65,7 @@ rule clade_frequency_graphs:
         tree = "results/tree-frequencies_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
         clades = "results/clades_cdc_{lineage}_{segment}_{resolution}_cell_hi.json"
     params:
-        regions = regions_to_graph,
+        regions = regions_to_graph+['global'],
         clades = clades_to_plot,
     output:
         tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.png",
