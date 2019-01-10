@@ -11,23 +11,14 @@ import os
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Run flu builds on aws')
-    parser.add_argument('-l', '--lineages', nargs='+', type = str,  help ="flu lineages to include")
-    parser.add_argument('-r', '--resolutions', nargs='+', type = str,  help ="flu resolutions to include")
-    parser.add_argument('-s', '--segments', nargs='+', type = str, help ="flu segments to include")
+    parser = argparse.ArgumentParser(description='Run flu builds on aws', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-l', '--lineages', nargs='+', type = str,  help ="flu lineages to include", default=['h3n2', 'h1n1pdm', 'vic', 'yam'])
+    parser.add_argument('-r', '--resolutions', nargs='+', type = str,  help ="flu resolutions to include", default=['2y', '3y', '6y', '12y'])
+    parser.add_argument('-s', '--segments', nargs='+', type = str, help ="flu segments to include", default=['ha', 'na'])
     params = parser.parse_args()
 
     if not os.path.exists("logs"):
         os.makedirs("logs")
-
-    if params.segments is None:
-        params.segments = ['ha', 'na']
-
-    if params.lineages is None:
-        params.lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
-
-    if params.resolutions is None:
-        params.resolutions = ['2y', '3y', '6y', '12y']
 
     for lineage in params.lineages:
         for resolution in params.resolutions:
