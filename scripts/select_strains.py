@@ -81,6 +81,16 @@ def populate_categories(metadata):
 
 
 def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None):
+    # Filter metadata by date using the given time interval. Using numeric dates
+    # here allows users to define time intervals to the day and filter viruses
+    # at that same level of precision.
+    time_interval_start = numeric_date(time_interval[1])
+    time_interval_end = numeric_date(time_interval[0])
+    metadata = {
+        strain: record
+        for strain, record in metadata.items()
+        if time_interval_start <= record["num_date"] <= time_interval_end
+    }
 
     #### DEFINE THE PRIORITY
     if titer_fname:
@@ -122,20 +132,11 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fname=None
 
     selected_strains = []
     for cat, val in list(virus_by_category.items()):
-        if cat_valid(cat, time_interval):
-            tmp = sorted(val, key=priority, reverse=True)
-            selected_strains.extend(tmp[:threshold_fn(cat)])
+        tmp = sorted(val, key=priority, reverse=True)
+        selected_strains.extend(tmp[:threshold_fn(cat)])
 
     return selected_strains
 
-
-def cat_valid(cat, time_interval):
-    if cat[-2]<time_interval[1].year or cat[-2]>time_interval[0].year:
-        return False
-    if (cat[-2]==time_interval[1].year and cat[-1]<time_interval[1].month) or\
-       (cat[-2]==time_interval[0].year and cat[-1]>time_interval[0].month):
-        return False
-    return True
 
 def determine_time_interval(time_interval, resolution):
     # determine date range to include strains from
@@ -275,6 +276,11 @@ if __name__ == '__main__':
     # summary of selected strains by region
     summary(selected_strains, filtered_metadata, args.segments, ['region'])
     summary(selected_strains, filtered_metadata, args.segments, ['year', 'month'])
+
+    # Confirm that none of the selected strains were sampled outside of the
+    # requested interval.
+    for strain in selected_strains:
+        assert filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)
 
     # write the list of selected strains to file
     with open(args.output, 'w') as ofile:
