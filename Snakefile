@@ -283,7 +283,8 @@ rule tree:
         augur tree \
             --alignment {input.alignment} \
             --output {output.tree} \
-            --nthreads auto
+            --nthreads auto \
+            --method raxml
         """
 
 rule refine:
