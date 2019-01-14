@@ -176,6 +176,7 @@ A/Lousiana/4/2003
 A/Maine/6/2011
 A/Maryland/20/2012
 A/Maryland/23/2012
+A/Maryland/25/2012
 A/Maryland/28/2012
 A/Maryland/46/2017
 A/Maryland/50/2017
@@ -280,8 +281,8 @@ A/StPetersburg/5/2009
 A/StPetersburg/5/2009-egg
 A/Sydney/53/2015
 A/Taiwan/937/2009
-A/WestVirginia/9/2012
 A/WestVirginia/16/2012
+A/WestVirginia/9/2012
 A/Wisconsin/12/2010
 A/Wisconsin/24/2014
 A/Wisconsin/27/2012
