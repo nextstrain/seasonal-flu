@@ -1,3 +1,4 @@
+
 import argparse, sys, os, glob, json
 import numpy as np
 import matplotlib
@@ -69,7 +70,11 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
 
 
 def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorbars=True,
-                          n_std_dev=1, n_smooth=3, drop=3):
+                          regions=None, n_std_dev=1, n_smooth=3, drop=3):
+
+    if regions is None:
+        regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
+
     smoothed_count_by_region = {}
     total_count_by_region = {}
     for region in frequencies['counts']:
@@ -77,7 +82,6 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
                                                        frequencies['counts'][region], mode='same')
         total_count_by_region[region] = np.sum(frequencies['counts'][region])
 
-    regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
 
     fig, axs = plt.subplots(len(clades), 1, sharex=True, figsize=(8,1+2*len(clades)))
     for mi,(clade, ax) in enumerate(zip(clades, axs)):
@@ -190,7 +194,7 @@ if __name__ == '__main__':
         frequencies = {}
         for region, fname in zip(args.regions, args.mutation_frequencies):
             frequencies[region] = load_frequencies(fname)
-        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations)
+        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations, drop=1)
         sample_count_by_region(frequencies, args.output_total_counts)
 
 
@@ -203,4 +207,5 @@ if __name__ == '__main__':
             clade_to_node = {node["clade_annotation"]:node_name for node_name, node in clade_annotations['nodes'].items()
                              if "clade_annotation" in node}
 
-            plot_clades_by_region(tree_frequencies, args.clades, clade_to_node, args.output_clades)
+            plot_clades_by_region(tree_frequencies, args.clades, clade_to_node,
+                                  args.output_clades, regions=args.regions, drop=1)

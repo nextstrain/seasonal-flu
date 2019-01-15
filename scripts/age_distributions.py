@@ -29,7 +29,7 @@ def age_distribution(metadata, fname):
                  lw=4 if region=='global' else 2, c=region_colors[region])
 
     plt.legend(fontsize=fs*0.8, ncol=2)
-    plt.ylabel('age distribution', fontsize=fs)
+    plt.ylabel('fraction in age bin', fontsize=fs)
     plt.xlabel('age', fontsize=fs)
     plt.ylim([0,0.7])
     plt.tight_layout()

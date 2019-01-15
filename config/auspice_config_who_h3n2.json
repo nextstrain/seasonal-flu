@@ -1,0 +1,113 @@
+{
+  "title": "Real-time tracking of influenza A/H3N2 evolution",
+  "color_options": {
+    "gt": {
+      "menuItem": "genotype",
+      "legendTitle": "Genotype",
+      "type": "discrete",
+      "key": "genotype"
+    },
+    "num_date": {
+      "menuItem": "date",
+      "legendTitle": "Sampling date",
+      "type": "continuous",
+      "key": "num_date"
+    },
+    "region": {
+      "key":"region",
+      "legendTitle":"Region",
+      "menuItem":"region",
+      "type":"discrete"
+    },
+    "avgage": {
+      "menuItem": "average age",
+      "legendTitle": "average age",
+      "type": "continuous",
+      "key": "avg_age"
+    },
+    "vaccov": {
+      "key":"vac_cov",
+      "legendTitle":"Host vaccine coverage",
+      "menuItem":"Host  vac. cov.",
+      "type":"continuous"
+    },
+    "clade_membership": {
+      "key": "clade_membership",
+      "legendTitle": "Clade",
+      "menuItem": "clade",
+      "type": "discrete"
+    },
+    "cTiter": {
+      "key": "cTiter",
+      "legendTitle": "Antigenic advance (tree model)",
+      "menuItem": "antigenic advance (tree model)",
+      "type": "continuous"
+    },
+    "cTiterSub": {
+      "key": "cTiterSub",
+      "legendTitle": "Antigenic advance (sub model)",
+      "menuItem": "antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    "lbi": {
+      "vmin": 0,
+      "vmax": 0.7,
+      "legendTitle": "local branching index",
+      "key": "lbi",
+      "menuItem": "local branching index",
+      "type": "continuous"
+    },
+    "ep": {
+      "menuItem": "epitope mutations",
+      "legendTitle": "Epitope mutations",
+      "type": "continuous",
+      "key": "ep"
+    },
+    "ne": {
+      "menuItem": "non-epitope mutations",
+      "legendTitle": "Non-epitope mutations",
+      "type": "continuous",
+      "key": "ne"
+    },
+    "rb": {
+      "menuItem": "RBS adjacent mutations",
+      "legendTitle": "RBS adjacent mutations",
+      "type": "continuous",
+      "key": "rb"
+    }
+  },
+  "geo": [
+    "country",
+    "region"
+  ],
+  "defaults": {
+    "mapTriplicate": true,
+    "colorBy": "clade_membership"
+  },
+  "maintainer": [
+    "Trevor Bedford and Barney Potter",
+    "http://bedford.io/"
+  ],
+  "filters": [
+    "clade_membership",
+    "region",
+    "country",
+    "authors"
+  ],
+  "panels": [
+    "tree",
+    "entropy",
+    "frequencies"
+  ],
+  "vaccine_choices": {
+    "A/Wisconsin/67/2005": "2006-02-21",
+    "A/Brisbane/10/2007": "2007-09-25",
+    "A/Perth/16/2009": "2009-09-25",
+    "A/Victoria/361/2011": "2012-02-21",
+    "A/Texas/50/2012": "2013-09-25",
+    "A/Switzerland/9715293/2013": "2014-09-25",
+    "A/HongKong/4801/2014": "2015-09-24",
+    "A/Singapore/Infimh-16-0019/2016": "2017-09-28",
+    "A/Switzerland/8060/2017": "2018-09-27"
+  }
+}

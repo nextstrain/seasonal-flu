@@ -217,7 +217,7 @@ rule export_who:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        auspice_config = "config/auspice_config_report_{lineage}.json",
+        auspice_config = "config/auspice_config_who_{lineage}.json",
         node_data = _get_node_data_for_report_export,
     output:
         tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",

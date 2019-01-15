@@ -98,7 +98,7 @@ if __name__ == '__main__':
         pass
 
     plt.figure()
-    sns.heatmap(df, center=0, vmin=-1, vmax=5, cmap='seismic')
+    sns.heatmap(df, vmin=-1, vmax=5, cmap='YlOrRd')
     plt.ylabel('')
     plt.xlabel('')
     tick_labels = []
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         else:
             tick_labels.append("%s - %s % 4d"%(x[1], x[0], median_auto))
     plt.yticks(0.5+np.arange(len(df)), tick_labels)
-    plt.xticks(0.5+np.arange(len(df.columns)), [x for x in df.columns], rotation=60, horizontalalignment='right')
+    plt.xticks(1.0+np.arange(len(df.columns)), [x for x in df.columns], rotation=60, horizontalalignment='right')
     plt.tight_layout()
 
     if args.output:
