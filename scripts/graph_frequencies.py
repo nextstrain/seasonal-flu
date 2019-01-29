@@ -145,7 +145,7 @@ def plot_counts(counts, date_bins, fname, drop=3):
     fig, ax = plt.subplots(figsize=(8, 3))
     regions = sorted(counts.keys())
     tmpcounts = np.zeros(len(date_bins))
-    width = 0.9*(date_bins[1] - date_bins[0])
+    width = 0.75*(date_bins[1] - date_bins[0])
     plt.bar(date_bins, counts['global'], width=width, linewidth=0,
             label="Other", color="#bbbbbb", clip_on=False)
 
@@ -157,8 +157,8 @@ def plot_counts(counts, date_bins, fname, drop=3):
             tmpcounts += np.array(counts[region])
     ax.set_xlim([date_bins[0]-width*0.5, date_bins[-1]])
     ax.set_ylim(0,min(max(counts['global']), ymax))
-    ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
-    ax.tick_params(axis='x', which='minor', pad=7)
+    ax.tick_params(axis='x', which='major', labelsize=fs, pad=5, rotation=30)
+    # ax.tick_params(axis='x', which='minor', pad=7)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)

@@ -78,7 +78,16 @@ if __name__ == '__main__':
     if args.antigens:
         antigens = args.antigens
     else:
-        antigens = sorted(titers.keys(), key=lambda x:len(titers[x]), reverse=True)[:15]
+        antigens_by_clades = defaultdict(list)
+        for serum in titers:
+            clade = clades[serum]['clade_membership']
+            antigens_by_clades[clade].append(serum)
+
+        selected_antigens = set()
+        for clade in antigens_by_clades:
+            selected_antigens.update(sorted(antigens_by_clades[clade], key=lambda x:len(titers[x]), reverse=True)[:2])
+
+        antigens = selected_antigens.union(sorted(titers.keys(), key=lambda x:len(titers[x]), reverse=True)[:15])
 
     # summarize titers for each antigen
     average_titers = {}
