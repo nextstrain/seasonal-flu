@@ -39,7 +39,8 @@ if __name__ == '__main__':
     parser.add_argument('--region-frequencies', nargs='+', type=str, help="regions with frequency estimates")
     parser.add_argument('--regions', nargs='+', type=str, help="region names corresponding to estimated frequencies")
     parser.add_argument('--tree-frequencies', type=str, help="json file with tree frequencies")
-    parser.add_argument('--output', type=str,  help="names of file to save age_distribution histogram to ")
+    parser.add_argument('--output-augur', type=str,  help="name of file to frequencies too ")
+    parser.add_argument('--output-auspice', type=str,  help="name of file to frequencies too ")
 
     args = parser.parse_args()
 
@@ -51,6 +52,7 @@ if __name__ == '__main__':
     all_mutations = sorted(filter(lambda x:('counts' not in x) and ('pivots' not in x),
                            set.union(*[set(frequencies[region].keys()) for region in frequencies])))
     pivots = frequencies[args.regions[0]]['pivots']
+    frequencies['global']['pivots'] = format_frequencies(pivots)
 
     seasonal_profile = {}
     total_weights = {}
@@ -78,6 +80,9 @@ if __name__ == '__main__':
 
         frequencies['global'][mutation] = format_frequencies(np.sum(np.array(freqs)*np.array(weights), axis=0)/total_weights[gene])
 
+    with open(args.output_augur, 'wt') as fh:
+        json.dump(frequencies, fh)
+
     json_for_export = {'pivots':format_frequencies(pivots)}
     for region in frequencies:
         for mutation in frequencies[region]:
@@ -88,5 +93,5 @@ if __name__ == '__main__':
         with open(args.tree_frequencies) as fh:
             json_for_export.update(json.load(fh))
 
-    with open(args.output, 'wt') as fh:
+    with open(args.output_auspice, 'wt') as fh:
         json.dump(json_for_export, fh)

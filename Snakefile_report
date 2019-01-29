@@ -43,8 +43,7 @@ rule figures:
 
 rule mutation_frequency_graphs:
     input:
-        mutations = expand("results/mutation_frequencies_{region}_{{lineage}}_{{segment}}_{{resolution}}.json",
-                    region=regions_to_graph),
+        mutations = "results/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_frequencies.json"
     params:
         mutations = mutations_to_plot,
         regions = regions_to_graph+['global'],

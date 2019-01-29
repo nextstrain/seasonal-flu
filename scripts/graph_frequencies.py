@@ -35,6 +35,8 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
     smoothed_count_by_region = {}
     # generate a temporally smoothed sample count vector for each region.
     for region, freqs in frequencies.items():
+        if region=='global':
+            continue
         for n, f in freqs.items():
             if 'count' in n:
                 gene = n.split(':')[0]
@@ -50,8 +52,8 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
                 tmp_freq = np.array(frequencies[region][mut])
                 ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o', lw=4 if region=='global' else 2,
                         label=region_label.get(region, region), c=region_colors[region])
-                std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
-                if show_errorbars:
+                if show_errorbars and region!="global":
+                    std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
                                     (tmp_freq+n_std_dev*std_dev)[:-drop],
                                     facecolor=region_colors[region], linewidth=0, alpha=0.1)
@@ -174,7 +176,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--mutation-frequencies', nargs='+',
+    parser.add_argument('--mutation-frequencies', type=str,
                         help="json files containing frequencies in different regions")
     parser.add_argument('--tree-frequencies', type=str,
                         help="json files containing frequencies of clades in the tree")
@@ -191,9 +193,16 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     if args.mutation_frequencies:
-        frequencies = {}
-        for region, fname in zip(args.regions, args.mutation_frequencies):
-            frequencies[region] = load_frequencies(fname)
+        frequencies = load_frequencies(args.mutation_frequencies)
+        regions_to_pop = []
+        for region in frequencies:
+            if region not in args.regions:
+                regions_to_pop.append(region)
+        for region in regions_to_pop:
+            frequencies.pop(region)
+        # for region, fname in zip(args.regions, args.mutation_frequencies):
+        #     frequencies[region] = load_frequencies(fname)
+        print(frequencies.keys())
         plot_mutations_by_region(frequencies, args.mutations, args.output_mutations, drop=1)
         sample_count_by_region(frequencies, args.output_total_counts)
 

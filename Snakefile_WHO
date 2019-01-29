@@ -100,13 +100,15 @@ rule global_mutation_frequencies:
     params:
         regions = frequency_regions
     output:
-        "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
+        auspice="auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json",
+        augur="results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
     shell:
         '''
         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
                                               --regions {params.regions} \
                                               --tree-frequencies {input.tree_freq} \
-                                              --output {output}
+                                              --output-auspice {output.auspice} \
+                                              --output-augur {output.augur}
         '''
 
 
