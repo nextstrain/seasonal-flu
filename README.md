@@ -1,59 +1,47 @@
-# nextstrain.org/flu/
+# nextstrain.org/flu
 
-This is the [Nextstrain](https://nextstrain.org) build for seasonal influenza
-virus, visible at [nextstrain.org/flu](https://nextstrain.org/flu).
+This is the [Nextstrain](https://nextstrain.org) build for seasonal influenza viruses, available online at [nextstrain.org/flu](https://nextstrain.org/flu).
 
 The build encompasses fetching data, preparing it for analysis, doing quality
 control, performing analyses, and saving the results in a format suitable for
 visualization (with [auspice][]).  This involves running components of
 Nextstrain such as [fauna][] and [augur][].
 
-All flu-specific steps and functionality for the Nextstrain pipeline should be
+All influenza virus specific steps and functionality for the Nextstrain pipeline should be
 housed in this repository.
 
-[![Build Status](https://travis-ci.com/nextstrain/seasonal-flu.svg?branch=master)](https://travis-ci.com/nextstrain/seasonal-flu)
+This build is more complicated than other standard nextstrain build because all four currently circulating seasonal influenza lineages (A(H3N2), A(H1N1pdn), B(vic) and B(yam)) are analyzed using the same snakefile with appropriate wildcards.
+In addition, we run analysis of the HA and NA segment of the influenza virus genome and analyze data sets that span different time intervals (e.g. 2, 6, 12 years).
 
-## Usage
+Furthermore, the nextstrain analysis of influenza virus evolution also uses antigenic and serological data from different WHO collaborating centers.
+These antigenic data come in four flavors depending on the assay that passage history of the antigens.
+The influenza virus output files have the wildcard set
 
-If you're unfamiliar with Nextstrain builds, you may want to follow our
-[quickstart guide][] first and then come back here.
+`{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}`
 
-The easiest way to run this pathogen build is using the [Nextstrain
-command-line tool][nextstrain-cli]:
+that currently use the following values:
 
-    nextstrain build .
-
-See the [nextstrain-cli README][] for how to install the `nextstrain` command.
-
-Alternatively, you should be able to run the build using `snakemake` within a
-suitably-configured local environment.  Details of setting that up are not yet
-well-documented, but will be in the future.
-
-Build output goes into the directories `data/`, `results/` and `auspice/`.
-
-Once you've run the build, you can view the results in auspice:
-
-    nextstrain view auspice/
+ * center: [`who`, `cdc`, `vidrl`, `crick`, `niid`]
+ * lineage: [`h3n2`, `h1n1pdm`, `vic`, `yam`]
+ * segment: [`ha`, `na`]
+ * resolution: [`12y`, `6y`, `3y`, `2y`]
+ * assay: [`hi`, `cell`]
+ * passage: [`cell`, `egg`]
 
 
-## Configuration
+To manage both builds for the general public and the different WHO collaborating centers, the Snakefiles are split into a `Snakefile_base` that contains the rules for the core analysis and the files
 
-Configuration takes place entirely with the `Snakefile`. This can be read top-to-bottom, each rule
-specifies its file inputs and output and also its parameters. There is little redirection and each
-rule should be able to be reasoned with on its own.
+ * `Snakefile` for the standard build
+ * `Snakefile_WHO` for the WHO CC builds
+ * `Snakefile_reports` to generate figures and additional analysis for the biannual reports to the WHO
+
+The latter snakefiles import the rules specified in `Snakefile_base`, define additional rules, and specify the build targets.
 
 
 ### fauna / RethinkDB credentials
 
 This build starts by pulling sequences from our live [fauna][] database (a RethinkDB instance). This
 requires environment variables `RETHINK_HOST` and `RETHINK_AUTH_KEY` to be set.
-
-If you don't have access to our database, you can run the build using the
-example data provided in this repository.  Before running the build, copy the
-example sequences into the `data/` directory like so:
-
-    mkdir -p data/
-    cp example_data/* data/
 
 
 [Nextstrain]: https://nextstrain.org
@@ -63,4 +51,3 @@ example sequences into the `data/` directory like so:
 [snakemake cli]: https://snakemake.readthedocs.io/en/stable/executable.html#all-options
 [nextstrain-cli]: https://github.com/nextstrain/cli
 [nextstrain-cli README]: https://github.com/nextstrain/cli/blob/master/README.md
-[quickstart guide]: https://nextstrain.org/docs/getting-started/quickstart

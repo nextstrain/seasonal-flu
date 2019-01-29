@@ -68,7 +68,7 @@ def _get_clades_file_for_wildcards(wildcards):
 #
 def _get_titers_for_build(w):
     if w.center=='who':
-        tmp_centers = centers + ['public']
+        tmp_centers = [c for c in centers if c!='who'] + ['public']
     else:
         tmp_centers = [w.center, 'public']
 
