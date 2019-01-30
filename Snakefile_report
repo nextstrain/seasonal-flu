@@ -117,12 +117,14 @@ rule age_distributions:
 rule titer_matrix:
     input:
         titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
-        clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+        clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        metadata = "results/metadata_{lineage}_ha.tsv"
     output:
         "figures/titer_matrix_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.pdf"
     shell:
         '''
-        python3 scripts/plot_titer_matrices.py --titers {input.titers} \
+        python3 scripts/plot_titer_matrices.py --metadata {input.metadata} \
+        									   --titers {input.titers} \
                                                --clades {input.clades} \
                                                --output {output}
         '''

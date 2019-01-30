@@ -7,6 +7,7 @@ import pandas as pd
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 
 def load_json(fname):
     with open(fname) as fh:
@@ -60,18 +61,35 @@ if __name__ == '__main__':
 
     parser.add_argument('--titers', help="json with titer info")
     parser.add_argument('--clades', help="json with clade info")
+    parser.add_argument('--metadata', type=str, help="metadata table")
     parser.add_argument('--clades-to-plot', nargs='+', help="clades to include in matrix")
     parser.add_argument('--antigens', nargs="+", help="antigens to summarize titers for")
     parser.add_argument('--combine-sera', action='store_true', help="average values for different sera")
 
     parser.add_argument('--output', help="file name to save figure to")
 
+
     args=parser.parse_args()
+    metadata = {k:val for k,val in parse_metadata(['segment'], [args.metadata]).items()}['segment']
+
+    date_cutoff = 2018
 
     titers = load_json(args.titers)
+    autologous_titers = get_autologous_titers(titers)
+    # prune old measurements
+    to_pop = []
+    for antigen in titers:
+        titers[antigen] = {k:v for k,v in titers[antigen].items()
+                           if metadata[k]["num_date"]>date_cutoff}
+        if len(titers[antigen])<5:
+            to_pop.append(antigen)
+
+    for a in to_pop:
+        print("dropping reference strain ",a)
+        titers.pop(a)
+
     clades = load_json(args.clades)["nodes"]
 
-    autologous_titers = get_autologous_titers(titers)
     viruses_by_clade = get_viruses_by_clade(clades)
 
     # if no antigens are specified, take the top 15
