@@ -2,8 +2,8 @@ include: "Snakefile_base"
 
 passages = ['cell', 'egg']
 assays = ['hi', 'fra']
-centers = ['cdc', 'vidrl', 'who'] #, 'crick', 'niid', 'who']
-resolutions = ['2y'] #, '6y']
+centers = ['who', 'cdc', 'crick', 'niid', 'vidrl']
+resolutions = ['2y', '6y']
 lineages = ['h3n2' , 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
 
@@ -12,7 +12,7 @@ def all_builds(w):
     builds = []
     for lineage in lineages:
         assays = ['hi', 'fra'] if lineage=='h3n2' else ['hi']
-        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer_tree_model', 'titer_subs_model', 'entropy', 'sequences']:
+        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer-tree-model', 'titer-subs-model', 'entropy', 'sequences']:
            builds.extend(
                 expand("auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
                         center=centers, lineage=lineages, segment=segments,
@@ -132,8 +132,8 @@ rule export_titers:
         tree = rules.titers_tree.output.titers_model
     output:
         raw = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
-        tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_tree_model.json",
-        sub = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer_subs_model.json",
+        tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-tree-model.json",
+        sub = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-subs-model.json",
     run:
         import json
         with open(input.sub) as fh:

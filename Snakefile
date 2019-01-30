@@ -10,11 +10,11 @@ assays = ['hi']
 
 rule all_live:
     input:
-        auspice_tree = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
                               lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
                               lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_tip_frequencies = expand("auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+        auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
                               lineage=lineages, segment=segments, resolution=resolutions)
 
 # separate rule for interaction with fauna
@@ -69,26 +69,27 @@ rule export:
             --output-meta {output.auspice_meta}
         """
 
-rule link_live:
+rule simplify_auspice_names:
     input:
         tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
         meta = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
-        frequencies = "results/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+        frequencies = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
     output:
-        tree = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        meta = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
-        frequencies = "auspice-live/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
-        ln -s ../{input.tree} {output.tree} &
-        ln -s ../{input.meta} {output.meta} &
-        ln -s ../{input.frequencies} {output.frequencies} &
+        mv {input.tree} {output.tree} &
+        mv {input.meta} {output.meta} &
+        mv {input.frequencies} {output.frequencies} &
         '''
 
 rule clean:
     message: "Removing directories: {params}"
     params:
         "results ",
-        "auspice-live"
+        "auspice ",
+        "auspice-who"
     shell:
         "rm -rfv {params}"
