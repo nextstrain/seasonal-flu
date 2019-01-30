@@ -68,9 +68,9 @@ def _get_clades_file_for_wildcards(wildcards):
 #
 def _get_tdb_databases(wildcards):
     if wildcards.center == 'who':
-        return " ".join([center + "_tdb" for center in centers if center != "who"])
+        return " ".join([center + "_tdb" for center in centers if center != "who"]+['tdb'])
     else:
-        return wildcards.center + "_tdb"
+        return wildcards.center + "_tdb tdb"
 
 #
 # Define LBI parameters and functions.

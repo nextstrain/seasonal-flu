@@ -21,7 +21,7 @@ rule all_live:
 rule download_all:
     input:
         titers = expand("data/{lineage}_{center}_{assay}_{passage}_titers.tsv",
-                         lineage=lineages, center=centers+['public'], assay=assays, passage=passages),
+                         lineage=lineages, center=centers, assay=assays, passage=passages),
         sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
 
 
