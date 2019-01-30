@@ -51,7 +51,7 @@ if __name__ == '__main__':
     if params.version == 'who' or params.version == 'both':
         for center in params.centers:
             for lineage in params.lineages:
-                resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']                
+                resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
                 for resolution in resolutions:
                     for passage in params.passages:
                         for assay in params.assays:
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_tree.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_meta.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_entropy.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-subs-model.json'%(center, lineage, segment, resolution, passage, assay))
+                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
 

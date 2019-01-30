@@ -12,7 +12,7 @@ def all_builds(w):
     builds = []
     for lineage in lineages:
         assays = ['hi', 'fra'] if lineage=='h3n2' else ['hi']
-        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer-tree-model', 'titer-subs-model', 'entropy', 'sequences']:
+        for file_suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer-tree-model', 'titer-sub-model', 'entropy', 'sequences']:
            builds.extend(
                 expand("auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{f}.json",
                         center=centers, lineage=lineages, segment=segments,
@@ -133,7 +133,7 @@ rule export_titers:
     output:
         raw = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
         tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-tree-model.json",
-        sub = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-subs-model.json",
+        sub = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-sub-model.json",
     run:
         import json
         with open(input.sub) as fh:
