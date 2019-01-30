@@ -66,14 +66,11 @@ def _get_clades_file_for_wildcards(wildcards):
 #
 # Define titer data sets to be used.
 #
-def _get_titers_for_build(w):
-    if w.center=='who':
-        tmp_centers = [c for c in centers if c!='who'] + ['public']
+def _get_tdb_databases(wildcards):
+    if wildcards.center == 'who':
+        return " ".join([center + "_tdb" for center in centers if center != "who"])
     else:
-        tmp_centers = [w.center, 'public']
-
-    return expand("data/{{lineage}}_{center}_{{assay}}_{{passage}}_titers.tsv",
-                   center=tmp_centers)
+        return wildcards.center + "_tdb"
 
 #
 # Define LBI parameters and functions.
@@ -148,19 +145,18 @@ rule download_sequences:
 rule download_titers:
     message: "Downloading titers from fauna: {wildcards.lineage}, {wildcards.assay}, {wildcards.center}"
     output:
-        titers = "data/{lineage}_{center}_{assay}_{passage}_titers.tsv"
+        titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
     params:
-        db = lambda w:'tdb' if w.center=='public' else '%s_tdb'%w.center,
-        fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
+        db = _get_tdb_databases,
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
-            --database  {params.db} \
+            --database tdb {params.db} \
             --virus flu \
             --subtype {wildcards.lineage} \
             --select assay_type:{wildcards.assay} serum_passage_category:{wildcards.passage} \
             --path data \
-            --fstem {wildcards.lineage}_{wildcards.center}_{wildcards.assay}_{wildcards.passage}
+            --fstem {wildcards.center}_{wildcards.lineage}_{wildcards.passage}_{wildcards.assay}
         """
 
 rule parse:
@@ -213,7 +209,7 @@ rule select_strains:
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}.fasta", segment=segments),
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
-        titers = _get_titers_for_build,
+        titers = rules.download_titers.output.titers,
         include = files.references
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
@@ -394,7 +390,7 @@ rule traits:
 
 rule titers_sub:
     input:
-        titers = _get_titers_for_build,
+        titers = rules.download_titers.output.titers,
         aa_muts = rules.translate.output,
         alignments = translations,
         tree = rules.refine.output.tree
@@ -414,7 +410,7 @@ rule titers_sub:
 
 rule titers_tree:
     input:
-        titers = _get_titers_for_build,
+        titers = rules.download_titers.output.titers,
         tree = rules.refine.output.tree
     output:
         titers_model = "results/titers-tree-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",

@@ -13,7 +13,7 @@ housed in this repository.
 This build is more complicated than other standard nextstrain build because all four currently circulating seasonal influenza lineages (A(H3N2), A(H1N1pdn), B(vic) and B(yam)) are analyzed using the same snakefile with appropriate wildcards.
 In addition, we run analysis of the HA and NA segment of the influenza virus genome and analyze data sets that span different time intervals (e.g. 2, 6, 12 years).
 
-Furthermore, the nextstrain analysis of influenza virus evolution also uses antigenic and serological data from different WHO collaborating centers.
+Furthermore, the Nextstrain analysis of influenza virus evolution also uses antigenic and serological data from different WHO collaborating centers.
 These antigenic data come in four flavors depending on the assay that passage history of the antigens.
 The influenza virus output files have the wildcard set
 
@@ -21,13 +21,14 @@ The influenza virus output files have the wildcard set
 
 that currently use the following values:
 
- * center: [`who`, `cdc`, `vidrl`, `crick`, `niid`]
+ * center: [`who`, `cdc`, `crick`, `niid`, `vidrl`]
  * lineage: [`h3n2`, `h1n1pdm`, `vic`, `yam`]
  * segment: [`ha`, `na`]
- * resolution: [`12y`, `6y`, `3y`, `2y`]
- * assay: [`hi`, `cell`]
+ * resolution: [`2y`, `3y`, `6y`, `12y`]
+ * assay: [`hi`, `fra`]
  * passage: [`cell`, `egg`]
 
+ Intermediate files follow this wildcard ordering, but may omit irrelevant wildcards, ie `filtered_h3n2_ha.fasta`.
 
 To manage both builds for the general public and the different WHO collaborating centers, the Snakefiles are split into a `Snakefile_base` that contains the rules for the core analysis and the files
 
