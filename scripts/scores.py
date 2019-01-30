@@ -97,8 +97,13 @@ def calc_average_vaccination_coverage(tree, metadata, min_clade_size=20):
         else:
             return np.nan, 0
 
-    return calculate_average_on_tree(tree, vaccination_coverage, min_clade_size=min_clade_size)
+    scores = calculate_average_on_tree(tree, vaccination_coverage, min_clade_size=min_clade_size)
+    if min_clade_size==0:
+        for n in tree.get_terminals():
+            if np.isnan(vaccination_coverage(n)[0]):
+                scores[n.name] = 'unknown'
 
+    return scores
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -118,11 +123,11 @@ if __name__ == '__main__':
 
     # dictionary to hold calculated scores for terminal and internal nodes
     scores = dict()
-    for k,v in calculate_average_age(T, metadata).items():
+    for k,v in calculate_average_age(T, metadata, min_clade_size=20).items():
         if k not in scores: scores[k] = {}
-        scores[k]['avgage'] = v
+        scores[k]['avg_age'] = v
 
-    for k,v in calc_average_vaccination_coverage(T, metadata).items():
+    for k,v in calc_average_vaccination_coverage(T, metadata, min_clade_size=0).items():
         if k not in scores: scores[k] = {}
         scores[k]['vaccov'] = v
 

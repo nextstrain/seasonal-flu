@@ -1,3 +1,4 @@
+
 import argparse, sys, os, glob, json
 import numpy as np
 import matplotlib
@@ -34,6 +35,8 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
     smoothed_count_by_region = {}
     # generate a temporally smoothed sample count vector for each region.
     for region, freqs in frequencies.items():
+        if region=='global':
+            continue
         for n, f in freqs.items():
             if 'count' in n:
                 gene = n.split(':')[0]
@@ -47,17 +50,17 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
             pivots = frequencies[region]["pivots"]
             if mut in frequencies[region]:
                 tmp_freq = np.array(frequencies[region][mut])
-                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
-                        label=region_label.get(region, region), lw=2, c=region_colors[region])
-                std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
-                if show_errorbars:
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o', lw=4 if region=='global' else 2,
+                        label=region_label.get(region, region), c=region_colors[region])
+                if show_errorbars and region!="global":
+                    std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
                                     (tmp_freq+n_std_dev*std_dev)[:-drop],
                                     facecolor=region_colors[region], linewidth=0, alpha=0.1)
             else:
                 print("Mutation %s not calculated in region %s"%(mut, region))
             if mi==0:
-                ax.legend()
+                ax.legend(ncol=2)
             if mi==len(mutations)-1:
                 ax.set_xlabel('time', fontsize=fs)
             ax.set_ylabel(mut, fontsize=fs)
@@ -69,7 +72,11 @@ def plot_mutations_by_region(frequencies, mutations, fname,show_errorbars=True,
 
 
 def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorbars=True,
-                          n_std_dev=1, n_smooth=3, drop=3):
+                          regions=None, n_std_dev=1, n_smooth=3, drop=3):
+
+    if regions is None:
+        regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
+
     smoothed_count_by_region = {}
     total_count_by_region = {}
     for region in frequencies['counts']:
@@ -77,7 +84,6 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
                                                        frequencies['counts'][region], mode='same')
         total_count_by_region[region] = np.sum(frequencies['counts'][region])
 
-    regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
 
     fig, axs = plt.subplots(len(clades), 1, sharex=True, figsize=(8,1+2*len(clades)))
     for mi,(clade, ax) in enumerate(zip(clades, axs)):
@@ -90,8 +96,8 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
             pivots = frequencies["pivots"]
             if node in frequencies and region in frequencies[node]:
                 tmp_freq = np.array(frequencies[node][region])
-                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
-                        label=region_label.get(region, region), lw=2, c=region_colors[region])
+                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o', lw=4 if region=='global' else 2,
+                        label=region_label.get(region, region), c=region_colors[region])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[region]+1))
                 if show_errorbars:
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
@@ -100,7 +106,7 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname,show_errorba
             else:
                 print("region %s not present in node %s"%(region, node))
             if mi==0:
-                ax.legend()
+                ax.legend(ncol=2)
             if mi==len(clades)-1:
                 ax.set_xlabel('time', fontsize=fs)
             ax.set_ylabel(clade, fontsize=fs)
@@ -141,7 +147,7 @@ def plot_counts(counts, date_bins, fname, drop=3):
     fig, ax = plt.subplots(figsize=(8, 3))
     regions = sorted(counts.keys())
     tmpcounts = np.zeros(len(date_bins))
-    width = 0.9*(date_bins[1] - date_bins[0])
+    width = 0.75*(date_bins[1] - date_bins[0])
     plt.bar(date_bins, counts['global'], width=width, linewidth=0,
             label="Other", color="#bbbbbb", clip_on=False)
 
@@ -153,8 +159,8 @@ def plot_counts(counts, date_bins, fname, drop=3):
             tmpcounts += np.array(counts[region])
     ax.set_xlim([date_bins[0]-width*0.5, date_bins[-1]])
     ax.set_ylim(0,min(max(counts['global']), ymax))
-    ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
-    ax.tick_params(axis='x', which='minor', pad=7)
+    ax.tick_params(axis='x', which='major', labelsize=fs, pad=5, rotation=30)
+    # ax.tick_params(axis='x', which='minor', pad=7)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
@@ -170,7 +176,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--mutation-frequencies', nargs='+',
+    parser.add_argument('--mutation-frequencies', type=str,
                         help="json files containing frequencies in different regions")
     parser.add_argument('--tree-frequencies', type=str,
                         help="json files containing frequencies of clades in the tree")
@@ -187,10 +193,17 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     if args.mutation_frequencies:
-        frequencies = {}
-        for region, fname in zip(args.regions, args.mutation_frequencies):
-            frequencies[region] = load_frequencies(fname)
-        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations)
+        frequencies = load_frequencies(args.mutation_frequencies)
+        regions_to_pop = []
+        for region in frequencies:
+            if region not in args.regions:
+                regions_to_pop.append(region)
+        for region in regions_to_pop:
+            frequencies.pop(region)
+        # for region, fname in zip(args.regions, args.mutation_frequencies):
+        #     frequencies[region] = load_frequencies(fname)
+        print(frequencies.keys())
+        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations, drop=1)
         sample_count_by_region(frequencies, args.output_total_counts)
 
 
@@ -203,4 +216,5 @@ if __name__ == '__main__':
             clade_to_node = {node["clade_annotation"]:node_name for node_name, node in clade_annotations['nodes'].items()
                              if "clade_annotation" in node}
 
-            plot_clades_by_region(tree_frequencies, args.clades, clade_to_node, args.output_clades)
+            plot_clades_by_region(tree_frequencies, args.clades, clade_to_node,
+                                  args.output_clades, regions=args.regions, drop=1)

@@ -6,7 +6,7 @@ from Bio import SeqIO, AlignIO
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
-from graph_frequencies import region_label
+from graph_frequencies import region_label, region_colors
 
 def age_distribution(metadata, fname):
     import matplotlib
@@ -20,18 +20,19 @@ def age_distribution(metadata, fname):
     plt.figure()
 
     for region in ['africa','china','europe','japan_korea','north_america','oceania',
-                   'south_america','south_asia','southeast_asia','west_asia','total']:
+                   'south_america','south_asia','southeast_asia','west_asia','global']:
         y,x = np.histogram([m['age'] for m in metadata
-                            if m['age']!='unknown' and (m['region']==region or region=='total')], bins=bins)
+                            if m['age']!='unknown' and (m['region']==region or region=='global')], bins=bins)
         total = np.sum(y)
         y = np.array(y, dtype=float)/total
-        plt.plot(bc, y, label=region_label.get(region, region), lw=4 if region=='total' else 2)
+        plt.plot(bc, y, label=region_label.get(region, region),
+                 lw=4 if region=='global' else 2, c=region_colors[region])
 
     plt.legend(fontsize=fs*0.8, ncol=2)
-    plt.ylabel('age distribution', fontsize=fs)
+    plt.ylabel('fraction in age bin', fontsize=fs)
     plt.xlabel('age', fontsize=fs)
     plt.ylim([0,0.7])
-
+    plt.tight_layout()
     plt.savefig(fname)
     plt.close()
 

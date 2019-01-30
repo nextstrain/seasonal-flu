@@ -63,6 +63,7 @@ if __name__ == '__main__':
     if not os.path.isdir('tmp'):
         os.mkdir('tmp')
 
+    print("selected %d for region %s and date interval %f-%f"%(len(sequences), region, time_interval[0], time_interval[1]))
     features_to_translate = load_features(args.reference_sequence, args.genes)
     tmp_file = "tmp/sequence_file_%s_%s.fasta"%(region, tmp_str)
     tmp_file_out = "tmp/sequence_file_%s_%s_aln.fasta"%(region, tmp_str)
@@ -74,6 +75,14 @@ if __name__ == '__main__':
         sys.exit(fail)
 
     aln = AlignIO.read(tmp_file_out, 'fasta')
+    for seq in aln:
+        seq_str = str(seq.seq)
+        seq_str = seq_str.lstrip('-')
+        seq_str = 'X'*(len(seq)-len(seq_str)) + seq_str
+
+        seq_str = seq_str.rstrip('-')
+        seq_str = seq_str + 'X'*(len(seq)-len(seq_str))
+
     for gene, fname in zip(args.genes, args.output):
         if gene not in features_to_translate:
             continue
