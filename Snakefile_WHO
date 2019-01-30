@@ -52,7 +52,7 @@ for seg, genes in genes_to_translate.items():
                                 gene=genes)
         shell:
             """
-            python scripts/full_region_alignments.py  --sequences {input.sequences}\
+            python3 scripts/full_region_alignments.py  --sequences {input.sequences}\
                                                  --metadata {input.metadata} \
                                                  --exclude {input.exclude} \
                                                  --genes {params.genes} \
@@ -120,7 +120,7 @@ rule scores:
         scores = "results/scores_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
-        python scripts/scores.py  --metadata {input.metadata} \
+        python3 scripts/scores.py  --metadata {input.metadata} \
                                   --tree {input.tree} \
                                   --output {output}
         """

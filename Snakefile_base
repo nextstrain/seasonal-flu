@@ -528,7 +528,7 @@ rule clades:
             """)
         else:
             shell("""
-                python scripts/import_tip_clades.py \
+                python3 scripts/import_tip_clades.py \
                     --tree {input.tree} \
                     --clades {input.clades} \
                     --output {output.clades}

@@ -52,7 +52,7 @@ rule mutation_frequency_graphs:
         total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.pdf",
     shell:
         """
-        python scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
+        python3 scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
                                             --mutations {params.mutations} \
                                             --regions {params.regions} \
                                             --output-mutations {output.mutations} \
@@ -71,7 +71,7 @@ rule clade_frequency_graphs:
         clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}.pdf"
     shell:
         """
-        python scripts/graph_frequencies.py --tree-frequencies {input.tree} \
+        python3 scripts/graph_frequencies.py --tree-frequencies {input.tree} \
                                             --clade-annotation {input.clades} \
                                             --clades {params.clades} \
                                             --regions {params.regions} \
@@ -108,7 +108,7 @@ rule age_distributions:
         "figures/age-distribution_{lineage}_{resolution}.pdf"
     shell:
         """
-        python scripts/age_distributions.py  --metadata {input.metadata} \
+        python3 scripts/age_distributions.py  --metadata {input.metadata} \
                                              --resolution {params.resolution} \
                                              --exclude {input.exclude} \
                                              --output {output}
@@ -126,4 +126,3 @@ rule titer_matrix:
                                                --clades {input.clades} \
                                                --output {output}
         '''
-
