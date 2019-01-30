@@ -116,6 +116,7 @@ def _get_mask_names_by_wildcards(wildcards):
 rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
+        exclude_sites = "config/exclude-sites_{lineage}.txt",
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
@@ -266,7 +267,8 @@ rule align:
 rule tree:
     message: "Building tree"
     input:
-        alignment = rules.align.output.alignment
+        alignment = rules.align.output.alignment,
+        exclude_sites = files.exclude_sites
     output:
         tree = "results/tree-raw_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk"
     shell:
@@ -274,7 +276,8 @@ rule tree:
         augur tree \
             --alignment {input.alignment} \
             --output {output.tree} \
-            --nthreads auto
+            --nthreads auto \
+            --exclude-sites {input.exclude_sites}
         """
 
 rule refine:
