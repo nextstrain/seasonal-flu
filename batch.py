@@ -66,6 +66,7 @@ if __name__ == '__main__':
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_tree.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_meta.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_entropy.json'%(center, lineage, segment, resolution, passage, assay))
+                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_sequences.json'%(center, lineage, segment, resolution, passage, assay))                            
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
