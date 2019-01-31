@@ -140,19 +140,22 @@ rule export_titers:
             sub = json.load(fh)
 
         with open(output.sub, 'wt') as sub_file:
-            json.dump({'avidity':sub['avidity'],'potency':sub['potency'],
-                       'substitution':sub['substitution']},sub_file)
+            json.dump({'avidity': sub['avidity'],
+                       'potency': sub['potency'],
+                       'substitution': sub['substitution']},
+                      sub_file, indent=1)
 
         with open(output.raw, 'wt') as raw_file:
-            json.dump(sub['titers'],raw_file)
+            json.dump(sub['titers'], raw_file, indent=1)
 
         with open(input.tree) as fh:
             tree = json.load(fh)
 
         with open(output.tree, 'wt') as tree_file:
-            json.dump({'avidity':tree['avidity'],'potency':tree['potency'],
-                       'dTiter':{k:v['dTiter'] for k,v in tree['nodes'].items()}},tree_file)
-
+            json.dump({'avidity': tree['avidity'],
+                       'potency': tree['potency'],
+                       'dTiter': {k:v['dTiter'] for k,v in tree['nodes'].items()}},
+                      tree_file, indent=1)
 
 rule export_entropy:
     input:
