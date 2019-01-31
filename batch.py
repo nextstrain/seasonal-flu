@@ -42,7 +42,7 @@ if __name__ == '__main__':
                     targets.append('auspice/flu_seasonal_%s_%s_%s_tip-frequencies.json'%(lineage, segment, resolution))
                 call.extend(targets)
                 print(' '.join(call))
-                log = open('logs/%s_%s.txt'%(lineage, resolution), 'w')
+                log = open('logs/liveflu_%s_%s_%s.txt'%(lineage, segment, resolution), 'w')
                 if params.system == 'local':
                     pro = subprocess.call(call)
                 if params.system == 'batch':
@@ -66,14 +66,14 @@ if __name__ == '__main__':
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_tree.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_meta.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_entropy.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_sequences.json'%(center, lineage, segment, resolution, passage, assay))                            
+                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_sequences.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
 
                             call.extend(targets)
                             print(' '.join(call))
-                            log = open('logs/%s_%s.txt'%(lineage, resolution), 'w')
+                            log = open('logs/whoflu_%s_%s_%s_%s_%s_%s.txt'%(center, lineage, segment, resolution, passage, assay), 'w')
                             if params.system == 'local':
                                 pro = subprocess.call(call)
                             if params.system == 'batch':
