@@ -42,7 +42,7 @@ if __name__ == '__main__':
                     targets.append('auspice/flu_seasonal_%s_%s_%s_tip-frequencies.json'%(lineage, segment, resolution))
                 call.extend(targets)
                 print(' '.join(call))
-                log = open('logs/liveflu_%s_%s_%s.txt'%(lineage, segment, resolution), 'w')
+                log = open('logs/live_flu_%s_%s.txt'%(lineage, resolution), 'w')
                 if params.system == 'local':
                     pro = subprocess.call(call)
                 if params.system == 'batch':
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
                             call.extend(targets)
                             print(' '.join(call))
-                            log = open('logs/whoflu_%s_%s_%s_%s_%s_%s.txt'%(center, lineage, segment, resolution, passage, assay), 'w')
+                            log = open('logs/who_flu_%s_%s_%s_%s_%s.txt'%(center, lineage, resolution, passage, assay), 'w')
                             if params.system == 'local':
                                 pro = subprocess.call(call)
                             if params.system == 'batch':
