@@ -147,6 +147,7 @@ A/Indiana/9/2013
 A/Indiana/93/2012
 A/Indiana/99/2012
 A/Iowa/16/2009
+A/Iowa/16/2012
 A/Iowa/4/2013
 A/Iran/140/2014
 A/Iran/227/2014
@@ -243,6 +244,7 @@ A/Ohio/64/2012
 A/Ohio/69/2012
 A/Ohio/74/2012
 A/Ohio/75/2012
+A/Ohio/77/2012
 A/Ohio/78/2012
 A/Ohio/79/2012
 A/Ohio/80/2012
