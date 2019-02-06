@@ -32,7 +32,7 @@ if __name__ == '__main__':
         for lineage in params.lineages:
             for resolution in params.resolutions:
                 if params.system == 'local':
-                    call = ['nextstrain', 'build', '.', '-j', '2']
+                    call = ['nextstrain', 'build', '.', '-j', '1']
                 elif params.system == 'batch':
                     call = ['nextstrain', 'build', '--aws-batch', '.', '-j', '2']
                 targets = []
@@ -53,28 +53,27 @@ if __name__ == '__main__':
             for lineage in params.lineages:
                 resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
                 for resolution in resolutions:
+                    segment = 'ha'
+                    if params.system == 'local':
+                        call = ['nextstrain', 'build', '.', '-s', 'Snakefile_WHO', '-j', '1']
+                    elif params.system == 'batch':
+                        call = ['nextstrain', 'build', '--aws-batch', '.', '-s', 'Snakefile_WHO', '-j', '4']
+                    targets = []
                     for passage in params.passages:
-                        for assay in params.assays:
-                            segment = 'ha'
-                            if lineage != 'h3n2' and assay == 'fra':
-                                break
-                            if params.system == 'local':
-                                call = ['nextstrain', 'build', '.', '-s', 'Snakefile_WHO', '-j', '1']
-                            elif params.system == 'batch':
-                                call = ['nextstrain', 'build', '--aws-batch', '.', '-s', 'Snakefile_WHO', '-j', '1']
-                            targets = []
+                        assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
+                        for assay in assays:
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_tree.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_meta.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_entropy.json'%(center, lineage, segment, resolution, passage, assay))
+                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_frequencies.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_sequences.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
-
-                            call.extend(targets)
-                            print(' '.join(call))
-                            log = open('logs/who_flu_%s_%s_%s_%s_%s.txt'%(center, lineage, resolution, passage, assay), 'w')
-                            if params.system == 'local':
-                                pro = subprocess.call(call)
-                            if params.system == 'batch':
-                                pro = subprocess.Popen(call, stdout=log, stderr=log)
+                    call.extend(targets)
+                    print(' '.join(call))
+                    log = open('logs/who_flu_%s_%s_%s.txt'%(center, lineage, resolution), 'w')
+                    if params.system == 'local':
+                        pro = subprocess.call(call)
+                    if params.system == 'batch':
+                        pro = subprocess.Popen(call, stdout=log, stderr=log)
