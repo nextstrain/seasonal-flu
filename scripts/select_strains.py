@@ -9,7 +9,8 @@ import numpy as np
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
 
-regions = ['africa', 'europe', 'north_america', 'china', 'south_asia', 'japan_korea', 'oceania', 'south_america', 'southeast_asia', 'west_asia']
+regions = ['africa', 'europe', 'north_america', 'china', 'south_asia',
+           'japan_korea', 'oceania', 'south_america', 'southeast_asia', 'west_asia']
 subcats = regions
 
 def read_strain_list(fname):
@@ -80,7 +81,8 @@ def populate_categories(metadata):
     return virus_by_super_category, virus_by_category
 
 
-def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=None):
+def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=None,
+                    priority_region=None, priority_region_fraction=0.5):
     # Filter metadata by date using the given time interval. Using numeric dates
     # here allows users to define time intervals to the day and filter viruses
     # at that same level of precision.
@@ -105,7 +107,19 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
         def priority(strain):
             return np.random.random()
 
-    subcat_threshold = int(np.ceil(1.0*viruses_per_month/len(subcats)))
+    print("Viruses per month:", viruses_per_month)
+
+    if priority_region is None:
+        # Request an equal number of viruses per subcategory.
+        subcat_threshold = int(np.ceil(float(viruses_per_month) / len(subcats)))
+        print("Subcategory threshold:", subcat_threshold)
+    else:
+        # Give priority to the given region and request fewer viruses per other region.
+        subcats.remove(priority_region)
+        priority_region_threshold = int(np.ceil(priority_region_fraction * viruses_per_month))
+        subcat_threshold = int(np.ceil((1 - priority_region_fraction) * viruses_per_month / len(subcats)))
+        print("Priority region threshold:", priority_region_threshold)
+        print("Subcategory threshold:", subcat_threshold)
 
     virus_by_super_category, virus_by_category = populate_categories(metadata)
     def threshold_fn(x):
@@ -119,11 +133,29 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
         sub_counts = sorted([(r, virus_by_category[(r, x[1], x[2])]) for r in subcats],
                              key=lambda y:len(y[1]))
 
+        # If a priority region has been requested, return either the preferred
+        # number of viruses for that region or the total number of viruses
+        # sampled for that region during the current month and year.
+        if priority_region == x[0]:
+            return min(priority_region_threshold, len(virus_by_category[x]))
+
         # if all (the smallest) subcat has more strains than the threshold, return threshold
         if len(sub_counts[0][1]) > subcat_threshold:
             return subcat_threshold
 
-        strains_selected = 0
+        if priority_region is None:
+            # If no region is given priority, we assume no strains have been selected yet.
+            strains_selected = 0
+        else:
+            # If a priority region is given, we assume that region's proportion
+            # of the total viruses per month have been selected given sufficient strains.
+            # Otherwise, set strains_selected to the number of available viruses.
+            # The remaining regions divide up the remaining viruses per month.
+            strains_selected = min(
+                len(virus_by_category[(priority_region, x[1], x[2])]),
+                int(np.ceil(priority_region_fraction * viruses_per_month))
+            )
+
         tmp_subcat_threshold = subcat_threshold
         for ri, (r, strains) in enumerate(sub_counts):
             current_threshold = int(np.ceil(1.0*(viruses_per_month-strains_selected)/(len(subcats)-ri)))
@@ -219,8 +251,8 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--lineage', choices=['h3n2', 'h1n1pdm', 'vic', 'yam'], default='h3n2', type=str, help="single lineage to include (default: h3n2)")
     parser.add_argument('-r', '--resolution',default='3y', type = str,  help = "single resolution to include (default: 3y)")
     parser.add_argument('-s', '--segments', default=['ha'], nargs='+', type = str,  help = "list of segments to include (default: ha)")
-    parser.add_argument('--sampling', default = 'even', type=str,
-                        help='sample evenly over regions (even) (default), or prioritize one region (region name), otherwise sample randomly')
+    parser.add_argument('--priority-region', help='a specific region to prioritize over others')
+    parser.add_argument('--priority-region-fraction', type=float, default=0.5, help='fraction of viruses per month to sample from the given priority region')
     parser.add_argument('--time-interval', nargs=2, help="explicit time interval to use -- overrides resolutions"
                                                                      " expects YYYY-MM-DD YYYY-MM-DD")
     parser.add_argument('--titers', nargs='+', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
@@ -263,8 +295,14 @@ if __name__ == '__main__':
     # exclude outlier strains
     strains_with_all_segments.difference_update(set(excluded_strains))
     # subsample by region, month, year
-    selected_strains = flu_subsampling({x:filtered_metadata[guide_segment][x] for x in strains_with_all_segments},
-                                  args.viruses_per_month, time_interval, titer_fnames=args.titers)
+    selected_strains = flu_subsampling(
+        {x:filtered_metadata[guide_segment][x] for x in strains_with_all_segments},
+        args.viruses_per_month,
+        time_interval,
+        titer_fnames=args.titers,
+        priority_region=args.priority_region,
+        priority_region_fraction=args.priority_region_fraction
+    )
 
     # add strains that need to be included
     # these strains don't have to exist in all segments, just the guide segment
