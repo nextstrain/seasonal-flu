@@ -68,7 +68,7 @@ def _get_clades_file_for_wildcards(wildcards):
 #
 def _get_tdb_databases(wildcards):
     if wildcards.center == 'who':
-        return " ".join([center + "_tdb" for center in centers if center != "who"]+['tdb'])
+        return "cdc_tdb crick_tdb niid_tdb vidrl_tdb tdb"
     else:
         return wildcards.center + "_tdb tdb"
 
@@ -148,11 +148,11 @@ rule download_titers:
     output:
         titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
     params:
-        db = _get_tdb_databases,
+        dbs = _get_tdb_databases,
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
-            --database tdb {params.db} \
+            --database {params.dbs} \
             --virus flu \
             --subtype {wildcards.lineage} \
             --select assay_type:{wildcards.assay} serum_passage_category:{wildcards.passage} \
