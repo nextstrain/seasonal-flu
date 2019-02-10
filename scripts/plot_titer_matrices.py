@@ -10,6 +10,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 
+
+h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135K', 'A1b/135K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
+h1n1_clades = ["6b1.A", "6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-3", "6b1.A/183P-5", "6b1.A/183P-6", "6b1.A/183P-7"]
+vic_clades =  ["V1A", "V1A.1", "V1A/165N"]
+yam_clades = ["172Q", "3"]
+
 def load_json(fname):
     with open(fname) as fh:
         return json.load(fh)
@@ -141,7 +147,7 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(average_titers).T
     # sort columns
-    df = df[[x for x in ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135K', 'A1b/135K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
+    df = df[[x for x in h3n2_clades+h1n1_clades+vic_clades+yam_clades
              if x in df.columns]]
     df.sort_index(axis=0, inplace=True)
 
