@@ -72,7 +72,8 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                 smoothed_count_by_region[(gene, region)] = np.convolve(np.ones(n_smooth, dtype=float)/n_smooth, f, mode='same')
 
     # set up a figure and plot each mutation in a different panel
-    fig, axs = plt.subplots(int(np.ceil(len(mutations)/2.)), 2, sharex=True, figsize=(10, 1.2*len(mutations)))
+    rows = int(np.ceil(len(mutations)/2.))
+    fig, axs = plt.subplots(rows, 2, sharex=True, figsize=(10, 1.0+1.6*rows))
 
     if len(mutations) % 2 != 0:
         axs[-1, -1].axis('off')
@@ -128,8 +129,8 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname, show_errorb
                                                        frequencies['counts'][region], mode='same')
         total_count_by_region[region] = np.sum(frequencies['counts'][region])
 
-
-    fig, axs = plt.subplots(int(np.ceil(len(clades)/2.)), 2, sharex=True, figsize=(10, 1.2*len(clades)))
+    rows = int(np.ceil(len(clades)/2.))
+    fig, axs = plt.subplots(rows, 2, sharex=True, figsize=(10, 1.0+1.6*rows))
 
     if len(clades) % 2 != 0:
         axs[-1, -1].axis('off')
