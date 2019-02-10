@@ -138,9 +138,13 @@ if __name__ == '__main__':
         average_titers[(c, antigen)] = get_average_titer_by_clade(titers[antigen], clades,
                                     normalized=True, geometric=False)
 
+
     df = pd.DataFrame(average_titers).T
+    # sort columns
     df = df[[x for x in ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135K', 'A1b/135K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
              if x in df.columns]]
+    df.sort_index(axis=0, inplace=True)
+
     try:
         df.pop('unassigned')
     except:
