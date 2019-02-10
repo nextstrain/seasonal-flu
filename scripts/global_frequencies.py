@@ -78,10 +78,12 @@ if __name__ == '__main__':
                 freqs.append(frequencies[region][mutation])
                 weights.append(seasonal_profile[region][gene])
 
-        frequencies['global'][mutation] = format_frequencies(np.sum(np.array(freqs)*np.array(weights), axis=0)/total_weights[gene])
+        frequencies['global'][mutation] = format_frequencies(
+            np.sum(np.array(freqs)*np.array(weights), axis=0) / total_weights[gene]
+        )
 
     with open(args.output_augur, 'wt') as fh:
-        json.dump(frequencies, fh)
+        json.dump(frequencies, fh, indent=1)
 
     json_for_export = {'pivots':format_frequencies(pivots)}
     for region in frequencies:
@@ -94,4 +96,4 @@ if __name__ == '__main__':
             json_for_export.update(json.load(fh))
 
     with open(args.output_auspice, 'wt') as fh:
-        json.dump(json_for_export, fh)
+        json.dump(json_for_export, fh, indent=1)
