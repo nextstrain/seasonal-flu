@@ -2,9 +2,10 @@ import argparse, sys, os, glob, json
 from collections import defaultdict
 import numpy as np
 import matplotlib
-import pandas as pd
 # important to use a non-interactive backend, otherwise will crash on cluster
 matplotlib.use('agg')
+
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
@@ -12,6 +13,20 @@ from select_strains import read_strain_list, regions, determine_time_interval, p
 def load_json(fname):
     with open(fname) as fh:
         return json.load(fh)
+
+def reduce_to_sera(titers, sera):
+    sub_titers = dict()
+    for refstrain in titers:
+        tmp = defaultdict(dict)
+        for testvirus in titers[refstrain]:
+            for serum in sera:
+                if serum in titers[refstrain][testvirus]:
+                    tmp[testvirus][serum] = titers[refstrain][testvirus][serum]
+        if len(tmp):
+            sub_titers[refstrain]=tmp
+
+    return sub_titers
+
 
 def get_autologous_titers(titers):
     autologous_titers = defaultdict(dict)
@@ -65,23 +80,29 @@ if __name__ == '__main__':
     parser.add_argument('--clades-to-plot', nargs='+', help="clades to include in matrix")
     parser.add_argument('--antigens', nargs="+", help="antigens to summarize titers for")
     parser.add_argument('--combine-sera', action='store_true', help="average values for different sera")
+    parser.add_argument('--reassortants', nargs="+", help="list of sera raised against reassortants")
 
     parser.add_argument('--output', help="file name to save figure to")
 
 
     args=parser.parse_args()
-    metadata = {k:val for k,val in parse_metadata(['segment'], [args.metadata]).items()}['segment']
+    # metadata = {k:val for k,val in parse_metadata(['segment'], [args.metadata]).items()}['segment']
 
     date_cutoff = 2018
 
     titers = load_json(args.titers)
+    if args.reassortants:
+        print("reducing to ", args.reassortants)
+        titers = reduce_to_sera(titers, args.reassortants)
+
     autologous_titers = get_autologous_titers(titers)
     # prune old measurements
     to_pop = []
     for antigen in titers:
         titers[antigen] = {k:v for k,v in titers[antigen].items()
-                           if metadata[k]["num_date"]>date_cutoff}
-        if len(titers[antigen])<5:
+                            if any([x in k for x in ['/2018', '/2019']])}
+#                           if metadata[k]["num_date"]>date_cutoff}
+        if len(titers[antigen])<5 or any([x in antigen for x in ["/2014", "/2015"]]):
             to_pop.append(antigen)
 
     for a in to_pop:
@@ -118,14 +139,15 @@ if __name__ == '__main__':
                                     normalized=True, geometric=False)
 
     df = pd.DataFrame(average_titers).T
-    df.sort_index(inplace=True)
+    df = df[[x for x in ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135K', 'A1b/135K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
+             if x in df.columns]]
     try:
         df.pop('unassigned')
     except:
         pass
 
     plt.figure()
-    sns.heatmap(df, vmin=-1, vmax=5, cmap='YlOrRd')
+    sns.heatmap(df, vmin=-1, vmax=5, cmap='rainbow', square=True)
     plt.ylabel('')
     plt.xlabel('')
     tick_labels = []

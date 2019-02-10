@@ -7,11 +7,13 @@ import json
 from datetime import datetime
 import numpy as np
 import matplotlib
+# important to use a non-interactive backend, otherwise will crash on cluster
+# this needs to be right after the matplotlib import!
+matplotlib.use('agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 import seaborn as sns
-# important to use a non-interactive backend, otherwise will crash on cluster
-matplotlib.use('agg')
 
 default_regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
 
