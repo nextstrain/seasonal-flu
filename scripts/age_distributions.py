@@ -8,7 +8,7 @@ from augur.utils import read_metadata, get_numerical_dates
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 from graph_frequencies import region_label, region_colors
 
-def age_distribution(metadata, fname):
+def age_distribution(metadata, fname, title=None):
     import matplotlib
     # important to use a non-interactive backend, otherwise will crash on cluster
     matplotlib.use('agg')
@@ -29,12 +29,26 @@ def age_distribution(metadata, fname):
                  lw=4 if region=='global' else 2, c=region_colors[region])
 
     plt.legend(fontsize=fs*0.8, ncol=2)
+    if title:
+        plt.title(title, fontsize=1.5*fs)
     plt.ylabel('fraction in age bin', fontsize=fs)
     plt.xlabel('age', fontsize=fs)
     plt.ylim([0,0.7])
     plt.tight_layout()
     plt.savefig(fname)
     plt.close()
+
+def get_title(fname):
+    if 'h3n2' in fname:
+        return "A(H3N2)"
+    elif 'h1n1pdm' in fname:
+        return "A(H1N1pdm)"
+    elif 'vic' in fname:
+        return "B(Vic)"
+    elif 'yam' in fname:
+        return "B(Yam)"
+    else:
+        return None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -71,4 +85,4 @@ if __name__ == '__main__':
            metadata[seq]["num_date"]<time_interval[1]:
             sequences.append(metadata[seq])
 
-    age_distribution(sequences, args.output)
+    age_distribution(sequences, args.output, title = get_title(args.output))
