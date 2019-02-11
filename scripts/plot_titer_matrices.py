@@ -11,7 +11,7 @@ import seaborn as sns
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 
 
-h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135K', 'A1b/135K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
+h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135N', 'A1b/131K','A2', 'A2/re', 'A3', 'A4', '3c3.A']
 h1n1_clades = ["6b1.A", "6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-3", "6b1.A/183P-5", "6b1.A/183P-6", "6b1.A/183P-7"]
 vic_clades =  ["V1A", "V1A.1", "V1A/165N"]
 yam_clades = ["172Q", "3"]
@@ -81,6 +81,7 @@ if __name__ == '__main__':
     )
 
     parser.add_argument('--titers', help="json with titer info")
+    parser.add_argument('--model', help="json with titer model used to subtract serum potencies")
     parser.add_argument('--clades', help="json with clade info")
     parser.add_argument('--metadata', type=str, help="metadata table")
     parser.add_argument('--clades-to-plot', nargs='+', help="clades to include in matrix")
@@ -97,6 +98,8 @@ if __name__ == '__main__':
     date_cutoff = 2018
 
     titers = load_json(args.titers)
+    potency = load_json(args.model)["potency"] if args.model else defaultdict(dict)
+
     if args.reassortants:
         print("reducing to ", args.reassortants)
         titers = reduce_to_sera(titers, args.reassortants)
@@ -142,7 +145,10 @@ if __name__ == '__main__':
         else:
             continue
         average_titers[(c, antigen)] = get_average_titer_by_clade(titers[antigen], clades,
-                                    normalized=True, geometric=False)
+                                        normalized=True, geometric=False)
+        for clade in average_titers[(c,antigen)]:
+            average_titers[(c,antigen)][clade] -= potency[antigen].get("mean_potency",0)
+
 
 
     df = pd.DataFrame(average_titers).T
@@ -159,7 +165,7 @@ if __name__ == '__main__':
         pass
 
     plt.figure()
-    sns.heatmap(df, vmin=-1, vmax=5, cmap='rainbow', square=True)
+    sns.heatmap(df, vmin=0, vmax=4, cmap='rainbow', square=True)
     plt.ylabel('')
     plt.xlabel('')
     tick_labels = []
