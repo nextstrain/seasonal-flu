@@ -20,8 +20,8 @@ rule all_live:
 # separate rule for interaction with fauna
 rule download_all:
     input:
-        titers = expand("data/{lineage}_{center}_{assay}_{passage}_titers.tsv",
-                         lineage=lineages, center=centers, assay=assays, passage=passages),
+        titers = expand("data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
+                         center=centers, lineage=lineages, passage=passages, assay=assays),
         sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
 
 
