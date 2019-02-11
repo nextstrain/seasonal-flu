@@ -149,7 +149,9 @@ if __name__ == '__main__':
     # sort columns
     df = df[[x for x in h3n2_clades+h1n1_clades+vic_clades+yam_clades
              if x in df.columns]]
-    df.sort_index(axis=0, inplace=True)
+    rows = list(df.iterrows())
+    rows.sort(key=lambda x:('Z',x[0][1]) if x[0][0]=='3c3.A' else x[0])
+    df = pd.DataFrame({x[0]:x[1] for x in rows}).T
 
     try:
         df.pop('unassigned')
