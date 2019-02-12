@@ -82,6 +82,7 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
 
     axs = list(np.array(axs).flatten())
 
+    region_labeled = set()
     for mi,(mut, ax) in enumerate(zip(mutations, axs)):
         gene = mut.split(':')[0]
         for region in regions:
@@ -92,7 +93,9 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                 tmp_freq = np.array(frequencies[region][mut])
                 ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
                         ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
-                        label=region_label.get(region, region), c=region_colors[region])
+                        label=region_label.get(region, region) if region not in region_labeled else '',
+                        c=region_colors[region])
+                region_labeled.add(region)
                 if show_errorbars and region!="global":
                     std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
@@ -112,7 +115,7 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
             ax.xaxis.set_minor_locator(months)
             ax.xaxis.set_minor_formatter(monthsFmt)
 
-    fig.legend(regions, loc=1, ncol=2)
+    fig.legend(loc=1, ncol=2)
     plt.tight_layout()
     sns.despine()
     plt.savefig(fname)
