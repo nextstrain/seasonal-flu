@@ -30,35 +30,35 @@ if __name__ == '__main__':
 
     if params.version == 'live' or params.version == 'both':
         for lineage in params.lineages:
+            if params.system == 'local':
+                call = ['nextstrain', 'build', '.', '-j', '1']
+            elif params.system == 'batch':
+                call = ['nextstrain', 'build', '--aws-batch', '.', '-j', '4'] # 4 jobs to match xlarge nodes
+            targets = []
             for resolution in params.resolutions:
-                if params.system == 'local':
-                    call = ['nextstrain', 'build', '.', '-j', '1']
-                elif params.system == 'batch':
-                    call = ['nextstrain', 'build', '--aws-batch', '.', '-j', '2']
-                targets = []
                 for segment in params.segments:
                     targets.append('auspice/flu_seasonal_%s_%s_%s_tree.json'%(lineage, segment, resolution))
                     targets.append('auspice/flu_seasonal_%s_%s_%s_meta.json'%(lineage, segment, resolution))
                     targets.append('auspice/flu_seasonal_%s_%s_%s_tip-frequencies.json'%(lineage, segment, resolution))
-                call.extend(targets)
-                print(' '.join(call))
-                log = open('logs/live_flu_%s_%s.txt'%(lineage, resolution), 'w')
-                if params.system == 'local':
-                    pro = subprocess.call(call)
-                if params.system == 'batch':
-                    pro = subprocess.Popen(call, stdout=log, stderr=log)
+            call.extend(targets)
+            print(' '.join(call))
+            log = open('logs/live_flu_%s.txt'%(lineage), 'w')
+            if params.system == 'local':
+                pro = subprocess.call(call)
+            if params.system == 'batch':
+                pro = subprocess.Popen(call, stdout=log, stderr=log)
 
     if params.version == 'who' or params.version == 'both':
         for center in params.centers:
             for lineage in params.lineages:
+                if params.system == 'local':
+                    call = ['nextstrain', 'build', '.', '-s', 'Snakefile_WHO', '-j', '1']
+                elif params.system == 'batch':
+                    call = ['nextstrain', 'build', '--aws-batch', '.', '-s', 'Snakefile_WHO', '-j', '4'] # 4 jobs to match xlarge nodes
+                targets = []
+                segment = 'ha'
                 resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
                 for resolution in resolutions:
-                    segment = 'ha'
-                    if params.system == 'local':
-                        call = ['nextstrain', 'build', '.', '-s', 'Snakefile_WHO', '-j', '1']
-                    elif params.system == 'batch':
-                        call = ['nextstrain', 'build', '--aws-batch', '.', '-s', 'Snakefile_WHO', '-j', '4']
-                    targets = []
                     for passage in params.passages:
                         assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
                         for assay in assays:
@@ -70,10 +70,10 @@ if __name__ == '__main__':
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
                             targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
-                    call.extend(targets)
-                    print(' '.join(call))
-                    log = open('logs/who_flu_%s_%s_%s.txt'%(center, lineage, resolution), 'w')
-                    if params.system == 'local':
-                        pro = subprocess.call(call)
-                    if params.system == 'batch':
-                        pro = subprocess.Popen(call, stdout=log, stderr=log)
+                call.extend(targets)
+                print(' '.join(call))
+                log = open('logs/who_flu_%s_%s.txt'%(center, lineage), 'w')
+                if params.system == 'local':
+                    pro = subprocess.call(call)
+                if params.system == 'batch':
+                    pro = subprocess.Popen(call, stdout=log, stderr=log)
