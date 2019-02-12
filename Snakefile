@@ -58,7 +58,7 @@ rule export:
     output:
         auspice_tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
-        auspice_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_seq.json"
+        auspice_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
     shell:
         """
         augur export \
@@ -75,12 +75,12 @@ rule simplify_auspice_names:
     input:
         tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
         meta = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
-        seq = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_seq.json",
+        seq = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json",
         frequencies = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
     output:
         tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
         meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
-        seq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_seq.json",
+        seq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
