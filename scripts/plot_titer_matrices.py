@@ -165,7 +165,8 @@ if __name__ == '__main__':
         pass
 
     plt.figure()
-    sns.heatmap(df, vmin=0, vmax=4, cmap='rainbow', square=True, cbar_kws={"shrink": min(1.0,(df.shape[0]+.1)/(df.shape[1]+.1))})
+    cmap = sns.cubehelix_palette(start=2.6, rot=.1, as_cmap=True)
+    sns.heatmap(df, vmin=0, vmax=4, cmap=cmap, square=True, cbar_kws={"shrink": min(1.0,(df.shape[0]+.1)/(df.shape[1]+.1))})
     plt.ylabel('')
     plt.xlabel('')
     tick_labels = []
