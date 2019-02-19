@@ -37,6 +37,7 @@ A/Guatemala/116/2018
 A/Hawaii/3/2012
 A/Helsinki/798/2013
 A/Helsinki/897/2013
+A/Helsinki/941/2013
 A/Helsinki/942/2013
 A/HoChiMinh/4596/2010
 A/HongKong/H090-781-V10/2009
@@ -179,6 +180,7 @@ A/Louisiana/4/2003
 A/Lousiana/4/2003
 A/Maine/6/2011
 A/Maryland/20/2012
+A/Maryland/22/2012
 A/Maryland/23/2012
 A/Maryland/25/2012
 A/Maryland/28/2012

@@ -43,6 +43,7 @@ A/Novosibirsk/716/2009
 A/Ohio/1/2007
 A/Ohio/2/2007
 A/Ohio/9/2015
+A/Ohio/9/2015-egg
 A/Ontario/N163578/2012
 A/Philippines/8/2018
 A/Poland/16/2013
