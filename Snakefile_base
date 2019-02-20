@@ -168,7 +168,7 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus isolate_id date region country division location passage authors age gender"
+        fasta_fields =  "strain virus accession date region country division location passage authors age gender"
     shell:
         """
         augur parse \
