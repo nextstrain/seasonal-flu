@@ -82,7 +82,8 @@
     "frequencies"
   ],
   "vaccine_choices": {
-    "A/Michigan/45/2015": "2016-09-29", 
-    "A/California/7/2009": "2009-09-25"
-  }   
+    "A/California/7/2009": "2009-09-25",
+    "A/Michigan/45/2015": "2016-09-29",
+    "A/Brisbane/2/2018": "2019-02-20"    
+  }
 }
