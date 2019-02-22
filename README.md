@@ -24,7 +24,7 @@ that currently use the following values:
  * center: [`who`, `cdc`, `crick`, `niid`, `vidrl`]
  * lineage: [`h3n2`, `h1n1pdm`, `vic`, `yam`]
  * segment: [`ha`, `na`]
- * resolution: [`2y`, `3y`, `6y`, `12y`]
+ * resolution: [`6m`, `2y`, `3y`, `6y`, `12y`]
  * assay: [`hi`, `fra`]
  * passage: [`cell`, `egg`]
 

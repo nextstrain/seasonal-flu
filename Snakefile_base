@@ -10,7 +10,7 @@ frequency_regions = ['north_america', 'south_america', 'europe', 'china', 'ocean
 
 
 def vpm(v):
-    vpm = {'2y':90, '3y':60, '6y':30, '12y':15}
+    vpm = {'6m':360, '2y':90, '3y':60, '6y':30, '12y':15}
     return vpm[v.resolution] if v.resolution in vpm else 5
 
 def reference_strain(v):
@@ -33,12 +33,18 @@ def translations(w):
 def pivot_interval(w):
     """Returns the number of months between pivots by build resolution.
     """
-    pivot_intervals_by_resolution = {'2y': 1, '3y': 2, '6y': 3, '12y': 6}
+    pivot_intervals_by_resolution = {'6m': 1, '2y': 1, '3y': 2, '6y': 3, '12y': 6}
     return pivot_intervals_by_resolution[w.resolution]
 
-def min_date(w):
+def min_date(wildcards):
     now = numeric_date(date.today())
-    return now - int(w.resolution[:-1])
+    if wildcards.resolution[-1] == "y":
+        years_back = int(wildcards.resolution[:-1])
+    elif wildcards.resolution[-1] == "m":
+        years_back = int(wildcards.resolution[:-1]) / 12.
+    else:
+        years_back = 3
+    return now - years_back
 
 def max_date(w):
     return numeric_date(date.today())
@@ -76,6 +82,7 @@ def _get_tdb_databases(wildcards):
 # Define LBI parameters and functions.
 #
 LBI_params = {
+    '6m': {"tau": 0.3, "time_window": 0.5},
     '2y': {"tau": 0.3, "time_window": 0.5},
     '3y': {"tau": 0.4, "time_window": 0.6},
     '6y': {"tau": 0.25, "time_window": 0.75},

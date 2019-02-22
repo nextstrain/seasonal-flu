@@ -179,7 +179,12 @@ def determine_time_interval(time_interval, resolution):
         datetime_interval = sorted([datetime.strptime(x, '%Y-%m-%d').date() for x in args.time_interval], reverse=True)
     else: # derived from resolution arguments (explicit takes precedence)
         if resolution:
-            years_back = int(resolution[:-1])
+            if resolution[-1] == "y":
+                years_back = int(resolution[:-1])
+            elif resolution[-1] == "m":
+                years_back = int(resolution[:-1]) / 12.
+            else:
+                years_back = 3
         else:
             years_back = 3
         datetime_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]

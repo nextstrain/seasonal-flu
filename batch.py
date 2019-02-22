@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('--system', type = str, default = 'local', help='where to run, local or batch')
     parser.add_argument('-v', '--version', type = str, default = 'live', help='version to run, live or who or both')
     parser.add_argument('-l', '--lineages', nargs='+', type = str,  help ="flu lineages to include", default=['h3n2', 'h1n1pdm', 'vic', 'yam'])
-    parser.add_argument('-r', '--resolutions', nargs='+', type = str,  help ="flu resolutions to include", default=['2y', '3y', '6y' , '12y'])
+    parser.add_argument('-r', '--resolutions', nargs='+', type = str,  help ="flu resolutions to include", default=['6m', '2y', '3y', '6y' , '12y'])
     parser.add_argument('-s', '--segments', nargs='+', type = str, help ="flu segments to include", default=['ha', 'na'])
     parser.add_argument('-c', '--centers', nargs='+', type = str, help ="who collaborating centers to include", default=['cdc', 'who', 'niid', 'vidrl', 'crick'])
     parser.add_argument('-p', '--passages', nargs='+', type = str, help ="passages to include", default=['cell', 'egg'])
