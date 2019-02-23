@@ -247,6 +247,10 @@ rule targets:
         sequences = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
         titer_sub_model = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-sub-model.json",
         titer_tree_model = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-tree-model.json",
-        titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
+        titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json"
     output:
-        target = "targets/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}",
+        target = "targets/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}"
+    shell:
+        '''
+        touch {output.target}
+        '''

@@ -97,12 +97,17 @@ rule targets:
         seq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     output:
-        target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}",
+        target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
+    shell:
+        '''
+        touch {output.target}
+        '''
 
 rule clean:
     message: "Removing directories: {params}"
     params:
         "results ",
+        "targets ",
         "auspice ",
         "auspice-who"
     shell:
