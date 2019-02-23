@@ -30,10 +30,12 @@ if __name__ == '__main__':
 
     if params.version == 'live' or params.version == 'both':
         for lineage in params.lineages:
+            cpus = len(params.resolutions) * len(params.segments)
+            memory = 1800 * cpus
             if params.system == 'local':
                 call = ['nextstrain', 'build', '.', '--jobs', '1']
             elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '8', '--aws-batch-memory', '15200', '.', '--jobs', '8']
+                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--jobs', str(cpus)]
             targets = []
             for resolution in params.resolutions:
                 for segment in params.segments:
@@ -48,17 +50,19 @@ if __name__ == '__main__':
 
     if params.version == 'who' or params.version == 'both':
         for lineage in params.lineages:
+            segment = 'ha'
+            resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
+            assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
+            cpus = len(params.centers) * len(resolutions) * len(params.passages) * len(assays)
+            memory = 1800 * cpus
             if params.system == 'local':
                 call = ['nextstrain', 'build', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '1']
             elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '16', '--aws-batch-memory', '31000', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '16']
+                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--snakefile', 'Snakefile_WHO', '--jobs', str(cpus)]
             targets = []
-            segment = 'ha'
-            resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
             for center in params.centers:
                 for resolution in resolutions:
                     for passage in params.passages:
-                        assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
                         for assay in assays:
                             targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
             call.extend(targets)
