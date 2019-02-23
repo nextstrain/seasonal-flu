@@ -31,15 +31,13 @@ if __name__ == '__main__':
     if params.version == 'live' or params.version == 'both':
         for lineage in params.lineages:
             if params.system == 'local':
-                call = ['nextstrain', 'build', '.', '-j', '1']
+                call = ['nextstrain', 'build', '.', '--jobs', '1']
             elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '8', '--aws-batch-memory', '14800', '.', '--jobs', '8']
+                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '8', '--aws-batch-memory', '15200', '.', '--jobs', '8']
             targets = []
             for resolution in params.resolutions:
                 for segment in params.segments:
-                    targets.append('auspice/flu_seasonal_%s_%s_%s_tree.json'%(lineage, segment, resolution))
-                    targets.append('auspice/flu_seasonal_%s_%s_%s_meta.json'%(lineage, segment, resolution))
-                    targets.append('auspice/flu_seasonal_%s_%s_%s_tip-frequencies.json'%(lineage, segment, resolution))
+                    targets.append('targets/flu_seasonal_%s_%s_%s'%(lineage, segment, resolution))
             call.extend(targets)
             print(' '.join(call))
             log = open('logs/live_%s.txt'%(lineage), 'w')
@@ -51,9 +49,9 @@ if __name__ == '__main__':
     if params.version == 'who' or params.version == 'both':
         for lineage in params.lineages:
             if params.system == 'local':
-                call = ['nextstrain', 'build', '.', '-s', 'Snakefile_WHO', '-j', '1']
+                call = ['nextstrain', 'build', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '1']
             elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '8', '--aws-batch-memory', '14800', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '8']
+                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', '16', '--aws-batch-memory', '31000', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '16']
             targets = []
             segment = 'ha'
             resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
@@ -62,14 +60,7 @@ if __name__ == '__main__':
                     for passage in params.passages:
                         assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
                         for assay in assays:
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_tree.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_meta.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_entropy.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_frequencies.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_sequences.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-sub-model.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titer-tree-model.json'%(center, lineage, segment, resolution, passage, assay))
-                            targets.append('auspice-who/flu_%s_%s_%s_%s_%s_%s_titers.json'%(center, lineage, segment, resolution, passage, assay))
+                            targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
             call.extend(targets)
             print(' '.join(call))
             log = open('logs/who_%s.txt'%(lineage), 'w')

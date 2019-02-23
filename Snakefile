@@ -90,6 +90,15 @@ rule simplify_auspice_names:
         mv {input.frequencies} {output.frequencies} &
         '''
 
+rule targets:
+    input:
+        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        seq = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
+        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+    output:
+        target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}",
+
 rule clean:
     message: "Removing directories: {params}"
     params:
