@@ -261,7 +261,7 @@ rule align:
             --reference-sequence {input.reference} \
             --output {output.alignment} \
             --remove-reference \
-            --nthreads auto
+            --nthreads 1
         """
 
 rule tree:
@@ -276,7 +276,7 @@ rule tree:
         augur tree \
             --alignment {input.alignment} \
             --output {output.tree} \
-            --nthreads auto \
+            --nthreads 1 \
             --exclude-sites {input.exclude_sites}
         """
 
