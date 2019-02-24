@@ -263,14 +263,14 @@ if __name__ == '__main__':
     parser.add_argument('--titers', nargs='+', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
                                           " and use this count as a priority for inclusion during subsampling.")
     parser.add_argument('--include', help="a text file containing strains (one per line) that will be included regardless of subsampling")
-    parser.add_argument('--max-include-range', type=float, default=5, help="number of years prior to the lower date limit for reference strain inclusion")
+    parser.add_argument('--max-include-range', type=float, default=4, help="number of years prior to the lower date limit for reference strain inclusion")
     parser.add_argument('--exclude', help="a text file containing strains (one per line) that will be excluded")
 
     args = parser.parse_args()
     time_interval = determine_time_interval(args.time_interval, args.resolution)
 
     # derive additional lower inclusion date for "force-included strains"
-    lower_reference_cutoff = date(year = time_interval[1].year - args.max_include_range, month=1, day=1)
+    lower_reference_cutoff = time_interval[1]  - timedelta(days=365.25 * args.max_include_range)
     upper_reference_cutoff = time_interval[0]
 
     # read strains to exclude
@@ -315,7 +315,7 @@ if __name__ == '__main__':
         if strain not in selected_strains and strain in filtered_metadata[guide_segment]:
             # Do not include strains sampled too far in the past or strains
             # sampled from the future relative to the requested build interval.
-            if (filtered_metadata[guide_segment][strain]['year'] >= lower_reference_cutoff.year and
+            if (filtered_metadata[guide_segment][strain]['num_date'] >= numeric_date(lower_reference_cutoff) and
                 filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)):
                 selected_strains.append(strain)
 

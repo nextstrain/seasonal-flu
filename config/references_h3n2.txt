@@ -36,6 +36,7 @@ A/HongKong/7127/2014-egg
 A/Idaho/33/2016
 A/Idaho/33/2016-egg
 A/Kansas/14/2017
+A/Kobe/63/2014
 A/LaRioja/2202/2018
 A/Maryland/23/2016
 A/Michigan/15/2014
@@ -44,6 +45,7 @@ A/Nagano/2731/2017
 A/Nebraska/2/2017
 A/Nebraska/19/2015
 A/Netherlands/524/2014
+A/Nevada/22/2016
 A/Nevada/22/2016
 A/NewCaledonia/8/2018
 A/NewCaledonia/71/2014
@@ -65,6 +67,7 @@ A/Norway/4465/2017-egg
 A/Ontario/RV2414/2015
 A/Oregon/19/2016
 A/Perth/16/2009
+A/Peru/27/2015
 A/Peru/3817/2017
 A/Saitama/103/2014-egg
 A/Sapporo/71/2015

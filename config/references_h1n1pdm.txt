@@ -1,6 +1,8 @@
 A/AbuDhabi/18/2017
+A/AbuDhabi/186/2017
 A/Aichi/190/2018
 A/Arizona/33/2017
+A/Austria/1048413/2018
 A/Bangladesh/2021/2012
 A/Bangladesh/3002/2015
 A/Bolivia/559/2013
@@ -10,7 +12,10 @@ A/Brisbane/37/2017
 A/Brisbane/96/2012
 A/Brisbane/181/2015
 A/California/7/2009
+A/Cambodia/1095/2017
+A/Catalonia/738728S/2018
 A/Darwin/6/2018
+A/England/62/2017
 A/Fiji/3/2016
 A/Florida/62/2014
 A/Florida/62/2014
@@ -29,7 +34,10 @@ A/Montana/50/2016
 A/Navarra/1985/2017
 A/Newcaledonia/58/2014
 A/NewJersey/13/2018
+A/NewMexico/19/2017
 A/Oman/3192/2017
+A/Oman/3192/2017
+A/Ontario/RV2293/2017
 A/Panama/318595/2016
 A/Paris/1447/2017
 A/Perth/10/2017
@@ -37,6 +45,7 @@ A/Perth/103/2015
 A/Singapore/GP1908/2015
 A/SouthAfrica/3626/2013
 A/StPetersburg/61/2015
+A/Sydney/31/2018
 A/Taiwan/80693/2018
 A/Tasmania/24/2014
 A/Texas/157/2016

@@ -212,12 +212,14 @@ A/Michigan/96/2016
 A/Minnesota/9/2010
 A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
+A/Minnesota/11/2012
 A/Minnesota/15/2012
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/NewJersey/53/2015
 A/Ohio/2/2014
 A/Ohio/5/2013
+A/Ohio/13/2012
 A/Ohio/13/2012-egg
 A/Ohio/14/2012
 A/Ohio/15/2012
@@ -283,8 +285,8 @@ A/SaoPaulo/61282/2015
 A/SaoPaulo/65194/2015
 A/SaoPaulo/554097/2017
 A/Sari/388/2006
-A/Shanghai/6/2014
 A/Shanghai-Minxing/1482/2017
+A/Shanghai/6/2014
 A/SouthAustralia/22/2018
 A/SouthAustralia/47/2016
 A/SouthCarolina/NHRC0001/2011
