@@ -70,7 +70,7 @@ if __name__ == '__main__':
     SeqIO.write(sequences, tmp_file, 'fasta')
     fail = align.run(pseudo_args(sequences=tmp_file, reference_sequence=args.reference_sequence,
                       output = tmp_file_out, reference_name=None, remove_reference=True,
-                      method='mafft', nthreads=2, fill_gaps=False))
+                      method='mafft', nthreads=1, fill_gaps=False))
     if fail:
         sys.exit(fail)
 

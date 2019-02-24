@@ -237,3 +237,20 @@ rule export_who:
             --output-tree {output.tree} \
             --output-meta {output.meta}
         """
+
+rule targets:
+    input:
+        tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
+        entropy = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_entropy.json",
+        frequencies = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json",
+        sequences = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
+        titer_sub_model = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-sub-model.json",
+        titer_tree_model = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-tree-model.json",
+        titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json"
+    output:
+        target = "targets/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}"
+    shell:
+        '''
+        touch {output.target}
+        '''

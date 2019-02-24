@@ -7,6 +7,7 @@ auspice-who/
 build/
 logs/
 figures/
+targets/
 
 # Sensitive environment variables
 environment*
