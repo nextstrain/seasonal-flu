@@ -66,12 +66,13 @@
   ],
   "panels": [
     "tree",
+    "map",    
     "entropy",
     "frequencies"
   ],
   "vaccine_choices": {
-    "B/Malaysia/2506/2004": "2006-09-25", 
-    "B/Brisbane/60/2008": "2009-09-25", 
+    "B/Malaysia/2506/2004": "2006-09-25",
+    "B/Brisbane/60/2008": "2009-09-25",
     "B/Colorado/6/2017": "2018-02-22"
-  }   
+  }
 }

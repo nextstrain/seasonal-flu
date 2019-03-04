@@ -66,13 +66,14 @@
   ],
   "panels": [
     "tree",
+    "map",
     "entropy",
     "frequencies"
   ],
   "vaccine_choices": {
-    "B/Shanghai/361/2002": "2004-09-25",   
-    "B/Florida/4/2006": "2008-09-25", 
-    "B/Wisconsin/1/2010": "2012-02-25", 
+    "B/Shanghai/361/2002": "2004-09-25",
+    "B/Florida/4/2006": "2008-09-25",
+    "B/Wisconsin/1/2010": "2012-02-25",
     "B/Phuket/3073/2013": "2014-09-25"
-  }   
+  }
 }
