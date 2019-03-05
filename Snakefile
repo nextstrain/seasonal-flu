@@ -3,7 +3,7 @@ from treetime.utils import numeric_date
 
 path_to_fauna = os.environ.get('FAUNA_PATH')
 min_length = 900
-segments = ['ha', 'na']
+segments = ['ha', 'na'] # order is important. first entry is the seed for reassortment.
 lineages = ['h3n2']
 resolutions = ['2y']
 
@@ -397,6 +397,21 @@ rule lbi:
             --tau {params.tau} \
             --window {params.window}
         """
+
+rule hamming_distance:
+    message:
+        """
+        Calculating hamming distance for {wildcards.lineage} {wildcards.segment} {wildcards.resolution}
+        """
+    input:
+        aligned = rules.align.output.alignment
+    output:
+        data = "results/distance_{lineage}_{segment}_{resolution}.json"
+    shell:
+        """
+        python scripts/reassort/hamming.py --fasta {input.aligned} --output {output.data}
+        """
+
 
 def _get_trees_for_all_segments(wildcards):
     trees = []
