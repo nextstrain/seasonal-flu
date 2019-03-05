@@ -11,7 +11,12 @@ This allows the concatenation of the segments for each set of (non-reassorting) 
 
 
 #### Method
-In development
+In development.
+
+The easiest way to rerun the algorithm when the script has changed is to run:
+```bash
+snakemake --force results/reassort_h3n2_2y.json && snakemake
+```
 
 
 ## Running

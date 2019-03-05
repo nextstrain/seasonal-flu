@@ -25,18 +25,6 @@
       "menuItem": "clade",
       "type": "discrete"
     },
-    "cTiter": {
-      "key": "cTiter",
-      "legendTitle": "Antigenic advance (tree model)",
-      "menuItem": "antigenic advance (tree model)",
-      "type": "continuous"
-    },
-    "cTiterSub": {
-      "key": "cTiterSub",
-      "legendTitle": "Antigenic advance (sub model)",
-      "menuItem": "antigenic advance (sub model)",
-      "type": "continuous"
-    },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
@@ -45,23 +33,17 @@
       "menuItem": "local branching index",
       "type": "continuous"
     },
-    "ep": {
-      "menuItem": "epitope mutations",
-      "legendTitle": "Epitope mutations",
+    "reassort": {
+      "menuItem": "reassort",
+      "legendTitle": "reassort",
       "type": "continuous",
-      "key": "ep"
+      "key": "reassort"
     },
-    "ne": {
-      "menuItem": "non-epitope mutations",
-      "legendTitle": "Non-epitope mutations",
+    "reassort_raw": {
+      "menuItem": "reassort_raw",
+      "legendTitle": "reassort_raw",
       "type": "continuous",
-      "key": "ne"
-    },
-    "rb": {
-      "menuItem": "RBS adjacent mutations",
-      "legendTitle": "RBS adjacent mutations",
-      "type": "continuous",
-      "key": "rb"
+      "key": "reassort_raw"
     }
   },
   "geo": [

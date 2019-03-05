@@ -398,6 +398,23 @@ rule lbi:
             --window {params.window}
         """
 
+def _get_trees_for_all_segments(wildcards):
+    trees = []
+    for seg in segments:
+        trees.append(rules.refine.output.tree.format(**wildcards, **{"segment": seg}))
+    return trees
+
+rule identify_non_reassorting_tips:
+    message: "Identifying sets of tips which have not reassorted"
+    input:
+        trees = _get_trees_for_all_segments
+    output:
+        data = "results/reassort_{lineage}_{resolution}.json"
+    shell:
+        """
+        python scripts/reassort --trees {input.trees} --output {output.data}
+        """
+
 def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
     """
@@ -410,6 +427,10 @@ def _get_node_data_for_export(wildcards):
         rules.traits.output.node_data,
         rules.lbi.output.lbi
     ]
+
+    # HA gets the reassortant information
+    if wildcards["segment"] == "ha":
+        inputs.append(rules.identify_non_reassorting_tips.output.data)
 
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards) for input_file in inputs]
