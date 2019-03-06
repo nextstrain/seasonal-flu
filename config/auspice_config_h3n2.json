@@ -33,6 +33,12 @@
       "menuItem": "local branching index",
       "type": "continuous"
     },
+    "seed_id": {
+      "menuItem": "seed_id",
+      "legendTitle": "seed_id",
+      "type": "continuous",
+      "key": "seed_id"
+    },
     "reassort": {
       "menuItem": "reassort",
       "legendTitle": "reassort",

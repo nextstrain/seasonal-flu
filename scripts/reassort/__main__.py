@@ -14,6 +14,8 @@ def get_args():
 
     parser.add_argument('--trees', nargs='+',
                         help="newick tree files")
+    parser.add_argument('--distances', nargs='+',
+                        help="distance metrics (for each tree)")
     parser.add_argument('--output',
                         help="json file containing clade definitions")
 
@@ -21,16 +23,32 @@ def get_args():
     return args
 
 
-class Trees():
-    def __init__(self, paths):
-        super().__init__()
-        print("Set up the trees object", paths)
+def write_node_data_json(tree, output_path, attr_map, missing_value = 0):
+    strain_data = defaultdict(dict)
+    for node in t.tree.find_clades():
+        for attr, label in attr_map.items():
+            strain_data[node.name][label] = getattr(node, attr, missing_value)
+    with open(output_path, 'w') as fh:
+        json.dump({"nodes": strain_data}, fh, indent=2, sort_keys = True)
+    print("Saved node JSON with these attrs:", ",".join(attr_map.values()))
+    print("Don't forget to add them to the auspice config JSON before running \"augur export\"")
 
-        self.tree = Bio.Phylo.read(paths[0], "newick") # <class 'Bio.Phylo.Newick.Tree'>
+
+class Trees():
+    def __init__(self, treePaths, distancePaths):
+        super().__init__()
+        print("Trees class __init__")
+        print("\tReading in these trees:", treePaths)
+        self.tree = Bio.Phylo.read(treePaths[0], "newick") # <class 'Bio.Phylo.Newick.Tree'>
         self.set_parent_links_in_tree(self.tree)
-        self.other_trees = [Bio.Phylo.read(p, "newick") for p in paths[1:]]
+        self.other_trees = [Bio.Phylo.read(p, "newick") for p in treePaths[1:]]
         self.strains_common_to_all_trees = self.get_common_strains_between_trees([self.tree, *self.other_trees])
         self.current_reassort_id = 0
+        print("\tReading in distance files:", distancePaths)
+        self.distances = []
+        for p in distancePaths[1:]:
+            with open(p) as fh:    
+                self.distances.append(json.load(fh))
 
     @staticmethod
     def set_parent_links_in_tree(tree):
@@ -43,6 +61,57 @@ class Trees():
     def get_common_strains_between_trees(trees):
         strains = [set([node.name for node in t.find_clades() if node.is_terminal()]) for t in trees]
         return set.intersection(*strains)
+
+    def do_all_nodes_have_same_set_of_common_ancestors(self, node, comparison_trees):
+        def equal_set_exists(a, listB):
+            for b in listB:
+                if a == b:
+                    return True
+            return False
+
+        for n1 in node.find_clades(terminal=False, order='preorder'):
+            set_of_strains = {n2.name for n2 in n1.get_terminals() if n2.name in self.strains_common_to_all_trees}
+            # print("\tChecking set of strains from ", n1.name, "with ", len(set_of_strains), "strains")
+            for terminal_sets_in_other_tree in self.terminal_sets:
+                if not equal_set_exists(set_of_strains, terminal_sets_in_other_tree): 
+                    return False # one failure means the question if false
+        
+        return True
+
+
+    @staticmethod
+    def mark_downstream(node, attr, value, include_node=True):
+        if include_node:
+            setattr(node, attr, value)
+        for n in node.find_clades():
+            setattr(n, attr, value)
+
+
+    def store_terminal_sets(self):
+        """
+        for all trees, calculate & store sets of common tips across nodes.
+        A convenient function for performance reasons.
+        Does not consider terminal nodes.
+        """
+        self.terminal_sets = []
+        for tree in self.other_trees:
+            self.terminal_sets.append(
+                [{n.name for n in node.get_terminals() if n.name in self.strains_common_to_all_trees} for node in tree.find_clades(terminal=False, order='preorder')]
+            )
+    
+    def find_best_seeds(self):
+        self.seed_nodes = []
+        self.store_terminal_sets()
+        seed_id = 1
+        for node in self.tree.find_clades(terminal=False, order="preorder"):
+            if hasattr(node, "seed_id"):
+                continue
+            if self.do_all_nodes_have_same_set_of_common_ancestors(node, self.other_trees):
+                self.mark_downstream(node, "seed_id", seed_id)
+                self.seed_nodes.append(node)
+                print(node.name, node.count_terminals(), "has been assigned seed ID", seed_id)
+                seed_id += 1
+
 
     def reset_pointer(self):
         """set the pointer to a new terminal (i.e. strain)
@@ -231,14 +300,28 @@ class Trees():
 if __name__ == '__main__':
     args = get_args()
 
-    t = Trees(args.trees)
-    tmp = 0
+    t = Trees(args.trees, args.distances)
+    debugging_break_counter = 0
+
+    # Use phylogenetic concordance (strict) to identify the best seeds to start the algorithm
+    t.find_best_seeds()
+
+    write_node_data_json(t, args.output, {"seed_id": "seed_id"})
+
+    # strain_data[node.name]["reassort_raw"] = getattr(node, "reassort_id", 0)
+    # strain_data[node.name]["reassort"] = getattr(node, "reassort_id_no_gaps", 0)
+
+    sys.exit(0)
 
 
+    # Algorithm picks a leaf as a seed (and sets the pointer to it)
+    # and we then try to greedily add related strains to the set,
+    # according to if they have reassorted.
     while t.reset_pointer():
-        tmp += 1
-        # if tmp>100:
-        #     break
+
+        debugging_break_counter += 1
+        if debugging_break_counter>10:
+            break
 
         while t.try_move_pointer():
             print("pointer moved up to {} ({} terminals)".format(t.pointer.name, len(t.pointer.get_terminals())))
