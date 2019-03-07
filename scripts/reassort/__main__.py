@@ -24,11 +24,12 @@ def get_args():
     return args
 
 
-def write_node_data_json(tree, output_path, attr_map, missing_value = 0):
+def write_node_data_json(tree, output_path, attr_map):
     strain_data = defaultdict(dict)
     for node in t.tree.find_clades():
         for attr, label in attr_map.items():
-            strain_data[node.name][label] = getattr(node, attr, missing_value)
+            if hasattr(node, attr) and getattr(node, attr)>0:
+                strain_data[node.name][label] = getattr(node, attr)
     with open(output_path, 'w') as fh:
         json.dump({"nodes": strain_data}, fh, indent=2, sort_keys = True)
     print("Saved node JSON with these attrs:", ", ".join(attr_map.values()))
@@ -151,17 +152,41 @@ class Trees():
                 x = self.num_of_mutations_observed_along_path(self.mutations[idx], nodes_in_path)
                 mutation_distributions[idx].append(x)
 
-
         msg = ""
         msg += "mean number of mutations across seed clades: {:.2f}\n".format(np.mean(mutation_distributions))
         msg += "per tree means: "
         for idx in range(0, len(self.trees)):
             msg += "{:.2f}, ".format(np.mean(mutation_distributions[idx]))
-        msg += "\nRANGES. min: {} 25%: {:.1f} median: {:.1f} 75%: {:.1f} max: {}\n".format(np.min(mutation_distributions), np.percentile(mutation_distributions, 25), np.percentile(mutation_distributions, 50), np.percentile(mutation_distributions, 75), np.max(mutation_distributions))
-        msg += "mean num tips per clade: {:.1f}\n".format(np.mean(num_tips_per_seed))
-        msg += "mean mutations per additional tip: {:.2f}".format(np.mean(mutation_distributions)/np.mean(num_tips_per_seed))
+        msg += "\nmean num tips per clade: {:.1f}\n\n".format(np.mean(num_tips_per_seed))
+
+        dist_mutations_per_tip_per_tree = [[x[0]/x[1] for x in zip(mutation_distributions[idx], num_tips_per_seed)] for idx in range(0, len(self.trees))]
+        mean_mutations_per_tip_per_tree = [np.mean(x) for x in dist_mutations_per_tip_per_tree]
+        mean_mutations_per_tip = np.mean(mean_mutations_per_tip_per_tree)
+        msg += "(mean # muts) per tip: {:.2f}\n".format(mean_mutations_per_tip)
+        msg += "per tree: "
+        for idx in range(0, len(self.trees)):
+            msg += "{:.2f}, ".format(np.mean(mean_mutations_per_tip_per_tree[idx]))
+        msg += "\n\n"
+
+        percentiles = [50, 60, 70, 80]
+        percentile_mutations_per_tip_per_tree = [[np.percentile(x, y) for x in dist_mutations_per_tip_per_tree] for y in percentiles]
+        msg += "Percentiles (per tree):"
+        for pidx, p in enumerate(percentiles):
+            msg += "\n\t{}% -> ".format(p)
+            for tidx in range(0, len(self.trees)):
+                msg += "{:.2f}, ".format(percentile_mutations_per_tip_per_tree[pidx][tidx])
+            
+        msg += "\n\nsetting self.params.exp_muts_per_tip_added_per_tree to the mean value\n"
+        self.params.exp_muts_per_tip_added_per_tree = mean_mutations_per_tip_per_tree
+
+        # msg += "\n\nsetting self.params.exp_muts_per_tip_added_per_tree to the 70th percentile value\n"
+        # self.params.exp_muts_per_tip_added_per_tree = percentile_mutations_per_tip_per_tree[2]
+
+
         print(msg)
         print_end_of_block()
+
+        # import pdb; pdb.set_trace()
 
 
 
@@ -344,11 +369,13 @@ class Trees():
 
     def does_clade_appear_non_reassortant(self, clade):
         """
-        Given a clade to check, how many mutations are needed to add
-        all members of the clade to the current reassort_id
-        If this is over the parameter value "mutation_threshold_for_inclusion"
-        then it's classified as a reassortant.
+        Given a clade to check we here decide whether the tips are (potentially) linked
+        without reassortment with the current selection of tips.
 
+        We do this by calculating how many mutations (along the tree) are needed to add them to the clade
+        and compare this with the expectation based upon the "best_seeds" which gave us 
+        self.params.exp_muts_per_tip_added_per_tree
+        
         Here we could add further phylogenetic checks in the future.
         """
 
@@ -373,8 +400,6 @@ class Trees():
             # we take all termial nodes
             strains = {n for n in clade.get_terminals() if n.name in self.strains_common_to_all_trees}
 
-        if already_has_id == 8:
-            import pdb; pdb.set_trace()
 
         for idx, t in enumerate(self.trees):
             if already_has_id:
@@ -383,7 +408,8 @@ class Trees():
                 nodes_in_path = self.minimal_nodes_to_form_path(t, common_ancestors=[taxa_in_this_id], strains=strains)
 
             x = self.num_of_mutations_observed_along_path(self.mutations[idx], nodes_in_path)
-            if x > self.params.mutation_threshold_for_inclusion:
+            allowed_mutations = len(strains) * self.params.exp_muts_per_tip_added_per_tree[idx]
+            if x > allowed_mutations:
                 # print("\t\tEXCLUDED (", x, "mutations!)")
                 return False
 
@@ -455,6 +481,7 @@ class Trees():
                 continue  
             elif self.does_clade_appear_non_reassortant(clade):
                 self.add_clade(clade)
+                current_skip_count = 0
             else:
                 current_skip_count += 1 # want to see entire polytomy, not bail early
 
@@ -472,7 +499,6 @@ if __name__ == '__main__':
     args = get_args()
     params = {
         "max_skip_count": 4,
-        "mutation_threshold_for_inclusion": 10
     }
 
     t = Trees(params, args.trees, args.mutations)
