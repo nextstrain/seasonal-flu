@@ -15,7 +15,8 @@ In development.
 
 The easiest way to rerun the algorithm when the script has changed is to run:
 ```bash
-snakemake --force results/reassort_h3n2_2y.json && snakemake
+snakemake --force results/reassort_h3n2_2y_5vpm.json && snakemake
+snakemake --force results/reassort_h3n2_2y_20vpm.json && snakemake
 ```
 
 

@@ -6,10 +6,7 @@ min_length = 900
 segments = ['ha', 'na'] # order is important. first entry is the seed for reassortment.
 lineages = ['h3n2']
 resolutions = ['2y']
-
-def vpm(v):
-    vpm = {'2y':5}
-    return vpm[v.resolution] if v.resolution in vpm else 5
+vpm = [5, 20]
 
 def reference_strain(v):
     references = {'h3n2':"A/Beijing/32/1992"}
@@ -53,7 +50,7 @@ def _get_clades_file_for_wildcards(wildcards):
     if wildcards.segment == "ha":
         return "config/clades_%s_ha.tsv"%(wildcards.lineage)
     else:
-        return "results/clades_%s_ha_%s.json"%(wildcards.lineage, wildcards.resolution)
+        return "results/clades_%s_ha_%s_%svpm.json"%(wildcards.lineage, wildcards.resolution, wildcards.vpm)
 
 #
 # Define LBI parameters and functions.
@@ -77,8 +74,8 @@ def _get_lbi_window_for_wildcards(wildcards):
 
 rule all:
     input:
-        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_{vpm}vpm_tree.json", lineage=lineages, segment=segments, resolution=resolutions, vpm=vpm),
+        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_{vpm}vpm_meta.json", lineage=lineages, segment=segments, resolution=resolutions, vpm=vpm),
 
 # separate rule for interaction with fauna
 rule download_all:
@@ -169,9 +166,9 @@ rule select_strains:
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
         include = files.references
     output:
-        strains = "results/strains_{lineage}_{resolution}.txt",
+        strains = "results/strains_{lineage}_{resolution}_{vpm}.txt",
     params:
-        viruses_per_month = vpm
+        viruses_per_month = "{vpm}"
     shell:
         """
         python3 scripts/select_strains.py \
@@ -194,7 +191,7 @@ rule extract:
         sequences = rules.filter.output.sequences,
         strains = rules.select_strains.output.strains
     output:
-        sequences = 'results/extracted_{lineage}_{segment}_{resolution}.fasta'
+        sequences = 'results/extracted_{lineage}_{segment}_{resolution}_{vpm}vpm.fasta'
     shell:
         """
         python3 scripts/extract_sequences.py \
@@ -213,7 +210,7 @@ rule align:
         sequences = rules.extract.output.sequences,
         reference = files.reference
     output:
-        alignment = "results/aligned_{lineage}_{segment}_{resolution}.fasta"
+        alignment = "results/aligned_{lineage}_{segment}_{resolution}_{vpm}vpm.fasta"
     shell:
         """
         augur align \
@@ -230,7 +227,7 @@ rule tree:
     input:
         alignment = rules.align.output.alignment
     output:
-        tree = "results/tree-raw_{lineage}_{segment}_{resolution}.nwk"
+        tree = "results/tree-raw_{lineage}_{segment}_{resolution}_{vpm}vpm.nwk"
     shell:
         """
         augur tree \
@@ -253,8 +250,8 @@ rule refine:
         alignment = rules.align.output,
         metadata = rules.parse.output.metadata
     output:
-        tree = "results/tree_{lineage}_{segment}_{resolution}.nwk",
-        node_data = "results/branch-lengths_{lineage}_{segment}_{resolution}.json"
+        tree = "results/tree_{lineage}_{segment}_{resolution}_{vpm}vpm.nwk",
+        node_data = "results/branch-lengths_{lineage}_{segment}_{resolution}_{vpm}vpm.json"
     params:
         coalescent = "const",
         date_inference = "marginal",
@@ -282,7 +279,7 @@ rule ancestral:
         tree = rules.refine.output.tree,
         alignment = rules.align.output
     output:
-        node_data = "results/nt-muts_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/nt-muts_{lineage}_{segment}_{resolution}_{vpm}vpm.json"
     params:
         inference = "joint"
     shell:
@@ -301,7 +298,7 @@ rule translate:
         node_data = rules.ancestral.output.node_data,
         reference = files.reference
     output:
-        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}_{vpm}vpm.json",
     shell:
         """
         augur translate \
@@ -315,9 +312,9 @@ rule reconstruct_translations:
     message: "Reconstructing translations required for titer models and frequencies"
     input:
         tree = rules.refine.output.tree,
-        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/aa-muts_{lineage}_{segment}_{resolution}_{vpm}vpm.json",
     output:
-        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{gene}.fasta"
+        aa_alignment = "results/aa-seq_{lineage}_{segment}_{resolution}_{vpm}vpm_{gene}.fasta"
     shell:
         """
         augur reconstruct-sequences \
@@ -337,7 +334,7 @@ rule traits:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata
     output:
-        node_data = "results/traits_{lineage}_{segment}_{resolution}.json",
+        node_data = "results/traits_{lineage}_{segment}_{resolution}_{vpm}vpm.json",
     params:
         columns = "region"
     shell:
@@ -353,12 +350,12 @@ rule traits:
 rule clades:
     message: "Annotating clades"
     input:
-        tree = "results/tree_{lineage}_ha_{resolution}.nwk",
+        tree = "results/tree_{lineage}_ha_{resolution}_{vpm}vpm.nwk",
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
         clades = _get_clades_file_for_wildcards
     output:
-        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+        clades = "results/clades_{lineage}_{segment}_{resolution}_{vpm}vpm.json"
     run:
         if wildcards.segment == 'ha':
             shell("""
@@ -386,7 +383,7 @@ rule lbi:
         window = _get_lbi_window_for_wildcards,
         names = "lbi"
     output:
-        lbi = "results/lbi_{lineage}_{segment}_{resolution}.json"
+        lbi = "results/lbi_{lineage}_{segment}_{resolution}_{vpm}vpm.json"
     shell:
         """
         augur lbi \
@@ -425,7 +422,7 @@ rule identify_non_reassorting_tips:
         trees = _get_trees_for_all_segments,
         mutations = lambda wildcards: [rules.ancestral.output.node_data.format(**wildcards, **{"segment": seg}) for seg in segments]
     output:
-        data = "results/reassort_{lineage}_{resolution}.json"
+        data = "results/reassort_{lineage}_{resolution}_{vpm}vpm.json"
     shell:
         """
         python scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
@@ -459,8 +456,8 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json"
+        auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_{vpm}vpm_tree.json",
+        auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_{vpm}vpm_meta.json"
     shell:
         """
         augur export \
