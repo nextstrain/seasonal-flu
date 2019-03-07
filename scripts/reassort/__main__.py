@@ -4,6 +4,7 @@ import Bio.SeqIO
 import Bio.Phylo
 from collections import defaultdict
 from random import randint
+import numpy as np
 
 
 def get_args():
@@ -14,8 +15,8 @@ def get_args():
 
     parser.add_argument('--trees', nargs='+',
                         help="newick tree files")
-    parser.add_argument('--distances', nargs='+',
-                        help="distance metrics (for each tree)")
+    parser.add_argument('--mutations', nargs='+',
+                        help="inferred mutations (for each tree)")
     parser.add_argument('--output',
                         help="json file containing clade definitions")
 
@@ -30,25 +31,40 @@ def write_node_data_json(tree, output_path, attr_map, missing_value = 0):
             strain_data[node.name][label] = getattr(node, attr, missing_value)
     with open(output_path, 'w') as fh:
         json.dump({"nodes": strain_data}, fh, indent=2, sort_keys = True)
-    print("Saved node JSON with these attrs:", ",".join(attr_map.values()))
+    print("Saved node JSON with these attrs:", ", ".join(attr_map.values()))
     print("Don't forget to add them to the auspice config JSON before running \"augur export\"")
 
+def print_title(title):
+    print("***************************************************************************")
+    print(title)
+    print("***************************************************************************")
+
+def print_end_of_block():
+    print("---------------------------------------------------------------------------\n\n")
 
 class Trees():
-    def __init__(self, treePaths, distancePaths):
+    def __init__(self, params, treePaths, mutationPaths):
         super().__init__()
-        print("Trees class __init__")
+        print_title("Trees class __init__")
+        self.params = type('params', (), {})()
+        [setattr(self.params, k, v) for k, v in params.items()]
         print("\tReading in these trees:", treePaths)
-        self.tree = Bio.Phylo.read(treePaths[0], "newick") # <class 'Bio.Phylo.Newick.Tree'>
-        self.set_parent_links_in_tree(self.tree)
-        self.other_trees = [Bio.Phylo.read(p, "newick") for p in treePaths[1:]]
-        self.strains_common_to_all_trees = self.get_common_strains_between_trees([self.tree, *self.other_trees])
+        self.trees = [Bio.Phylo.read(p, "newick") for p in treePaths]
+        self.name_to_node_maps = []
+        for tree in self.trees:
+            self.set_parent_links_in_tree(tree)
+            self.name_to_node_maps.append(self.get_name_to_node_map(tree))
+        self.strains_common_to_all_trees = self.get_common_strains_between_trees(self.trees)
+        self.tree = self.trees[0] # for convenience
         self.current_reassort_id = 0
-        print("\tReading in distance files:", distancePaths)
-        self.distances = []
-        for p in distancePaths[1:]:
-            with open(p) as fh:    
-                self.distances.append(json.load(fh))
+        self.reassort_id_strain_map = {}
+        print("\tReading in mutation JSONs files:", mutationPaths)
+        self.mutations = []
+        for p in mutationPaths:
+            with open(p) as fh:
+                raw_data = json.load(fh)
+                self.mutations.append(raw_data["nodes"])
+        print_end_of_block()
 
     @staticmethod
     def set_parent_links_in_tree(tree):
@@ -56,14 +72,21 @@ class Trees():
             for child in clade:
                 child.parent = clade
         tree.root.parent = False
+    
+    @staticmethod
+    def get_name_to_node_map(tree):
+        data = {}
+        for clade in tree.find_clades():
+            data[clade.name] = clade
+        return data
 
     @staticmethod
     def get_common_strains_between_trees(trees):
         strains = [set([node.name for node in t.find_clades() if node.is_terminal()]) for t in trees]
         return set.intersection(*strains)
 
-    def do_all_nodes_have_same_set_of_common_ancestors(self, node, comparison_trees):
-        def equal_set_exists(a, listB):
+    def do_all_nodes_have_same_set_of_common_ancestors(self, node, comparison_trees, monopyletic_tip_sets_per_tree):
+        def is_a_in_b(a, listB):
             for b in listB:
                 if a == b:
                     return True
@@ -72,9 +95,11 @@ class Trees():
         for n1 in node.find_clades(terminal=False, order='preorder'):
             set_of_strains = {n2.name for n2 in n1.get_terminals() if n2.name in self.strains_common_to_all_trees}
             # print("\tChecking set of strains from ", n1.name, "with ", len(set_of_strains), "strains")
-            for terminal_sets_in_other_tree in self.terminal_sets:
-                if not equal_set_exists(set_of_strains, terminal_sets_in_other_tree): 
-                    return False # one failure means the question if false
+
+            for monopyletic_tip_sets in monopyletic_tip_sets_per_tree:
+                # check if our set of strains is present in some monophyly in the other tree
+                if not is_a_in_b(set_of_strains, monopyletic_tip_sets): 
+                    return False # one failure means the question is false
         
         return True
 
@@ -86,79 +111,122 @@ class Trees():
         for n in node.find_clades():
             setattr(n, attr, value)
 
+    def find_best_seeds(self):
+        print_title("Finding best seeds")
+        self.seed_nodes = []
 
-    def store_terminal_sets(self):
-        """
-        for all trees, calculate & store sets of common tips across nodes.
-        A convenient function for performance reasons.
-        Does not consider terminal nodes.
-        """
-        self.terminal_sets = []
-        for tree in self.other_trees:
-            self.terminal_sets.append(
+        # for speed reasons, precalculate the list of each set of terminal nodes (done for every node in the tree)
+        monopyletic_tip_sets_per_tree = []
+        for tree in self.trees:
+            monopyletic_tip_sets_per_tree.append(
                 [{n.name for n in node.get_terminals() if n.name in self.strains_common_to_all_trees} for node in tree.find_clades(terminal=False, order='preorder')]
             )
-    
-    def find_best_seeds(self):
-        self.seed_nodes = []
-        self.store_terminal_sets()
+
         seed_id = 1
         for node in self.tree.find_clades(terminal=False, order="preorder"):
             if hasattr(node, "seed_id"):
                 continue
-            if self.do_all_nodes_have_same_set_of_common_ancestors(node, self.other_trees):
+            if self.do_all_nodes_have_same_set_of_common_ancestors(node, self.trees[1:], monopyletic_tip_sets_per_tree[1:]):
                 self.mark_downstream(node, "seed_id", seed_id)
                 self.seed_nodes.append(node)
-                print(node.name, node.count_terminals(), "has been assigned seed ID", seed_id)
+                print("\t", node.name, node.count_terminals(), "has been assigned seed ID", seed_id)
                 seed_id += 1
+        print_end_of_block()
+
+    def get_stats_on_best_seeds(self):
+        """
+        Get stats from the seeds (which are phylogenetically thought to be non-reassorting)
+        which will be able to inform our parameter choices 
+        """
+        print_title("Statistics on the \"best\" seeds")
+        
+        mutation_distributions = [[] for _ in self.trees]
+        num_tips_per_seed = []
+
+        for seed_root in self.seed_nodes:
+            tip_names = {n.name for n in seed_root.get_terminals() if n.name in self.strains_common_to_all_trees}
+            num_tips_per_seed.append(len(tip_names))
+            for idx, tree in enumerate(self.trees):
+                nodes_in_path = self.minimal_nodes_to_form_path(tree, strains=tip_names)
+                x = self.num_of_mutations_observed_along_path(self.mutations[idx], nodes_in_path)
+                mutation_distributions[idx].append(x)
+
+
+        msg = ""
+        msg += "mean number of mutations across seed clades: {:.2f}\n".format(np.mean(mutation_distributions))
+        msg += "per tree means: "
+        for idx in range(0, len(self.trees)):
+            msg += "{:.2f}, ".format(np.mean(mutation_distributions[idx]))
+        msg += "\nRANGES. min: {} 25%: {:.1f} median: {:.1f} 75%: {:.1f} max: {}\n".format(np.min(mutation_distributions), np.percentile(mutation_distributions, 25), np.percentile(mutation_distributions, 50), np.percentile(mutation_distributions, 75), np.max(mutation_distributions))
+        msg += "mean num tips per clade: {:.1f}\n".format(np.mean(num_tips_per_seed))
+        msg += "mean mutations per additional tip: {:.2f}".format(np.mean(mutation_distributions)/np.mean(num_tips_per_seed))
+        print(msg)
+        print_end_of_block()
+
 
 
     def reset_pointer(self):
-        """set the pointer to a new terminal (i.e. strain)
-        that has not yet been assigned a reassort id.
-        Reset the appropriate temp variables (variables prefixed with "current")
+        """
+        Set the pointer to a new position to begin (attempting to) add sister strains which have not reassorted
+        This could be a node (if it's been identified as a seed node) OR
+        a terminal node. Either way, it will not yet have been assigned a reassort id.
+        
+        SIDE EFFECTS:
+        self.pointer                        points to new node (!)
+        self.current_reassort_id            incremented by one
+        node.reassort_id (in self.trees)
+
+        RETURNS:
+        bool
         """
 
-        # things to do on every reset, no matter what
+        if self.current_reassort_id:
+            # the (soon-to-be-previous) reassort_id may have been set on "extra" (higher) nodes
+            # due to how we check for more nodes to possible add to it.
+            # ensure that it's not set higher than the CA of the tips which have this ID
+            n = self.tree.common_ancestor(self.reassort_id_strain_map[self.current_reassort_id])
+            while True:
+                if not n.parent:
+                    break
+                if getattr(n.parent, "reassort_id", False)==self.current_reassort_id:
+                    delattr(n.parent, "reassort_id")
+                n = n.parent
+
+
         self.current_reassort_id += 1
-        self.current_false_moves = 0
-        self.current_pruned_nodes = set([])
-        self.current_pruned_taxa = set([])
-        if not hasattr(self, "current_singleton_nodes"):
-            self.current_singleton_nodes = set([])
-        if len(self.current_singleton_nodes):
-            for node in self.current_singleton_nodes:
-                delattr(node, "reassort_id")
-            self.current_singleton_nodes = set([])
-        self.current_strain_set = set([])
-        
-        # try to find a new terminal node not part of a current reassort id clade
-        for clade in self.tree.find_clades(order="postorder"):
-            if not clade.is_terminal():
+        self.reassort_id_strain_map[self.current_reassort_id] = set()
+
+        for clade in self.tree.find_clades(order="preorder"):
+            if hasattr(clade, "seed_id") and not hasattr(clade, "reassort_id"):
+                self.pointer = clade
+                setattr(self.pointer, "reassort_id", self.current_reassort_id)
+                for n in self.pointer.find_clades():
+                    setattr(n, "reassort_id", self.current_reassort_id)
+                for n in self.pointer.get_terminals():
+                    if n.name in self.strains_common_to_all_trees:
+                      self.reassort_id_strain_map[self.current_reassort_id].add(n.name)
+                print("pointer set to id#", self.current_reassort_id, "(seed id = ", getattr(clade, "seed_id"), ") num taxa:", len(self.reassort_id_strain_map[self.current_reassort_id]))
+                return True
+
+        for node in self.tree.get_terminals():
+            if node.name not in self.strains_common_to_all_trees:
                 continue
-            if hasattr(clade, "reassort_id"):
+            if hasattr(node, "reassort_id"):
                 continue
-            self.pointer = clade
+            self.pointer = node
             setattr(self.pointer, "reassort_id", self.current_reassort_id)
-            print(f"\n\nPointer reset to a new seed: {self.pointer.name}. Reassort id: {self.current_reassort_id}")
-            self.current_strain_set.add(self.pointer.name)
+            self.reassort_id_strain_map[self.current_reassort_id].add(node.name)
+            print("pointer set to id #", self.current_reassort_id, self.pointer.name)
             return True
 
-        print("\Can no longer reset pointer")
         return False
 
-    def try_move_pointer(self):
-        # if self.current_false_moves > 0:
-        #     print("Not moving pointer -- current_false_moves limit exceeded")
-        #     return False
+    def move_pointer_up(self):
         if not self.pointer.parent: # pointer is at the root
-            print("Not moving pointer -- pointer already at root!")
-            return False
+            raise Exception("Not moving pointer -- pointer already at root!")
         if hasattr(self.pointer.parent, "reassort_id"):
-            print("Not moving pointer -- parent already assigned ID")
-            return False
+            raise Exception("Not moving pointer -- parent already assigned ID")
         self.pointer = self.pointer.parent
-        return True
 
 
     def preorder_excluding_pruned(self, node):
@@ -171,115 +239,6 @@ class Trees():
                 #     continue
                 yield node
                 yield from self.preorder_excluding_pruned(child)
-
-    def _are_taxa_congruent(self, taxa_A):
-        """MUST TAKE INTO ACCOUNT POLYTOMIES!!!"""
-
-        taxa_A = taxa_A.intersection(self.strains_common_to_all_trees)
-        taxa_A = taxa_A.difference(self.current_pruned_taxa)
-
-
-        ## compare this to other trees! (this can be drastically sped up, BTW)
-        # currently assume only 1 other tree to simplify things
-        taxa_B = set([])
-        for node in self.other_trees[0].common_ancestor(taxa_A).find_clades():
-            if node.is_terminal:
-                taxa_B.add(node.name)
-
-        taxa_B = taxa_B.intersection(self.strains_common_to_all_trees)
-        taxa_B = taxa_B.difference(self.current_pruned_taxa)
-
-        # concordant if the taxa are the same!
-        if len(taxa_A) == len(taxa_B):
-            print("YES")
-            return True
-        print("NO ({} vs {})".format(len(taxa_A), len(taxa_B)))
-        return False
-
-    def _prune_child_clades(self, taxa_to_exclude):
-        for clade in self.pointer.clades:
-            if hasattr(clade, "reassort_id") and getattr(clade, "reassort_id") == self.current_reassort_id:
-                pass
-            else:
-                self.current_pruned_nodes.add(clade)
-        self.current_pruned_taxa = self.current_pruned_taxa.union(taxa_to_exclude)
-        
-
-    def try_add_children(self):
-        """Given a pointer, one of the child clades will be the current reassort_id
-        add the others 
-        * IF they are terminal AND they preserve concordance between tree tip sets
-        * IF they are a labelled clade AND they preserve concordance
-        Probably involves some non-greedy algorithm for polytomies (not yet implemented -- currently greedy).
-        Children added are also added to self.current_strain_set and reassort_id set accordingly
-        """
-        
-        strains_to_consider = set([]) #self.current_strain_set.copy()
-        nodes_to_maybe_add = []
-        non_assigned_non_terminal_clade_is_child = False
-
-        for clade in self.pointer.clades:
-            if hasattr(clade, "reassort_id") and getattr(clade, "reassort_id") == self.current_reassort_id:
-                pass
-            elif clade.is_terminal():
-                # doesn't matter if it's part of another reassort_id... we can steal it
-                strains_to_consider.add(clade.name)
-                nodes_to_maybe_add.append(clade)
-            elif hasattr(clade, "reassort_id"):
-                nodes_to_maybe_add.append(clade)
-                for n in clade.find_clades():
-                    nodes_to_maybe_add.append(n)
-                    if n.is_terminal():
-                        strains_to_consider.add(n.name)
-            else:
-                non_assigned_non_terminal_clade_is_child = True
-        
-        if non_assigned_non_terminal_clade_is_child:
-            self.current_false_moves += 1
-            print("not adding children as non_assigned_non_terminal_clade_is_child")
-            self._prune_child_clades(taxa_to_exclude=strains_to_consider)
-            self.current_singleton_nodes.add(self.pointer)
-        elif len(nodes_to_maybe_add) and self._are_taxa_congruent(self.current_strain_set.union(strains_to_consider)):
-            self.current_strain_set = self.current_strain_set.union(strains_to_consider)
-            for node in nodes_to_maybe_add:
-                setattr(node, "reassort_id", self.current_reassort_id)
-            self.current_false_moves = 0
-            self.current_singleton_nodes = set([])
-            self.maybe_add_downstream_if_possible()
-
-        else:
-            self.current_false_moves += 1
-            self._prune_child_clades(taxa_to_exclude=strains_to_consider)
-            self.current_singleton_nodes.add(self.pointer)
-        
-        # in all cases, mark the pointer (sometimes it'll be in the current_singleton_nodes set)
-        setattr(self.pointer, "reassort_id", self.current_reassort_id)
-
-
-    def maybe_add_downstream_if_possible(self):
-
-        # are any of the "pruned" taxa in the CA of tree 2?
-        taxa_A = self.current_strain_set.intersection(self.strains_common_to_all_trees)
-        terms_B = {node for node in self.other_trees[0].common_ancestor(taxa_A).get_terminals()}
-        taxa_B = {node.name for node in terms_B}
-
-        taxa_names_to_add = self.current_pruned_taxa.intersection(taxa_B)
-        if not len(taxa_names_to_add):
-            return
-        
-        print("ADDING BACK!", taxa_names_to_add)
-        for node in self.pointer.get_terminals():
-            if node.name in taxa_names_to_add:
-                self.current_pruned_taxa.remove(node.name)
-                setattr(node, "reassort_id", self.current_reassort_id)
-                # linking nodes
-                parent = node.parent
-                while True:
-                    if getattr(parent, "reassort_id", 0) == self.current_reassort_id:
-                        break
-                    setattr(parent, "reassort_id", self.current_reassort_id)
-                    self.current_pruned_nodes.discard(parent) # no error if not present
-                    parent = parent.parent
 
     def prune_singletons(self):
         for clade in self.tree.find_clades():
@@ -296,85 +255,245 @@ class Trees():
                     setattr(clade, "reassort_id", -1)
                     for child in clade.clades:
                         setattr(child, "reassort_id", -1)
+    
+    def reorder_id(self, new_attr):
+        """
+        given a tree with "reassort_id" set, create a new label (new_attr) which
+        where 1 is the taxa set with the most tips, 2 is the next largest etc
+        """
+        id_counts = defaultdict(lambda: 0)
+        for x in [getattr(tip, "reassort_id", -1) for tip in t.tree.get_terminals()]:
+            if x > 0:
+                id_counts[x] += 1
+        ordered = sorted(id_counts.items(), key=lambda x: x[1], reverse=True)
+        id_map = {id_count[0]: idx+1 for idx, id_count in enumerate(ordered)}
+        for node in t.tree.find_clades():
+            reassort_id = getattr(node, "reassort_id", 0)
+            try:
+                setattr(node, new_attr, id_map[reassort_id])
+            except KeyError:
+                setattr(node, new_attr, 0)
+
+
+    @staticmethod
+    def minimal_nodes_to_form_path(tree, common_ancestors=[], strains=[]):
+        """
+        which nodes are needed to form a path beetween "end-nodes"
+
+        INPUTS:
+        common_ancestors    list of sets of nodes which the CA should be used as "end-nodes"
+        strain_sets         list of sets of nodes which should each be used as "end-nodes"
+        note that nodes can be node objects or string names
+
+        RETURNS:
+        list of node objects
+        """
+        
+        def as_names(taxa):
+            """
+            if taxa (in taxa_A or taxa_B) are node objects, they may have come from a different
+            tree than the one provided. We care about names, so use node.names instead
+            """
+            ret = []
+            # watch out -- a single Bio.Phylo.Newick.Clade object can be iterated through!
+            assert(type(taxa).__name__ in ["list", "set"])
+            for x in taxa:
+                try:
+                    ret.append(x.name)
+                except AttributeError:
+                    ret.append(x)
+            return ret
+
+        # note on get_path method: the target node is part of the returned list,
+        # but the root of the tree is not.
+        # because mutations (in augur) are defined as "those leading to the node"
+        # this is not an issue
+
+        paths = []
+        for ca_nodes in common_ancestors:
+            paths.append(tree.get_path(target=tree.common_ancestor(as_names(ca_nodes))))
+        for end_nodes in as_names(strains):
+            paths.append(tree.get_path(target = end_nodes))
+
+
+        # names common to all sets (these aren't part of the true path, they're part of the
+        # path between the root of the tree and the root of the path
+        try:
+            exclude = set.intersection(*[   {n.name for n in path} for path in paths])
+        except:
+            import pdb; pdb.set_trace()
+
+        path_nodes = [] # the data this function returns
+        node_names_added = set() # list of node names in path_nodes so we don't double up
+        for path in paths:
+            for node in path:
+                if node.name not in exclude and node.name not in node_names_added:
+                    path_nodes.append(node)
+                    node_names_added.add(node.name)
+        
+        return path_nodes
+
+    @staticmethod
+    def num_of_mutations_observed_along_path(mutations, path):
+        n_muts = 0
+        for node in path:
+            n_muts += len(mutations[node.name]["muts"])
+        # print("\tn muts across path of len", len(path), "is", n_muts)
+        return n_muts
+        
+
+    def does_clade_appear_non_reassortant(self, clade):
+        """
+        Given a clade to check, how many mutations are needed to add
+        all members of the clade to the current reassort_id
+        If this is over the parameter value "mutation_threshold_for_inclusion"
+        then it's classified as a reassortant.
+
+        Here we could add further phylogenetic checks in the future.
+        """
+
+        already_has_id = getattr(clade, "reassort_id", False)
+        taxa_in_this_id = self.reassort_id_strain_map[self.current_reassort_id]
+
+ 
+
+        if already_has_id:
+            # we are attempting to incorporate in another clade with a reassort_id
+            # note that the parent should not have a reassort_id
+            if clade.parent and hasattr(clade.parent, "reassort_id"):
+                raise Exception("does_clade_appear_non_reassortant parent has id")
+
+            # we take all the strains in the already existing ID
+            # there should be a better way 
+            # we consider the path between the current taxa and all the ones in the already existing id
+            # because the clade has already been assessed as non-reassorting
+            # we instead consider the path between the current taxa set and the new clade
+            strains = {n for n in clade.get_terminals() if getattr(n, "reassort_id", False) == already_has_id}
+        else:
+            # we take all termial nodes
+            strains = {n for n in clade.get_terminals() if n.name in self.strains_common_to_all_trees}
+
+        if already_has_id == 8:
+            import pdb; pdb.set_trace()
+
+        for idx, t in enumerate(self.trees):
+            if already_has_id:
+                nodes_in_path = self.minimal_nodes_to_form_path(t, common_ancestors=[taxa_in_this_id, strains])
+            else:
+                nodes_in_path = self.minimal_nodes_to_form_path(t, common_ancestors=[taxa_in_this_id], strains=strains)
+
+            x = self.num_of_mutations_observed_along_path(self.mutations[idx], nodes_in_path)
+            if x > self.params.mutation_threshold_for_inclusion:
+                # print("\t\tEXCLUDED (", x, "mutations!)")
+                return False
+
+        # debugging / info messages
+        if already_has_id:
+            print("\tmerging id {} into id {} ({} strains)".format(already_has_id, self.current_reassort_id, len(strains)))
+        else:
+            msg = "\tadding {} strains to id {}".format(len(strains), self.current_reassort_id)
+            if len(strains) == 1:
+                msg += " ({})".format(next(iter(strains)).name)
+            print(msg)
+
+        return True
+
+
+    def assign_id_to_node(self, node):
+        setattr(node, "reassort_id", self.current_reassort_id)
+        if node.is_terminal() and node.name in self.strains_common_to_all_trees:
+            self.reassort_id_strain_map[self.current_reassort_id].add(node.name)
+
+    def add_clade(self, clade):
+        """
+        For a given clade, set the reassort_id attr on it & it's descendants
+
+        If the given clade has already been asigned a reassort_id, we replace it with the new one
+        (note that this may skip some descendents, this is by design)
+        If no reassort_id is set on the clade, we add it to all descendants.
+
+        SIDE EFFECTS:
+        downstream nodes                the "reassort_id" attr is set
+        self.reassort_id_strain_map     downstream terminal node names added to set
+                                        key removed if old id is overwritten
+        """
+        previous_id = getattr(clade, "reassort_id", False)
+
+        # loop through all descendent children
+        for node in clade.find_clades(order="preorder"):
+            # if adding in a clade already assigned a reassort_id, skip descendents who may
+            # not have that id
+            if previous_id and getattr(node, "reassort_id", False) != previous_id:
+                continue
+            self.assign_id_to_node(node)
+
+        # add the clade itself
+        self.assign_id_to_node(clade)
+
+        # if we've overwritten a previous_id, it no longer exists in the tree        
+        if previous_id:
+            del self.reassort_id_strain_map[previous_id]
+            for node in self.tree.find_clades():
+                if getattr(node, "reassort_id", False) == previous_id:
+                    import pdb; pdb.set_trace()
+                    raise Exception("should have overwritten id {} but it's still in the tree".format(previous_id))
+
+
+    def recursively_add_sisters_to_seeds(self, current_skip_count=0):
+        print("recursively_add_sisters_to_seeds (current_skip_count: {})".format(current_skip_count))
+        ## Move pointer up one heirachy
+        try:
+            self.move_pointer_up()
+        except Exception as err:
+            print(err)
+            return False
+        
+        ## For each "sister" clade, can we add it in according to our metrics?
+        for clade in self.pointer.clades:
+            if hasattr(clade, "reassort_id") and getattr(clade, "reassort_id") == self.current_reassort_id:
+                # clade can be the previous pointer, which this catches
+                continue  
+            elif self.does_clade_appear_non_reassortant(clade):
+                self.add_clade(clade)
+            else:
+                current_skip_count += 1 # want to see entire polytomy, not bail early
+
+        # ensure that all strains in this reassort_id are linked pylogenetically
+        self.assign_id_to_node(self.pointer)
+
+        if current_skip_count > self.params.max_skip_count:
+            print ("\tSkip count exceeded. Adding no more sisters")
+            return False
+    
+        self.recursively_add_sisters_to_seeds(current_skip_count)
+
 
 if __name__ == '__main__':
     args = get_args()
+    params = {
+        "max_skip_count": 4,
+        "mutation_threshold_for_inclusion": 10
+    }
 
-    t = Trees(args.trees, args.distances)
-    debugging_break_counter = 0
+    t = Trees(params, args.trees, args.mutations)
 
     # Use phylogenetic concordance (strict) to identify the best seeds to start the algorithm
     t.find_best_seeds()
+    t.get_stats_on_best_seeds()
 
-    write_node_data_json(t, args.output, {"seed_id": "seed_id"})
-
-    # strain_data[node.name]["reassort_raw"] = getattr(node, "reassort_id", 0)
-    # strain_data[node.name]["reassort"] = getattr(node, "reassort_id_no_gaps", 0)
-
-    sys.exit(0)
-
-
-    # Algorithm picks a leaf as a seed (and sets the pointer to it)
-    # and we then try to greedily add related strains to the set,
-    # according to if they have reassorted.
+    # # Add strains to seeds!
     while t.reset_pointer():
+        t.recursively_add_sisters_to_seeds()
+        print_end_of_block()
 
-        debugging_break_counter += 1
-        if debugging_break_counter>10:
-            break
-
-        while t.try_move_pointer():
-            print("pointer moved up to {} ({} terminals)".format(t.pointer.name, len(t.pointer.get_terminals())))
-            
-            t.try_add_children()
-
-            if t.current_false_moves > 0:
-                print(f"Current false moves: {t.current_false_moves}")
-                print(f"Excluded taxa: {t.current_pruned_taxa}")
-
-            if t.current_false_moves > 5:
-                print("TOO MANY FALSE MOVES")
-                break
-
-
-            # if t.is_pointer_concordant():
-            #     t.mark_pointer()
-            #     continue
-
-            # if len(t.pointer.clades)>2:
-            #     print("polytomy detected. Abandoning search")
-            #     break
-
-            # the children nodes of the pointer have broken concordance.
-            # prune them off!
-
-            # t.current_false_moves += 1
-            # t.prune_children_from_pointer()
-            # t.mark_clade_not_good()
-
-
-    # set all nodes where 2 children & both are terminal & parent has different reassort_id
-    # t.prune_twosomes()
+    # clean up results for display
     t.prune_singletons()
+    # t.prune_twosomes()
+    t.reorder_id("reassort_reordered")
 
-    
-    ## trickery
-    ids = {getattr(node, "reassort_id", 0) for node in t.tree.find_clades()}
-    ids.discard(0)
-    ids.discard(-1)
-    print(ids)
-    mapping = {old: idx+1 for idx, old in enumerate(list(ids))}
-    mapping[-1] = -1
-    print(mapping)
-    for node in t.tree.find_clades():
-        if hasattr(node, "reassort_id"):
-            setattr(node, "reassort_id_no_gaps", mapping[getattr(node, "reassort_id")])
-
-    # write output
-    strain_data = defaultdict(dict)
-    for node in t.tree.find_clades():
-        strain_data[node.name]["reassort_raw"] = getattr(node, "reassort_id", 0)
-        strain_data[node.name]["reassort"] = getattr(node, "reassort_id_no_gaps", 0)
-    with open(args.output, 'w') as fh:
-        json.dump({"nodes": strain_data}, fh, indent=2, sort_keys = True)
+    write_node_data_json(t, args.output, {
+        "seed_id": "seed_id",
+        "reassort_id": "reassort_id",
+        "reassort_reordered": "reassort_reordered"
+    })
 

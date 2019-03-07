@@ -423,12 +423,12 @@ rule identify_non_reassorting_tips:
     message: "Identifying sets of tips which have not reassorted"
     input:
         trees = _get_trees_for_all_segments,
-        distances = lambda wildcards: [rules.hamming_distance.output.data.format(**wildcards, **{"segment": seg}) for seg in segments]
+        mutations = lambda wildcards: [rules.ancestral.output.node_data.format(**wildcards, **{"segment": seg}) for seg in segments]
     output:
         data = "results/reassort_{lineage}_{resolution}.json"
     shell:
         """
-        python scripts/reassort --trees {input.trees} --distances {input.distances} --output {output.data}
+        python scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
         """
 
 def _get_node_data_for_export(wildcards):

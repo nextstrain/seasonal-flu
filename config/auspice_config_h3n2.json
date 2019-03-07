@@ -39,17 +39,23 @@
       "type": "continuous",
       "key": "seed_id"
     },
-    "reassort": {
-      "menuItem": "reassort",
-      "legendTitle": "reassort",
+    "reassort_id": {
+      "menuItem": "reassort_id",
+      "legendTitle": "reassort_id",
       "type": "continuous",
-      "key": "reassort"
+      "key": "reassort_id"
     },
     "reassort_raw": {
       "menuItem": "reassort_raw",
       "legendTitle": "reassort_raw",
       "type": "continuous",
       "key": "reassort_raw"
+    },
+    "reassort_reordered": {
+      "menuItem": "reassort_reordered",
+      "legendTitle": "reassort_reordered",
+      "type": "continuous",
+      "key": "reassort_reordered"
     }
   },
   "geo": [
