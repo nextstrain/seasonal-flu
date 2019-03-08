@@ -40,9 +40,9 @@ def _get_node_data_for_export(wildcards):
         rules.lbi.output.lbi
     ]
 
-    # Only request a distance file for builds that have mask configurations
-    # defined.
-    if _get_build_mask_config(wildcards) is not None:
+    # Only request a distance file for builds that have distance map
+    # configurations defined.
+    if _get_build_distance_map_config(wildcards) is not None:
         inputs.append(rules.distances.output.distances)
 
     # Convert input files from wildcard strings to real file names.
