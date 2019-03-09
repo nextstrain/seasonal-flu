@@ -190,12 +190,12 @@ def determine_time_interval(time_interval, resolution):
         datetime_interval = [datetime.today().date(), (datetime.today()  - timedelta(days=365.25 * years_back)).date()]
     return datetime_interval
 
-def parse_metadata(segments, metadata_files):
+def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
     metadata = {}
     for segment, fname in zip(segments, metadata_files):
         tmp_meta, columns = read_metadata(fname)
 
-        numerical_dates = get_numerical_dates(tmp_meta, fmt='%Y-%m-%d')
+        numerical_dates = get_numerical_dates(tmp_meta, fmt=date_format)
         for x in tmp_meta:
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
             tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
@@ -250,6 +250,7 @@ if __name__ == '__main__':
                         help='Subsample x viruses per country per month. Set to 0 to disable subsampling.')
     parser.add_argument('--sequences', nargs='+', help="FASTA file with viral sequences, one for each segment")
     parser.add_argument('--metadata', nargs='+', help="file with metadata associated with viral sequences, one for each segment")
+    parser.add_argument('--date-format', type=str, default="%Y-%m-%d", help="date format")
     parser.add_argument('--output', help="name of the file to write selected strains to")
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
 
@@ -282,7 +283,7 @@ if __name__ == '__main__':
     sequence_names_by_segment = parse_sequences(args.segments, args.sequences)
 
     # read in meta data, parse numeric dates
-    metadata = parse_metadata(args.segments, args.metadata)
+    metadata = parse_metadata(args.segments, args.metadata, date_format=args.date_format)
 
     # eliminate all metadata entries that do not have sequences
     filtered_metadata = {}
