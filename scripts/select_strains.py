@@ -200,7 +200,7 @@ def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
             tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
             tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
-            if age in tmp_meta[x]:
+            if 'age' in tmp_meta[x]:
                 age_str = tmp_meta[x]['age']
                 if age_str[-1]=='y':
                     tmp_meta[x]['age'] = int(age_str[:-1])
