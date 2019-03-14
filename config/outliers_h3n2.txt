@@ -116,6 +116,7 @@ A/Indiana/8/2013
 A/Indiana/9/2012
 A/Indiana/9/2013
 A/Indiana/10/2011-egg
+A/Indiana/10/2013
 A/Indiana/11/2013
 A/Indiana/12/2012
 A/Indiana/13/2012
