@@ -91,6 +91,11 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
     metadata = {
         strain: record
         for strain, record in metadata.items()
+        if record["num_date"]
+    }
+    metadata = {
+        strain: record
+        for strain, record in metadata.items()
         if time_interval_start <= record["num_date"] <= time_interval_end
     }
 
@@ -197,9 +202,14 @@ def parse_metadata(segments, metadata_files):
 
         numerical_dates = get_numerical_dates(tmp_meta, fmt='%Y-%m-%d')
         for x in tmp_meta:
-            tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
-            tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
-            tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
+            if numerical_dates[x] != [None, None] and numerical_dates[x] != None:
+                tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
+                tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
+                tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
+            else:
+                tmp_meta[x]['num_date'] = None
+                tmp_meta[x]['year'] = None
+                tmp_meta[x]['month'] = None
             age_str = tmp_meta[x]['age']
             if age_str[-1]=='y':
                 tmp_meta[x]['age'] = int(age_str[:-1])
@@ -289,6 +299,9 @@ if __name__ == '__main__':
     for segment in metadata:
         filtered_metadata[segment] = {}
         for name in metadata[segment]:
+            if metadata[segment][name]["location"] == "seattle":
+                filtered_metadata[segment][name] = metadata[segment][name]
+                included_strains.append(name)
             if name in sequence_names_by_segment[segment]:
                 filtered_metadata[segment][name] = metadata[segment][name]
             if name in included_strains:
@@ -315,18 +328,17 @@ if __name__ == '__main__':
         if strain not in selected_strains and strain in filtered_metadata[guide_segment]:
             # Do not include strains sampled too far in the past or strains
             # sampled from the future relative to the requested build interval.
-            if (filtered_metadata[guide_segment][strain]['num_date'] >= numeric_date(lower_reference_cutoff) and
-                filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)):
+            if filtered_metadata[guide_segment][strain]['num_date'] is None:
                 selected_strains.append(strain)
+            else:
+                if (filtered_metadata[guide_segment][strain]['num_date'] >= numeric_date(lower_reference_cutoff) and
+                        filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)):
+                    selected_strains.append(strain)
+
 
     # summary of selected strains by region
     summary(selected_strains, filtered_metadata, args.segments, ['region'])
     summary(selected_strains, filtered_metadata, args.segments, ['year', 'month'])
-
-    # Confirm that none of the selected strains were sampled outside of the
-    # requested interval.
-    for strain in selected_strains:
-        assert filtered_metadata[guide_segment][strain]['num_date'] <= numeric_date(upper_reference_cutoff)
 
     # write the list of selected strains to file
     with open(args.output, 'w') as ofile:

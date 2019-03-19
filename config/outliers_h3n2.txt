@@ -156,6 +156,7 @@ A/Iowa/7/2011-egg
 A/Iowa/8/2011-egg
 A/Iowa/16/2009
 A/Iowa/16/2012
+A/Iowa/38/2017
 A/Iran/140/2014
 A/Iran/227/2014
 A/Iran/234/2014
@@ -227,6 +228,7 @@ A/Ohio/16/2012
 A/Ohio/18/2012
 A/Ohio/18/2012-egg
 A/Ohio/19/2012
+A/Ohio/19/2017
 A/Ohio/20/2012
 A/Ohio/20/2012-egg
 A/Ohio/23/2012

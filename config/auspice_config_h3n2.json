@@ -64,7 +64,8 @@
   ],
   "defaults": {
     "mapTriplicate": true,
-    "colorBy": "clade_membership"
+    "colorBy": "region",
+    "geoResolution": "region"
   },
   "maintainer": [
     "Trevor Bedford and Barney Potter",

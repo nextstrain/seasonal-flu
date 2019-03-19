@@ -54,25 +54,21 @@ rule all:
         auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
         auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
 
-# separate rule for interaction with fauna
-rule download_all:
-    input:
-        sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
-
 rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
+        lat_longs = "config/lat_longs.tsv",
         auspice_config = "config/auspice_config_{lineage}.json",
 
 files = rules.files.params
 
-rule download_sequences:
-    message: "Downloading sequences from fauna"
+rule download_background_sequences:
+    message: "Downloading background sequences from fauna"
     output:
-        sequences = "data/{lineage}_{segment}.fasta"
+        sequences = "data/{lineage}_{segment}_background.fasta"
     params:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
@@ -84,13 +80,42 @@ rule download_sequences:
             --resolve_method split_passage \
             --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
             --path data \
-            --fstem {wildcards.lineage}_{wildcards.segment}
+            --fstem {wildcards.lineage}_{wildcards.segment}_background
+        """
+
+rule download_seattle_sequences:
+    message: "Downloading Seattle sequences from fauna"
+    output:
+        sequences = "data/{lineage}_{segment}_seattle.fasta"
+    params:
+        fasta_fields = "strain virus accession collection_date location country division location passage_category submitting_lab age gender"
+    shell:
+        """
+        python3 {path_to_fauna}/vdb/download.py \
+            --database vdb \
+            --virus seattle \
+            --fasta_fields {params.fasta_fields} \
+            --select segment:{wildcards.segment} type:{wildcards.lineage} \
+            --path data \
+            --fstem {wildcards.lineage}_{wildcards.segment}_seattle
+        """
+
+rule concat_sequences:
+    message: "Concatenating background and Seattle sequences"
+    input:
+        background_sequences = rules.download_background_sequences.output.sequences,
+        seattle_sequences = rules.download_seattle_sequences.output.sequences
+    output:
+        sequences = "data/{lineage}_{segment}_concat.fasta"
+    shell:
+        """
+        cat {input.background_sequences} {input.seattle_sequences} > {output.sequences}
         """
 
 rule parse:
     message: "Parsing fasta into sequences and metadata"
     input:
-        sequences = rules.download_sequences.output.sequences
+        sequences = rules.concat_sequences.output.sequences
     output:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
@@ -419,8 +444,8 @@ def _get_node_data_for_export(wildcards):
     ]
 
     # HA gets the reassortant information
-    if wildcards["segment"] == "ha":
-        inputs.append(rules.identify_non_reassorting_tips.output.data)
+    # if wildcards["segment"] == "ha":
+    #     inputs.append(rules.identify_non_reassorting_tips.output.data)
 
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards) for input_file in inputs]
@@ -430,6 +455,8 @@ rule export:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
+        colors = files.colors,
+        lat_longs = files.lat_longs,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
@@ -441,6 +468,8 @@ rule export:
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} \
+            --colors {input.colors} \
+            --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta}
