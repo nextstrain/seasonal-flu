@@ -255,6 +255,7 @@ A/Ohio/62/2012
 A/Ohio/63/2012
 A/Ohio/64/2012
 A/Ohio/69/2012
+A/Ohio/71/2012
 A/Ohio/74/2012
 A/Ohio/75/2012
 A/Ohio/77/2012
