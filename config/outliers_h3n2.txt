@@ -306,6 +306,7 @@ A/WestVirginia/9/2012
 A/WestVirginia/10/2012
 A/WestVirginia/16/2012
 A/Wisconsin/12/2010
+A/Wisconsin/23/2012
 A/Wisconsin/24/2014
 A/Wisconsin/27/2012
 A/Wisconsin/28/2012
