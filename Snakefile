@@ -109,6 +109,8 @@ rule clean:
         "results ",
         "targets ",
         "auspice ",
-        "auspice-who"
+        "auspice-who ",
+        "logs ",
+        "data"
     shell:
         "rm -rfv {params}"
