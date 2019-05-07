@@ -219,11 +219,9 @@ A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
 A/Minnesota/11/2012
 A/Minnesota/15/2012
-A/Minnesota/38/2015
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/NewJersey/53/2015
-A/Novosibirsk/1/2019
 A/Ohio/2/2014
 A/Ohio/5/2013
 A/Ohio/13/2012
@@ -231,6 +229,7 @@ A/Ohio/13/2012-egg
 A/Ohio/14/2012
 A/Ohio/15/2012
 A/Ohio/16/2012
+A/Ohio/17/2012
 A/Ohio/18/2012
 A/Ohio/18/2012-egg
 A/Ohio/19/2012
@@ -310,6 +309,7 @@ A/WestVirginia/9/2012
 A/WestVirginia/10/2012
 A/WestVirginia/16/2012
 A/Wisconsin/12/2010
+A/Wisconsin/22/2012
 A/Wisconsin/23/2012
 A/Wisconsin/24/2014
 A/Wisconsin/27/2012
