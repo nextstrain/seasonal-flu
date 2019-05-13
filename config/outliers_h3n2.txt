@@ -222,6 +222,7 @@ A/Minnesota/15/2012
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/NewJersey/53/2015
+A/Novosibirsk/1/2019
 A/Ohio/2/2014
 A/Ohio/5/2013
 A/Ohio/13/2012
