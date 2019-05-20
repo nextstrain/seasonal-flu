@@ -210,13 +210,14 @@ def parse_metadata(segments, metadata_files):
                 tmp_meta[x]['num_date'] = None
                 tmp_meta[x]['year'] = None
                 tmp_meta[x]['month'] = None
-            age_str = tmp_meta[x]['age']
-            if age_str[-1]=='y':
-                tmp_meta[x]['age'] = int(age_str[:-1])
-            elif tmp_meta[x]['age']=='m':
-                tmp_meta[x]['age'] = float(age_str[:-1])/12.0
-            else:
-                tmp_meta[x]['age'] = 'unknown'
+            if 'age' in tmp_meta[x]:
+                age_str = tmp_meta[x]['age']
+                if age_str[-1]=='y':
+                    tmp_meta[x]['age'] = int(age_str[:-1])
+                elif tmp_meta[x]['age']=='m':
+                    tmp_meta[x]['age'] = float(age_str[:-1])/12.0
+                else:
+                    tmp_meta[x]['age'] = 'unknown'
 
         metadata[segment] = tmp_meta
     return metadata
@@ -252,7 +253,7 @@ def summary(strains, metadata, segments, keys):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description="Select strains for downstream analysis",
+        description="Select strains for downstream analysis, keep all strains with region=seattle",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -299,7 +300,7 @@ if __name__ == '__main__':
     for segment in metadata:
         filtered_metadata[segment] = {}
         for name in metadata[segment]:
-            if metadata[segment][name]["location"] == "seattle":
+            if metadata[segment][name]["region"] == "seattle":
                 filtered_metadata[segment][name] = metadata[segment][name]
                 included_strains.append(name)
             if name in sequence_names_by_segment[segment]:

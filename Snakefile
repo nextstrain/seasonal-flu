@@ -51,11 +51,12 @@ def _get_clades_file_for_wildcards(wildcards):
 
 rule all:
     input:
-        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_tree = expand("auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_meta = expand("auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
 
 rule files:
     params:
+        seattle_metadata = "metadata/seattle_metadata.tsv",
         outliers = "config/outliers_{lineage}.txt",
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
@@ -65,10 +66,10 @@ rule files:
 
 files = rules.files.params
 
-rule download_background_sequences:
+rule download_background_seqmeta:
     message: "Downloading background sequences from fauna"
     output:
-        sequences = "data/{lineage}_{segment}_background.fasta"
+        seqmeta = "data/background_seqmeta_{lineage}_{segment}.fasta"
     params:
         fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
     shell:
@@ -80,15 +81,33 @@ rule download_background_sequences:
             --resolve_method split_passage \
             --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
             --path data \
-            --fstem {wildcards.lineage}_{wildcards.segment}_background
+            --fstem background_seqmeta_{wildcards.lineage}_{wildcards.segment}
+        """
+
+rule parse_background_seqmeta:
+    message: "Parsing fasta into sequences and metadata"
+    input:
+        seqmeta = rules.download_background_seqmeta.output.seqmeta
+    output:
+        sequences = "data/background_sequences_{lineage}_{segment}.fasta",
+        metadata = "data/background_metadata_{lineage}_{segment}.tsv"
+    params:
+        fasta_fields = "strain virus isolate_id date region country division location passage authors age gender"
+    shell:
+        """
+        augur parse \
+            --sequences {input.seqmeta} \
+            --output-sequences {output.sequences} \
+            --output-metadata {output.metadata} \
+            --fields {params.fasta_fields}
         """
 
 rule download_seattle_sequences:
     message: "Downloading Seattle sequences from fauna"
     output:
-        sequences = "data/{lineage}_{segment}_seattle.fasta"
+        sequences = "data/seattle_sequences_{lineage}_{segment}.fasta"
     params:
-        fasta_fields = "strain virus accession collection_date location country division location passage_category submitting_lab age gender"
+        fasta_fields = "strain"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -97,37 +116,35 @@ rule download_seattle_sequences:
             --fasta_fields {params.fasta_fields} \
             --select segment:{wildcards.segment} type:{wildcards.lineage} \
             --path data \
-            --fstem {wildcards.lineage}_{wildcards.segment}_seattle
+            --fstem seattle_sequences_{wildcards.lineage}_{wildcards.segment}
         """
 
 rule concat_sequences:
     message: "Concatenating background and Seattle sequences"
     input:
-        background_sequences = rules.download_background_sequences.output.sequences,
+        background_sequences = rules.parse_background_seqmeta.output.sequences,
         seattle_sequences = rules.download_seattle_sequences.output.sequences
     output:
-        sequences = "data/{lineage}_{segment}_concat.fasta"
+        sequences = "data/sequences_{lineage}_{segment}.fasta"
     shell:
         """
         cat {input.background_sequences} {input.seattle_sequences} > {output.sequences}
         """
 
-rule parse:
-    message: "Parsing fasta into sequences and metadata"
+rule concat_metadata:
+    message: "Concatenating background and Seattle metadata"
     input:
-        sequences = rules.concat_sequences.output.sequences
+        background_metadata = rules.parse_background_seqmeta.output.metadata,
+        seattle_metadata = files.seattle_metadata
     output:
-        sequences = "results/sequences_{lineage}_{segment}.fasta",
-        metadata = "results/metadata_{lineage}_{segment}.tsv"
-    params:
-        fasta_fields =  "strain virus isolate_id date region country division location passage authors age gender"
+        metadata = "data/metadata_{lineage}_{segment}.tsv"
     shell:
         """
-        augur parse \
-            --sequences {input.sequences} \
-            --output-sequences {output.sequences} \
-            --output-metadata {output.metadata} \
-            --fields {params.fasta_fields}
+        python scripts/concat_metadata.py \
+            --files {input.background_metadata} {input.seattle_metadata} \
+            --mergeby strain \
+            --fields date region \
+            > {output.metadata}
         """
 
 rule filter:
@@ -139,8 +156,8 @@ rule filter:
           - samples with missing region and country metadata
         """
     input:
-        metadata = rules.parse.output.metadata,
-        sequences = rules.parse.output.sequences,
+        sequences = rules.concat_sequences.output.sequences,
+        metadata = rules.concat_metadata.output.metadata,
         exclude = files.outliers
     output:
         sequences = 'results/filtered_{lineage}_{segment}.fasta'
@@ -162,10 +179,11 @@ rule select_strains:
     message:
         """
         Selecting Strains (scripts/select_strains.py)
+        This automatically includes all strains with region=seattle
         """
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}.fasta", segment=segments),
-        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
+        metadata = expand("data/metadata_{{lineage}}_{segment}.tsv", segment=segments),
         include = files.references
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
@@ -221,7 +239,7 @@ rule align:
             --output {output.alignment} \
             --fill-gaps \
             --remove-reference \
-            --nthreads auto
+            --nthreads 1
         """
 
 rule tree:
@@ -235,7 +253,7 @@ rule tree:
         augur tree \
             --alignment {input.alignment} \
             --output {output.tree} \
-            --nthreads auto
+            --nthreads 1
         """
 
 rule refine:
@@ -250,7 +268,7 @@ rule refine:
     input:
         tree = rules.tree.output.tree,
         alignment = rules.align.output,
-        metadata = rules.parse.output.metadata
+        metadata = rules.concat_metadata.output.metadata
     output:
         tree = "results/tree_{lineage}_{segment}_{resolution}.nwk",
         node_data = "results/branch-lengths_{lineage}_{segment}_{resolution}.json"
@@ -334,7 +352,7 @@ rule traits:
         """
     input:
         tree = rules.refine.output.tree,
-        metadata = rules.parse.output.metadata
+        metadata = rules.concat_metadata.output.metadata
     output:
         node_data = "results/traits_{lineage}_{segment}_{resolution}.json",
     params:
@@ -454,14 +472,14 @@ def _get_node_data_for_export(wildcards):
 rule export:
     input:
         tree = rules.refine.output.tree,
-        metadata = rules.parse.output.metadata,
+        metadata = rules.concat_metadata.output.metadata,
         colors = files.colors,
         lat_longs = files.lat_longs,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        auspice_meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json"
+        auspice_tree = "auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_tree.json",
+        auspice_meta = "auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_meta.json"
     shell:
         """
         augur export \
