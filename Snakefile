@@ -5,8 +5,8 @@ path_to_fauna = '../fauna'
 if os.environ.get('FAUNA_PATH'):
     path_to_fauna = os.environ.get('FAUNA_PATH')
 
-min_length = 900
-segments = ['ha', 'na'] # order is important. first entry is the seed for reassortment.
+min_length = 800
+segments = ['ha', 'na', 'pb2', 'pb1', 'pa', 'np', 'mp', 'ns'] # ordering is used by scripts/reassort
 lineages = ['h3n2']
 resolutions = ['2y']
 
@@ -276,7 +276,7 @@ rule refine:
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = 4,
-        clock_rate = clock_rate
+        # clock_rate = clock_rate # restore clock rate when computed for full genome
     shell:
         """
         augur refine \
@@ -286,7 +286,6 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --timetree \
-            --clock-rate {params.clock_rate} \
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
