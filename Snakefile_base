@@ -429,6 +429,7 @@ rule titers_sub:
             --gene-names {params.genes} \
             --tree {input.tree} \
             --output {output.titers_model}
+            --allow-empty-model
         """
 
 rule titers_tree:
@@ -443,6 +444,7 @@ rule titers_tree:
             --titers {input.titers} \
             --tree {input.tree} \
             --output {output.titers_model}
+            --allow-empty-model
         """
 
 rule mutation_frequencies:
