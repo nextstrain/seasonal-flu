@@ -7,6 +7,15 @@ Hamming distance is less than some cutoff.
 import argparse
 import os
 import json
+import numpy as np
+
+hamming_lookup = {}
+def hamming(strain1, strain2, array1, array2):
+    if (strain1, strain2) in hamming_lookup:
+        return hamming_lookup[(strain1, strain2)]
+    dist = np.sum(array1 != array2)
+    hamming_lookup[(strain1, strain2)] = dist
+    return dist
 
 def shared_strains(files):
     '''
@@ -32,16 +41,31 @@ def sequence_mapping(files, strains):
     '''
     mapping = {}
     for strain in strains:
-        mapping[strain] = ""
+        mapping[strain] = np.array([])
     for fname in files:
         if os.path.isfile(fname):
             with open(fname) as jfile:
                 json_data = json.load(jfile)
                 for node, values in json_data["nodes"].items():
                     if node in mapping:
-                        print(values["sequence"])
-                        mapping[node] += values["sequence"]
-    return(mapping)
+                        seq = values["sequence"]
+                        mapping[node] = np.concatenate((mapping[node], np.array(list(seq))), axis=0)
+    return mapping
+
+def attempt_merge(clusters, mapping, cutoff):
+    for clusterA in clusters:
+        for clusterB in clusters:
+            if clusterA != clusterB:
+                # compare all strains in clusterA to all strains in clusterB
+                for strainA in clusters[clusterA]:
+                    for strainB in clusters[clusterB]:
+                        if strainA != strainB:
+                            distance = hamming(strainA, strainB, mapping[strainA], mapping[strainB])
+                            if distance <= cutoff:
+                                clusters[clusterA] = [x for x in clusters[clusterA]] + [x for x in clusters[clusterB]]
+                                clusters.pop(clusterB, None)
+                                return True
+    return False
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -50,10 +74,24 @@ if __name__ == '__main__':
     )
 
     parser.add_argument('--files', nargs='+', type=str, required=True, help="list of nt-muts JSON files")
+    parser.add_argument('--cutoff', default=5, type = int,  help = "Hamming distance cutoff to be considered connected")
     args = parser.parse_args()
 
+    # collect strains shared across segments
     strains = shared_strains(args.files)
-    print(strains)
 
+    # mapping of strains to concatenated sequence
     mapping = sequence_mapping(args.files, strains)
-    print(mapping)
+
+    # start with each strain in its own cluster
+    # data structure is dict of cluster id -> list of strains
+    clusters = {}
+    for index, strain in enumerate(strains):
+        clusters[index] = [strain]
+
+    # iterate over clusters and attempt to merge
+    test = True
+    while test:
+        test = attempt_merge(clusters, mapping, args.cutoff)
+
+    print(clusters)
