@@ -7,7 +7,7 @@ if os.environ.get('FAUNA_PATH'):
 
 min_length = 800
 segments = ['ha', 'na', 'pb2', 'pb1', 'pa', 'np', 'mp', 'ns'] # ordering is used by scripts/reassort
-lineages = ['h3n2']
+lineages = ['h3n2', 'h1n1pdm']
 resolutions = ['2y']
 
 def reference_strain(v):
@@ -32,7 +32,9 @@ def clock_rate(w):
         ('h3n2', 'ha'): 0.00356, ('h3n2', 'na'): 0.00298, ('h3n2', 'mp'): 0.00082,
         ('h3n2', 'np'): 0.00140, ('h3n2', 'ns'): 0.00193, ('h3n2', 'pa'): 0.00226,
         ('h3n2', 'pb1'): 0.00177, ('h3n2', 'pb2'): 0.00230,
-        ('h1n1pdm', 'ha'): 0.0040, ('h1n1pdm', 'na'): 0.0032,
+        ('h1n1pdm', 'ha'): 0.00329, ('h1n1pdm', 'na'): 0.00342, ('h1n1pdm', 'mp'): 0.00209,
+        ('h1n1pdm', 'np'): 0.00196, ('h1n1pdm', 'ns'): 0.00278, ('h1n1pdm', 'pa'): 0.00235,
+        ('h1n1pdm', 'pb1'): 0.00188, ('h1n1pdm', 'pb2'): 0.00224,
         ('vic', 'ha'): 0.0024, ('vic', 'na'): 0.0015,
         ('yam', 'ha'): 0.0019, ('yam', 'na'): 0.0013
     }
