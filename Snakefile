@@ -29,10 +29,12 @@ def translations(w):
 
 def clock_rate(w):
     rate = {
-        ('h3n2', 'ha'): 0.0043, ('h3n2', 'na'):0.0029,
-        ('h1n1pdm', 'ha'): 0.0040, ('h1n1pdm', 'na'):0.0032,
-        ('vic', 'ha'): 0.0024, ('vic', 'na'):0.0015,
-        ('yam', 'ha'): 0.0019, ('yam', 'na'):0.0013
+        ('h3n2', 'ha'): 0.00356, ('h3n2', 'na'): 0.00298, ('h3n2', 'mp'): 0.00082,
+        ('h3n2', 'np'): 0.00140, ('h3n2', 'ns'): 0.00193, ('h3n2', 'pa'): 0.00226,
+        ('h3n2', 'pb1'): 0.00177, ('h3n2', 'pb2'): 0.00230,
+        ('h1n1pdm', 'ha'): 0.0040, ('h1n1pdm', 'na'): 0.0032,
+        ('vic', 'ha'): 0.0024, ('vic', 'na'): 0.0015,
+        ('yam', 'ha'): 0.0019, ('yam', 'na'): 0.0013
     }
     return rate[(w.lineage, w.segment)]
 
@@ -140,7 +142,7 @@ rule concat_metadata:
         metadata = "data/metadata_{lineage}_{segment}.tsv"
     shell:
         """
-        python scripts/concat_metadata.py \
+        python3 scripts/concat_metadata.py \
             --files {input.background_metadata} {input.seattle_metadata} \
             --mergeby strain \
             --fields date region \
@@ -188,7 +190,7 @@ rule select_strains:
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
     params:
-        viruses_per_month = 5
+        viruses_per_month = 90
     shell:
         """
         python3 scripts/select_strains.py \
@@ -276,7 +278,7 @@ rule refine:
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = 4,
-        # clock_rate = clock_rate # restore clock rate when computed for full genome
+        clock_rate = clock_rate
     shell:
         """
         augur refine \
@@ -286,6 +288,7 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --timetree \
+            --clock-rate {params.clock_rate} \
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
@@ -386,7 +389,7 @@ rule clades:
             """)
         else:
             shell("""
-                python scripts/import_tip_clades.py \
+                python3 scripts/import_tip_clades.py \
                     --tree {input.tree} \
                     --clades {input.clades} \
                     --output {output.clades}
@@ -425,7 +428,7 @@ rule hamming_distance:
         data = "results/distance_{lineage}_{segment}_{resolution}.json"
     shell:
         """
-        python scripts/reassort/hamming.py --fasta {input.aligned} --output {output.data}
+        python3 scripts/reassort/hamming.py --fasta {input.aligned} --output {output.data}
         """
 
 
@@ -444,7 +447,7 @@ rule identify_non_reassorting_tips:
         data = "results/reassort_{lineage}_{resolution}.json"
     shell:
         """
-        python scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
+        python3 scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
         """
 
 def _get_node_data_for_export(wildcards):
