@@ -199,6 +199,7 @@ A/Maryland/49/2017
 A/Maryland/50/2017
 A/Maryland/55/2017
 A/Maryland/64/2017
+A/Maryland/75/2017
 A/Maryland/77/2017
 A/Mendoza/176711/2012
 A/Michigan/16/2012
@@ -225,6 +226,7 @@ A/Minnesota/15/2012
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/NewJersey/53/2015
+A/NorthDakota/19/2017
 A/Novosibirsk/1/2019
 A/Ohio/2/2014
 A/Ohio/5/2013
