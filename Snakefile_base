@@ -428,8 +428,8 @@ rule titers_sub:
             --alignment {input.alignments} \
             --gene-names {params.genes} \
             --tree {input.tree} \
+            --allow-empty-model \
             --output {output.titers_model}
-            --allow-empty-model
         """
 
 rule titers_tree:
@@ -443,8 +443,8 @@ rule titers_tree:
         augur titers tree \
             --titers {input.titers} \
             --tree {input.tree} \
+            --allow-empty-model \
             --output {output.titers_model}
-            --allow-empty-model
         """
 
 rule mutation_frequencies:
