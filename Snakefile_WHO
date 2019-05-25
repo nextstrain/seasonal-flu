@@ -205,9 +205,12 @@ def _get_node_data_for_report_export(wildcards):
         rules.clades.output.clades,
         rules.traits.output.node_data,
         rules.lbi.output.lbi,
-        rules.glyc.output.glyc,
         rules.scores.output.scores,
     ]
+
+    # glycosilation only makes sense for surface proteins
+    if wildcards.segment in ['ha', 'na']:
+        inputs.append(rules.glyc.output.glyc)
 
     # Only request a distance file for builds that have mask configurations
     # defined.
