@@ -235,7 +235,8 @@ rule export_who:
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output-tree {output.tree} \
-            --output-meta {output.meta}
+            --output-meta {output.meta} \
+            --minify-json
         """
 
 rule targets:

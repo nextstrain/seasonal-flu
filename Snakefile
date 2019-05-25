@@ -68,7 +68,8 @@ rule export:
             --auspice-config {input.auspice_config} \
             --output-tree {output.auspice_tree} \
             --output-meta {output.auspice_meta} \
-            --output-sequence {output.auspice_seq}
+            --output-sequence {output.auspice_seq} \
+            --minify-json
         """
 
 rule simplify_auspice_names:
