@@ -102,29 +102,34 @@ def _get_lbi_window_for_wildcards(wildcards):
     return LBI_params[wildcards.resolution]["time_window"]
 
 #
-# Configure amino acid distance masks.
+# Configure distance maps (for amino acid and other distances).
 #
 
-# Load mask configuration including which masks map to which attributes per
-# lineage and segment.
-masks_config = pd.read_table("config/mask_config.tsv")
+# Load distance map configuration for lineages and segments.
+distance_map_config = pd.read_table("config/distance_maps.tsv")
 
-def _get_build_mask_config(wildcards):
-    config = masks_config[(masks_config["lineage"] == wildcards.lineage) &
-                          (masks_config["segment"] == wildcards.segment)]
+def _get_build_distance_map_config(wildcards):
+    config = distance_map_config[(distance_map_config["lineage"] == wildcards.lineage) &
+                          (distance_map_config["segment"] == wildcards.segment)]
     if config.shape[0] > 0:
         return config
     else:
         return None
 
-def _get_mask_attribute_names_by_wildcards(wildcards):
-    config = _get_build_mask_config(wildcards)
+def _get_distance_comparisons_by_lineage_and_segment(wildcards):
+    config = _get_build_distance_map_config(wildcards)
+    return " ".join(config.loc[:, "compare_to"].values)
+
+def _get_distance_attributes_by_lineage_and_segment(wildcards):
+    config = _get_build_distance_map_config(wildcards)
     return " ".join(config.loc[:, "attribute"].values)
 
-def _get_mask_names_by_wildcards(wildcards):
-    config = _get_build_mask_config(wildcards)
-    return " ".join(config.loc[:, "mask"].values)
-
+def _get_distance_maps_by_lineage_and_segment(wildcards):
+    config = _get_build_distance_map_config(wildcards)
+    return [
+        "config/distance_maps/{wildcards.lineage}/{wildcards.segment}/{distance_map}.json".format(wildcards=wildcards, distance_map=distance_map)
+        for distance_map in config.loc[:, "distance_map"].values
+    ]
 
 rule files:
     params:
@@ -553,23 +558,23 @@ rule distances:
     input:
         tree = rules.refine.output.tree,
         alignments = translations,
-        masks = "config/{segment}_masks.tsv"
+        distance_maps = _get_distance_maps_by_lineage_and_segment
     params:
         genes = gene_names,
-        attribute_names = _get_mask_attribute_names_by_wildcards,
-        mask_names = _get_mask_names_by_wildcards
+        comparisons = _get_distance_comparisons_by_lineage_and_segment,
+        attribute_names = _get_distance_attributes_by_lineage_and_segment
     output:
-        distances = "results/distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        distances = "results/distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
         augur distance \
             --tree {input.tree} \
             --alignment {input.alignments} \
             --gene-names {params.genes} \
-            --masks {input.masks} \
-            --output {output} \
-            --attribute-names {params.attribute_names} \
-            --mask-names {params.mask_names}
+            --compare-to {params.comparisons} \
+            --attribute-name {params.attribute_names} \
+            --map {input.distance_maps} \
+            --output {output}
         """
 
 rule lbi:
