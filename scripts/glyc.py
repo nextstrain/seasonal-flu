@@ -6,7 +6,7 @@ from Bio import Phylo, AlignIO
 import re
 
 def glycosylation_count(total_aa_seq, glyc_mask=None):
-    if glyc_mask is none:
+    if glyc_mask is None:
         glyc_mask = np.ones(len(total_aa_seq), dtype=bool)
 
     # TODO: need to restrict to surface residues.
@@ -28,9 +28,6 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=str, help="names of files to write selected strains to, one for each gene")
 
     args = parser.parse_args()
-
-    with open(args.alignment) as fh:
-        nuc = json.load(fh)["nodes"]
 
     T = Phylo.read(args.tree, 'newick')
 

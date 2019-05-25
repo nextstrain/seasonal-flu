@@ -131,6 +131,12 @@ def _get_distance_maps_by_lineage_and_segment(wildcards):
         for distance_map in config.loc[:, "distance_map"].values
     ]
 
+def _get_glyc_alignment(w):
+    return "results/aa-seq_{c}_{l}_{seg}_{res}_{p}_{a}_{gene}.fasta".format(
+            c=w.center, l=w.lineage, seg=w.segment, res=w.resolution, p=w.passage, a=w.assay,
+            gene='HA1' if w.segment=='ha' else 'NA')
+
+
 rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
@@ -583,7 +589,7 @@ rule distances:
 rule glyc:
     input:
         tree = rules.refine.output.tree,
-        alignment = "results/aa-seq_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_HA1.json",
+        alignment = _get_glyc_alignment
     output:
         glyc = "results/glyc_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:

@@ -57,6 +57,12 @@
       "menuItem": "local branching index",
       "type": "continuous"
     },
+    "glyc": {
+      "menuItem": "Glycosilation changes",
+      "legendTitle": "Glycosilation gain/loss relative to root",
+      "type": "continuous",
+      "key": "glyc"
+    },
     "ep": {
       "menuItem": "epitope mutations",
       "legendTitle": "Epitope mutations",
