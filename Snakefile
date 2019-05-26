@@ -110,6 +110,19 @@ rule clean:
         "results ",
         "targets ",
         "auspice ",
-        "auspice-who"
+        "auspice-who ",
+        "logs"
+    shell:
+        "rm -rfv {params}"
+
+rule clobber:
+    message: "Removing directories: {params}"
+    params:
+        "results ",
+        "targets ",
+        "auspice ",
+        "auspice-who ",
+        "logs ",
+        "data"
     shell:
         "rm -rfv {params}"
