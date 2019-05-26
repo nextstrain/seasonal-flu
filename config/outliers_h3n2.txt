@@ -328,6 +328,7 @@ A/Sydney/53/2015
 A/Taiwan/937/2009
 A/WestVirginia/9/2012
 A/WestVirginia/10/2012
+A/WestVirginia/15/2012
 A/WestVirginia/16/2012
 A/Wisconsin/12/2010
 A/Wisconsin/22/2012
