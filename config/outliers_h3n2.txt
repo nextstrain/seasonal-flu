@@ -144,6 +144,7 @@ A/Indiana/49/2012
 A/Indiana/52/2012
 A/Indiana/52/2012-egg
 A/Indiana/57/2012
+A/Indiana/59/2012
 A/Indiana/65/2012
 A/Indiana/90/2012
 A/Indiana/93/2012
@@ -190,6 +191,7 @@ A/Louisiana/4/2003
 A/Lousiana/4/2003
 A/Luxembourg/19008307/2019
 A/Maine/6/2011
+A/MardelPlata/14041/2018
 A/Maryland/20/2012
 A/Maryland/22/2012
 A/Maryland/23/2012
