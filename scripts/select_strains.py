@@ -82,7 +82,7 @@ def populate_categories(metadata):
 
 
 def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=None,
-                    priority_region=None, priority_region_fraction=0.5):
+                    priority_region=None, priority_region_fraction=0.5, completeness=None):
     # Filter metadata by date using the given time interval. Using numeric dates
     # here allows users to define time intervals to the day and filter viruses
     # at that same level of precision.
@@ -93,6 +93,7 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
         for strain, record in metadata.items()
         if time_interval_start <= record["num_date"] <= time_interval_end
     }
+    completeness = completeness or {}
 
     #### DEFINE THE PRIORITY
     if titer_fnames:
@@ -101,11 +102,11 @@ def flu_subsampling(metadata, viruses_per_month, time_interval, titer_fnames=Non
             for s, k in count_titer_measurements(fname).items():
                 HI_titer_count[s] += k
         def priority(strain):
-            return HI_titer_count[strain] + np.random.random()
+            return HI_titer_count[strain] + completeness.get(strain,0) + np.random.random()
     else:
         print("No titer counts provided - using random priorities")
         def priority(strain):
-            return np.random.random()
+            return completeness.get(strain,0) + np.random.random()
 
     print("Viruses per month:", viruses_per_month)
 
@@ -254,6 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--date-format', type=str, default="%Y-%m-%d", help="date format")
     parser.add_argument('--output', help="name of the file to write selected strains to")
     parser.add_argument('--verbose', action="store_true", help="turn on verbose reporting")
+    parser.add_argument('--all-segments', action="store_true", help="only include strains with sequence data for all specified segments")
 
     parser.add_argument('-l', '--lineage', choices=['h3n2', 'h1n1pdm', 'vic', 'yam'], default='h3n2', type=str, help="single lineage to include (default: h3n2)")
     parser.add_argument('-r', '--resolution',default='3y', type = str,  help = "single resolution to include (default: 3y)")
@@ -296,19 +298,27 @@ if __name__ == '__main__':
             if name in included_strains:
                 filtered_metadata[segment][name] = metadata[segment][name]
 
-    # filter down to strains with sequences for all required segments
+    # either filter down to strains with sequences for all required segments
     guide_segment = args.segments[0]
-    strains_with_all_segments = set.intersection(*(set(filtered_metadata[x].keys()) for x in args.segments))
+    if args.all_segments:
+        strain_names = set.intersection(*(set(filtered_metadata[x].keys()) for x in args.segments))
+    else: # or calculate completeness to prioritize and ensure the guide_segment is present
+        strain_names = set.union(*(set(filtered_metadata[x].keys()) for x in args.segments))
+        strain_names = set.intersection(set(filtered_metadata[guide_segment].keys()), strain_names)
+        completeness = {x:np.sum([1 if x in filtered_metadata[seg] else 0 for seg in filtered_metadata])
+                        for x in strain_names}
+
     # exclude outlier strains
-    strains_with_all_segments.difference_update(set(excluded_strains))
+    strain_names.difference_update(set(excluded_strains))
     # subsample by region, month, year
     selected_strains = flu_subsampling(
-        {x:filtered_metadata[guide_segment][x] for x in strains_with_all_segments},
+        {x:filtered_metadata[guide_segment][x] for x in strain_names},
         args.viruses_per_month,
         time_interval,
         titer_fnames=args.titers,
         priority_region=args.priority_region,
-        priority_region_fraction=args.priority_region_fraction
+        priority_region_fraction=args.priority_region_fraction,
+        completeness=completeness
     )
 
     # add strains that need to be included
