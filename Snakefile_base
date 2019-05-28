@@ -58,6 +58,9 @@ def clock_rate(w):
     }
     return rate[(w.lineage, w.segment)]
 
+def clock_std_dev(w):
+    return 0.2*clock_rate(w)
+
 #
 # Define clades functions
 #
@@ -326,7 +329,8 @@ rule refine:
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = 4,
-        clock_rate = clock_rate
+        clock_rate = clock_rate,
+        clock_std_dev = clock_std_dev
     shell:
         """
         augur refine \
@@ -336,7 +340,9 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --timetree \
+            --no-covariance \
             --clock-rate {params.clock_rate} \
+            --clock-std-dev {params.clock_std_dev} \
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
