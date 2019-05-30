@@ -199,6 +199,7 @@ A/Maryland/25/2012
 A/Maryland/28/2012
 A/Maryland/42/2017
 A/Maryland/43/2017
+A/Maryland/44/2017
 A/Maryland/46/2017
 A/Maryland/49/2017
 A/Maryland/50/2017
@@ -208,6 +209,7 @@ A/Maryland/65/2017
 A/Maryland/72/2017
 A/Maryland/75/2017
 A/Maryland/77/2017
+A/Maryland/79/2017
 A/Maryland/87/2017
 A/Mendoza/176711/2012
 A/Michigan/16/2012
@@ -253,12 +255,15 @@ A/Ohio/18/2017
 A/Ohio/19/2012
 A/Ohio/19/2017
 A/Ohio/20/2012
+A/Ohio/20/2017
 A/Ohio/20/2012-egg
+A/Ohio/22/2017
 A/Ohio/23/2012
 A/Ohio/23/2012-egg
 A/Ohio/23/2017
 A/Ohio/24/2012
 A/Ohio/27/2016
+A/Ohio/27/2017
 A/Ohio/28/2012
 A/Ohio/28/2016
 A/Ohio/28/2017

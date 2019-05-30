@@ -3,6 +3,7 @@ A/Arkansas/15/2013
 A/Astrakhan/1/2019
 A/Asturias/RR6898/2010
 A/Austria/183/2009-egg
+A/Austria/1048413/2018
 A/Bangladesh/2021/2012
 A/Bari/166/2016
 A/Bari/167/2016
