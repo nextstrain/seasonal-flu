@@ -147,7 +147,7 @@ rule concat_metadata:
         python3 scripts/concat_metadata.py \
             --files {input.background_metadata} {input.seattle_metadata} \
             --mergeby strain \
-            --fields date region age site_type flu_shot gender \
+            --fields date region site_type flu_shot gender \
             > {output.metadata}
         """
 
