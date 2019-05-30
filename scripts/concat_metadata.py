@@ -8,13 +8,13 @@ def select(file, mergeby, fields):
         if row[mergeby]:
             values = []
             for field in fields:
-                if row[field]:
-                    values.append(row[field])
+                if field in row:
+                    values.append(str(row[field]))
                 else:
                     values.append("?")
             mapping[row[mergeby]] = values
     for key, values in mapping.items():
-        print(key + "\t" + "\t".join(values))
+        print(str(key) + "\t" + "\t".join(values))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
