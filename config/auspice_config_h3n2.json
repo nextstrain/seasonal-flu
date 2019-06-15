@@ -33,29 +33,11 @@
       "menuItem": "local branching index",
       "type": "continuous"
     },
-    "seed_id": {
-      "menuItem": "seed_id",
-      "legendTitle": "seed_id",
-      "type": "continuous",
-      "key": "seed_id"
-    },
-    "reassort_id": {
-      "menuItem": "reassort_id",
-      "legendTitle": "reassort_id",
-      "type": "continuous",
-      "key": "reassort_id"
-    },
-    "reassort_raw": {
-      "menuItem": "reassort_raw",
-      "legendTitle": "reassort_raw",
-      "type": "continuous",
-      "key": "reassort_raw"
-    },
-    "reassort_reordered": {
-      "menuItem": "reassort_reordered",
-      "legendTitle": "reassort_reordered",
-      "type": "continuous",
-      "key": "reassort_reordered"
+    "cluster": {
+      "key": "cluster",
+      "legendTitle": "Cluster",
+      "menuItem": "cluster",
+      "type": "discrete"
     }
   },
   "geo": [

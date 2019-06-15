@@ -379,7 +379,7 @@ rule clades:
         aa_muts = rules.translate.output,
         clades = _get_clades_file_for_wildcards
     output:
-        clades = "results/clades_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/clades_{lineage}_{segment}_{resolution}.json"
     run:
         if wildcards.segment == 'ha':
             shell("""
@@ -394,7 +394,7 @@ rule clades:
                 python3 scripts/import_tip_clades.py \
                     --tree {input.tree} \
                     --clades {input.clades} \
-                    --output {output.clades}
+                    --output {output.node_data}
             """)
 
 rule lbi:
@@ -407,16 +407,16 @@ rule lbi:
         window = 0.5,
         names = "lbi"
     output:
-        lbi = "results/lbi_{lineage}_{segment}_{resolution}.json"
+        node_data = "results/lbi_{lineage}_{segment}_{resolution}.json"
     shell:
         """
         augur lbi \
             --tree {input.tree} \
             --branch-lengths {input.branch_lengths} \
-            --output {output} \
             --attribute-names {params.names} \
             --tau {params.tau} \
-            --window {params.window}
+            --window {params.window} \
+            --output {output.node_data}
         """
 
 rule hamming_distance:
@@ -433,24 +433,39 @@ rule hamming_distance:
         python3 scripts/reassort/hamming.py --fasta {input.aligned} --output {output.data}
         """
 
-
-def _get_trees_for_all_segments(wildcards):
-    trees = []
-    for seg in segments:
-        trees.append(rules.refine.output.tree.format(**wildcards, **{"segment": seg}))
-    return trees
-
-rule identify_non_reassorting_tips:
-    message: "Identifying sets of tips which have not reassorted"
+rule clustering:
+    message: "Identifying clusters based on connected components"
     input:
-        trees = _get_trees_for_all_segments,
-        mutations = lambda wildcards: [rules.ancestral.output.node_data.format(**wildcards, **{"segment": seg}) for seg in segments]
+        nt_muts = expand("results/nt-muts_{{lineage}}_{segment}_{{resolution}}.json", segment=segments),
+    params:
+        cutoff = 30
     output:
-        data = "results/reassort_{lineage}_{resolution}.json"
+        node_data = "results/clustering_{lineage}_{resolution}.json"
     shell:
         """
-        python3 scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
+        python3 scripts/connected_components.py \
+            --nt-muts {input.nt_muts} \
+            --cutoff {params.cutoff} \
+            --output {output.node_data}
         """
+
+# def _get_trees_for_all_segments(wildcards):
+#     trees = []
+#     for seg in segments:
+#         trees.append(rules.refine.output.tree.format(**wildcards, **{"segment": seg}))
+#     return trees
+#
+# rule identify_non_reassorting_tips:
+#     message: "Identifying sets of tips which have not reassorted"
+#     input:
+#         trees = _get_trees_for_all_segments,
+#         mutations = lambda wildcards: [rules.ancestral.output.node_data.format(**wildcards, **{"segment": seg}) for seg in segments]
+#     output:
+#         data = "results/reassort_{lineage}_{resolution}.json"
+#     shell:
+#         """
+#         python3 scripts/reassort --trees {input.trees} --mutations {input.mutations} --output {output.data}
+#         """
 
 def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
@@ -460,9 +475,10 @@ def _get_node_data_for_export(wildcards):
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
-        rules.clades.output.clades,
+        rules.clades.output.node_data,
         rules.traits.output.node_data,
-        rules.lbi.output.lbi
+        rules.lbi.output.node_data,
+        rules.clustering.output.node_data
     ]
 
     # HA gets the reassortant information

@@ -25,18 +25,6 @@
       "menuItem": "clade",
       "type": "discrete"
     },
-    "cTiter": {
-      "key": "cTiter",
-      "legendTitle": "Antigenic advance (tree model)",
-      "menuItem": "antigenic advance (tree model)",
-      "type": "continuous"
-    },
-    "cTiterSub": {
-      "key": "cTiterSub",
-      "legendTitle": "Antigenic advance (sub model)",
-      "menuItem": "antigenic advance (sub model)",
-      "type": "continuous"
-    },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
@@ -44,6 +32,12 @@
       "key": "lbi",
       "menuItem": "local branching index",
       "type": "continuous"
+    },
+    "cluster": {
+      "key": "cluster",
+      "legendTitle": "Cluster",
+      "menuItem": "cluster",
+      "type": "discrete"
     }
   },
   "geo": [

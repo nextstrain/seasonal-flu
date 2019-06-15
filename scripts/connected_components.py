@@ -8,14 +8,11 @@ import argparse
 import os
 import json
 import numpy as np
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import connected_components
 
-hamming_lookup = {}
-def hamming(strain1, strain2, array1, array2):
-    if (strain1, strain2) in hamming_lookup:
-        return hamming_lookup[(strain1, strain2)]
-    dist = np.sum(array1 != array2)
-    hamming_lookup[(strain1, strain2)] = dist
-    return dist
+def hamming(array1, array2):
+    return np.sum(array1 != array2)
 
 def shared_strains(files):
     '''
@@ -36,7 +33,7 @@ def shared_strains(files):
 
 def sequence_mapping(files, strains):
     '''
-    Return dictionary mapping of strains to contenated sequence across input files
+    Return dictionary mapping of strains to concatenated sequence across input files
     Assumes that all strains are in all files
     '''
     mapping = {}
@@ -52,20 +49,48 @@ def sequence_mapping(files, strains):
                         mapping[node] = np.concatenate((mapping[node], np.array(list(seq))), axis=0)
     return mapping
 
-def attempt_merge(clusters, mapping, cutoff):
-    for clusterA in clusters:
-        for clusterB in clusters:
-            if clusterA != clusterB:
-                # compare all strains in clusterA to all strains in clusterB
-                for strainA in clusters[clusterA]:
-                    for strainB in clusters[clusterB]:
-                        if strainA != strainB:
-                            distance = hamming(strainA, strainB, mapping[strainA], mapping[strainB])
-                            if distance <= cutoff:
-                                clusters[clusterA] = [x for x in clusters[clusterA]] + [x for x in clusters[clusterB]]
-                                clusters.pop(clusterB, None)
-                                return True
-    return False
+def strains_to_adjacency_matrix(strains, mapping, cutoff):
+    '''
+    Return np array of 0/1 for connected edges between all pairs of strains
+    Connected edges are edges where Hamming distance is less than cutoff
+    '''
+    length = len(mapping)
+    adj_matrix = np.zeros((length, length))
+    for indexA, strainA in enumerate(strains):
+        for indexB, strainB in enumerate(strains):
+            distance = hamming(mapping[strainA], mapping[strainB])
+            if distance < cutoff:
+                adj_matrix[indexA, indexB] = 1
+            else:
+                adj_matrix[indexA, indexB] = 0
+            if indexA == indexB:
+                adj_matrix[indexA, indexB] = 0
+    return adj_matrix
+
+def adjacency_matrix_to_connected_components(adj_matrix):
+    '''
+    Return connected components from adjacency matrix
+    '''
+    graph = csr_matrix(adj_matrix)
+    return connected_components(csgraph=graph, directed=False, return_labels=True)
+
+def components_to_cluster_json(strains, labels):
+    '''
+    Return JSON compatible data structure representing mapping of nodes to component labels
+    "nodes": {
+        "A/Hyogo/1061/2017": {
+            "cluster": 1
+        },
+        "A/Peru/27/2015": {
+            "cluster": 2
+        },
+        ...
+    '''
+    data = {}
+    data["nodes"] = {}
+    for strain, label in zip(strains, labels):
+        data["nodes"][strain] = {"cluster": str(label)}
+    return data
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -73,25 +98,26 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--files', nargs='+', type=str, required=True, help="list of nt-muts JSON files")
-    parser.add_argument('--cutoff', default=5, type = int,  help = "Hamming distance cutoff to be considered connected")
+    parser.add_argument('--nt-muts', nargs='+', type=str, required=True, help="list of nt-muts JSON files")
+    parser.add_argument('--cutoff', default=5, type = int, help = "Hamming distance cutoff to be considered connected")
+    parser.add_argument('--output', required=True, help="name of the file to write JSON data to")
     args = parser.parse_args()
 
     # collect strains shared across segments
-    strains = shared_strains(args.files)
+    strains = shared_strains(args.nt_muts)
 
     # mapping of strains to concatenated sequence
-    mapping = sequence_mapping(args.files, strains)
+    mapping = sequence_mapping(args.nt_muts, strains)
 
-    # start with each strain in its own cluster
-    # data structure is dict of cluster id -> list of strains
-    clusters = {}
-    for index, strain in enumerate(strains):
-        clusters[index] = [strain]
+    # adjacency matrix via Hamming distance matrix
+    adj_matrix = strains_to_adjacency_matrix(strains, mapping, args.cutoff)
 
-    # iterate over clusters and attempt to merge
-    test = True
-    while test:
-        test = attempt_merge(clusters, mapping, args.cutoff)
+    # connected components via adjacency matrix
+    n_components, labels = adjacency_matrix_to_connected_components(adj_matrix)
 
-    print(clusters)
+    print("Defining", n_components, "clusters based on connected components")
+
+    cluster_json = components_to_cluster_json(strains, labels)
+
+    with open(args.output, 'wt') as fh:
+        json.dump(cluster_json, fh, indent=1)
