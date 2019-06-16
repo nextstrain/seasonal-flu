@@ -96,7 +96,7 @@ rule parse_background_seqmeta:
         sequences = "data/background_sequences_{lineage}_{segment}.fasta",
         metadata = "data/background_metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields = "strain virus isolate_id date region country division location passage authors age gender"
+        fasta_fields = "strain virus isolate_id date region country division location passage authors age sex"
     shell:
         """
         augur parse \
@@ -387,7 +387,7 @@ rule clades:
                     --tree {input.tree} \
                     --mutations {input.nt_muts} {input.aa_muts} \
                     --clades {input.clades} \
-                    --output {output.clades}
+                    --output {output.node_data}
             """)
         else:
             shell("""
