@@ -1,3 +1,9 @@
+region	central_america	17.376838	-93.741977
+region	northeast_usa	42.399817	-73.950238
+region	midwest_usa	41.296461	-90.887825
+region	south_usa	33.160184	-89.238176
+region	west_usa	37.382078	-114.856226
+region	canada	52.669457	-98.194765
 region	seattle	47.606271	-122.333037
 
 # Eventually centroids will be computed by ID3C, but for now I generated these

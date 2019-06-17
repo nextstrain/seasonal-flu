@@ -147,7 +147,7 @@ rule concat_metadata:
         python3 scripts/concat_metadata.py \
             --files {input.background_metadata} {input.seattle_metadata} \
             --mergeby strain \
-            --fields date region site_type flu_shot gender \
+            --fields date region country division site site_type flu_shot sex residence_census_tract \
             > {output.metadata}
         """
 
@@ -175,7 +175,7 @@ rule filter:
             --min-length {params.min_length} \
             --non-nucleotide \
             --exclude {input.exclude} \
-            --exclude-where country=? region=? passage=egg \
+            --exclude-where region=? passage=egg \
             --output {output}
         """
 
@@ -192,7 +192,7 @@ rule select_strains:
     output:
         strains = "results/strains_{lineage}_{resolution}.txt",
     params:
-        viruses_per_month = 90
+        viruses_per_month = 80
     shell:
         """
         python3 scripts/select_strains.py \

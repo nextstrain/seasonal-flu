@@ -46,7 +46,12 @@ def sequence_mapping(files, strains):
                 for node, values in json_data["nodes"].items():
                     if node in mapping:
                         seq = values["sequence"]
-                        mapping[node] = np.concatenate((mapping[node], np.array(list(seq))), axis=0)
+                        seq = seq.replace("A", "0")
+                        seq = seq.replace("T", "1")
+                        seq = seq.replace("G", "2")
+                        seq = seq.replace("C", "3")
+                        array = np.asarray(list(seq), dtype = int)
+                        mapping[node] = np.concatenate((mapping[node], array), axis=0).astype(int)
     return mapping
 
 def strains_to_adjacency_matrix(strains, mapping, cutoff):
@@ -54,9 +59,19 @@ def strains_to_adjacency_matrix(strains, mapping, cutoff):
     Return np array of 0/1 for connected edges between all pairs of strains
     Connected edges are edges where Hamming distance is less than cutoff
     '''
+    counter = 0
+    interval = 100
     length = len(mapping)
+    print("progress")
     adj_matrix = np.zeros((length, length))
     for indexA, strainA in enumerate(strains):
+        if counter % interval == 0:
+            print("[", end = '')
+            for x in range(int(counter/interval)):
+                print("-", end = '')
+            for x in range(int(length/interval) - int(counter/interval)):
+                print(" ", end = '')
+            print("]")
         for indexB, strainB in enumerate(strains):
             distance = hamming(mapping[strainA], mapping[strainB])
             if distance < cutoff:
@@ -65,6 +80,7 @@ def strains_to_adjacency_matrix(strains, mapping, cutoff):
                 adj_matrix[indexA, indexB] = 0
             if indexA == indexB:
                 adj_matrix[indexA, indexB] = 0
+        counter += 1
     return adj_matrix
 
 def adjacency_matrix_to_connected_components(adj_matrix):

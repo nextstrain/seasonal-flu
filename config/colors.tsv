@@ -8,4 +8,10 @@ region  africa #7EB877
 region  europe  #98BD5E
 region  south_america #B4BD4C
 region  north_america #CDB642
+region	central_america	#C2BA46
+region	northeast_usa	#CCB742
+region	midwest_usa	#D3B240
+region	south_usa	#DAAC3D
+region	west_usa	#DFA43B
+region	canada	#E39B39
 region	seattle	#DC2F24
