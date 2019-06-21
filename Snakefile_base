@@ -264,7 +264,7 @@ rule extract:
             --output {output}
         """
 
-rule align:
+rule nuc_align:
     message:
         """
         Aligning sequences to {input.reference}
@@ -273,7 +273,7 @@ rule align:
         sequences = rules.extract.output.sequences,
         reference = files.reference
     output:
-        alignment = "results/aligned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta"
+        alignment = "results/aligned-nuc_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta"
     shell:
         """
         augur align \
@@ -282,6 +282,24 @@ rule align:
             --output {output.alignment} \
             --remove-reference \
             --nthreads 1
+        """
+
+rule align:
+    message:
+        """
+        codon aligning according to annotation in {input.reference}
+        """
+    input:
+        alignment = rules.nuc_align.output.alignment,
+        reference = files.reference
+    output:
+        alignment = "results/aligned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta"
+    shell:
+        """
+        python3 scripts/codon_align.py \
+            --alignment {input.alignment} \
+            --reference {input.reference} \
+            --output {output.alignment}
         """
 
 rule tree:
