@@ -1,7 +1,7 @@
 from datetime import date
 from treetime.utils import numeric_date
 
-path_to_fauna = '../fauna'
+path_to_fauna = '../../fauna'
 if os.environ.get('FAUNA_PATH'):
     path_to_fauna = os.environ.get('FAUNA_PATH')
 
