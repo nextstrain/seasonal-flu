@@ -41,7 +41,10 @@ if __name__ == '__main__':
         right_gaps = len(str_seq) - len(str_seq.rstrip('-'))
         ungapped[seq.id] = '-'*left_gaps + str(seq.seq.ungap('-')) + '-'*right_gaps
         aa = safe_translate(ungapped[seq.id])
-        ungapped_aa.append(SeqRecord.SeqRecord(seq=Seq.Seq(aa), id=seq.id, name=seq.id, description=''))
+        if aa.count('X') + aa.count('*')<5:
+            ungapped_aa.append(SeqRecord.SeqRecord(seq=Seq.Seq(aa), id=seq.id, name=seq.id, description=''))
+        else:
+            print(seq.id, "didn't translate properly")
 
     tmp_outfile = args.output+'.tmp.fasta'
     SeqIO.write(ungapped_aa, tmp_outfile, 'fasta')
@@ -57,17 +60,23 @@ if __name__ == '__main__':
         pos=0
         nuc_seq_aln = [str(UTR5p[seq.id].seq) if UTR5p else '']
         nuc_seq = ungapped[seq.id]
-        for aa in aa_aln[seq.id].seq:
-            if aa=='-':
-                nuc_seq_aln.append('---')
-                if nuc_seq[pos:pos+3]=='---':
+        if seq.id in aa_aln:
+            for aa in aa_aln[seq.id].seq:
+                if aa=='-':
+                    nuc_seq_aln.append('---')
+                    if nuc_seq[pos:pos+3]=='---':
+                        pos+=3
+                else:
+                    if len(nuc_seq)>=pos+3:
+                        nuc_seq_aln.append(nuc_seq[pos:pos+3])
+                    else:
+                        nuc_seq_aln.append('---')
                     pos+=3
-            else:
-                nuc_seq_aln.append(nuc_seq[pos:pos+3])
-                pos+=3
 
-        seq.seq=Seq.Seq(''.join(nuc_seq_aln)+(str(UTR3p[seq.id].seq) if UTR3p else ''))
-        new_cds_aln.append(seq)
+            seq.seq=Seq.Seq(''.join(nuc_seq_aln)+(str(UTR3p[seq.id].seq) if UTR3p else ''))
+            new_cds_aln.append(seq)
+        else:
+            print(seq.id, "didn't translate properly")
 
     AlignIO.write(MultipleSeqAlignment(new_cds_aln), args.output, 'fasta')
     os.remove(tmp_outfile)
