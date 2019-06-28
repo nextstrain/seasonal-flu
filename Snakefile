@@ -449,6 +449,22 @@ rule clustering:
             --output {output.node_data}
         """
 
+rule clusters_fasta:
+    message: "Creating fasta file of full-genome clusters"
+    input: 
+        clusters = "results/clustering_{lineage}_{resolution}.json",
+        nt_muts = expand("results/nt-muts_{{lineage}}_{segment}_{{resolution}}.json", segment=segments),
+    output:
+        sequences = 'results/genomes_{lineage}_{resolution}.fasta'
+    shell:
+        """
+        python3 scripts/genomes_cluster.py \
+            --clusters {input.clusters} \
+            --nt-muts {input.nt_muts} \
+            --output {output.sequences} \
+        """
+
+
 # def _get_trees_for_all_segments(wildcards):
 #     trees = []
 #     for seg in segments:
