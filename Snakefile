@@ -56,7 +56,8 @@ def _get_clades_file_for_wildcards(wildcards):
 rule all:
     input:
         auspice_tree = expand("auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_tree.json", lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_meta.json", lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_meta = expand("auspice/seattle_flu_seasonal_{lineage}_{segment}_{resolution}_global_meta.json", lineage=lineages, segment=segments, resolution=resolutions),
+        genomes = expand("results/genomes_{lineage}_cluster_{resolution}.fasta", lineage = lineages, resolution = resolutions)
 
 rule files:
     params:
@@ -450,18 +451,17 @@ rule clustering:
         """
 
 rule clusters_fasta:
-    message: "Creating fasta file of full-genome clusters"
+    message: "Creating fasta file of full-genome clusters. Outputs as genomes_lineage_cluster_resolution.fasta"
     input: 
-        clusters = "results/clustering_{lineage}_{resolution}.json",
-        nt_muts = expand("results/nt-muts_{{lineage}}_{segment}_{{resolution}}.json", segment=segments),
+        clusters = expand("results/clustering_{lineage}_{{resolution}}.json", lineage = lineages),
+        nt_muts = expand("results/nt-muts_{{lineage}}_{segment}_{{resolution}}.json", segment=segments)
     output:
-        sequences = 'results/genomes_{lineage}_{resolution}.fasta'
+        genomes = "results/genomes_{lineage}_cluster_{resolution}.fasta"
     shell:
         """
         python3 scripts/genomes_cluster.py \
             --clusters {input.clusters} \
-            --nt-muts {input.nt_muts} \
-            --output {output.sequences} \
+            --nt-muts {input.nt_muts} 
         """
 
 
