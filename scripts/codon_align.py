@@ -20,8 +20,10 @@ if __name__ == '__main__':
     aln = AlignIO.read(args.alignment, 'fasta')
     ref = SeqIO.read(args.reference, 'genbank')
 
+    # assuming there is one contiguous coding region which might be
+    # split into multiple sub-proteins like HA1 and HA2.
+    # loop over all features, pull out min and max of their union
     cds_start, cds_end = np.inf, 0
-
     for feature in ref.features:
         if feature.type=='CDS':
             if feature.location.start<cds_start:
@@ -29,14 +31,18 @@ if __name__ == '__main__':
             if feature.location.end>cds_end:
                 cds_end=feature.location.end
 
+    # save the 5p and 3p ends of each sequence. this will be added to the aligned CDS later
     UTR5p = {s.id:s for s in aln[:,:cds_start]} if cds_start else None
     UTR3p = {s.id:s for s in aln[:,cds_end:]} if cds_end<aln.get_alignment_length() else None
 
+    # pull out the cds of each sequence, strip internal gaps
     cds = aln[:,cds_start:cds_end]
     ungapped_aa = []
     ungapped = {}
     for seq in cds:
         str_seq = str(seq.seq)
+        # it is critical to maintain gaps at the 5p end of the sequence to make
+        # sure sequences are in frame. some start past the ATG in the middle of a codon.
         left_gaps = len(str_seq) - len(str_seq.lstrip('-'))
         right_gaps = len(str_seq) - len(str_seq.rstrip('-'))
         ungapped[seq.id] = '-'*left_gaps + str(seq.seq.ungap('-')) + '-'*right_gaps
@@ -46,15 +52,16 @@ if __name__ == '__main__':
         else:
             print(seq.id, "didn't translate properly")
 
+    # write out aa-sequence, align, and read back in
     tmp_outfile = args.output+'.tmp.fasta'
-    SeqIO.write(ungapped_aa, tmp_outfile, 'fasta')
-
     tmp_aln_file = args.output+'.tmp_aln.fasta'
+    SeqIO.write(ungapped_aa, tmp_outfile, 'fasta')
     os.system("mafft --auto %s > %s"%(tmp_outfile, tmp_aln_file))
-
-
     aa_aln = {seq.id: seq for seq in AlignIO.read(tmp_aln_file, 'fasta')}
 
+    # reassemble the sequences. For each aligned aa-sequence, use the codon in the
+    # nucleotide sequence if the aa sequence isn't gapped, insert '---' if the aa-sequence
+    # is gapped, and attach the 5p and 3p sequences saved above.
     new_cds_aln = []
     for seq in cds:
         pos=0
@@ -64,6 +71,8 @@ if __name__ == '__main__':
             for aa in aa_aln[seq.id].seq:
                 if aa=='-':
                     nuc_seq_aln.append('---')
+                    # if the nucleotide sequence is gapped
+                    # (i.e. because of missing data at the 5p and 3p end, advance pos)
                     if nuc_seq[pos:pos+3]=='---':
                         pos+=3
                 else:
@@ -78,6 +87,7 @@ if __name__ == '__main__':
         else:
             print(seq.id, "didn't translate properly")
 
+    # output and remove temporary files
     AlignIO.write(MultipleSeqAlignment(new_cds_aln), args.output, 'fasta')
     os.remove(tmp_outfile)
     os.remove(tmp_aln_file)
