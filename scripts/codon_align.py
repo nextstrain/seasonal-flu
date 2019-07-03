@@ -47,6 +47,7 @@ if __name__ == '__main__':
         right_gaps = len(str_seq) - len(str_seq.rstrip('-'))
         ungapped[seq.id] = '-'*left_gaps + str(seq.seq.ungap('-')) + '-'*right_gaps
         aa = safe_translate(ungapped[seq.id])
+        # throw out sequences that have many stops or non-translatable codons
         if aa.count('X') + aa.count('*')<5:
             ungapped_aa.append(SeqRecord.SeqRecord(seq=Seq.Seq(aa), id=seq.id, name=seq.id, description=''))
         else:
