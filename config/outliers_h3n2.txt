@@ -102,6 +102,7 @@ A/HongKong/HKMA20E/2008
 A/HuNan/01/2014
 A/HuNan/1/2014
 A/Illinois/3/2013
+A/Illinois/11/2012
 A/Illinois/14/2012
 A/India/6352/2012
 A/India/D0512577/2005
