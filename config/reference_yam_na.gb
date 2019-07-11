@@ -36,15 +36,6 @@ FEATURES             Location/Qualifiers
                      /organism="Influenza B virus (B/Singapore/11/1994)"
                      /segment="6"
                      /strain="Influenza B virus (B/Singapore/11/1994)"
-     gene            24..326
-                     /gene="NB"
-     CDS             24..326
-                     /codon_start=1
-                     /gene="NB"
-                     /product="NB protein"
-                     /protein_id="ABN50715.1"
-                     /translation="MNNATFNYTNVNPISHIRGSAIITICVSFTVILTVFGYIAKIFTN
-                     RNNCTNNAIGLCKRIKCSGCEPFCNKRGDTSSPRTGVDIPSFILPGLNLSESTPN"
      gene            31..1431
                      /gene="NA"
      CDS             31..1431

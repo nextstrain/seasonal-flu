@@ -35,15 +35,6 @@ FEATURES             Location/Qualifiers
                      /organism="Influenza B virus (B/Hong Kong/02/1993)"
                      /segment="6"
                      /strain="Influenza B virus (B/Hong Kong/02/1993)"
-     gene            24..326
-                     /gene="NB"
-     CDS             24..326
-                     /codon_start=1
-                     /gene="NB"
-                     /product="NB protein"
-                     /protein_id="ABL77324.1"
-                     /translation="MNNATFNYTNVNPISHIRGSVIITICVSLTVILTVFGYIAKIFTN
-                     KNNRTNNVAGLRERIKCSGCEPFCNKRDDTSSPRTGVDIPSFILPGLNFPESTPN"
      gene            31..1431
                      /gene="NA"
      CDS             31..1431
