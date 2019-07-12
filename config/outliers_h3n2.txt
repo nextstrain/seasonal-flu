@@ -1,3 +1,5 @@
+29cea8cb-fa93-4c46-8bbc-3d1a51f26391
+51de8816-cadd-4a85-92d9-d69fc945f92c
 A/Asaka/2/2017
 A/Austria/838902/2015
 A/Austria/839669/2015
@@ -206,6 +208,7 @@ A/Maryland/46/2017
 A/Maryland/49/2017
 A/Maryland/50/2017
 A/Maryland/52/2017
+A/Maryland/54/2017
 A/Maryland/55/2017
 A/Maryland/59/2017
 A/Maryland/61/2017
@@ -214,6 +217,7 @@ A/Maryland/64/2017
 A/Maryland/65/2017
 A/Maryland/67/2017
 A/Maryland/70/2017
+A/Maryland/71/2017
 A/Maryland/72/2017
 A/Maryland/75/2017
 A/Maryland/77/2017
@@ -266,6 +270,7 @@ A/Ohio/19/2017
 A/Ohio/20/2012
 A/Ohio/20/2012-egg
 A/Ohio/20/2017
+A/Ohio/21/2017
 A/Ohio/22/2017
 A/Ohio/23/2012
 A/Ohio/23/2012-egg
