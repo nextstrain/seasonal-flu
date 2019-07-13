@@ -1,5 +1,6 @@
 B/Catalonia/NSVH100562319/2017
 B/England/581/2012
+B/HongKong/2196/2010
 B/Kisumu/7/2005
 B/Kolkata/2546/2009
 B/Kolkata/N-1272/2009
