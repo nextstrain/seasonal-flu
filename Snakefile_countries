@@ -3,24 +3,24 @@ include: "Snakefile_base"
 localrules: all_live, download_all, download_titers, download_sequences
 ruleorder: select_strains_countries > select_strains
 
-segments = ['ha', 'na']
-lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
+segments = ['ha'] #, 'na']
+lineages = ['h3n2'] #, 'h1n1pdm', 'vic', 'yam']
 resolutions = ['2y']
 
 passages = ['cell']
 centers = ['cdc']
 assays = ['hi']
 
-countries = ["netherlands", "france"]
+countries = {"netherlands":"netherlands", "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
 
 rule all_live:
     input:
-        auspice_tree = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_tree.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_meta.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_tip_frequencies = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions)
+        auspice_tree = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays),
+        auspice_meta = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays),
+        auspice_tip_frequencies = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays)
 
 # separate rule for interaction with fauna
 rule download_all:
@@ -29,6 +29,9 @@ rule download_all:
                          center=["who"], lineage=lineages, passage=passages, assay=assays),
         sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
 
+
+def _get_focus_countries(wildcards):
+    return " ".join(countries[wildcards.center])
 
 def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
@@ -88,14 +91,15 @@ rule select_strains_countries:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
         viruses_per_month = 10,
-        extra_viruses_per_month=50
+        extra_viruses_per_month=50,
+        focus_countries = _get_focus_countries
     shell:
         """
         python3 scripts/select_strains.py \
             --sequences {input.sequences} \
             --metadata {input.metadata} \
             --segments {segments} \
-            --focus-countries {wildcards.center} \
+            --focus-countries {params.focus_countries} \
             --extra-viruses-per-month {params.extra_viruses_per_month} \
             --include {input.include} \
             --lineage {wildcards.lineage} \
