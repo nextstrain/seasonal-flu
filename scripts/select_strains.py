@@ -248,7 +248,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('-v', '--viruses_per_month', type = int, default=15,
+    parser.add_argument('-v', '--viruses-per-month', type = int, default=15,
                         help='Subsample x viruses per country per month. Set to 0 to disable subsampling.')
     parser.add_argument('--sequences', nargs='+', help="FASTA file with viral sequences, one for each segment")
     parser.add_argument('--metadata', nargs='+', help="file with metadata associated with viral sequences, one for each segment")
@@ -262,6 +262,8 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--segments', default=['ha'], nargs='+', type = str,  help = "list of segments to include (default: ha)")
     parser.add_argument('--priority-region', help='a specific region to prioritize over others')
     parser.add_argument('--priority-region-fraction', type=float, default=0.5, help='fraction of viruses per month to sample from the given priority region')
+    parser.add_argument('--focus-countries', nargs='+', help='countries from which extra viruses are to be added')
+    parser.add_argument('--extra-viruses-per-month', type=int, help="number of extra viruses per month")
     parser.add_argument('--time-interval', nargs=2, help="explicit time interval to use -- overrides resolutions"
                                                                      " expects YYYY-MM-DD YYYY-MM-DD")
     parser.add_argument('--titers', nargs='+', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
@@ -320,6 +322,17 @@ if __name__ == '__main__':
         priority_region_fraction=args.priority_region_fraction,
         completeness=completeness
     )
+
+    if args.focus_countries:
+        selected_strains_countries = flu_subsampling(
+            {x:filtered_metadata[guide_segment][x] for x in strain_names if filtered_metadata[guide_segment][x]['country'] in args.focus_countries},
+            args.extra_viruses_per_month,
+            time_interval,
+            titer_fnames=args.titers,
+            completeness=completeness
+        )
+        selected_strains = list(set.union(set(selected_strains), selected_strains_countries))
+
 
     # add strains that need to be included
     # these strains don't have to exist in all segments, just the guide segment

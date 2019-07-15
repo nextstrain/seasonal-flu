@@ -76,10 +76,11 @@ def _get_clades_file_for_wildcards(wildcards):
 # Define titer data sets to be used.
 #
 def _get_tdb_databases(wildcards):
-    if wildcards.center == 'who':
-        return "cdc_tdb crick_tdb niid_tdb vidrl_tdb tdb"
-    else:
+    if wildcards.center in ['cdc', 'crick', 'niid', 'vidrl']:
         return wildcards.center + "_tdb tdb"
+    else:
+        return "cdc_tdb crick_tdb niid_tdb vidrl_tdb tdb"
+
 
 def exclude_where(wildcards):
     if wildcards.passage == 'cell':
@@ -254,7 +255,7 @@ rule select_strains:
             --include {input.include} \
             --lineage {wildcards.lineage} \
             --resolution {wildcards.resolution} \
-            --viruses_per_month {params.viruses_per_month} \
+            --viruses-per-month {params.viruses_per_month} \
             --titers {input.titers} \
             --output {output.strains}
         """

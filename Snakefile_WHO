@@ -1,5 +1,7 @@
 include: "Snakefile_base"
 
+localrules: all_builds, download_all, download_titers, download_sequences
+
 passages = ['cell', 'egg']
 assays = ['hi', 'fra']
 centers = ['who', 'cdc', 'crick', 'niid', 'vidrl']

@@ -1,0 +1,106 @@
+include: "Snakefile_base"
+
+localrules: all_live, download_all, download_titers, download_sequences
+ruleorder: select_strains_countries > select_strains
+
+segments = ['ha', 'na']
+lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
+resolutions = ['2y']
+
+passages = ['cell']
+centers = ['cdc']
+assays = ['hi']
+
+countries = ["netherlands", "france"]
+
+rule all_live:
+    input:
+        auspice_tree = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_tree.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_meta = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_meta.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions)
+
+# separate rule for interaction with fauna
+rule download_all:
+    input:
+        titers = expand("data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
+                         center=["who"], lineage=lineages, passage=passages, assay=assays),
+        sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
+
+
+def _get_node_data_for_export(wildcards):
+    """Return a list of node data files to include for a given build's wildcards.
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.refine.output.node_data,
+        rules.ancestral.output.node_data,
+        rules.translate.output.node_data,
+        rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
+        rules.clades.output.clades,
+        rules.traits.output.node_data,
+        rules.lbi.output.lbi
+    ]
+
+    # Only request a distance file for builds that have distance map
+    # configurations defined.
+    if _get_build_distance_map_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
+
+rule export:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        auspice_config = files.auspice_config,
+        node_data = _get_node_data_for_export
+    output:
+        auspice_tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
+        auspice_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
+    shell:
+        """
+        augur export \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --auspice-config {input.auspice_config} \
+            --output-tree {output.auspice_tree} \
+            --output-meta {output.auspice_meta} \
+            --output-sequence {output.auspice_seq} \
+            --minify-json
+        """
+
+
+rule select_strains_countries:
+    input:
+        sequences = expand("results/filtered_{{lineage}}_{segment}_{{passage}}.fasta", segment=segments),
+        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
+        titers = "data/who_{lineage}_{passage}_{assay}_titers.tsv",
+        include = files.references
+    output:
+        strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
+    params:
+        viruses_per_month = 10,
+        extra_viruses_per_month=50
+    shell:
+        """
+        python3 scripts/select_strains.py \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
+            --segments {segments} \
+            --focus-countries {wildcards.center} \
+            --extra-viruses-per-month {params.extra_viruses_per_month} \
+            --include {input.include} \
+            --lineage {wildcards.lineage} \
+            --resolution {wildcards.resolution} \
+            --viruses-per-month {params.viruses_per_month} \
+            --titers {input.titers} \
+            --output {output.strains}
+        """
