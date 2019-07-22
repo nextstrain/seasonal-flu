@@ -1,15 +1,15 @@
-include: "Snakefile_base"
-
 localrules: all_live, download_all, download_titers, download_sequences
 ruleorder: select_strains_countries > select_strains
 
-segments = ['ha'] #, 'na']
-lineages = ['h3n2'] #, 'h1n1pdm', 'vic', 'yam']
+segments = ['ha', 'na']
+lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 resolutions = ['2y']
 
 passages = ['cell']
 centers = ['cdc']
 assays = ['hi']
+
+include: "Snakefile_base"
 
 countries = {"netherlands":"netherlands", "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
 

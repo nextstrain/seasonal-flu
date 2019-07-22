@@ -22,7 +22,10 @@ def reference_strain(v):
                   }
     return references[v.lineage]
 
-genes_to_translate = {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA']}
+genes_to_translate = {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA'],
+                      'pb1':['PB1-F2'], 'pb2':['PB2'], 'pa':['PA'],
+                      'np':['NP'], 'm':['M'], 'ns':['NEP']}
+
 def gene_names(w):
     return genes_to_translate[w.segment]
 
@@ -57,7 +60,8 @@ def clock_rate(w):
         ('vic', 'ha'): 0.0024, ('vic', 'na'):0.0015,
         ('yam', 'ha'): 0.0019, ('yam', 'na'):0.0013
     }
-    return rate[(w.lineage, w.segment)]
+    return rate.get((w.lineage, w.segment), 0.001)
+
 
 def clock_std_dev(w):
     return 0.2*clock_rate(w)
