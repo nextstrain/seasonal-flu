@@ -1,6 +1,3 @@
-include: "Snakefile_base"
-
-localrules: all_builds, download_all, download_titers, download_sequences
 
 passages = ['cell', 'egg']
 assays = ['hi', 'fra']
@@ -8,6 +5,9 @@ centers = ['who', 'cdc', 'crick', 'niid', 'vidrl']
 resolutions = ['2y', '6y']
 lineages = ['h3n2' , 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
+
+include: "Snakefile_base"
+localrules: all_builds, download_all, download_titers, download_sequences
 
 
 def all_builds(w):

@@ -2,12 +2,13 @@ from datetime import date
 import pandas as pd
 from treetime.utils import numeric_date
 
-segments = ['ha', 'na']
 path_to_fauna = '../fauna'
 min_length = 900
 frequency_regions = ['north_america', 'south_america', 'europe', 'china', 'oceania',
                      'southeast_asia', 'japan_korea', 'south_asia', 'africa']
 
+
+localrules: download_titers, download_sequences
 
 def vpm(v):
     vpm = {'6m':360, '2y':90, '3y':60, '6y':30, '12y':15}
