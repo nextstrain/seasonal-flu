@@ -11,7 +11,7 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":"netherlands", "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
+countries = {"netherlands":["netherlands"], "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
 
 rule all_live:
     input:
@@ -85,7 +85,7 @@ rule select_strains_countries:
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}_{{passage}}.fasta", segment=segments),
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
-        titers = "data/who_{lineage}_{passage}_{assay}_titers.tsv",
+        titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
         include = files.references
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
