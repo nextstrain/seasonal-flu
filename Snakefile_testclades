@@ -2,28 +2,28 @@
 rule clades:
     message:
         """
-        Refining tree
+        assigning clades
         """
     input:
         tree = "results/tree_cdc_h3n2_ha_12y_cell_hi.nwk",
-        mutations = "results/ntmuts_cdc_h3n2_ha_12y_cell_hi.json",
+        mutations = "results/nt-muts_cdc_h3n2_ha_12y_cell_hi.json",
         metadata = "results/metadata_h3n2_ha.tsv"
     output:
         "results/clade_test.json"
     shell:
         """
             python3 scripts/assign_clades.py --tree {input.tree} --mutations {input.mutations} \
-                    --metadata {input.mutations} --output {output}
+                    --metadata {input.metadata} --output {output}
         """
 
 rule export:
     input:
         tree = "results/tree_cdc_h3n2_ha_12y_cell_hi.nwk",
         metadata = "results/metadata_h3n2_ha.tsv",
-        auspice_config = "data/auspice_config_h3n2.json",
+        auspice_config = "config/auspice_config_h3n2.json",
         node_data = ["results/aa-muts_cdc_h3n2_ha_12y_cell_hi.json",
                     "results/branch-lengths_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/clades_test.json",
+                    "results/clade_test.json",
                     "results/distances_cdc_h3n2_ha_12y_cell_hi.json",
                     "results/lbi_cdc_h3n2_ha_12y_cell_hi.json",
                     "results/nt-muts_cdc_h3n2_ha_12y_cell_hi.json",

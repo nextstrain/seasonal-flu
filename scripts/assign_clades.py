@@ -5,13 +5,11 @@ from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates, read_node_data, write_json
 from select_strains import parse_metadata
 
-nameing_alphabets = [list(map(str,range(10))),
+naming_alphabets = [list(map(str,range(1,10))),
                      list('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
                      list('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.lower())]
 
 separator = '.'
-frequency_threshold = 0.1
-distance_threshold = 3
 
 def next_clade(previous, alphabet):
     max_digits = len(previous)+1
@@ -25,22 +23,30 @@ def next_clade(previous, alphabet):
 
 
 def generate_clade_name(node, existing_names):
+    '''
+    to generate a name, we need to know how many sister clades at the same level
+    exist and what the next 'digit' at this level will be.
+    '''
     super_clade = node.clade
-    sister_clades = sorted([clade.lstrip(super_clade+separator) for clade in existing_names
-                     if clade.startswith(super_clade)])
+    prefix = super_clade+separator
+    sister_clades = sorted([clade[len(prefix):].split(separator)[0] for clade in existing_names if clade.startswith(prefix)])
 
-    compatible_alphabets = [a for a in nameing_alphabets
-                            if all([(x in a) or x==separator for x in super_clade])]
+    # alphabet are simply cycled.
+    alphabet = naming_alphabets[len(super_clade.split(separator))%len(naming_alphabets)]
 
     if len(sister_clades):
-        new_clade = super_clade + separator + next_clade(sister_clades[-1], compatible_alphabets[0])
+        print(sister_clades)
+        new_clade = super_clade + separator + next_clade(sister_clades[-1], alphabet)
     else:
-        new_clade = super_clade + separator + compatible_alphabets[0][0]
-
+        new_clade = super_clade + separator + alphabet[0]
+    print(super_clade, new_clade)
     return new_clade
 
 
 def assign_new_clade_name(node, new_name):
+    '''
+    assign a new clade name to a node and reset names and distance of all descendent nodes
+    '''
     for n in node.find_clades(order='preorder'):
         if n==node:
             node.clade = new_name
@@ -50,7 +56,11 @@ def assign_new_clade_name(node, new_name):
             n.distance_from_last_clade = n.up.distance_from_last_clade + len(n.mutations)
 
 
-def name_new_clades(tree, tree_frequency_index):
+def name_new_clades(tree, tree_frequency_index, frequency_threshold=0.1, distance_threshold=3):
+    '''
+    take stock of existing clades and then annotate new clades if they fulfill
+    the frequencyd/divergence criteria in the time interval specified in tree_frequency_index
+    '''
     assert hasattr(tree.root, 'clade')
     existing_clades = set()
     for n in tree.find_clades(order='preorder'):
@@ -106,21 +116,23 @@ if __name__ == '__main__':
         else:
             n.num_date = None
 
-
+    # generate time bins to calculate frequencies in
     all_dates.sort()
-    date_range = (all_dates[int(0.05*len(all_dates))], all_dates[int(0.95*len(all_dates))])
+    date_range = (all_dates[int(0.05*len(all_dates))], all_dates[-1])
     dt = 0.5
     date_bins = np.arange(date_range[0], date_range[1]+dt,dt)
 
+    # count number of tips of each node in each time window => frequency
     for n in T.find_clades(order='postorder'):
         if n.name in node_data["nodes"]:
             n.mutations = node_data["nodes"][n.name]['muts']
         if n.is_terminal():
             n.bin_count = np.zeros_like(date_bins)
-            n.bin_count[date_bins.searchsorted(n.num_date)] += 1
+            n.bin_count[min(len(date_bins)-1, date_bins.searchsorted(n.num_date))] += 1
         else:
             n.bin_count = np.sum([c.bin_count for c in n], axis=0)
 
+    # convert counts in time windows into frequencies and prep tree
     T.root.up = None
     for n in T.find_clades(order='preorder'):
         n.freq = n.bin_count/T.root.bin_count
@@ -128,22 +140,21 @@ if __name__ == '__main__':
             for c in n:
                 c.up = n
 
-    T.root.clade = '0'
+    # name clades in the tree by going through all time slices consecutively
+    T.root.clade = '1'
     for i,threshold in enumerate(date_bins):
-        name_new_clades(T, i)
+        name_new_clades(T, i, frequency_threshold=0.2, distance_threshold=5)
 
-    for n in T.get_terminals():
-        print(n.clade)
-
+    # collect clade names and generate augur clade json
     clades = {}
     for n in T.find_clades():
         if n.up:
             if n.up.clade!=n.clade:
-                clades[n.name] = {'clade_annotation': c.clade, 'clade_membership':c.clade}
+                clades[n.name] = {'clade_annotation': n.clade, 'clade_membership':n.clade}
             else:
-                clades[n.name] = {'clade_membership':c.clade}
+                clades[n.name] = {'clade_membership':n.clade}
         else:
-            clades[n.name] = {'clade_annotation': c.clade, 'clade_membership':c.clade}
+            clades[n.name] = {'clade_annotation': n.clade, 'clade_membership':n.clade}
 
     write_json({'nodes': clades}, args.output)
 
