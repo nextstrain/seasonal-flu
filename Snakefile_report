@@ -1,29 +1,29 @@
-include: "Snakefile_WHO"
-
 resolutions = ['2y']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
-centers = ['cdc', 'vidrl', 'crick', 'niid', 'who']
+centers = ['cdc'] #, 'vidrl', 'crick', 'niid', 'who']
 assays = ['hi', 'fra']
 passages = ['cell', 'egg']
 
+include: "Snakefile_WHO"
+
 def mutations_to_plot(v):
-    mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:135N",
-                                 "HA1:142G", "HA1:212T", "HA1:214T", "HA1:91N"],
+    mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K",
+                                 "HA1:142G", "HA1:91N", "HA1:197R"],
                  ('h3n2', 'na'):["NA:329S","NA:329T", "NA:386S", "NA:126L"],
-                 ('h1n1pdm', 'ha'):["HA1:164T","HA1:120A","HA1:129D", "HA1:183P", "HA1:235D", "HA1:233I"],
-                 ('h1n1pdm', 'na'):["NA:77R", "NA:93H", "NA:74L", "NA:416N"],
-                 ('vic', 'ha'):["HA1:163-", "HA1:165N", "HA1:175V", "HA1:209N"],
-                 ('vic', 'na'):["NA:371Q","NA:375K"],
+                 ('h1n1pdm', 'ha'):["HA1:120A","HA1:129D", "HA1:183P", "HA1:235D", "HA1:130N", "HA1:185I"],
+                 ('h1n1pdm', 'na'):["NA:93H", "NA:74L", "NA:74S","NA:389K", "NA:416N"],
+                 ('vic', 'ha'):["HA1:163-", "HA1:164-","HA1:164D", "HA1:133R"],
+                 ('vic', 'na'):["NA:371Q","NA:395T"],
                  ('yam', 'ha'):["HA1:229N","HA1:232N"],
-                 ('yam', 'na'):["NA:342K", "NA:395S", "NA:65H"],
+                 ('yam', 'na'):["NA:402P", "NA:395S", "NA:65H"],
                   }
     return mutations[(v.lineage, v.segment)]
 
 def clades_to_plot(v):
     clades = {
-        ('h3n2', 'ha'): ["A1b/135K", "A1b/131K", "A1b/135N", "A2/re", "A3", "3c3.A"],
-        ('h1n1pdm', 'ha'): ["6b1.A", "6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-3", "6b1.A/183P-5", "6b1.A/183P-6", "6b1.A/183P-7"],
+        ('h3n2', 'ha'): ["A1b/135K", "A1b/131K", "A2/re", "3c3.A"],
+        ('h1n1pdm', 'ha'): ["6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-5"],
         ('vic', 'ha'): ["V1A", "V1A.1", "V1A/165N"],
         ('yam', 'ha'): ["172Q", "3"],
     }

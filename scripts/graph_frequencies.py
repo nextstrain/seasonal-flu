@@ -115,7 +115,7 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
             ax.xaxis.set_minor_locator(months)
             ax.xaxis.set_minor_formatter(monthsFmt)
 
-    fig.legend(loc=1, ncol=2)
+    fig.legend(loc=2, ncol=2)
     plt.tight_layout()
     sns.despine()
     plt.savefig(fname)
