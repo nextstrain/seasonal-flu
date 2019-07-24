@@ -62,6 +62,7 @@ def name_new_clades(tree, tree_frequency_index, frequency_threshold=0.1, distanc
     the frequencyd/divergence criteria in the time interval specified in tree_frequency_index
     '''
     assert hasattr(tree.root, 'clade')
+    print("assigning clades with distance threshold {} and frequency threshold {}".format(distance_threshold, frequency_threshold))
     existing_clades = set()
     for n in tree.find_clades(order='preorder'):
         if n.up is None:
@@ -97,6 +98,8 @@ if __name__ == '__main__':
                         help="newick file with the tree")
     parser.add_argument('--metadata', nargs='+', help="file with metadata associated with viral sequences, one for each segment")
     parser.add_argument('--mutations', nargs='+', help='JSON(s) containing ancestral and tip nucleotide and/or amino-acid mutations ')
+    parser.add_argument('--frequency-threshold', type=float, default=0.2, help='minimal population fraction to name clade')
+    parser.add_argument('--distance-threshold', type=int, default=3, help='minimal distance (number of mutations) from parent clade to name clade')
     parser.add_argument('--date-format', type=str, default="%Y-%m-%d", help="date format")
     parser.add_argument('--output', help="name of the file to write selected strains to")
 
@@ -143,7 +146,8 @@ if __name__ == '__main__':
     # name clades in the tree by going through all time slices consecutively
     T.root.clade = '1'
     for i,threshold in enumerate(date_bins):
-        name_new_clades(T, i, frequency_threshold=0.2, distance_threshold=5)
+        name_new_clades(T, i, frequency_threshold=args.frequency_threshold,
+                        distance_threshold=args.distance_threshold)
 
     # collect clade names and generate augur clade json
     clades = {}

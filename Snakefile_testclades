@@ -1,37 +1,41 @@
 
+rule all:
+    input:
+        expand("auspice/FluByCountry_clades_{lineage}_{dist}_{frac}_tree.json", lineage=['h3n2', 'h1n1pdm', 'vic', 'yam'], frac=[0.1, 0.2], dist=[3,5])
+
+
 rule clades:
     message:
         """
         assigning clades
         """
     input:
-        tree = "results/tree_cdc_h3n2_ha_12y_cell_hi.nwk",
-        mutations = "results/nt-muts_cdc_h3n2_ha_12y_cell_hi.json",
-        metadata = "results/metadata_h3n2_ha.tsv"
+        tree = "results/tree_cdc_{lineage}_ha_12y_cell_hi.nwk",
+        mutations = "results/nt-muts_cdc_{lineage}_ha_12y_cell_hi.json",
+        metadata = "results/metadata_{lineage}_ha.tsv"
     output:
-        "results/clade_test.json"
+        "results/clades_{lineage}_{dist}_{frac}_test.json"
     shell:
         """
             python3 scripts/assign_clades.py --tree {input.tree} --mutations {input.mutations} \
-                    --metadata {input.metadata} --output {output}
+                    --metadata {input.metadata} --output {output} --frequency-threshold {wildcards.frac} --distance-threshold {wildcards.dist}
         """
 
 rule export:
     input:
-        tree = "results/tree_cdc_h3n2_ha_12y_cell_hi.nwk",
-        metadata = "results/metadata_h3n2_ha.tsv",
-        auspice_config = "config/auspice_config_h3n2.json",
-        node_data = ["results/aa-muts_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/branch-lengths_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/clade_test.json",
-                    "results/distances_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/lbi_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/nt-muts_cdc_h3n2_ha_12y_cell_hi.json",
-                    "results/traits_cdc_h3n2_ha_12y_cell_hi.json"]
+        tree = "results/tree_cdc_{lineage}_ha_12y_cell_hi.nwk",
+        metadata = "results/metadata_{lineage}_ha.tsv",
+        auspice_config = "config/auspice_config_{lineage}.json",
+        node_data = ["results/aa-muts_cdc_{lineage}_ha_12y_cell_hi.json",
+                    "results/branch-lengths_cdc_{lineage}_ha_12y_cell_hi.json",
+                    "results/clades_{lineage}_test.json",
+                    "results/lbi_cdc_{lineage}_ha_12y_cell_hi.json",
+                    "results/nt-muts_cdc_{lineage}_ha_12y_cell_hi.json",
+                    "results/traits_cdc_{lineage}_ha_12y_cell_hi.json"]
     output:
-        auspice_tree = "auspice/clade_tree.json",
-        auspice_meta = "auspice/clade_meta.json",
-        auspice_seq = "auspice/clade_root-sequence.json"
+        auspice_tree = "auspice/FluByCountry_clades_{lineage}_{dist}_{frac}_tree.json",
+        auspice_meta = "auspice/FluByCountry_clades_{lineage}_{dist}_{frac}_meta.json",
+        auspice_seq = "auspice/FluByCountry_clades_{lineage}_{dist}_{frac}_root-sequence.json"
     shell:
         """
         augur export \
