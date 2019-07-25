@@ -28,7 +28,7 @@ rule export:
         auspice_config = "config/auspice_config_{lineage}.json",
         node_data = ["results/aa-muts_cdc_{lineage}_ha_12y_cell_hi.json",
                     "results/branch-lengths_cdc_{lineage}_ha_12y_cell_hi.json",
-                    "results/clades_{lineage}_test.json",
+                    "results/clades_{lineage}_{dist}_{frac}_test.json",
                     "results/lbi_cdc_{lineage}_ha_12y_cell_hi.json",
                     "results/nt-muts_cdc_{lineage}_ha_12y_cell_hi.json",
                     "results/traits_cdc_{lineage}_ha_12y_cell_hi.json"]
