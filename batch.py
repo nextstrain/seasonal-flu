@@ -1,8 +1,6 @@
 """
 This script runs the entire suite of seasonal flu builds via AWS batch
-One batch run is created per HA/NA combination, ie
-h3n2_ha_2y + h3n2_na_2y is one build and
-h3n2_ha_6y + h3n2_na_6y is another
+One batch run for 'live' builds and a separate batch run is created for 'who' builds
 """
 
 import subprocess
@@ -29,46 +27,55 @@ if __name__ == '__main__':
         subprocess.call(rmc, shell=True)
 
     if params.version == 'live' or params.version == 'both':
+        cpus = len(params.lineages) * len(params.resolutions) * len(params.segments)
+        if cpus > 36:
+            cpus = 36
+        memory = 1800 * cpus
+        if params.system == 'local':
+            call = ['nextstrain', 'build', '.', '--jobs', '1']
+        elif params.system == 'batch':
+            call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--jobs', str(cpus)]
+        targets = []
         for lineage in params.lineages:
-            cpus = len(params.resolutions) * len(params.segments)
-            memory = 1800 * cpus
-            if params.system == 'local':
-                call = ['nextstrain', 'build', '.', '--jobs', '1']
-            elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--jobs', str(cpus)]
-            targets = []
             for resolution in params.resolutions:
                 for segment in params.segments:
                     targets.append('targets/flu_seasonal_%s_%s_%s'%(lineage, segment, resolution))
-            call.extend(targets)
-            print(' '.join(call))
-            log = open('logs/live_%s.txt'%(lineage), 'w')
-            if params.system == 'local':
-                pro = subprocess.call(call)
-            if params.system == 'batch':
-                pro = subprocess.Popen(call, stdout=log, stderr=log)
+        call.extend(targets)
+        print(' '.join(call))
+        log = open('logs/live_%s.txt'%(lineage), 'w')
+        if params.system == 'local':
+            pro = subprocess.call(call)
+        if params.system == 'batch':
+            pro = subprocess.Popen(call, stdout=log, stderr=log)
 
     if params.version == 'who' or params.version == 'both':
+        segment = 'ha'
+        resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
+        assay = 'hi'
+        cpus = len(params.lineages) * len(params.centers) * len(resolutions) * len(params.passages)
+        if cpus > 72:
+            cpus = 72
+        memory = 1800 * cpus
+        if params.system == 'local':
+            call = ['nextstrain', 'build', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '1']
+        elif params.system == 'batch':
+            call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--snakefile', 'Snakefile_WHO', '--jobs', str(cpus)]
+        targets = []
         for lineage in params.lineages:
-            segment = 'ha'
-            resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
-            assays = [assay for assay in params.assays if lineage == 'h3n2' or assay == 'hi']
-            cpus = len(params.centers) * len(resolutions) * len(params.passages) * len(assays)
-            memory = 1800 * cpus
-            if params.system == 'local':
-                call = ['nextstrain', 'build', '.', '--snakefile', 'Snakefile_WHO', '--jobs', '1']
-            elif params.system == 'batch':
-                call = ['nextstrain', 'build', '--aws-batch', '--aws-batch-cpus', str(cpus), '--aws-batch-memory', str(memory), '.', '--snakefile', 'Snakefile_WHO', '--jobs', str(cpus)]
-            targets = []
             for center in params.centers:
                 for resolution in resolutions:
                     for passage in params.passages:
-                        for assay in assays:
-                            targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
-            call.extend(targets)
-            print(' '.join(call))
-            log = open('logs/who_%s.txt'%(lineage), 'w')
-            if params.system == 'local':
-                pro = subprocess.call(call)
-            if params.system == 'batch':
-                pro = subprocess.Popen(call, stdout=log, stderr=log)
+                        targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
+        if 'h3n2' in params.lineages and 'fra' in params.assays:
+            assay = 'fra'
+            for center in params.centers:
+                for resolution in resolutions:
+                    for passage in params.passages:
+                        targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
+        call.extend(targets)
+        print(' '.join(call))
+        log = open('logs/who_%s.txt'%(lineage), 'w')
+        if params.system == 'local':
+            pro = subprocess.call(call)
+        if params.system == 'batch':
+            pro = subprocess.Popen(call, stdout=log, stderr=log)
