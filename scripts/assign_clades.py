@@ -81,6 +81,7 @@ def name_new_clades(tree, tree_frequency_index, frequency_threshold=0.1, distanc
 
     for n in tree.find_clades(order='preorder'):
         if n.freq[tree_frequency_index]>frequency_threshold and \
+           n.freq[tree_frequency_index]<1-2*frequency_threshold and \
            n.distance_from_last_clade>distance_threshold:
             new_name = generate_clade_name(n, existing_clades)
             assign_new_clade_name(n, new_name)
