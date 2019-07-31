@@ -164,7 +164,7 @@ if __name__ == '__main__':
     except:
         pass
 
-    plt.figure()
+    plt.figure(figsize=(8,4))
     cmap = sns.cubehelix_palette(start=2.6, rot=.1, as_cmap=True)
     sns.heatmap(df, vmin=0, vmax=4, cmap=cmap, square=True, cbar_kws={"shrink": min(1.0,(df.shape[0]+.1)/(df.shape[1]+.1))})
     plt.ylabel('')
@@ -173,11 +173,12 @@ if __name__ == '__main__':
     for x in df.T:
         median_auto = np.median([y[1] for y in autologous_titers[x[1]].values()])
         if np.isnan(median_auto):
-            tick_labels.append("%s - %s  NaN"%(x[1], x[0]))
+            tick_labels.append(f"{x[1]} - {x[0]}  ----")
         else:
-            tick_labels.append("%s - %s % 4d"%(x[1], x[0], median_auto))
+            tick_labels.append(f"{x[1]} - {x[0]} {int(median_auto):4d}")
     plt.yticks(0.5+np.arange(len(df)), tick_labels)
     plt.xticks(1.0+np.arange(len(df.columns)), [x for x in df.columns], rotation=60, horizontalalignment='right')
+
     plt.tight_layout()
 
     if args.output:
