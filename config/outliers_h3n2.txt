@@ -38,6 +38,7 @@ A/Corsica/42/2009
 A/Delaware/3/2011
 A/Delaware/33/2017
 A/DistrictOfColumbia/2/2017
+A/Gangwon/11/1999
 A/Guam/AF2771/2011
 A/Guangdong-Duanzhou/1227/2017
 A/Guatemala/116/2018
@@ -252,6 +253,7 @@ A/Minnesota/11/2012
 A/Minnesota/15/2012
 A/Nanjing/1/2010
 A/Nepal/142/2011
+A/Netherlands/233/1982
 A/NewJersey/53/2015
 A/NorthDakota/19/2017
 A/Novosibirsk/1/2019
@@ -352,6 +354,7 @@ A/StPetersburg/5/2009
 A/StPetersburg/5/2009-egg
 A/Sydney/53/2015
 A/Taiwan/937/2009
+A/Tokyo/1/1975
 A/WestVirginia/6/2011
 A/WestVirginia/9/2012
 A/WestVirginia/10/2012

@@ -11,7 +11,7 @@ frequency_regions = ['north_america', 'south_america', 'europe', 'china', 'ocean
 localrules: download_titers, download_sequences
 
 def vpm(v):
-    vpm = {'6m':360, '2y':90, '3y':60, '6y':30, '12y':15}
+    vpm = {'6m':360, '2y':90, '3y':60, '6y':30, '12y':15, '60y':5}
     return vpm[v.resolution] if v.resolution in vpm else 5
 
 def reference_strain(v):
@@ -37,7 +37,7 @@ def translations(w):
 def pivot_interval(w):
     """Returns the number of months between pivots by build resolution.
     """
-    pivot_intervals_by_resolution = {'6m': 1, '2y': 1, '3y': 2, '6y': 3, '12y': 6}
+    pivot_intervals_by_resolution = {'6m': 1, '2y': 1, '3y': 2, '6y': 3, '12y': 6, '60y': 6}
     return pivot_intervals_by_resolution[w.resolution]
 
 def min_date(wildcards):
@@ -101,7 +101,8 @@ LBI_params = {
     '2y': {"tau": 0.3, "time_window": 0.5},
     '3y': {"tau": 0.4, "time_window": 0.6},
     '6y': {"tau": 0.25, "time_window": 0.75},
-    '12y': {"tau": 0.25, "time_window": 0.75}
+    '12y': {"tau": 0.25, "time_window": 0.75},
+    '60y': {"tau": 0.25, "time_window": 0.75}    
 }
 
 def _get_lbi_tau_for_wildcards(wildcards):
