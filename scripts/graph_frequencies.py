@@ -74,13 +74,15 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                 smoothed_count_by_region[(gene, region)] = np.convolve(np.ones(n_smooth, dtype=float)/n_smooth, f, mode='same')
 
     # set up a figure and plot each mutation in a different panel
-    rows = int(np.ceil(len(mutations)/2.))
+    nmuts = len(mutations)
+    rows = int(np.ceil((nmuts+(nmuts+1)%2)/2.))
     fig, axs = plt.subplots(rows, 2, sharex=True, figsize=(10, 1.0+1.6*rows))
 
-    if len(mutations) % 2 != 0:
+    axs[0,0].axis('off')
+    if nmuts%2 == 0:
         axs[-1, -1].axis('off')
 
-    axs = list(np.array(axs).flatten())
+    axs = list(np.array(axs).flatten())[1:]
 
     region_labeled = set()
     for mi,(mut, ax) in enumerate(zip(mutations, axs)):
@@ -115,7 +117,8 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
             ax.xaxis.set_minor_locator(months)
             ax.xaxis.set_minor_formatter(monthsFmt)
 
-    fig.legend(loc=2, ncol=2)
+    # axs[1].legend(regions, loc=3, bbox_to_anchor=(-0.05, 1.15), ncol=2, fontsize=fs)
+    fig.legend(regions, loc=2, ncol=2, fontsize=fs)
     plt.tight_layout()
     sns.despine()
     plt.savefig(fname)
@@ -134,13 +137,15 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname, show_errorb
                                                        frequencies['counts'][region], mode='same')
         total_count_by_region[region] = np.sum(frequencies['counts'][region])
 
-    rows = int(np.ceil(len(clades)/2.))
+    nclades = len(clades)
+    rows = int(np.ceil((nclades+(nclades+1)%2)/2.))
     fig, axs = plt.subplots(rows, 2, sharex=True, figsize=(10, 1.0+1.6*rows))
 
-    if len(clades) % 2 != 0:
+    axs[0,0].axis('off')
+    if nclades%2 == 0:
         axs[-1, -1].axis('off')
 
-    axs = list(np.array(axs).flatten())
+    axs = list(np.array(axs).flatten())[1:]
 
     for mi,(clade, ax) in enumerate(zip(clades, axs)):
         if clade not in clade_to_node:
@@ -174,7 +179,7 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname, show_errorb
             ax.xaxis.set_minor_locator(months)
             ax.xaxis.set_minor_formatter(monthsFmt)
 
-    fig.legend(regions, loc=1, ncol=2)
+    fig.legend(regions, loc=2, ncol=2, fontsize=fs)
     plt.tight_layout()
     sns.despine()
     plt.savefig(fname)
