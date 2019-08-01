@@ -1,0 +1,38 @@
+segments = ['ha', 'na', 'pb1', 'pb2', 'pa']
+lineages = ['h3n2', 'h1n1', 'h1n1pdm', 'yam', 'vic']
+
+rule download:
+    output:
+        "data/gisaid_dump.fasta.bz2"
+    params:
+        os.getenv("GISAID_DUMP")
+    shell:
+        "curl {params} -o {output}"
+
+rule split:
+    input:
+        rules.download.output
+    output:
+        expand('data/{lineage}_{segment}.fasta', lineage=lineages, segment=segments)
+    run:
+        import bz2, os
+        from Bio import SeqIO
+
+        outfiles = {}
+        for x in output:
+            lineage, seg = os.path.basename(x).split('.')[0].split('_')
+            outfiles[(lineage, seg)] = open(x, 'w')
+
+        with bz2.open(input[0], 'rt') as fh:
+            for seq in SeqIO.parse(fh, 'fasta'):
+                fields = seq.description.split('|')
+                seg = fields[0].lower()
+                if fields[5][0]=='B':
+                    lineage = fields[6][:3].lower()
+                elif fields[5][0]=='A':
+                    lineage = fields[5].split('/')[-1].strip().lower()
+                    if lineage=='h1n1' and fields[6]=='swl':
+                        lineage+='pdm'
+                if (lineage, seg) in outfiles:
+                    SeqIO.write(seq, outfiles[(lineage, seg)], 'fasta')
+
