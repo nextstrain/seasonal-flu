@@ -67,6 +67,7 @@ if __name__ == '__main__':
                     for passage in params.passages:
                         targets.append('targets/flu_%s_%s_%s_%s_%s_%s'%(center, lineage, segment, resolution, passage, assay))
         if 'h3n2' in params.lineages and 'fra' in params.assays:
+            lineage = 'h3n2'
             assay = 'fra'
             for center in params.centers:
                 for resolution in resolutions:
