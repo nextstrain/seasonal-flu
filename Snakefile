@@ -1,6 +1,6 @@
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
-resolutions = ['6m', '2y', '3y', '6y', '12y', '60y']
+resolutions = ['6m', '2y', '3y', '6y', '12y']
 
 passages = ['cell']
 centers = ['cdc']

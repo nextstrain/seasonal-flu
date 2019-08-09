@@ -18,6 +18,7 @@ A/Cambodia/NHRCC00010/2009
 A/Cambodia/NHRCC00011/2009
 A/Catalonia/NSVH100533399/2017
 A/Catalonia/NSVH100560486/2017
+A/Catalonia/NSVH100570896/2017
 A/Chile/8266/2003
 A/Corsica/3/2009
 A/Corsica/7/2007
@@ -170,6 +171,7 @@ A/Indiana/149/2012
 A/Indiana/150/2012
 A/Iowa/4/2013
 A/Iowa/7/2011-egg
+A/Iowa/8/2011
 A/Iowa/8/2011-egg
 A/Iowa/16/2009
 A/Iowa/16/2012
