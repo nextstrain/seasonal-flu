@@ -54,28 +54,31 @@ if __name__ == '__main__':
         seq5pUTR = "".join(seq_aln_array_ungapped[:cds_start])
         seq3pUTR = "".join(seq_aln_array_ungapped[cds_end:])
         seqCDS = "".join(seq_aln_array_ungapped[cds_start:cds_end])
-        seqAA = safe_translate(seqCDS.replace('-', ''))
+        seqCDS_ungapped = seqCDS.replace('-', '')
+        seqAA = safe_translate(seqCDS_ungapped)
 
         scoreAA, refalnAA, seqalnAA = align_overlap(refAA, seqAA,**scoring_params)
         if scoreAA<0 or sum(seqAA.count(x) for x in ['*', 'X'])>5 or refalnAA.count('-')>5:
             print(seq.id, "didn't translate properly")
             continue
+        if seq.name == "B/Guatemala/581/2017":
+            import ipdb; ipdb.set_trace()
 
-        pos = 0
         seqCDS_aln = seq5pUTR
+        pos = 0
         for aa_ref, aa_seq in zip(refalnAA, seqalnAA):
             if aa_seq=='-':
                 seqCDS_aln += '---'
                 # if the nucleotide sequence is gapped
                 # (i.e. because of missing data at the 5p and 3p end, advance pos)
-                if seqCDS[pos:pos+3]=='---':
-                    pos+=3
+                if seqCDS_ungapped[pos:pos+3]=='---':
+                    pos += 3
             else:
-                if len(seqCDS)>=pos+3:
-                    seqCDS_aln += seqCDS[pos:pos+3]
+                if len(seqCDS_ungapped)>=pos+3:
+                    seqCDS_aln += seqCDS_ungapped[pos:pos+3]
                 else:
                     seqCDS_aln += '---'
-                pos+=3
+                pos += 3
         if len(seqCDS_aln)>len(refstr):
             import ipdb; ipdb.set_trace()
         seq.seq=Seq.Seq(''.join(seqCDS_aln)+seq3pUTR)
