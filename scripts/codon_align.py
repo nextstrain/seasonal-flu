@@ -61,8 +61,6 @@ if __name__ == '__main__':
         if scoreAA<0 or sum(seqAA.count(x) for x in ['*', 'X'])>5 or refalnAA.count('-')>5:
             print(seq.id, "didn't translate properly")
             continue
-        if seq.name == "B/Guatemala/581/2017":
-            import ipdb; ipdb.set_trace()
 
         seqCDS_aln = seq5pUTR
         pos = 0
