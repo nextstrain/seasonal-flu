@@ -77,8 +77,7 @@ if __name__ == '__main__':
                 else:
                     seqCDS_aln += '---'
                 pos += 3
-        if len(seqCDS_aln)>len(refstr):
-            import ipdb; ipdb.set_trace()
+
         seq.seq=Seq.Seq(''.join(seqCDS_aln)+seq3pUTR)
         alignment.append(seq)
 
