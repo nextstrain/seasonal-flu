@@ -7,6 +7,7 @@ A/Bangladesh/2021/2012
 A/Bangladesh/3002/2015
 A/Bolivia/559/2013
 A/Brisbane/2/2018
+A/Brisbane/2/2018-egg
 A/Brisbane/28/2013
 A/Brisbane/37/2017
 A/Brisbane/96/2012
@@ -17,6 +18,7 @@ A/Catalonia/738728S/2018
 A/Darwin/6/2018
 A/England/62/2017
 A/Fiji/3/2016
+A/Fiji/3/2016-egg
 A/Florida/62/2014
 A/Florida/62/2014
 A/Idaho/7/2018
@@ -24,6 +26,8 @@ A/India/322/2017
 A/India/3405/2017
 A/Indiana/21/2016
 A/Iowa/53/2015
+A/Iowa/59/2018
+A/Iowa/59/2018-egg
 A/Israel/Q-504/2015
 A/Kazakhstan/581/2018
 A/Michigan/45/2015
@@ -31,6 +35,7 @@ A/Michigan/272/2017
 A/Minnesota/32/2015
 A/Minnesota/34/2018
 A/Montana/50/2016
+A/Montana/50/2016-egg
 A/Navarra/1985/2017
 A/Newcaledonia/58/2014
 A/NewJersey/13/2018
@@ -43,11 +48,16 @@ A/Paris/1447/2017
 A/Perth/10/2017
 A/Perth/103/2015
 A/Singapore/GP1908/2015
+A/Singapore/GP1908/2015-egg
+A/Slovenia/2903/2015-egg
 A/SouthAfrica/3626/2013
 A/StPetersburg/61/2015
+A/StPetersburg/61/2015-egg
+A/Switzerland/2656/2017-egg
 A/Sydney/31/2018
 A/Taiwan/80693/2018
 A/Tasmania/24/2014
+A/Tasmania/24/2014-egg
 A/Texas/157/2016
 A/Tokyo/EH1608/2017
 A/Townsville/21/2018
