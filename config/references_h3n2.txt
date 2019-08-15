@@ -1,4 +1,5 @@
 A/AbuDhabi/240/2018
+A/AbuDhabi/240/2018-egg
 A/Afghanistan/616/2017
 A/Afghanistan/833/2017
 A/Alaska/232/2015
@@ -10,6 +11,8 @@ A/Antananarivo/1067/2016-egg
 A/Arizona/67/2016
 A/Bretagne/1413/2017
 A/Bretagne/1565/2017-egg
+A/Brisbane/1/2018
+A/Brisbane/1/2018-egg
 A/Brisbane/10/2007
 A/Brisbane/29/2017
 A/Brisbane/32/2017
@@ -28,6 +31,7 @@ A/Hawaii/22/2012
 A/Hawaii/47/2014
 A/HongKong/50/2016-egg
 A/HongKong/656/2018
+A/HongKong/2286/2017
 A/HongKong/2286/2017-egg
 A/HongKong/4801/2014
 A/HongKong/4801/2014-egg
