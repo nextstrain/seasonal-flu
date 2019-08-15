@@ -5,9 +5,20 @@ import argparse
 from Bio import AlignIO, SeqIO, Seq, SeqRecord
 from Bio.AlignIO import MultipleSeqAlignment
 from augur.translate import safe_translate
-from seqanpy import align_overlap
 
 scoring_params = {"score_match":3, "score_mismatch":-1, "score_gapext":-1, "score_gapopen":-10}
+
+def align_pairwise(seq1, seq2):
+    # from seqanpy import align_overlap
+    # return align_overlap(seq1, seq2, **scoring_params)
+    from Bio import pairwise2
+    aln = pairwise2.align.globalms(seq1, seq2,
+        scoring_params['score_match'], scoring_params['score_mismatch'],
+        scoring_params['score_gapopen'], scoring_params['score_gapext'],
+        penalize_end_gaps=False, one_alignment_only=True)[0]
+    return aln[2], aln[0], aln[1]
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -40,7 +51,7 @@ if __name__ == '__main__':
     alignment = []
     for seq in aln:
         seqstr = str(seq.seq).upper()
-        score, refaln, seqaln = align_overlap(refstr, seqstr, **scoring_params)
+        score, refaln, seqaln = align_pairwise(refstr, seqstr)
         if score<0: # did not align
             continue
         ref_aln_array = np.array(list(refaln))
@@ -57,7 +68,7 @@ if __name__ == '__main__':
         seqCDS_ungapped = seqCDS.replace('-', '')
         seqAA = safe_translate(seqCDS_ungapped)
 
-        scoreAA, refalnAA, seqalnAA = align_overlap(refAA, seqAA,**scoring_params)
+        scoreAA, refalnAA, seqalnAA = align_pairwise(refAA, seqAA)
         if scoreAA<0 or sum(seqAA.count(x) for x in ['*', 'X'])>5 or refalnAA.count('-')>5:
             print(seq.id, "didn't translate properly")
             continue
