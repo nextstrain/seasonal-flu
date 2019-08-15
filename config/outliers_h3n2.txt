@@ -42,6 +42,7 @@ A/DistrictOfColumbia/2/2017
 A/Gangwon/11/1999
 A/Guam/AF2771/2011
 A/Guangdong-Duanzhou/1227/2017
+A/Guangxi-Gangbei/190/2019
 A/Guatemala/116/2018
 A/Hawaii/3/2012
 A/Helsinki/798/2013
