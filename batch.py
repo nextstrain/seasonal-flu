@@ -9,17 +9,17 @@ import os
 
 def get_cpus(jobs):
     count = 1
-    if jobs > 72:
+    if jobs >= 72:
         count = 72
-    elif jobs > 36:
+    elif jobs >= 36:
         count = 36
-    elif jobs > 16:
+    elif jobs >= 16:
         count = 16
-    elif jobs > 8:
+    elif jobs >= 8:
         count = 8
-    elif jobs > 4:
+    elif jobs >= 4:
         count = 4
-    elif jobs > 2:
+    elif jobs >= 2:
         count = 2
     return count
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run flu builds on aws', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--system', type = str, default = 'local', help='where to run, local or batch')
-    parser.add_argument('-v', '--version', type = str, default = 'live', help='version to run, live or who or both')
+    parser.add_argument('-v', '--version', type = str, default = 'live', help='version to run, live or who')
     parser.add_argument('-l', '--lineages', nargs='+', type = str,  help ="flu lineages to include", default=['h3n2', 'h1n1pdm', 'vic', 'yam'])
     parser.add_argument('-r', '--resolutions', nargs='+', type = str,  help ="flu resolutions to include", default=['6m', '2y', '3y', '6y' , '12y'])
     parser.add_argument('-s', '--segments', nargs='+', type = str, help ="flu segments to include", default=['ha', 'na'])
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         rmc = 'rm -rf logs/*'
         subprocess.call(rmc, shell=True)
 
-    if params.version == 'live' or params.version == 'both':
+    if params.version == 'live':
 
         targets = []
         for lineage in params.lineages:
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             if params.system == 'batch':
                 pro = subprocess.Popen(call, stdout=log, stderr=log)
 
-    if params.version == 'who' or params.version == 'both':
+    if params.version == 'who':
 
         segment = 'ha'
         resolutions = [r for r in params.resolutions if r == '2y' or r == '6y']
