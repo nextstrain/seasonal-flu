@@ -30,7 +30,8 @@ def clades_to_plot(v):
     return clades[(v.lineage, v.segment)]
 
 def get_extra_muts(w):
-    return "156K" if w.lineage=='h1n1pdm' else ""
+	extra_muts = {'h1n1pdm':'156K', 'h3n2':'137S', 'vic':'133R', 'yam':''}
+    return extra_muts[w.lineage]
 
 regions_to_graph = ['china', 'europe', 'japan_korea', 'oceania', 'north_america', 'south_america', 'global']
 

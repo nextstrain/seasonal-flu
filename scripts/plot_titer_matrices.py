@@ -69,8 +69,8 @@ def get_average_titer_by_clade(titers, clades, normalized=False,
             if any([aaseqs[strain][p]==v if strain in aaseqs else False for p,v in emuts]):
                 return extra_label
         return clades[strain]['clade_membership']
-            
-        
+
+
     titers_by_clade = defaultdict(list)
     for teststrain in titers:
         if teststrain not in clades:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     parser.add_argument('--metadata', type=str, help="metadata table")
     parser.add_argument('--clades-to-plot', nargs='+', help="clades to include in matrix")
     parser.add_argument('--aaseqs', type=str, help='amino acid sequences')
-    parser.add_argument('--exclude-extra-muts',nargs='+', type=str, help='exclude strains with this mutation from the clade summary, put in separate bin')
+    parser.add_argument('--exclude-extra-muts',nargs='*', type=str, help='exclude strains with this mutation from the clade summary, put in separate bin')
     parser.add_argument('--antigens', nargs="+", help="antigens to summarize titers for")
     parser.add_argument('--combine-sera', action='store_true', help="average values for different sera")
     parser.add_argument('--reassortants', nargs="+", help="list of sera raised against reassortants")
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     potency = load_json(args.model)["potency"] if args.model else defaultdict(dict)
     if args.aaseqs:
         aaseqs = {s.id:s.seq for s in SeqIO.parse(args.aaseqs, 'fasta')}
-    
+
     if args.reassortants:
         print("reducing to ", args.reassortants)
         titers = reduce_to_sera(titers, args.reassortants)
