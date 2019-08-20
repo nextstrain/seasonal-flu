@@ -124,7 +124,7 @@ if __name__ == '__main__':
         titers[antigen] = {k:v for k,v in titers[antigen].items()
                             if any([x in k for x in ['/2019']])}
 #                           if metadata[k]["num_date"]>date_cutoff}
-        if len(titers[antigen])<5 or any([x in antigen for x in ["/2014", "/2015"]]):
+        if len(titers[antigen])<8 or any([x in antigen for x in ["/2014", "/2015"]]):
             to_pop.append(antigen)
 
     for a in to_pop:
