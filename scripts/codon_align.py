@@ -1,7 +1,7 @@
 """Extract sequences from a given FASTA file that match the given list of sample names.
 """
 import numpy as np
-import argparse
+import argparse, sys
 from Bio import AlignIO, SeqIO, Seq, SeqRecord
 from Bio.AlignIO import MultipleSeqAlignment
 from augur.translate import safe_translate
@@ -61,7 +61,7 @@ def codon_align(seq, refstr, refAA, cds_start, cds_end):
 
     scoreAA, refalnAA, seqalnAA = align_pairwise(refAA, seqAA)
     if scoreAA<0 or sum(seqAA.count(x) for x in ['*', 'X'])>5 or refalnAA.count('-')>5:
-        print(seq.id, "didn't translate properly")
+        print(seq.id, "didn't translate properly", file=sys.stderr)
         return None
 
     seqCDS_aln = seq5pUTR
