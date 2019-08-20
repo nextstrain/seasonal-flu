@@ -9,15 +9,16 @@ from augur.translate import safe_translate
 scoring_params = {"score_match":3, "score_mismatch":-1, "score_gapext":-1, "score_gapopen":-10}
 
 def align_pairwise(seq1, seq2):
-    # from seqanpy import align_overlap
-    # return align_overlap(seq1, seq2, **scoring_params)
-    from Bio import pairwise2
-    aln = pairwise2.align.globalms(seq1, seq2,
-        scoring_params['score_match'], scoring_params['score_mismatch'],
-        scoring_params['score_gapopen'], scoring_params['score_gapext'],
-        penalize_end_gaps=False, one_alignment_only=True)[0]
-    return aln[2], aln[0], aln[1]
-
+    try:
+        from seqanpy import align_overlap
+        return align_overlap(seq1, seq2, **scoring_params)
+    except ImportError:
+        from Bio import pairwise2
+        aln = pairwise2.align.globalms(seq1, seq2,
+            scoring_params['score_match'], scoring_params['score_mismatch'],
+            scoring_params['score_gapopen'], scoring_params['score_gapext'],
+            penalize_end_gaps=False, one_alignment_only=True)[0]
+        return aln[2], aln[0], aln[1]
 
 
 if __name__ == '__main__':
