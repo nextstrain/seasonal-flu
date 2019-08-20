@@ -1,5 +1,6 @@
 import argparse, sys, os, glob, json
 from collections import defaultdict
+from Bio import SeqIO
 import numpy as np
 import matplotlib
 # important to use a non-interactive backend, otherwise will crash on cluster
@@ -52,7 +53,7 @@ def get_viruses_by_clade(clades):
 
 
 def get_average_titer_by_clade(titers, clades, normalized=False,
-                               median=False, geometric=False, serum=None):
+                               median=False, geometric=False, serum=None, aaseqs=None, extra_muts=None):
     ti = 0 if normalized else 1
     def mean_func(d):
         if median:
@@ -61,15 +62,23 @@ def get_average_titer_by_clade(titers, clades, normalized=False,
             return np.exp(np.mean(np.log(d)))
         else:
             return np.mean(d)
-
+    emuts = [(int(x[:-1])-1, x[-1]) for x in extra_muts] if extra_muts else []
+    extra_label = ",".join(extra_muts)
+    def get_clade(strain):
+        if aaseqs and emuts:
+            if any([aaseqs[strain][p]==v if strain in aaseqs else False for p,v in emuts]):
+                return extra_label
+        return clades[strain]['clade_membership']
+            
+        
     titers_by_clade = defaultdict(list)
     for teststrain in titers:
         if teststrain not in clades:
             continue
         if serum is None:
-            titers_by_clade[clades[teststrain]['clade_membership']].append(mean_func([x[ti] for x in titers[teststrain].values()]))
+            titers_by_clade[get_clade(teststrain)].append(mean_func([x[ti] for x in titers[teststrain].values()]))
         elif serum in titers[teststrain]:
-            titers_by_clade[clades[teststrain]['clade_membership']].append(titers[teststrain][serum][ti])
+            titers_by_clade[get_clade(teststrain)].append(titers[teststrain][serum][ti])
 
     return {k:mean_func(d) for k,d in titers_by_clade.items()}
 
@@ -85,6 +94,8 @@ if __name__ == '__main__':
     parser.add_argument('--clades', help="json with clade info")
     parser.add_argument('--metadata', type=str, help="metadata table")
     parser.add_argument('--clades-to-plot', nargs='+', help="clades to include in matrix")
+    parser.add_argument('--aaseqs', type=str, help='amino acid sequences')
+    parser.add_argument('--exclude-extra-muts',nargs='+', type=str, help='exclude strains with this mutation from the clade summary, put in separate bin')
     parser.add_argument('--antigens', nargs="+", help="antigens to summarize titers for")
     parser.add_argument('--combine-sera', action='store_true', help="average values for different sera")
     parser.add_argument('--reassortants', nargs="+", help="list of sera raised against reassortants")
@@ -99,7 +110,9 @@ if __name__ == '__main__':
 
     titers = load_json(args.titers)
     potency = load_json(args.model)["potency"] if args.model else defaultdict(dict)
-
+    if args.aaseqs:
+        aaseqs = {s.id:s.seq for s in SeqIO.parse(args.aaseqs, 'fasta')}
+    
     if args.reassortants:
         print("reducing to ", args.reassortants)
         titers = reduce_to_sera(titers, args.reassortants)
@@ -145,7 +158,7 @@ if __name__ == '__main__':
         else:
             continue
         average_titers[(c, antigen)] = get_average_titer_by_clade(titers[antigen], clades,
-                                        normalized=True, geometric=False)
+                                                                  normalized=True, geometric=False, aaseqs=aaseqs, extra_muts=args.exclude_extra_muts)
         for clade in average_titers[(c,antigen)]:
             average_titers[(c,antigen)][clade] -= potency[antigen].get("mean_potency",0)
 
@@ -153,7 +166,7 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(average_titers).T
     # sort columns
-    df = df[[x for x in h3n2_clades+h1n1_clades+vic_clades+yam_clades
+    df = df[[x for x in h3n2_clades+h1n1_clades+vic_clades+yam_clades+[",".join(args.exclude_extra_muts)]
              if x in df.columns]]
     rows = list(df.iterrows())
     rows.sort(key=lambda x:('Z',x[0][1]) if x[0][0]=='3c3.A' else x[0])
