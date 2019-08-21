@@ -29,6 +29,10 @@ def clades_to_plot(v):
     }
     return clades[(v.lineage, v.segment)]
 
+def get_extra_muts(w):
+	extra_muts = {'h1n1pdm':'156K', 'h3n2':'137S', 'vic':'133R', 'yam':''}
+    return extra_muts[w.lineage]
+
 regions_to_graph = ['china', 'europe', 'japan_korea', 'oceania', 'north_america', 'south_america', 'global']
 
 rule figures:
@@ -118,13 +122,18 @@ rule titer_matrix:
         titers = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titers.json",
         model = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_titer-sub-model.json",
         clades = "results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+	aaseq = "results/aa-seq_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_HA1.fasta",
         metadata = "results/metadata_{lineage}_ha.tsv"
     output:
         "figures/titer_matrix_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.pdf"
+    params:
+        exclude_extra_muts = get_extra_muts
     shell:
         '''
         python3 scripts/plot_titer_matrices.py --metadata {input.metadata} \
-        									   --titers {input.titers} \
+                                               --titers {input.titers} \
+					       --aaseq {input.aaseq} \
+					       --exclude-extra-muts {params.exclude_extra_muts} \
                                                --model {input.model} \
                                                --clades {input.clades} \
                                                --output {output}
