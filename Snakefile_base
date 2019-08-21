@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 import pandas as pd
 from treetime.utils import numeric_date
@@ -146,6 +147,54 @@ def _get_glyc_alignment(w):
             c=w.center, l=w.lineage, seg=w.segment, res=w.resolution, p=w.passage, a=w.assay,
             gene='HA1' if w.segment=='ha' else 'NA')
 
+#
+# Define node data table functions.
+#
+
+def float_to_datestring(time):
+    """Convert a floating point date from TreeTime `numeric_date` to a date string
+    """
+    # Extract the year and remainder from the floating point date.
+    year = int(time)
+    remainder = time - year
+
+    # Calculate the day of the year (out of 365 + 0.25 for leap years).
+    tm_yday = int(remainder * 365.25)
+    if tm_yday == 0:
+        tm_yday = 1
+
+    # Construct a date object from the year and day of the year.
+    date = datetime.datetime.strptime("%s-%s" % (year, tm_yday), "%Y-%j")
+
+    # Build the date string with zero-padded months and days.
+    date_string = "%s-%.2i-%.2i" % (date.year, date.month, date.day)
+
+    return date_string
+
+def _get_timepoint(wildcards):
+    return float_to_datestring(max_date(wildcards))
+
+def _get_annotations_for_node_data(wildcards):
+    annotations = ["%s=%s" % (key, value) for key, value in wildcards.items()]
+    annotations.append("timepoint=%s" % _get_timepoint(wildcards))
+    return " ".join(annotations)
+
+def _get_excluded_fields_arg(wildcards):
+    if config.get("excluded_node_data_fields"):
+        return "--excluded-fields %s" % " ".join(config["excluded_node_data_fields"])
+    else:
+        return ""
+
+#
+# Define forecasting helper functions.
+#
+
+def _get_delta_months_to_forecast(wildcards):
+    return " ".join([str(month) for month in config["fitness_model"]["delta_months"]])
+
+#
+# Define shared rules
+#
 
 rule files:
     params:
@@ -425,6 +474,25 @@ rule reconstruct_translations:
             --output {output.aa_alignment} \
             --internal-nodes
         """
+
+
+rule convert_translations_to_json:
+    input:
+        tree = rules.refine.output.tree,
+        translations = translations
+    output:
+        translations = "results/aa-seq_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    params:
+        gene_names = gene_names
+    shell:
+        """
+        python3 flu-forecasting/scripts/convert_translations_to_json.py \
+            --tree {input.tree} \
+            --alignment {input.translations} \
+            --gene-names {params.gene_names} \
+            --output {output.translations}
+        """
+
 
 rule traits:
     message:

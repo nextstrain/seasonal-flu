@@ -1,3 +1,5 @@
+configfile: "config/config.json"
+
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 resolutions = ['6m', '2y', '3y', '6y', '12y']
@@ -38,7 +40,8 @@ def _get_node_data_for_export(wildcards):
         rules.titers_sub.output.titers_model,
         rules.clades.output.clades,
         rules.traits.output.node_data,
-        rules.lbi.output.lbi
+        rules.lbi.output.lbi,
+        rules.convert_translations_to_json.output.translations
     ]
 
     # Only request a distance file for builds that have distance map
@@ -49,6 +52,113 @@ def _get_node_data_for_export(wildcards):
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards) for input_file in inputs]
     return inputs
+
+
+rule convert_node_data_to_table:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        node_data = _get_node_data_for_export
+    output:
+        table = "results/node-data_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    params:
+        annotations = _get_annotations_for_node_data,
+        excluded_fields_arg = _get_excluded_fields_arg
+    shell:
+        """
+        python3 flu-forecasting/scripts/node_data_to_table.py \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --jsons {input.node_data} \
+            --output {output} \
+            --annotations {params.annotations} \
+            {params.excluded_fields_arg} \
+        """
+
+
+rule convert_frequencies_to_table:
+    input:
+        tree = rules.refine.output.tree,
+        frequencies = rules.tip_frequencies.output.tip_freq
+    output:
+        table = "results/frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    shell:
+        """
+        python3 scripts/frequencies_to_table.py \
+            --tree {input.tree} \
+            --frequencies {input.frequencies} \
+            --output {output}
+        """
+
+
+rule merge_node_data_and_frequencies:
+    input:
+        node_data = rules.convert_node_data_to_table.output.table,
+        frequencies = rules.convert_frequencies_to_table.output.table
+    output:
+        table = "results/tip-attributes_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    run:
+        node_data = pd.read_table(input.node_data)
+        frequencies = pd.read_table(input.frequencies)
+        df = node_data.merge(
+            frequencies,
+            how="inner",
+            on=["strain", "is_terminal"]
+        )
+        df = df[df["frequency"] > 0].copy()
+        df.to_csv(output.table, sep="\t", index=False, header=True)
+
+
+rule target_distances:
+    input:
+        attributes = rules.merge_node_data_and_frequencies.output.table
+    output:
+        distances = "results/target-distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    params:
+        delta_months = _get_delta_months_to_forecast
+    shell:
+        """
+        python3 flu-forecasting/scripts/calculate_target_distances.py \
+            --tip-attributes {input.attributes} \
+            --delta-months {params.delta_months} \
+            --output {output}
+        """
+
+
+rule forecast_tips:
+    input:
+        attributes = rules.merge_node_data_and_frequencies.output.table,
+        distances = rules.target_distances.output.distances,
+        model = "models/lbi-cTiter-ne_star.json"
+    output:
+        forecast = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    params:
+        delta_months = _get_delta_months_to_forecast
+    shell:
+        """
+        python3 flu-forecasting/src/forecast_model.py \
+            --tip-attributes {input.attributes} \
+            --distances {input.distances} \
+            --model {input.model} \
+            --delta-months {params.delta_months} \
+            --output {output}
+        """
+
+
+rule add_forecasts_to_tip_frequencies:
+    input:
+        frequencies = rules.tip_frequencies.output.tip_freq,
+        forecasts = rules.forecast_tips.output.forecast
+    output:
+        tip_freq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
+    shell:
+        """
+        python3 scripts/add_forecasts_to_tip_frequencies.py \
+            --frequencies {input.frequencies} \
+            --forecasts {input.forecasts} \
+            --output {output}
+        """
+
 
 rule export:
     input:
@@ -71,11 +181,17 @@ rule export:
             --minify-json
         """
 
+def get_tip_frequencies(wildcards):
+    if wildcards.lineage == "h3n2" and wildcards.segment == "ha":
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_forecast-tip-frequencies.json"
+    else:
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+
 rule simplify_auspice_names:
     input:
         tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
         meta = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
-        frequencies = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+        frequencies = get_tip_frequencies
     output:
         tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
         meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",

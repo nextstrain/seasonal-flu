@@ -1,0 +1,3 @@
+[submodule "flu-forecasting"]
+	path = flu-forecasting
+	url = https://github.com/blab/flu-forecasting.git
