@@ -336,6 +336,7 @@ A/Pennsylvania/11/2011
 A/Pennsylvania/11/2012
 A/Pennsylvania/13/2012
 A/Pennsylvania/14/2010
+A/Pennsylvania/17/2012
 A/Pennsylvania/40/2010
 A/Piaui/494713/2017
 A/Quebec/167936/2011
@@ -377,3 +378,4 @@ A/Wisconsin/34/2012
 A/Wisconsin/35/2012
 A/Zhejiang-Nanxun/12/2018
 A/Zhejiang-Wuxin/1300/2016
+A/Zhejiang-Wuxin/1916/2018
