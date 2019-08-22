@@ -3,12 +3,13 @@ import numpy as np
 from datetime import datetime, timedelta, date
 from random import sample
 from collections import defaultdict
-from Bio import SeqIO, AlignIO
+from Bio import SeqIO, AlignIO, SeqRecord, Seq
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates, load_features
 from augur import align
+from augur.translate import safe_translate
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
-
+from codon_align import codon_align, get_cds
 
 class pseudo_args(object):
     def __init__(self, **kwargs):
@@ -60,42 +61,32 @@ if __name__ == '__main__':
                 sequences.append(seq)
 
     tmp_str = "".join(sample('ABCDEFGHILKLMOPQRSTUVWXYZ', 20))
-    if not os.path.isdir('tmp'):
-        os.mkdir('tmp')
+
+    ref = SeqIO.read(args.reference_sequence, 'genbank')
+
+    # get sequence as string, CDS seq, amino acid sequence, and start/end pos
+    features_to_translate = load_features(args.reference_sequence, args.genes)
+    refstr, refCDS, refAA, cds_start, cds_end = get_cds(ref)
+
+    alignment = []
+    for seq in sequences:
+        seq_aln = codon_align(seq,  refstr, refAA, cds_start, cds_end)
+        if seq_aln:
+            seq.seq=Seq.Seq(seq_aln)
+            alignment.append(seq)
 
     print("selected %d for region %s and date interval %f-%f"%(len(sequences), region, time_interval[0], time_interval[1]))
-    features_to_translate = load_features(args.reference_sequence, args.genes)
-    tmp_file = "tmp/sequence_file_%s_%s.fasta"%(region, tmp_str)
-    tmp_file_out = "tmp/sequence_file_%s_%s_aln.fasta"%(region, tmp_str)
-    SeqIO.write(sequences, tmp_file, 'fasta')
-    fail = align.run(pseudo_args(sequences=tmp_file, reference_sequence=args.reference_sequence,
-                      output = tmp_file_out, reference_name=None, remove_reference=True,
-                      method='mafft', nthreads=1, fill_gaps=False))
-    if fail:
-        sys.exit(fail)
-
-    aln = AlignIO.read(tmp_file_out, 'fasta')
-    for seq in aln:
-        seq_str = str(seq.seq)
-        seq_str = seq_str.lstrip('-')
-        seq_str = 'X'*(len(seq)-len(seq_str)) + seq_str
-
-        seq_str = seq_str.rstrip('-')
-        seq_str = seq_str + 'X'*(len(seq)-len(seq_str))
 
     for gene, fname in zip(args.genes, args.output):
         if gene not in features_to_translate:
             continue
         seqs = []
         feature = features_to_translate[gene]
-        for seq in aln:
+        for seq in alignment:
             try:
-                translation = feature.extract(seq).translate(gap='-')
-                translation.id, translation.name, translation.description = seq.name, seq.name, ''
+                translation =  SeqRecord.SeqRecord(seq=Seq.Seq(safe_translate(str(feature.extract(seq.seq)))),
+                                                   id=seq.name, name=seq.name, description='')
                 seqs.append(translation)
             except:
                 print("WARN:",seq.name,"did not translate")
         SeqIO.write(seqs, fname, 'fasta')
-
-    for fname in glob.glob("tmp/*%s_%s*"%(region, tmp_str)):
-        os.remove(fname)
