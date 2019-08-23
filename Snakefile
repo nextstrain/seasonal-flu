@@ -41,7 +41,7 @@ def _get_node_data_for_export(wildcards):
         rules.clades.output.clades,
         rules.traits.output.node_data,
         rules.lbi.output.lbi,
-        rules.convert_translations_to_json.output.translations
+        rules.forecast_tips.output.node_data
     ]
 
     # Only request a distance file for builds that have distance map
@@ -53,12 +53,31 @@ def _get_node_data_for_export(wildcards):
     inputs = [input_file.format(**wildcards) for input_file in inputs]
     return inputs
 
+def _get_node_data_for_predictors(wildcards):
+    """Return a list of node data files for fitness predictors
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
+        rules.lbi.output.lbi,
+        rules.convert_translations_to_json.output.translations,
+    ]
+
+    # Only request a distance file for builds that have distance map
+    # configurations defined.
+    if _get_build_distance_map_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
 
 rule convert_node_data_to_table:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        node_data = _get_node_data_for_export
+        node_data = _get_node_data_for_predictors
     output:
         table = "results/node-data_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
     params:
@@ -105,7 +124,6 @@ rule merge_node_data_and_frequencies:
             how="inner",
             on=["strain", "is_terminal"]
         )
-        df = df[df["frequency"] > 0].copy()
         df.to_csv(output.table, sep="\t", index=False, header=True)
 
 
@@ -129,9 +147,11 @@ rule forecast_tips:
     input:
         attributes = rules.merge_node_data_and_frequencies.output.table,
         distances = rules.target_distances.output.distances,
+        frequencies = rules.tip_frequencies.output.tip_freq,
         model = "models/lbi-cTiter-ne_star.json"
     output:
-        forecast = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+        node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
     params:
         delta_months = _get_delta_months_to_forecast
     shell:
@@ -139,26 +159,12 @@ rule forecast_tips:
         python3 flu-forecasting/src/forecast_model.py \
             --tip-attributes {input.attributes} \
             --distances {input.distances} \
+            --frequencies {input.frequencies} \
             --model {input.model} \
             --delta-months {params.delta_months} \
-            --output {output}
+            --output-node-data {output.node_data} \
+            --output-frequencies {output.frequencies}
         """
-
-
-rule add_forecasts_to_tip_frequencies:
-    input:
-        frequencies = rules.tip_frequencies.output.tip_freq,
-        forecasts = rules.forecast_tips.output.forecast
-    output:
-        tip_freq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
-    shell:
-        """
-        python3 scripts/add_forecasts_to_tip_frequencies.py \
-            --frequencies {input.frequencies} \
-            --forecasts {input.forecasts} \
-            --output {output}
-        """
-
 
 rule export:
     input:

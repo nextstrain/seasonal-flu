@@ -62,6 +62,18 @@
       "legendTitle": "RBS adjacent mutations",
       "type": "continuous",
       "key": "rb"
+    },
+    "fitness": {
+      "menuItem": "fitness",
+      "legendTitle": "Fitness",
+      "type": "continuous",
+      "key": "fitness"
+    },
+    "weighted_distance_to_future": {
+      "menuItem": "distance to future population",
+      "legendTitle": "Distance to future population",
+      "type": "continuous",
+      "key": "weighted_distance_to_future"
     }
   },
   "geo": [
