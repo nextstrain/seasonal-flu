@@ -2,65 +2,55 @@
   "title": "Real-time tracking of influenza A/H3N2 evolution",
   "color_options": {
     "gt": {
-      "menuItem": "genotype",
-      "legendTitle": "Genotype",
-      "type": "discrete",
+      "title": "genotype",
+      "type": "categorical",
       "key": "genotype"
     },
     "num_date": {
-      "menuItem": "date",
-      "legendTitle": "Sampling date",
+      "title": "Sampling date",
       "type": "continuous",
       "key": "num_date"
     },
     "region": {
       "key":"region",
-      "legendTitle":"Region",
-      "menuItem":"region",
-      "type":"discrete"
+      "title":"Region",
+      "type":"categorical"
     },
     "clade_membership": {
       "key": "clade_membership",
-      "legendTitle": "Clade",
-      "menuItem": "clade",
-      "type": "discrete"
+      "title": "Clade",
+      "type": "categorical"
     },
     "cTiter": {
       "key": "cTiter",
-      "legendTitle": "Antigenic advance (tree model)",
-      "menuItem": "antigenic advance (tree model)",
+      "title": "Antigenic advance (tree model)",
       "type": "continuous"
     },
     "cTiterSub": {
       "key": "cTiterSub",
-      "legendTitle": "Antigenic advance (sub model)",
-      "menuItem": "antigenic advance (sub model)",
+      "title": "Antigenic advance (sub model)",
       "type": "continuous"
     },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
-      "legendTitle": "local branching index",
       "key": "lbi",
-      "menuItem": "local branching index",
+      "title": "local branching index",
       "type": "continuous"
     },
     "ep": {
-      "menuItem": "epitope mutations",
-      "legendTitle": "Epitope mutations",
-      "type": "continuous",
+      "title": "epitope mutations",
+      "type": "ordinal",
       "key": "ep"
     },
     "ne": {
-      "menuItem": "non-epitope mutations",
-      "legendTitle": "Non-epitope mutations",
-      "type": "continuous",
+      "title": "non-epitope mutations",
+      "type": "ordinal",
       "key": "ne"
     },
     "rb": {
-      "menuItem": "RBS adjacent mutations",
-      "legendTitle": "RBS adjacent mutations",
-      "type": "continuous",
+      "title": "RBS adjacent mutations",
+      "type": "ordinal",
       "key": "rb"
     }
   },
