@@ -1,70 +1,51 @@
 {
   "title": "Real-time tracking of influenza B/Yam evolution",
-  "color_options": {
+  "colorings": {
     "gt": {
-      "menuItem": "genotype",
-      "legendTitle": "Genotype",
-      "type": "discrete",
+      "title": "genotype",
+      "type": "categorical",
       "key": "genotype"
     },
     "num_date": {
-      "menuItem": "date",
-      "legendTitle": "Sampling date",
+      "title": "Sampling date",
       "type": "continuous",
       "key": "num_date"
     },
     "region": {
       "key":"region",
-      "legendTitle":"Region",
-      "menuItem":"region",
-      "type":"discrete"
-    },
-    "avgage": {
-      "menuItem": "average age",
-      "legendTitle": "average age",
-      "type": "continuous",
-      "key": "avg_age"
-    },
-    "vaccov": {
-      "key":"vac_cov",
-      "legendTitle":"Host vaccine coverage",
-      "menuItem":"Host  vac. cov.",
-      "type":"continuous"
+      "title":"Region",
+      "type":"categorical"
     },
     "clade_membership": {
       "key": "clade_membership",
-      "legendTitle": "Clade",
-      "menuItem": "clade",
-      "type": "discrete"
+      "title": "Clade",
+      "type": "categorical"
     },
     "cTiter": {
       "key": "cTiter",
-      "legendTitle": "Antigenic advance (tree model)",
-      "menuItem": "antigenic advance (tree model)",
+      "title": "Antigenic advance (tree model)",
       "type": "continuous"
     },
     "cTiterSub": {
       "key": "cTiterSub",
-      "legendTitle": "Antigenic advance (sub model)",
-      "menuItem": "antigenic advance (sub model)",
+      "title": "Antigenic advance (sub model)",
       "type": "continuous"
     },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
-      "legendTitle": "local branching index",
       "key": "lbi",
-      "menuItem": "local branching index",
+      "title": "local branching index",
       "type": "continuous"
     }
   },
-  "geo": [
-    "country",
-    "region"
+  "geo_resolutions": [
+    {"key":"country"},
+    {"key":"region"}
   ],
-  "defaults": {
-    "mapTriplicate": true,
-    "colorBy": "clade_membership"
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
   },
   "maintainer": [
     "Trevor Bedford and Barney Potter",

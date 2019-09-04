@@ -1,6 +1,6 @@
 {
   "title": "Real-time tracking of influenza A/H3N2 evolution",
-  "color_options": {
+  "colorings": {
     "gt": {
       "title": "genotype",
       "type": "categorical",
@@ -54,13 +54,13 @@
       "key": "rb"
     }
   },
-  "geo": [
-    "country",
-    "region"
+  "geo_resolutions": [
+    {"key":"country"},
+    {"key":"region"}
   ],
-  "defaults": {
-    "mapTriplicate": true,
-    "colorBy": "clade_membership"
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
   },
   "maintainer": [
     "Trevor Bedford and Barney Potter",
