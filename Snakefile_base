@@ -618,7 +618,7 @@ rule tree_frequencies:
         regions = ['global'] + frequency_regions,
         min_clade = 20
     output:
-        "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        frequencies = "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur frequencies \
@@ -634,6 +634,49 @@ rule tree_frequencies:
             --output {output}
         """
 
+rule diffusion_frequencies:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+    params:
+        min_date = min_date,
+        max_date = max_date,
+        pivot_interval = config["fitness_model"]["pivot_interval"],
+        regions = 'global'
+    output:
+        frequencies = "results/diffusion-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    shell:
+        """
+        augur frequencies \
+            --method diffusion \
+            --include-internal-nodes \
+            --tree {input.tree} \
+            --regions {params.regions} \
+            --metadata {input.metadata} \
+            --pivot-interval {params.pivot_interval} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output}
+        """
+
+rule delta_frequency:
+    input:
+        tree = rules.refine.output.tree,
+        frequencies = rules.diffusion_frequencies.output.frequencies
+    output:
+        delta_frequency = "results/delta_frequency_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    params:
+        delta_pivots = config["fitness_model"]["delta_pivots"],
+        method = "diffusion"
+    shell:
+        """
+        python3 flu-forecasting/scripts/calculate_delta_frequency.py \
+            --tree {input.tree} \
+            --frequencies {input.frequencies} \
+            --frequency-method {params.method} \
+            --delta-pivots {params.delta_pivots} \
+            --output {output.delta_frequency}
+        """
 
 rule clades:
     message: "Annotating clades"

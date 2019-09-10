@@ -63,6 +63,12 @@
       "type": "continuous",
       "key": "rb"
     },
+    "delta_frequency": {
+      "menuItem": "delta frequency",
+      "legendTitle": "delta frequency",
+      "type": "continuous",
+      "key": "delta_frequency"
+    },
     "fitness": {
       "menuItem": "fitness",
       "legendTitle": "Fitness",
