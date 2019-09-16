@@ -52,7 +52,13 @@ def min_date(wildcards):
     return now - years_back
 
 def max_date(w):
-    return numeric_date(date.today())
+    # Estimate frequencies a given number of months back in the past to account
+    # for lag in data availability.
+    if "frequency_max_date_month_offset" in config:
+        date_offset = pd.DateOffset(months=config["frequency_max_date_month_offset"])
+        return numeric_date(pd.to_datetime(date.today()) - date_offset)
+    else:
+        return numeric_date(date.today())
 
 def clock_rate(w):
     rate = {
@@ -170,6 +176,9 @@ def float_to_datestring(time):
     date_string = "%s-%.2i-%.2i" % (date.year, date.month, date.day)
 
     return date_string
+
+def _get_start_timepoint(wildcards):
+    return float_to_datestring(min_date(wildcards))
 
 def _get_timepoint(wildcards):
     return float_to_datestring(max_date(wildcards))
@@ -300,7 +309,9 @@ rule select_strains:
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
-        viruses_per_month = vpm
+        viruses_per_month = vpm,
+        min_date = _get_start_timepoint,
+        max_date = _get_timepoint
     shell:
         """
         python3 scripts/select_strains.py \
@@ -312,6 +323,7 @@ rule select_strains:
             --resolution {wildcards.resolution} \
             --viruses-per-month {params.viruses_per_month} \
             --titers {input.titers} \
+            --time-interval {params.min_date} {params.max_date} \
             --output {output.strains}
         """
 
