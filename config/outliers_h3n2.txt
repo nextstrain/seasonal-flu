@@ -166,6 +166,7 @@ A/Indiana/125/2012
 A/Indiana/126/2012
 A/Indiana/127/2012
 A/Indiana/132/2012
+A/Indiana/133/2012
 A/Indiana/135/2012
 A/Indiana/144/2012
 A/Indiana/149/2012
@@ -255,6 +256,7 @@ A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
 A/Minnesota/11/2012
 A/Minnesota/15/2012
+A/Minnesota/38/2015
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/Netherlands/233/1982
@@ -323,6 +325,7 @@ A/Ohio/80/2012
 A/Ohio/81/2012
 A/Ohio/83/2012
 A/Ohio/85/2012
+A/Ohio/87/2012
 A/Ohio/88/2012
 A/Ohio/90/2012
 A/Ohio/4319/2014
@@ -336,6 +339,7 @@ A/Pennsylvania/11/2011
 A/Pennsylvania/11/2012
 A/Pennsylvania/13/2012
 A/Pennsylvania/14/2010
+A/Pennsylvania/17/2012
 A/Pennsylvania/40/2010
 A/Piaui/494713/2017
 A/Quebec/167936/2011
@@ -377,3 +381,4 @@ A/Wisconsin/34/2012
 A/Wisconsin/35/2012
 A/Zhejiang-Nanxun/12/2018
 A/Zhejiang-Wuxin/1300/2016
+A/Zhejiang-Wuxin/1916/2018
