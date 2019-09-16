@@ -63,7 +63,7 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
-            --output-main {output.auspice} \
+            --output {output.auspice} \
             --minify-json
         """
 

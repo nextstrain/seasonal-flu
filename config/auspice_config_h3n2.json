@@ -1,25 +1,10 @@
 {
   "title": "Real-time tracking of influenza A/H3N2 evolution",
   "colorings": {
-    "gt": {
-      "title": "genotype",
-      "type": "categorical",
-      "key": "genotype"
-    },
-    "num_date": {
-      "title": "Sampling date",
-      "type": "continuous",
-      "key": "num_date"
-    },
     "region": {
       "key":"region",
       "title":"Region",
       "type":"categorical"
-    },
-    "clade_membership": {
-      "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical"
     },
     "cTiter": {
       "key": "cTiter",
