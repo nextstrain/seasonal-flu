@@ -107,6 +107,7 @@ rule global_mutation_frequencies:
     shell:
         '''
         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
+                                              --tree-frequencies {input.tree_freq} \
                                               --regions {params.regions} \
                                               --output-auspice {output.auspice} \
                                               --output-augur {output.augur}
