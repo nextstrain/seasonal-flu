@@ -103,8 +103,11 @@ if __name__ == '__main__':
     for seq in aln:
         seq_aln = codon_align(seq,  refstr, refAA, cds_start, cds_end)
         if seq_aln:
-            seq.seq=Seq.Seq(seq_aln)
-            alignment.append(seq)
+            if len(seq_aln)!=len(refstr):
+                print(seq.name, seq_aln, refstr)
+            else:
+                seq.seq=Seq.Seq(seq_aln)
+                alignment.append(seq)
 
     # output
     AlignIO.write(MultipleSeqAlignment(alignment), args.output, 'fasta')
