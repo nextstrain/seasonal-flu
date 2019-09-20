@@ -109,7 +109,7 @@ LBI_params = {
     '3y': {"tau": 0.4, "time_window": 0.6},
     '6y': {"tau": 0.25, "time_window": 0.75},
     '12y': {"tau": 0.25, "time_window": 0.75},
-    '60y': {"tau": 0.25, "time_window": 0.75}    
+    '60y': {"tau": 0.25, "time_window": 0.75}
 }
 
 def _get_lbi_tau_for_wildcards(wildcards):
@@ -205,6 +205,12 @@ def _get_delta_months_to_forecast(wildcards):
 # Define shared rules
 #
 
+def _get_auspice_config(wildcards):
+    if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
+        return "config/auspice_config_h3n2_fitness.json"
+    else:
+        return "config/auspice_config_{lineage}.json".format(lineage=wildcards.lineage)
+
 rule files:
     params:
         outliers = "config/outliers_{lineage}.txt",
@@ -212,7 +218,7 @@ rule files:
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
-        auspice_config = "config/auspice_config_{lineage}.json",
+        auspice_config = _get_auspice_config
 
 files = rules.files.params
 

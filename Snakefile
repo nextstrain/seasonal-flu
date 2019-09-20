@@ -40,10 +40,11 @@ def _get_node_data_for_export(wildcards):
         rules.titers_sub.output.titers_model,
         rules.clades.output.clades,
         rules.traits.output.node_data,
-        rules.lbi.output.lbi,
-        rules.delta_frequency.output.delta_frequency,
-        rules.forecast_tips.output.node_data
+        rules.lbi.output.lbi
     ]
+
+    if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
+        inputs.append(rules.forecast_tips.output.node_data)
 
     # Only request a distance file for builds that have distance map
     # configurations defined.
@@ -190,7 +191,7 @@ rule export:
         """
 
 def get_tip_frequencies(wildcards):
-    if wildcards.lineage == "h3n2" and wildcards.segment == "ha":
+    if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
         return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_forecast-tip-frequencies.json"
     else:
         return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
