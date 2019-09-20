@@ -126,7 +126,6 @@ rule merge_node_data_and_frequencies:
             how="inner",
             on=["strain", "is_terminal"]
         )
-        df = df[df["frequency"] > 0].copy()
         df.to_csv(output.table, sep="\t", index=False, header=True)
 
 
