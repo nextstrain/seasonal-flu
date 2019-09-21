@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 import pandas as pd
 from treetime.utils import numeric_date
@@ -51,7 +52,13 @@ def min_date(wildcards):
     return now - years_back
 
 def max_date(w):
-    return numeric_date(date.today())
+    # Estimate frequencies a given number of months back in the past to account
+    # for lag in data availability.
+    if "frequency_max_date_month_offset" in config:
+        date_offset = pd.DateOffset(months=config["frequency_max_date_month_offset"])
+        return numeric_date(pd.to_datetime(date.today()) - date_offset)
+    else:
+        return numeric_date(date.today())
 
 def clock_rate(w):
     rate = {
@@ -102,7 +109,7 @@ LBI_params = {
     '3y': {"tau": 0.4, "time_window": 0.6},
     '6y': {"tau": 0.25, "time_window": 0.75},
     '12y': {"tau": 0.25, "time_window": 0.75},
-    '60y': {"tau": 0.25, "time_window": 0.75}    
+    '60y': {"tau": 0.25, "time_window": 0.75}
 }
 
 def _get_lbi_tau_for_wildcards(wildcards):
@@ -146,6 +153,63 @@ def _get_glyc_alignment(w):
             c=w.center, l=w.lineage, seg=w.segment, res=w.resolution, p=w.passage, a=w.assay,
             gene='HA1' if w.segment=='ha' else 'NA')
 
+#
+# Define node data table functions.
+#
+
+def float_to_datestring(time):
+    """Convert a floating point date from TreeTime `numeric_date` to a date string
+    """
+    # Extract the year and remainder from the floating point date.
+    year = int(time)
+    remainder = time - year
+
+    # Calculate the day of the year (out of 365 + 0.25 for leap years).
+    tm_yday = int(remainder * 365.25)
+    if tm_yday == 0:
+        tm_yday = 1
+
+    # Construct a date object from the year and day of the year.
+    date = datetime.datetime.strptime("%s-%s" % (year, tm_yday), "%Y-%j")
+
+    # Build the date string with zero-padded months and days.
+    date_string = "%s-%.2i-%.2i" % (date.year, date.month, date.day)
+
+    return date_string
+
+def _get_start_timepoint(wildcards):
+    return float_to_datestring(min_date(wildcards))
+
+def _get_timepoint(wildcards):
+    return float_to_datestring(max_date(wildcards))
+
+def _get_annotations_for_node_data(wildcards):
+    annotations = ["%s=%s" % (key, value) for key, value in wildcards.items()]
+    annotations.append("timepoint=%s" % _get_timepoint(wildcards))
+    return " ".join(annotations)
+
+def _get_excluded_fields_arg(wildcards):
+    if config.get("excluded_node_data_fields"):
+        return "--excluded-fields %s" % " ".join(config["excluded_node_data_fields"])
+    else:
+        return ""
+
+#
+# Define forecasting helper functions.
+#
+
+def _get_delta_months_to_forecast(wildcards):
+    return " ".join([str(month) for month in config["fitness_model"]["delta_months"]])
+
+#
+# Define shared rules
+#
+
+def _get_auspice_config(wildcards):
+    if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
+        return "config/auspice_config_h3n2_fitness.json"
+    else:
+        return "config/auspice_config_{lineage}.json".format(lineage=wildcards.lineage)
 
 rule files:
     params:
@@ -154,7 +218,7 @@ rule files:
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
-        auspice_config = "config/auspice_config_{lineage}.json",
+        auspice_config = _get_auspice_config
 
 files = rules.files.params
 
@@ -251,7 +315,9 @@ rule select_strains:
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
-        viruses_per_month = vpm
+        viruses_per_month = vpm,
+        min_date = _get_start_timepoint,
+        max_date = _get_timepoint
     shell:
         """
         python3 scripts/select_strains.py \
@@ -263,6 +329,7 @@ rule select_strains:
             --resolution {wildcards.resolution} \
             --viruses-per-month {params.viruses_per_month} \
             --titers {input.titers} \
+            --time-interval {params.min_date} {params.max_date} \
             --output {output.strains}
         """
 
@@ -426,6 +493,25 @@ rule reconstruct_translations:
             --internal-nodes
         """
 
+
+rule convert_translations_to_json:
+    input:
+        tree = rules.refine.output.tree,
+        translations = translations
+    output:
+        translations = "results/aa-seq_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    params:
+        gene_names = gene_names
+    shell:
+        """
+        python3 flu-forecasting/scripts/convert_translations_to_json.py \
+            --tree {input.tree} \
+            --alignment {input.translations} \
+            --gene-names {params.gene_names} \
+            --output {output.translations}
+        """
+
+
 rule traits:
     message:
         """
@@ -550,7 +636,7 @@ rule tree_frequencies:
         regions = ['global'] + frequency_regions,
         min_clade = 20
     output:
-        "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        frequencies = "results/tree-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
         """
         augur frequencies \
@@ -566,6 +652,49 @@ rule tree_frequencies:
             --output {output}
         """
 
+rule diffusion_frequencies:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+    params:
+        min_date = min_date,
+        max_date = max_date,
+        pivot_interval = config["fitness_model"]["pivot_interval"],
+        regions = 'global'
+    output:
+        frequencies = "results/diffusion-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    shell:
+        """
+        augur frequencies \
+            --method diffusion \
+            --include-internal-nodes \
+            --tree {input.tree} \
+            --regions {params.regions} \
+            --metadata {input.metadata} \
+            --pivot-interval {params.pivot_interval} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output}
+        """
+
+rule delta_frequency:
+    input:
+        tree = rules.refine.output.tree,
+        frequencies = rules.diffusion_frequencies.output.frequencies
+    output:
+        delta_frequency = "results/delta_frequency_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    params:
+        delta_pivots = config["fitness_model"]["delta_pivots"],
+        method = "diffusion"
+    shell:
+        """
+        python3 flu-forecasting/scripts/calculate_delta_frequency.py \
+            --tree {input.tree} \
+            --frequencies {input.frequencies} \
+            --frequency-method {params.method} \
+            --delta-pivots {params.delta_pivots} \
+            --output {output.delta_frequency}
+        """
 
 rule clades:
     message: "Annotating clades"

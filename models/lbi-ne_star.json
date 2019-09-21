@@ -1,0 +1,29 @@
+{
+ "predictors": [
+  "lbi",
+  "ne_star"
+ ],
+ "cv_error_mean": 0.03932088565325557,
+ "cv_error_std": 0.24573778247192815,
+ "coefficients_mean": [
+  1.521988708005206,
+  -2.4673613960005376
+ ],
+ "coefficients_std": [
+  1.4558867235275208,
+  0.8533148540751813
+ ],
+ "mean_stds_mean": [
+  0.09893824768380016,
+  1.2604128705055786
+ ],
+ "mean_stds_std": [
+  0.01670656190852144,
+  0.10102698753070875
+ ],
+ "cost_function": "diffsum",
+ "l1_lambda": 0.015,
+ "delta_months": 12,
+ "training_window": 6,
+ "pseudocount": null
+}
