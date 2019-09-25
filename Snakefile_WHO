@@ -1,3 +1,4 @@
+configfile: "config/config.json"
 
 passages = ['cell', 'egg']
 assays = ['hi', 'fra']
