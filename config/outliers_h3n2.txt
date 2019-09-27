@@ -175,6 +175,7 @@ A/Indiana/149/2012
 A/Indiana/150/2012
 A/Indiana/153/2012
 A/Iowa/4/2013
+A/Iowa/7/2011
 A/Iowa/7/2011-egg
 A/Iowa/8/2011
 A/Iowa/8/2011-egg
@@ -224,6 +225,7 @@ A/Maryland/51/2017
 A/Maryland/52/2017
 A/Maryland/54/2017
 A/Maryland/55/2017
+A/Maryland/58/2017
 A/Maryland/59/2017
 A/Maryland/61/2017
 A/Maryland/62/2017
@@ -332,6 +334,7 @@ A/Ohio/85/2012
 A/Ohio/87/2012
 A/Ohio/88/2012
 A/Ohio/90/2012
+A/Ohio/91/2012
 A/Ohio/4319/2014
 A/Ontario/1252/2007
 A/Ontario/RV1273/2005
