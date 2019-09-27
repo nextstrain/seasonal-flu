@@ -69,12 +69,14 @@ A/Saitama/103/2014-egg
 A/Sapporo/71/2015
 A/Sidney/7/2014
 A/Singapore/22/2012
+A/Singapore/22/2012
 A/Singapore/Infimh-16-0019/2016
 A/Singapore/Infimh-16-0019/2016-egg
 A/Singapore/TT0555/2017
 A/Singapore/TT1374/2016
 A/Southauckland/7/2012
-A/Southauckland/7/2012A/Singapore/22/2012
+A/Southauckland/7/2012
+A/SouthAustralia/34/2019
 A/SouthAustralia/55/2014
 A/SouthAustralia/135/2016
 A/SouthCarolina/4/2017
