@@ -1,0 +1,15 @@
+{
+    "frequency_max_date_month_offset": 1,
+    "excluded_node_data_fields": [
+        "aa_muts",
+        "aa_sequences",
+        "muts",
+        "num_date_confidence",
+        "sequence"
+    ],
+    "fitness_model": {
+        "delta_months": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "pivot_interval": 6,
+        "delta_pivots": 1
+    }
+}
