@@ -267,7 +267,7 @@ rule parse:
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
         fasta_fields =  "strain virus accession date region country division location passage authors age gender",
-        prettify_fields = "region country division location submitting_lab"
+        prettify_fields = "region country division location authors"
     shell:
         """
         augur parse \
