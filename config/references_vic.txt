@@ -30,6 +30,7 @@ B/NordrheinWestfalen/1/2016
 B/Norway/2409/2017
 B/Ohio/1/2005
 B/Shangdong/7/1997
+B/Sichuan-Gaoxin/531/2018
 B/Singapore/TT1243/2015
 B/Slovenia/1604/2016
 B/StPetersburg/293/2016

@@ -19,6 +19,8 @@ A/Cambodia/NHRCC00011/2009
 A/Catalonia/NSVH100533399/2017
 A/Catalonia/NSVH100560486/2017
 A/Catalonia/NSVH100570896/2017
+A/Catalonia/NSVH100731127/2017
+A/Catalonia/NSVH100748648/2018
 A/Chile/8266/2003
 A/Corsica/3/2009
 A/Corsica/7/2007
@@ -171,7 +173,9 @@ A/Indiana/135/2012
 A/Indiana/144/2012
 A/Indiana/149/2012
 A/Indiana/150/2012
+A/Indiana/153/2012
 A/Iowa/4/2013
+A/Iowa/7/2011
 A/Iowa/7/2011-egg
 A/Iowa/8/2011
 A/Iowa/8/2011-egg
@@ -221,11 +225,13 @@ A/Maryland/51/2017
 A/Maryland/52/2017
 A/Maryland/54/2017
 A/Maryland/55/2017
+A/Maryland/58/2017
 A/Maryland/59/2017
 A/Maryland/61/2017
 A/Maryland/62/2017
 A/Maryland/64/2017
 A/Maryland/65/2017
+A/Maryland/66/2017
 A/Maryland/67/2017
 A/Maryland/70/2017
 A/Maryland/71/2017
@@ -325,9 +331,11 @@ A/Ohio/80/2012
 A/Ohio/81/2012
 A/Ohio/83/2012
 A/Ohio/85/2012
+A/Ohio/86/2012
 A/Ohio/87/2012
 A/Ohio/88/2012
 A/Ohio/90/2012
+A/Ohio/91/2012
 A/Ohio/4319/2014
 A/Ontario/1252/2007
 A/Ontario/RV1273/2005
