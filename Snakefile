@@ -207,7 +207,7 @@ rule simplify_auspice_names:
 
 rule targets:
     input:
-        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     output:
         target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
