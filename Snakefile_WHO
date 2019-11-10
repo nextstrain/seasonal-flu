@@ -108,8 +108,8 @@ rule global_mutation_frequencies:
     shell:
         '''
         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
-                                              --regions {params.regions} \
                                               --tree-frequencies {input.tree_freq} \
+                                              --regions {params.regions} \
                                               --output-auspice {output.auspice} \
                                               --output-augur {output.augur}
         '''
@@ -236,7 +236,7 @@ rule export_who:
         meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
     shell:
         """
-        augur export \
+        augur export v1 \
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} \
