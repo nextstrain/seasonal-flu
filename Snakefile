@@ -8,14 +8,20 @@ passages = ['cell']
 centers = ['cdc']
 assays = ['hi']
 
+wildcard_constraints:
+    lineage = "[A-Za-z0-9]{3,7}",
+    segment = "[A-Za-z0-9]{2,3}",
+    resolution = "[A-Za-z0-9]{2,3}",
+    passage = "[a-z]{3,4}",
+    center = "[a-z]{3,5}",
+    assay = "[a-z]{2,3}"
+
 localrules: download_all, simplify_auspice_names, targets, clean, clobber
 include: "Snakefile_base"
 
 rule all_live:
     input:
-        auspice_tree = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-                              lineage=lineages, segment=segments, resolution=resolutions),
-        auspice_meta = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        auspice_main = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
                               lineage=lineages, segment=segments, resolution=resolutions),
         auspice_tip_frequencies = expand("auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
                               lineage=lineages, segment=segments, resolution=resolutions)
@@ -176,17 +182,16 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json"
+        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        auspice_root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
     shell:
         """
-        augur export v1 \
+        augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
-            --output-tree {output.auspice_tree} \
-            --output-meta {output.auspice_meta} \
+            --output {output.auspice_main} \
             --minify-json
         """
 
@@ -198,24 +203,24 @@ def get_tip_frequencies(wildcards):
 
 rule simplify_auspice_names:
     input:
-        tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
-        meta = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
+        main = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
+        root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json",
         frequencies = get_tip_frequencies
     output:
-        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
-        mv {input.tree} {output.tree} &
-        mv {input.meta} {output.meta} &
+        mv {input.main} {output.main} &
+        mv {input.root_sequence} {output.root_sequence} &
         mv {input.frequencies} {output.frequencies} &
         '''
 
 rule targets:
     input:
-        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
-        meta = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_meta.json",
+        main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     output:
         target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
