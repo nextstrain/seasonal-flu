@@ -12,7 +12,7 @@ import seaborn as sns
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 
 
-h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/135N', 'A1b/131K','A2', 'A2/re', '3c3.A']
+h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/137F','A1b/135N', 'A1b/131K', 'A1b/197R', 'A2', 'A2/re', '3c3.A']
 h1n1_clades = ["6b1.A", "6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-3", "6b1.A/183P-5", "6b1.A/183P-6", "6b1.A/183P-7"]
 vic_clades =  ["V1A", "V1A.1","V1A.2", "V1A.3", "V1A/165N"]
 yam_clades = ["172Q", "3"]

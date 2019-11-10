@@ -290,7 +290,7 @@ if __name__ == '__main__':
         if args.clade_annotations:
             clade_annotations = load_frequencies(args.clade_annotations)
             clade_to_node = {node["clade_annotation"]:node_name for node_name, node in clade_annotations['nodes'].items()
-                             if "clade_annotation" in node}
-
+                             if "clade_annotation" in node and node_name[:4]=='NODE'}
+            print(clade_to_node) #, [(c,tree_frequencies[n]) for c,n in clade_to_node.items()])
             plot_clades_by_region(tree_frequencies, args.clades, clade_to_node,
                                   args.output_clades, regions=args.regions, drop=1)
