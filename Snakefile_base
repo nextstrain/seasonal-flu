@@ -228,7 +228,7 @@ rule download_sequences:
     output:
         sequences = "data/{lineage}_{segment}.fasta"
     params:
-        fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
+        fasta_fields = "strain virus accession collection_date region country division location passage_category originating_lab submitting_lab age gender"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -266,8 +266,8 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus accession date region country division location passage submitting_lab age gender",
-        prettify_fields = "region country division location submitting_lab"
+        fasta_fields =  "strain virus accession date region country division location passage originating_lab submitting_lab age gender",
+        prettify_fields = "region country division location originating_lab submitting_lab"
     shell:
         """
         augur parse \

@@ -21,10 +21,6 @@
       "title": "Country",
       "type": "categorical"
     },
-    "submitting_lab": {
-      "title": "Submitting lab",
-      "type": "categorical"
-    },
     "cTiter": {
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -58,6 +54,14 @@
     "weighted_distance_to_future": {
       "title": "Distance to future population",
       "type": "continuous"
+    },
+    "submitting_lab": {
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    "originating_lab": {
+      "title": "Originating lab",
+      "type": "categorical"
     }
   },
   "geo_resolutions": [

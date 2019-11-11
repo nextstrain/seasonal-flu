@@ -21,10 +21,6 @@
       "title": "Country",
       "type": "categorical"
     },
-    "submitting_lab": {
-      "title": "Submitting lab",
-      "type": "categorical"
-    },
     "cTiter": {
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -38,6 +34,14 @@
       "vmax": 0.7,
       "title": "Local branching index",
       "type": "continuous"
+    },
+    "submitting_lab": {
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    "originating_lab": {
+      "title": "Originating lab",
+      "type": "categorical"
     }
   },
   "geo_resolutions": [

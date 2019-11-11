@@ -21,10 +21,6 @@
       "title": "Country",
       "type": "categorical"
     },
-    "submitting_lab": {
-      "title": "Submitting lab",
-      "type": "categorical"
-    },
     "cTiter": {
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -46,6 +42,14 @@
     "ne": {
       "title": "Non-epitope mutations",
       "type": "ordinal"
+    },
+    "submitting_lab": {
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    "originating_lab": {
+      "title": "Originating lab",
+      "type": "categorical"
     }
   },
   "geo_resolutions": [
