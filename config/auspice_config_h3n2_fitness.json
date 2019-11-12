@@ -1,69 +1,82 @@
 {
   "title": "Real-time tracking of influenza A/H3N2 evolution",
-  "colorings": {
-    "gt": {
+  "colorings": [
+    {
+      "key": "gt",
       "title": "Genotype",
       "type": "categorical"
     },
-    "num_date": {
+    {
+      "key": "num_date",
       "title": "Date",
       "type": "continuous"
     },
-    "clade_membership": {
+    {
+      "key": "clade_membership",
       "title": "Clade",
       "type": "categorical"
     },
-    "region": {
-      "title": "Region",
-      "type": "categorical"
-    },
-    "country": {
-      "title": "Country",
-      "type": "categorical"
-    },
-    "cTiter": {
-      "title": "Antigenic advance (tree model)",
-      "type": "continuous"
-    },
-    "cTiterSub": {
-      "title": "Antigenic advance (sub model)",
-      "type": "continuous"
-    },
-    "lbi": {
-      "vmin": 0,
-      "vmax": 0.7,
-      "title": "Local branching index",
-      "type": "continuous"
-    },
-    "ep": {
-      "title": "Epitope mutations",
-      "type": "ordinal"
-    },
-    "ne": {
-      "title": "Non-epitope mutations",
-      "type": "ordinal"
-    },
-    "rb": {
-      "title": "RBS adjacent mutations",
-      "type": "ordinal"
-    },
-    "fitness": {
+    {
+      "key": "fitness",
       "title": "Fitness",
       "type": "continuous"
     },
-    "weighted_distance_to_future": {
+    {
+      "key": "weighted_distance_to_future",
       "title": "Distance to future population",
       "type": "continuous"
     },
-    "submitting_lab": {
+    {
+      "key": "cTiter",
+      "title": "Antigenic advance (tree model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiterSub",
+      "title": "Antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    {
+      "key": "lbi",
+      "title": "Local branching index",
+      "type": "continuous"
+    },
+    {
+      "key": "ep",
+      "title": "Epitope mutations",
+      "type": "ordinal"
+    },
+    {
+      "key": "ne",
+      "title": "Non-epitope mutations",
+      "type": "ordinal"
+    },
+    {
+      "key": "rb",
+      "title": "RBS adjacent mutations",
+      "type": "ordinal"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "submitting_lab",
       "title": "Submitting lab",
       "type": "categorical"
     },
-    "originating_lab": {
+    {
+      "key": "originating_lab",
       "title": "Originating lab",
       "type": "categorical"
     }
-  },
+  ],
   "geo_resolutions": [
     "country",
     "region"
@@ -73,9 +86,9 @@
     "color_by": "clade_membership"
   },
   "maintainers": [
-    ["Jover Lee", "https://bedford.io/team/jover-lee/"],
-    ["Richard Neher", "https://neherlab.org/richard-neher.html"],
-    ["Trevor Bedford", "https://bedford.io/team/trevor-bedford/"]
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
   ],
   "filters": [
     "clade_membership",
