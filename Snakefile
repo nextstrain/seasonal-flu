@@ -46,7 +46,8 @@ def _get_node_data_for_export(wildcards):
         rules.titers_sub.output.titers_model,
         rules.clades.output.clades,
         rules.traits.output.node_data,
-        rules.lbi.output.lbi
+        rules.lbi.output.lbi,
+        files.vaccine_json
     ]
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
