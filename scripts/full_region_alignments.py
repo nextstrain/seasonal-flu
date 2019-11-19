@@ -57,7 +57,7 @@ if __name__ == '__main__':
         if seq.name in metadata:
             if metadata[seq.name]["num_date"]>=time_interval[0] and \
                metadata[seq.name]["num_date"]<time_interval[1] and \
-               metadata[seq.name]["region"]==region:
+               metadata[seq.name]["region"].lower().replace(' ', '_')==region:
                 sequences.append(seq)
 
     tmp_str = "".join(sample('ABCDEFGHILKLMOPQRSTUVWXYZ', 20))

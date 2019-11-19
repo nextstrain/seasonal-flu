@@ -1,6 +1,6 @@
 {
   "title": "Real-time tracking of influenza B/Yam evolution",
-  "colorings": {
+  "color_options": {
     "gt": {
       "title": "genotype",
       "type": "categorical",
@@ -39,13 +39,13 @@
       "type": "continuous"
     }
   },
-  "geo_resolutions": [
-    {"key":"country"},
-    {"key":"region"}
+  "geo": [
+    "country",
+    "region"
   ],
-  "display_defaults": {
-    "map_triplicate": true,
-    "color_by": "clade_membership"
+  "defaults": {
+    "mapTriplicate": true,
+    "colorBy": "clade_membership"
   },
   "maintainer": [
     "Trevor Bedford and Barney Potter",
