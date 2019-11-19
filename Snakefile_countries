@@ -1,5 +1,7 @@
 localrules: all_live, download_all, download_titers, download_sequences
 ruleorder: select_strains_countries > select_strains
+ruleorder: exportv1 > exportv2
+ruleorder: rename_output_v1 > rename_output_v2
 
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
@@ -11,16 +13,21 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":["netherlands"], "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
+countries = {"netherlands":["netherlands"]} #, "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
 
-rule all_live:
+def focal_vpm(v):
+    focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
+    return focal_vpm[v.resolution] if v.resolution in focal_vpm else 5
+
+def other_vpm(v):
+    return vpm(v) - focal_vpm(v)
+
+rule all_country:
     input:
-        auspice_tree = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays),
-        auspice_meta = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays),
-        auspice_tip_frequencies = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
-                              center=countries, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays)
+        auspice_tree = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tree.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+                              center=countries, lineage=lineages, segment=segments, resolution=resolutions)
 
 # separate rule for interaction with fauna
 rule download_all:
@@ -57,39 +64,94 @@ def _get_node_data_for_export(wildcards):
     inputs = [input_file.format(**wildcards) for input_file in inputs]
     return inputs
 
-rule export:
+rule exportv1:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        auspice_config = "config/auspice_config_v1_{lineage}.json",
+        node_data = _get_node_data_for_export
+    output:
+        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json"
+    shell:
+        """
+        augur export v1 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --auspice-config {input.auspice_config} \
+            --output-tree {output.auspice_main} \
+            --output-meta {output.auspice_meta} \
+            --minify-json
+        """
+
+
+rule exportv2:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json"
+        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
     shell:
         """
-        augur export \
+        augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
-            --output-tree {output.auspice_tree} \
-            --output-meta {output.auspice_meta} \
+            --output {output.auspice_main} \
             --minify-json
         """
+
+rule rename_output_v2:
+    input:
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json",
+        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
+        root_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree_root-sequence.json"
+    output:
+        tree = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}.json",
+        root_seq = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_root-sequence.json",
+        frequencies = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+    shell:
+        '''
+        mv {input.tree} {output.tree} &
+        mv {input.frequencies} {output.frequencies} &
+        mv {input.root_seq} {output.root_seq}
+        '''
+
+
+
+rule rename_output_v1:
+    input:
+        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
+        meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json",
+    output:
+        tree = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tree.json",
+        meta = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_meta.json",
+        frequencies = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+    shell:
+        '''
+        mv {input.tree} {output.tree} &
+        mv {input.frequencies} {output.frequencies} &
+        mv {input.meta} {output.meta}
+        '''
 
 
 rule select_strains_countries:
     input:
         sequences = expand("results/filtered_{{lineage}}_{segment}_{{passage}}.fasta", segment=segments),
         metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
-        titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
+        titers = "data/who_{lineage}_{passage}_{assay}_titers.tsv",
         include = files.references
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
-        viruses_per_month = 10,
-        extra_viruses_per_month=50,
+        viruses_per_month = other_vpm,
+        extra_viruses_per_month = focal_vpm,
         focus_countries = _get_focus_countries
     shell:
         """
