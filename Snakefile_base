@@ -241,7 +241,8 @@ rule files:
         references = "config/references_{lineage}.txt",
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
-        auspice_config = _get_auspice_config
+        auspice_config = _get_auspice_config,
+        vaccine_json = "config/vaccines_{lineage}.json"
 
 files = rules.files.params
 
@@ -251,7 +252,7 @@ rule download_sequences:
     output:
         sequences = "data/{lineage}_{segment}.fasta"
     params:
-        fasta_fields = "strain virus accession collection_date region country division location passage_category submitting_lab age gender"
+        fasta_fields = "strain virus accession collection_date region country division location passage_category originating_lab submitting_lab age gender"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -289,8 +290,8 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus accession date region country division location passage authors age gender",
-        prettify_fields = "region country division location authors"
+        fasta_fields =  "strain virus accession date region country division location passage originating_lab submitting_lab age gender",
+        prettify_fields = "region country division location originating_lab submitting_lab"
     shell:
         """
         augur parse \

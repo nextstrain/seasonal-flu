@@ -1,98 +1,100 @@
 {
   "title": "Real-time tracking of influenza A/H3N2 evolution",
-  "color_options": {
-    "gt": {
-      "menuItem": "genotype",
-      "legendTitle": "Genotype",
-      "type": "discrete",
-      "key": "genotype"
+  "colorings": [
+    {
+      "key": "gt",
+      "title": "Genotype",
+      "type": "categorical"
     },
-    "num_date": {
-      "menuItem": "date",
-      "legendTitle": "Sampling date",
-      "type": "continuous",
-      "key": "num_date"
+    {
+      "key": "num_date",
+      "title": "Date",
+      "type": "continuous"
     },
-    "region": {
-      "key":"region",
-      "legendTitle":"Region",
-      "menuItem":"region",
-      "type":"discrete"
-    },
-    "clade_membership": {
+    {
       "key": "clade_membership",
-      "legendTitle": "Clade",
-      "menuItem": "clade",
-      "type": "discrete"
+      "title": "Clade",
+      "type": "categorical"
     },
-    "cTiter": {
+    {
+      "key": "fitness",
+      "title": "Fitness",
+      "type": "continuous"
+    },
+    {
+      "key": "weighted_distance_to_future",
+      "title": "Distance to future population",
+      "type": "continuous"
+    },
+    {
       "key": "cTiter",
-      "legendTitle": "Antigenic advance (tree model)",
-      "menuItem": "antigenic advance (tree model)",
+      "title": "Antigenic advance (tree model)",
       "type": "continuous"
     },
-    "cTiterSub": {
+    {
       "key": "cTiterSub",
-      "legendTitle": "Antigenic advance (sub model)",
-      "menuItem": "antigenic advance (sub model)",
+      "title": "Antigenic advance (sub model)",
       "type": "continuous"
     },
-    "lbi": {
-      "vmin": 0,
-      "vmax": 0.7,
-      "legendTitle": "local branching index",
+    {
       "key": "lbi",
-      "menuItem": "local branching index",
+      "title": "Local branching index",
       "type": "continuous"
     },
-    "ep": {
-      "menuItem": "epitope mutations",
-      "legendTitle": "Epitope mutations",
-      "type": "continuous",
-      "key": "ep"
+    {
+      "key": "ep",
+      "title": "Epitope mutations",
+      "type": "ordinal"
     },
-    "ne": {
-      "menuItem": "non-epitope mutations",
-      "legendTitle": "Non-epitope mutations",
-      "type": "continuous",
-      "key": "ne"
+    {
+      "key": "ne",
+      "title": "Non-epitope mutations",
+      "type": "ordinal"
     },
-    "rb": {
-      "menuItem": "RBS adjacent mutations",
-      "legendTitle": "RBS adjacent mutations",
-      "type": "continuous",
-      "key": "rb"
+    {
+      "key": "rb",
+      "title": "RBS adjacent mutations",
+      "type": "ordinal"
     },
-    "fitness": {
-      "menuItem": "fitness",
-      "legendTitle": "Fitness",
-      "type": "continuous",
-      "key": "fitness"
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
     },
-    "weighted_distance_to_future": {
-      "menuItem": "distance to future population",
-      "legendTitle": "Distance to future population",
-      "type": "continuous",
-      "key": "weighted_distance_to_future"
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "submitting_lab",
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    {
+      "key": "originating_lab",
+      "title": "Originating lab",
+      "type": "categorical"
     }
-  },
-  "geo": [
+  ],
+  "geo_resolutions": [
     "country",
     "region"
   ],
-  "defaults": {
-    "mapTriplicate": true,
-    "colorBy": "clade_membership"
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
   },
-  "maintainer": [
-    "Trevor Bedford and Barney Potter",
-    "http://bedford.io/"
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
   ],
   "filters": [
     "clade_membership",
     "region",
     "country",
-    "authors"
+    "submitting_lab"
   ],
   "panels": [
     "tree",
@@ -111,6 +113,6 @@
     "A/Singapore/Infimh-16-0019/2016": "2017-09-28",
     "A/Switzerland/8060/2017": "2018-09-27",
     "A/Kansas/14/2017": "2019-03-21",
-    "A/SouthAustralia/34/2019": "2019-09-27"    
+    "A/SouthAustralia/34/2019": "2019-09-27"
   }
 }

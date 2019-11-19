@@ -49,4 +49,4 @@ if __name__ == '__main__':
         for clade_name, clade_alleles in clade_designations.items():
             if is_node_in_clade(clade_alleles, seq_container, ref):
                 matches.append(clade_name)
-        print(f"{seq.id}\t{', '.join(matches)}", file=sys.stdout)
+        print(f"{seq.description}\t{', '.join(matches)}", file=sys.stdout)

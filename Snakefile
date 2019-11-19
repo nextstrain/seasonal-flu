@@ -8,6 +8,14 @@ passages = ['cell']
 centers = ['cdc']
 assays = ['hi']
 
+wildcard_constraints:
+    lineage = "[A-Za-z0-9]{3,7}",
+    segment = "[A-Za-z0-9]{2,3}",
+    resolution = "[A-Za-z0-9]{2,3}",
+    passage = "[a-z]{3,4}",
+    center = "[a-z]{3,5}",
+    assay = "[a-z]{2,3}"
+
 localrules: download_all, simplify_auspice_names, targets, clean, clobber
 include: "Snakefile_base"
 
@@ -38,7 +46,8 @@ def _get_node_data_for_export(wildcards):
         rules.titers_sub.output.titers_model,
         rules.clades.output.clades,
         rules.traits.output.node_data,
-        rules.lbi.output.lbi
+        rules.lbi.output.lbi,
+        files.vaccine_json
     ]
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
@@ -174,7 +183,8 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
+        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        auspice_root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
     shell:
         """
         augur export v2 \
@@ -182,7 +192,7 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
-            --output {output.auspice} \
+            --output {output.auspice_main} \
             --minify-json
         """
 
@@ -194,20 +204,24 @@ def get_tip_frequencies(wildcards):
 
 rule simplify_auspice_names:
     input:
-        tree = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
-        frequencies = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+        main = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
+        root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json",
+        frequencies = get_tip_frequencies
     output:
-        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
+        main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
-        mv {input.tree} {output.tree} &
+        mv {input.main} {output.main} &
+        mv {input.root_sequence} {output.root_sequence} &
         mv {input.frequencies} {output.frequencies} &
         '''
 
 rule targets:
     input:
-        tree = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tree.json",
+        main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     output:
         target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
