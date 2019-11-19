@@ -1,5 +1,8 @@
+configfile: "config/config.json"
+
 localrules: all_live, download_all, download_titers, download_sequences
 ruleorder: select_strains_countries > select_strains
+ruleorder: titers_rename>download_titers
 ruleorder: exportv1 > exportv2
 ruleorder: rename_output_v1 > rename_output_v2
 
@@ -13,7 +16,7 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":["netherlands"]} #, "france":["france"], "UK":["united_kingdom"], "scandinavia":["norway", "sweden", "denmark"]}
+countries = {"netherlands":["Netherlands"]} #, "france":["France"], "UK":["United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
 
 def focal_vpm(v):
     focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
@@ -28,6 +31,17 @@ rule all_country:
                               center=countries, lineage=lineages, segment=segments, resolution=resolutions),
         auspice_tip_frequencies = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
                               center=countries, lineage=lineages, segment=segments, resolution=resolutions)
+
+rule titers_rename:
+     input:
+         titer_file = "data/who_{lineage}_{passage}_{assay}_titers.tsv"
+     output:
+         titer_file = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
+     shell:
+         '''
+	 cp {input.titer_file} {output.titer_file}
+	 '''
+
 
 # separate rule for interaction with fauna
 rule download_all:
@@ -68,7 +82,7 @@ rule exportv1:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        auspice_config = "config/auspice_config_v1_{lineage}.json",
+        auspice_config = "config/auspice_config_v1_{center}_{lineage}.json",
         node_data = _get_node_data_for_export
     output:
         auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
