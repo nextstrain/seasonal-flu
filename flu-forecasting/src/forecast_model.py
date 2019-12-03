@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # load historic frequencies
     with open(args.frequencies, "r") as fh:
         frequencies = json.load(fh)
-    frequencies.pop("generated_by")
+    frequencies.pop("generated_by", None)
 
     pivots = frequencies.pop("pivots")
     projection_pivot = pivots[-1]
