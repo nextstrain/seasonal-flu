@@ -183,8 +183,7 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
-        auspice_root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
+        auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
         augur export v2 \
@@ -192,7 +191,7 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
-            --output {output.auspice_main} \
+            --output {output.auspice_json} \
             --minify-json
         """
 
@@ -205,23 +204,19 @@ def get_tip_frequencies(wildcards):
 rule simplify_auspice_names:
     input:
         main = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
-        root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json",
         frequencies = get_tip_frequencies
     output:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
-        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
         mv {input.main} {output.main} &
-        mv {input.root_sequence} {output.root_sequence} &
         mv {input.frequencies} {output.frequencies} &
         '''
 
 rule targets:
     input:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
-        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     output:
         target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
