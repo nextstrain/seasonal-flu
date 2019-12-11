@@ -180,12 +180,12 @@ def float_to_datestring(time):
 def _get_start_timepoint(wildcards):
     return float_to_datestring(min_date(wildcards))
 
-def _get_timepoint(wildcards):
+def _get_end_timepoint(wildcards):
     return float_to_datestring(max_date(wildcards))
 
 def _get_annotations_for_node_data(wildcards):
     annotations = ["%s=%s" % (key, value) for key, value in wildcards.items()]
-    annotations.append("timepoint=%s" % _get_timepoint(wildcards))
+    annotations.append("timepoint=%s" % _get_end_timepoint(wildcards))
     return " ".join(annotations)
 
 def _get_excluded_fields_arg(wildcards):
@@ -318,9 +318,7 @@ rule select_strains:
     output:
         strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     params:
-        viruses_per_month = vpm,
-        min_date = _get_start_timepoint,
-        max_date = _get_timepoint
+        viruses_per_month = vpm
     shell:
         """
         python3 scripts/select_strains.py \
@@ -332,7 +330,6 @@ rule select_strains:
             --resolution {wildcards.resolution} \
             --viruses-per-month {params.viruses_per_month} \
             --titers {input.titers} \
-            --time-interval {params.min_date} {params.max_date} \
             --output {output.strains}
         """
 
