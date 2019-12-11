@@ -61,17 +61,12 @@ if __name__ == "__main__":
     # collect fitness and projection
     forecasts_df = model.predict(tips)
     forecasts_df["weighted_distance_to_future_by_%s" % "-".join(predictors)] = forecasts_df["y"]
-    forecasts_df["future_timepoint"] = forecasts_df["timepoint"] + delta_offset
 
     # collect dicts from dataframe
     strain_to_fitness = {}
-    strain_to_future_timepoint = {}
-    strain_to_projected_frequency = {}
     strain_to_weighted_distance_to_future = {}
     for index, row in forecasts_df.iterrows():
         strain_to_fitness[row['strain']] = row['fitness']
-        strain_to_future_timepoint[row['strain']] = row["future_timepoint"].strftime("%Y-%m-%d")
-        strain_to_projected_frequency[row['strain']] = row['projected_frequency']
         strain_to_weighted_distance_to_future[row['strain']] = row['y']
 
     # populate node data
@@ -80,8 +75,6 @@ if __name__ == "__main__":
     for strain in strains:
         node_data[strain] = {
             "fitness": strain_to_fitness[strain],
-            "future_timepoint": strain_to_future_timepoint[strain],
-            "projected_frequency": strain_to_projected_frequency[strain],
             "weighted_distance_to_future": strain_to_weighted_distance_to_future[strain]
         }
 

@@ -1,0 +1,19 @@
+{
+    "nodes": {
+        "A/California/7/2009": {
+            "vaccine": {
+                "selection_date": "2009-09-25"
+            }
+        },
+        "A/Michigan/45/2015": {
+            "vaccine": {
+                "selection_date": "2016-09-29"
+            }
+        },
+        "A/Brisbane/2/2018": {
+            "vaccine": {
+                "selection_date": "2019-02-20"
+            }
+        }
+    }
+}
