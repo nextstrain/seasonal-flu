@@ -2,40 +2,47 @@
   "title": "Real-time tracking of influenza B/Yam evolution",
   "color_options": {
     "gt": {
-      "title": "genotype",
-      "type": "categorical",
+      "menuItem": "genotype",
+      "legendTitle": "Genotype",
+      "type": "discrete",
       "key": "genotype"
     },
     "num_date": {
-      "title": "Sampling date",
+      "menuItem": "date",
+      "legendTitle": "Sampling date",
       "type": "continuous",
       "key": "num_date"
     },
     "region": {
       "key":"region",
-      "title":"Region",
-      "type":"categorical"
+      "legendTitle":"Region",
+      "menuItem":"region",
+      "type":"discrete"
     },
     "clade_membership": {
       "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical"
+      "legendTitle": "Clade",
+      "menuItem": "clade",
+      "type": "discrete"
     },
     "cTiter": {
       "key": "cTiter",
-      "title": "Antigenic advance (tree model)",
+      "legendTitle": "Antigenic advance (tree model)",
+      "menuItem": "antigenic advance (tree model)",
       "type": "continuous"
     },
     "cTiterSub": {
       "key": "cTiterSub",
-      "title": "Antigenic advance (sub model)",
+      "legendTitle": "Antigenic advance (sub model)",
+      "menuItem": "antigenic advance (sub model)",
       "type": "continuous"
     },
     "lbi": {
       "vmin": 0,
       "vmax": 0.7,
+      "legendTitle": "local branching index",
       "key": "lbi",
-      "title": "local branching index",
+      "menuItem": "local branching index",
       "type": "continuous"
     }
   },
@@ -59,6 +66,7 @@
   ],
   "panels": [
     "tree",
+    "map",
     "entropy",
     "frequencies"
   ],

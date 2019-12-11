@@ -2,7 +2,7 @@ configfile: "config/config.json"
 
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
-resolutions = ['6m', '2y', '3y', '6y', '12y']
+resolutions = ['6m', '2y','3y', '6y', '12y']
 
 passages = ['cell']
 centers = ['cdc']

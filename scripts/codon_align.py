@@ -1,28 +1,32 @@
 """Extract sequences from a given FASTA file that match the given list of sample names.
 """
 import numpy as np
-import argparse
+import argparse, sys
 from Bio import AlignIO, SeqIO, Seq, SeqRecord
 from Bio.AlignIO import MultipleSeqAlignment
 from augur.translate import safe_translate
-import os
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Extract sample sequences by name",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument("--alignment", required=True, help="FASTA file of aligned sequences")
-    parser.add_argument("--reference", required=True, help="annotated genbank file")
-    parser.add_argument("--output", required=True, help="FASTA file of extracted sample sequences")
-    args = parser.parse_args()
+scoring_params = {"score_match":3, "score_mismatch":-1, "score_gapext":-1, "score_gapopen":-10}
 
-    aln = AlignIO.read(args.alignment, 'fasta')
-    ref = SeqIO.read(args.reference, 'genbank')
+def align_pairwise(seq1, seq2):
+    try:
+        from seqanpy import align_overlap
+        return align_overlap(seq1, seq2, **scoring_params)
+    except ImportError:
+        from Bio import pairwise2
+        aln = pairwise2.align.globalms(seq1, seq2,
+            scoring_params['score_match'], scoring_params['score_mismatch'],
+            scoring_params['score_gapopen'], scoring_params['score_gapext'],
+            penalize_end_gaps=False, one_alignment_only=True)[0]
+        return aln[2], aln[0], aln[1]
 
-    # assuming there is one contiguous coding region which might be
-    # split into multiple sub-proteins like HA1 and HA2.
-    # loop over all features, pull out min and max of their union
+
+def get_cds(ref):
+    '''
+    assuming there is one contiguous coding region which might be
+    split into multiple sub-proteins like HA1 and HA2.
+    loop over all features, pull out min and max of their union
+    '''
     cds_start, cds_end = np.inf, 0
     for feature in ref.features:
         if feature.type=='CDS':
@@ -31,64 +35,79 @@ if __name__ == '__main__':
             if feature.location.end>cds_end:
                 cds_end=feature.location.end
 
-    # save the 5p and 3p ends of each sequence. this will be added to the aligned CDS later
-    UTR5p = {s.id:s for s in aln[:,:cds_start]} if cds_start else None
-    UTR3p = {s.id:s for s in aln[:,cds_end:]} if cds_end<aln.get_alignment_length() else None
+    refstr = str(ref.seq).upper()
+    refCDS = refstr[cds_start:cds_end]
+    refAA = safe_translate(refstr[cds_start:cds_end])
+    return refstr, refCDS, refAA, cds_start, cds_end
 
-    # pull out the cds of each sequence, strip internal gaps
-    cds = aln[:,cds_start:cds_end]
-    ungapped_aa = []
-    ungapped = {}
-    for seq in cds:
-        str_seq = str(seq.seq)
-        # it is critical to maintain gaps at the 5p end of the sequence to make
-        # sure sequences are in frame. some start past the ATG in the middle of a codon.
-        left_gaps = len(str_seq) - len(str_seq.lstrip('-'))
-        right_gaps = len(str_seq) - len(str_seq.rstrip('-'))
-        ungapped[seq.id] = '-'*left_gaps + str(seq.seq.ungap('-')) + '-'*right_gaps
-        aa = safe_translate(ungapped[seq.id])
-        # throw out sequences that have many stops or non-translatable codons
-        if aa.count('X') + aa.count('*')<5:
-            ungapped_aa.append(SeqRecord.SeqRecord(seq=Seq.Seq(aa), id=seq.id, name=seq.id, description=''))
+def codon_align(seq, refstr, refAA, cds_start, cds_end):
+    seqstr = str(seq.seq).upper()
+    score, refaln, seqaln = align_pairwise(refstr, seqstr)
+    if score<0: # did not align
+        return None
+    ref_aln_array = np.array(list(refaln))
+    seq_aln_array = np.array(list(seqaln))
+
+    # stip gaps
+    ungapped = ref_aln_array!='-'
+    ref_aln_array_ungapped = ref_aln_array[ungapped]
+    seq_aln_array_ungapped = seq_aln_array[ungapped]
+
+    seq5pUTR = "".join(seq_aln_array_ungapped[:cds_start])
+    seq3pUTR = "".join(seq_aln_array_ungapped[cds_end:])
+    seqCDS = "".join(seq_aln_array_ungapped[cds_start:cds_end])
+    seqCDS_ungapped = seqCDS.replace('-', '')
+    seqAA = safe_translate(seqCDS_ungapped)
+
+    scoreAA, refalnAA, seqalnAA = align_pairwise(refAA, seqAA)
+    if scoreAA<0 or sum(seqAA.count(x) for x in ['*', 'X'])>5 or refalnAA.count('-')>5:
+        print(seq.id, "didn't translate properly", file=sys.stderr)
+        return None
+
+    seqCDS_aln = seq5pUTR
+    pos = 0
+    for aa_ref, aa_seq in zip(refalnAA, seqalnAA):
+        if aa_seq=='-':
+            seqCDS_aln += '---'
+            # if the nucleotide sequence is gapped
+            # (i.e. because of missing data at the 5p and 3p end, advance pos)
+            if seqCDS_ungapped[pos:pos+3]=='---':
+                pos += 3
         else:
-            print(seq.id, "didn't translate properly")
+            if len(seqCDS_ungapped)>=pos+3:
+                seqCDS_aln += seqCDS_ungapped[pos:pos+3]
+            else:
+                seqCDS_aln += '---'
+            pos += 3
 
-    # write out aa-sequence, align, and read back in
-    tmp_outfile = args.output+'.tmp.fasta'
-    tmp_aln_file = args.output+'.tmp_aln.fasta'
-    SeqIO.write(ungapped_aa, tmp_outfile, 'fasta')
-    os.system("mafft --auto %s > %s"%(tmp_outfile, tmp_aln_file))
-    aa_aln = {seq.id: seq for seq in AlignIO.read(tmp_aln_file, 'fasta')}
+    return ''.join(seqCDS_aln)+seq3pUTR
 
-    # reassemble the sequences. For each aligned aa-sequence, use the codon in the
-    # nucleotide sequence if the aa sequence isn't gapped, insert '---' if the aa-sequence
-    # is gapped, and attach the 5p and 3p sequences saved above.
-    new_cds_aln = []
-    for seq in cds:
-        pos=0
-        nuc_seq_aln = [str(UTR5p[seq.id].seq) if UTR5p else '']
-        nuc_seq = ungapped[seq.id]
-        if seq.id in aa_aln:
-            for aa in aa_aln[seq.id].seq:
-                if aa=='-':
-                    nuc_seq_aln.append('---')
-                    # if the nucleotide sequence is gapped
-                    # (i.e. because of missing data at the 5p and 3p end, advance pos)
-                    if nuc_seq[pos:pos+3]=='---':
-                        pos+=3
-                else:
-                    if len(nuc_seq)>=pos+3:
-                        nuc_seq_aln.append(nuc_seq[pos:pos+3])
-                    else:
-                        nuc_seq_aln.append('---')
-                    pos+=3
 
-            seq.seq=Seq.Seq(''.join(nuc_seq_aln)+(str(UTR3p[seq.id].seq) if UTR3p else ''))
-            new_cds_aln.append(seq)
-        else:
-            print(seq.id, "didn't translate properly")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description="Extract sample sequences by name",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument("--sequences", required=True, help="FASTA file of aligned sequences")
+    parser.add_argument("--reference", required=True, help="annotated genbank file")
+    parser.add_argument("--output", required=True, help="FASTA file of extracted sample sequences")
+    args = parser.parse_args()
 
-    # output and remove temporary files
-    AlignIO.write(MultipleSeqAlignment(new_cds_aln), args.output, 'fasta')
-    os.remove(tmp_outfile)
-    os.remove(tmp_aln_file)
+    aln = SeqIO.parse(args.sequences, 'fasta')
+    ref = SeqIO.read(args.reference, 'genbank')
+
+    # get sequence as string, CDS seq, amino acid sequence, and start/end pos
+    refstr, refCDS, refAA, cds_start, cds_end = get_cds(ref)
+
+    alignment = []
+    for seq in aln:
+        seq_aln = codon_align(seq,  refstr, refAA, cds_start, cds_end)
+        if seq_aln:
+            if len(seq_aln)!=len(refstr):
+                print(seq.name, seq_aln, refstr)
+            else:
+                seq.seq=Seq.Seq(seq_aln)
+                alignment.append(seq)
+
+    # output
+    AlignIO.write(MultipleSeqAlignment(alignment), args.output, 'fasta')
