@@ -239,7 +239,8 @@ rule files:
         reference = "config/reference_{lineage}_{segment}.gb",
         colors = "config/colors.tsv",
         auspice_config = _get_auspice_config,
-        vaccine_json = "config/vaccines_{lineage}.json"
+        vaccine_json = "config/vaccines_{lineage}.json",
+        footer_description = "config/description.md"
 
 files = rules.files.params
 
