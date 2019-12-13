@@ -14,7 +14,7 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":["Netherlands"]} #, "france":["France"], "UK":["United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
+countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"]} #, "france":["France"], "UK":["United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
 
 def focal_vpm(v):
     focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
@@ -26,18 +26,25 @@ def other_vpm(v):
 
 lineage_label = {"h3n2":"A/H3N2", "h1n1pdm":"A/H1N1pdm", "vic":"B/Vic", "yam":"B/Yam"}
 def get_title(w):
-    if w.center=='Netherlands':
+    if w.center=='netherlands':
         return f"Influenza {lineage_label[w.lineage]} in the Netherlands -- using data from EMC & RIVM & GISAID"
+    elif w.center=='NorthAmerica':
+        return f"Influenza {lineage_label[w.lineage]} in NorthAmerica -- using data from US CDC & GISAID"
     else:
         return f"Real-time tracking of influenza {lineage_label[w.lineage]} evolution"
 
 
 def get_maintainers(w):
-    if w.center=='Netherlands':
+    if w.center=='netherlands':
         return "Adam Meijer and Richard Neher <http://rivm.nl/>"
     else:
         return "not specified"
 
+def get_geo_resolution(w):
+    if w.center=="NorthAmerica":
+        return "region country division"
+    else:
+        return "region country"
 
 rule all_country:
     input:
@@ -103,7 +110,8 @@ rule export:
         #auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
     params:
         title = get_title,
-        maintainers = get_maintainers
+        maintainers = get_maintainers,
+        geo = get_geo_resolution
     shell:
         """
         augur export v2 \
@@ -111,6 +119,7 @@ rule export:
             --metadata {input.metadata} \
             --title {params.title:q} \
             --maintainers {params.maintainers:q} \
+            --geo-resolutions {params.geo} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_main} \
@@ -129,8 +138,7 @@ rule rename_output:
     shell:
         '''
         mv {input.tree} {output.tree} &
-        mv {input.frequencies} {output.frequencies} &
-        mv {input.root_seq} {output.root_seq}
+        mv {input.frequencies} {output.frequencies}
         '''
 
 
