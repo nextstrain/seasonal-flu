@@ -2,14 +2,11 @@ We thank the [GISAID Initiative](https://gisaid.org) and the [GISRS Network](htt
 
 Special thanks to Jackie Katz, Dave Wentworth, Becky Garten, Vivien Dugan, Xiyan Xu, Elizabeth Neuhaus, Sujatha Seenu, John McCauley, Rod Daniels, Vicki Gregory, Kanta Subbarao, Ian Barr, Aeron Hurt, Takato Odagiri, Shinji Watanabe, Tomoko Kuwahara, Michael Lässig, Marta Łuksza, Richard Reeve, Colin Russell, Sebastian Maurer-Stroh and Peter Bogner for feedback and advice. This analysis represents an updated frontend to the Nextflu informatic pipeline, originally available at nextflu.org.
 
-<div style="display: flex; justify-content: space-between;">
-    <div style="flex: 5;"></div>
-    <a key={5} href="https://gisaid.org" target="_blank" rel="noreferrer noopener" style="display: flex; flex-direction: column; justify-content: center;">
+<div>
+    <a href="https://gisaid.org">
         <img alt="gisaid-logo" width="120" src="https://www.gisaid.org/fileadmin/gisaid/img/schild.png"/>
     </a>
-    <div style="flex: 1;"></div>
-    <a key={6} href="http://www.who.int/influenza/gisrs_laboratory/en/" target="_blank" rel="noreferrer noopener">
+    <a href="http://www.who.int/influenza/gisrs_laboratory/en/">
         <img alt="gisrs-logo" width="120" src="https://www.who.int/influenza/gip-anniversary/GISRS_insignia_web_resize_.jpg"/>
     </a>
-    <div style="flex: 5;"></div>
 </div>
