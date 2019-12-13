@@ -99,8 +99,8 @@ rule export:
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export
     output:
-        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
+        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json"
+        #auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
     params:
         title = get_title,
         maintainers = get_maintainers
@@ -109,8 +109,8 @@ rule export:
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --title {params.title} \
-            --maintainers {params.maintainers} \
+            --title {params.title:q} \
+            --maintainers {params.maintainers:q} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_main} \
@@ -120,11 +120,11 @@ rule export:
 rule rename_output:
     input:
         frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json",
-        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
-        root_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree_root-sequence.json"
+        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json"
+        #root_seq = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree_root-sequence.json"
     output:
         tree = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}.json",
-        root_seq = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_root-sequence.json",
+        #root_seq = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_root-sequence.json",
         frequencies = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json"
     shell:
         '''
