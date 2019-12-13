@@ -3,8 +3,6 @@ configfile: "config/config.json"
 localrules: all_live, download_all, download_titers, download_sequences
 ruleorder: select_strains_countries > select_strains
 ruleorder: titers_rename>download_titers
-ruleorder: exportv1 > exportv2
-ruleorder: rename_output_v1 > rename_output_v2
 
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
@@ -25,9 +23,25 @@ def focal_vpm(v):
 def other_vpm(v):
     return vpm(v) - focal_vpm(v)
 
+
+lineage_label = {"h3n2":"A/H3N2", "h1n1pdm":"A/H1N1pdm", "vic":"B/Vic", "yam":"B/Yam"}
+def get_title(w):
+    if w.center=='Netherlands':
+        return f"Influenza {lineage_label[w.lineage]} in the Netherlands -- using data from EMC & RIVM & GISAID"
+    else:
+        return f"Real-time tracking of influenza {lineage_label[w.lineage]} evolution"
+
+
+def get_maintainers(w):
+    if w.center=='Netherlands':
+        return "Adam Meijer and Richard Neher <http://rivm.nl/>"
+    else:
+        return "not specified"
+
+
 rule all_country:
     input:
-        auspice_tree = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tree.json",
+        auspice_tree = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}.json",
                               center=countries, lineage=lineages, segment=segments, resolution=resolutions),
         auspice_tip_frequencies = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
                               center=countries, lineage=lineages, segment=segments, resolution=resolutions)
@@ -78,29 +92,7 @@ def _get_node_data_for_export(wildcards):
     inputs = [input_file.format(**wildcards) for input_file in inputs]
     return inputs
 
-rule exportv1:
-    input:
-        tree = rules.refine.output.tree,
-        metadata = rules.parse.output.metadata,
-        auspice_config = "config/auspice_config_v1_{center}_{lineage}.json",
-        node_data = _get_node_data_for_export
-    output:
-        auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
-        auspice_meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json"
-    shell:
-        """
-        augur export v1 \
-            --tree {input.tree} \
-            --metadata {input.metadata} \
-            --node-data {input.node_data} \
-            --auspice-config {input.auspice_config} \
-            --output-tree {output.auspice_main} \
-            --output-meta {output.auspice_meta} \
-            --minify-json
-        """
-
-
-rule exportv2:
+rule export:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
@@ -109,18 +101,23 @@ rule exportv2:
     output:
         auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
+    params:
+        title = get_title,
+        maintainers = get_maintainers
     shell:
         """
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --title {params.title} \
+            --maintainers {params.maintainers} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_main} \
             --minify-json
         """
 
-rule rename_output_v2:
+rule rename_output:
     input:
         frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json",
         tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
@@ -134,24 +131,6 @@ rule rename_output_v2:
         mv {input.tree} {output.tree} &
         mv {input.frequencies} {output.frequencies} &
         mv {input.root_seq} {output.root_seq}
-        '''
-
-
-
-rule rename_output_v1:
-    input:
-        tree = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tree.json",
-        meta = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_meta.json",
-        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json",
-    output:
-        tree = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tree.json",
-        meta = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_meta.json",
-        frequencies = "auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json"
-    shell:
-        '''
-        mv {input.tree} {output.tree} &
-        mv {input.frequencies} {output.frequencies} &
-        mv {input.meta} {output.meta}
         '''
 
 
