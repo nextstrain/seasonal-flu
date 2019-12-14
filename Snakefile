@@ -182,7 +182,7 @@ rule export:
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export,
-        footer_description = files.footer_description
+        description = files.description
     output:
         auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
@@ -193,7 +193,7 @@ rule export:
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_json} \
-            --description {input.footer_description} \
+            --description {input.description} \
             --minify-json
         """
 
