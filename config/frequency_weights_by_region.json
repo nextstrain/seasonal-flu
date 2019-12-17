@@ -1,12 +1,12 @@
 {
-    "africa": 1.02,
-    "europe": 0.74,
-    "north america": 0.54,
-    "china": 1.36,
-    "south asia": 1.45,
-    "japan korea": 0.20,
-    "oceania": 0.04,
-    "south america": 0.41,
-    "southeast asia": 0.62,
-    "west asia": 0.75
+    "Africa": 1.02,
+    "Europe": 0.74,
+    "North America": 0.54,
+    "China": 1.36,
+    "South Asia": 1.45,
+    "Japan Korea": 0.20,
+    "Oceania": 0.04,
+    "South America": 0.41,
+    "Southeast Asia": 0.62,
+    "West Asia": 0.75
 }
