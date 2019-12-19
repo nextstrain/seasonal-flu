@@ -49,7 +49,7 @@ if __name__ == '__main__':
         with open(freq_file) as fh:
             frequencies[region] = json.load(fh)
 
-    all_mutations = sorted(filter(lambda x:('counts' not in x) and ('pivots' not in x),
+    all_mutations = sorted(filter(lambda x:('counts' not in x) and ('pivots' not in x) and (x != 'generated_by'),
                            set.union(*[set(frequencies[region].keys()) for region in frequencies])))
     pivots = frequencies[args.regions[0]]['pivots']
     frequencies['global']['pivots'] = format_frequencies(pivots)

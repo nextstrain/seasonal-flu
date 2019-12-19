@@ -57,7 +57,7 @@ def read_all_vaccination_data():
 	vaccov = defaultdict(list)
 	for d in [vaccov_SA, vaccov_europe, vaccov_OECD]:
 		for c,v in d.items():
-			vaccov[c.lower().replace(' ', '_')].append(v)
+			vaccov[c].append(v)
 	for c,v in vaccov.items():
 		vaccov[c] = np.median(v)
 
