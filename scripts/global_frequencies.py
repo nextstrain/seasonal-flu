@@ -1,31 +1,6 @@
 import argparse, json
 import numpy as np
-
-population_sizes = {
-    'africa':1.02,
-    'europe': 0.74,
-    'north_america': 0.54,
-    'china': 1.36,
-    'south_asia': 1.45,
-    'japan_korea': 0.20,
-    'oceania': 0.04,
-    'south_america': 0.41,
-    'southeast_asia': 0.62,
-    'west_asia': 0.75
-}
-
-region_abbreviations = {
-    'africa':'AF',
-    'europe': 'EU',
-    'north_america': 'NA',
-    'china': 'CN',
-    'south_asia': 'SAS',
-    'japan_korea': 'JK',
-    'oceania': 'OC',
-    'south_america': 'SA',
-    'southeast_asia': 'SEA',
-    'west_asia': "WAS"
-}
+from flu_regions import *
 
 def format_frequencies(x):
     return [round(y,4) for y in x]
@@ -54,6 +29,7 @@ if __name__ == '__main__':
     pivots = frequencies[args.regions[0]]['pivots']
     frequencies['global']['pivots'] = format_frequencies(pivots)
 
+    # TODO: THIS NEEDS TO USE POPULATION SIZES!!
     seasonal_profile = {}
     total_weights = {}
     for region in frequencies:

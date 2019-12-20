@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 import numpy as np
 import matplotlib
+from flu_regions import *
 # important to use a non-interactive backend, otherwise will crash on cluster
 # this needs to be right after the matplotlib import!
 matplotlib.use('agg')
@@ -15,35 +16,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 import seaborn as sns
 
-default_regions = ['north_america', 'china', 'japan_korea', 'oceania', 'europe', 'southeast_asia']
-
-region_label = {
-    'global': 'Global',
-    'africa': 'Africa',
-    'china': 'China',
-    'europe': 'Europe',
-    'japan_korea': 'Japan/Korea',
-    'north_america': 'N America',
-    'oceania': 'Oceania',
-    'south_america': 'S America',
-    'south_asia': 'S Asia',
-    'southeast_asia': 'SE Asia',
-    'west_asia': 'W Asia'
-}
-
-region_colors = {
-    'global': '#111111',
-    'africa': '#A0CCA5',
-    'china': '#A76BB1',
-    'europe': '#658447',
-    'japan_korea': '#2A4786',
-    'north_america': '#D6C568',
-    'oceania': '#8E1616',
-    'south_america': '#926224',
-    'south_asia': '#EBA85F',
-    'southeast_asia': '#8FBDD0',
-    'west_asia': '#76104B'
-}
+default_regions = ['North America', 'China', 'Japan Korea', 'Oceania', 'Europe', 'Southeast Asia']
 
 fs = 12
 ymax = 800
@@ -88,6 +61,7 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
     for mi,(mut, ax) in enumerate(zip(mutations, axs)):
         gene = mut.split(':')[0]
         for region in regions:
+            props = region_properties[region]
             pivots = frequencies[region]["pivots"]
             offset = datetime(2000,1,1).toordinal()
             pivots = [offset+(x-2000)*365.25 for x in pivots]
@@ -95,14 +69,14 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                 tmp_freq = np.array(frequencies[region][mut])
                 ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
                         ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
-                        label=region_label.get(region, region) if region not in region_labeled else '',
-                        c=region_colors[region])
+                        label=props.get('label', region) if region not in region_labeled else '',
+                        c=prop['colors'])
                 region_labeled.add(region)
                 if show_errorbars and region!="global":
                     std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
                                     (tmp_freq+n_std_dev*std_dev)[:-drop],
-                                    facecolor=region_colors[region], linewidth=0, alpha=0.1)
+                                    facecolor=props['color'], linewidth=0, alpha=0.1)
             else:
                 print("Mutation %s not calculated in region %s"%(mut, region))
             # if mi==0:
@@ -154,6 +128,7 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname, show_errorb
 
         node = clade_to_node[clade]
         for region in regions:
+            props = region_properties[region]
             pivots = frequencies["pivots"]
             offset = datetime(2000,1,1).toordinal()
             pivots = [offset+(x-2000)*365.25 for x in pivots]
@@ -161,12 +136,12 @@ def plot_clades_by_region(frequencies, clades, clade_to_node, fname, show_errorb
                 tmp_freq = np.array(frequencies[node][region])
                 ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
                         ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
-                        label=region_label.get(region, region), c=region_colors[region])
+                        label=props.get('label', region), c=props['color'])
                 std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[region]+1))
                 if show_errorbars:
                     ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
                                     (tmp_freq+n_std_dev*std_dev)[:-drop],
-                                    facecolor=region_colors[region], linewidth=0, alpha=0.1)
+                                    facecolor=props['color'], linewidth=0, alpha=0.1)
             else:
                 print("region %s not present in node %s"%(region, node))
             ax.set_ylabel(clade, fontsize=fs)
@@ -233,9 +208,10 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
             label="Other", color="#bbbbbb", clip_on=False)
 
     for region in regions:
+        props=region_properties[region]
         if region!='global':
             plt.bar(date_bins, counts[region], bottom=tmpcounts, width=width, linewidth=0,
-                    label=region_label.get(region, region), color=region_colors[region],
+                    label=props.get('label', region), color=props['colors'],
                     clip_on=False, alpha=0.8)
             tmpcounts += np.array(counts[region])
     ax.set_xlim([date_bins[0]-width*0.5, date_bins[-1]])

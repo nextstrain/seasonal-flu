@@ -33,7 +33,7 @@ def get_extra_muts(w):
     extra_muts = {'h1n1pdm':'156K 156D', 'h3n2':'', 'vic':'133R', 'yam':''}
     return extra_muts[w.lineage]
 
-regions_to_graph = ['china', 'europe', 'japan_korea', 'oceania', 'north_america', 'south_america', 'global']
+regions_to_graph = ['China', 'Europe', 'Japan Korea', 'Oceania', 'North America', 'South America', 'global']
 
 rule figures:
     input:

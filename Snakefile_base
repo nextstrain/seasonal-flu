@@ -2,11 +2,11 @@ import datetime
 from datetime import date
 import pandas as pd
 from treetime.utils import numeric_date
+from scripts.flu_regions import region_names
 
 path_to_fauna = '../fauna'
 min_length = 900
-frequency_regions = ['north_america', 'south_america', 'europe', 'china', 'oceania',
-                     'southeast_asia', 'japan_korea', 'south_asia', 'africa']
+frequency_regions = region_names
 
 
 localrules: download_titers, download_sequences

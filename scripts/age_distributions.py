@@ -7,6 +7,7 @@ from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
 from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
 from graph_frequencies import region_label, region_colors
+from flu_regions import *
 
 def age_distribution(metadata, fname, title=None):
     import matplotlib
@@ -19,8 +20,7 @@ def age_distribution(metadata, fname, title=None):
     bc = 0.5*(bins[1:]+bins[:-1])
     plt.figure()
 
-    for region in ['africa','china','europe','japan_korea','north_america','oceania',
-                   'south_america','south_asia','southeast_asia','west_asia','global']:
+    for region in region_names:
         y,x = np.histogram([m['age'] for m in metadata
                             if m['age']!='unknown' and (m['region']==region or region=='global')], bins=bins)
         total = np.sum(y)
