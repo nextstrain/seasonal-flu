@@ -643,7 +643,7 @@ rule tree_frequencies:
             --method diffusion \
             --include-internal-nodes \
             --tree {input.tree} \
-            --regions {params.regions} \
+            --regions {params.regions:q} \
             --metadata {input.metadata} \
             --pivot-interval {params.pivot_interval} \
             --minimal-clade-size {params.min_clade} \
@@ -669,7 +669,7 @@ rule diffusion_frequencies:
             --method diffusion \
             --include-internal-nodes \
             --tree {input.tree} \
-            --regions {params.regions} \
+            --regions {params.regions:q} \
             --metadata {input.metadata} \
             --pivot-interval {params.pivot_interval} \
             --min-date {params.min_date} \
