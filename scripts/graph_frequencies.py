@@ -70,7 +70,7 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                 ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
                         ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
                         label=props.get('label', region) if region not in region_labeled else '',
-                        c=prop['colors'])
+                        c=props['color'])
                 region_labeled.add(region)
                 if show_errorbars and region!="global":
                     std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
@@ -211,7 +211,7 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
         props=region_properties[region]
         if region!='global':
             plt.bar(date_bins, counts[region], bottom=tmpcounts, width=width, linewidth=0,
-                    label=props.get('label', region), color=props['colors'],
+                    label=props.get('label', region), color=props['color'],
                     clip_on=False, alpha=0.8)
             tmpcounts += np.array(counts[region])
     ax.set_xlim([date_bins[0]-width*0.5, date_bins[-1]])

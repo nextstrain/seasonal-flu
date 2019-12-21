@@ -1,6 +1,7 @@
 import json
+import os
 
-with open('../config/frequency_weights_by_region.json') as fh:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../config/frequency_weights_by_region.json')) as fh:
     population_sizes = json.load(fh)
 
 region_properties = {
@@ -19,8 +20,8 @@ region_properties = {
 
 for region in region_properties:
     if region in population_sizes:
-        region_properties['popsize'] = population_sizes[region]
+        region_properties[region]['popsize'] = population_sizes[region]
 
-region_names = [x for x in region_abbreviations.keys() if x!='global']
+region_names = [x for x in region_properties.keys() if x!='global']
 
 
