@@ -10,7 +10,7 @@ region_properties = {
     'Europe':       {'abbr':'EU', 'label':'Europe', 'color':'#658447'},
     'North America':{'abbr':'NA', 'label':'N America', 'color':'#D6C568'},
     'China':        {'abbr':'CN', 'label':'China', 'color':'#A76BB1'},
-    'South Asia':   {'abbr':'SAS', 'label':'South Asia', 'color':'#EBA85F'},
+    'South Asia':   {'abbr':'SAS', 'label':'South Asia', 'color':'#5199B7'},
     'Japan Korea':  {'abbr':'JK', 'label':'Japan/Korea', 'color':'#2A4786'},
     'Oceania':      {'abbr':'OC', 'label':'Oceania', 'color':'#8E1616'},
     'South America':{'abbr':'SA', 'label':'S America', 'color':'#EBA85F'},
