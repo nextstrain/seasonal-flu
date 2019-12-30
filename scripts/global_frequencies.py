@@ -1,6 +1,6 @@
 import argparse, json
 import numpy as np
-from flu_regions import *
+from flu_regions import region_properties
 
 def format_frequencies(x):
     return [round(y,4) for y in x]

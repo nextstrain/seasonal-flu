@@ -8,7 +8,7 @@ import Bio.SeqIO
 import numpy as np
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
-from flu_regions import *
+from flu_regions import region_names
 
 subcats = region_names
 

@@ -6,7 +6,7 @@ from Bio import SeqIO, AlignIO
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
 from select_strains import read_strain_list, determine_time_interval, parse_metadata
-from flu_regions import *
+from flu_regions import region_names, region_properties
 
 def age_distribution(metadata, fname, title=None):
     import matplotlib
