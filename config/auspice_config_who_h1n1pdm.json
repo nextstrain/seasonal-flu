@@ -1,5 +1,5 @@
 {
-  "title": "Real-time tracking of influenza A/H1N1pdm evolution",
+  "title": "Real-time tracking of influenza A/H1N1pdm evolution using data from GISAID",
   "color_options": {
     "gt": {
       "menuItem": "genotype",

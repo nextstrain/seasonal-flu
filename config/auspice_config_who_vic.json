@@ -1,5 +1,5 @@
 {
-  "title": "Real-time tracking of influenza B/Vic evolution",
+  "title": "Real-time tracking of influenza B/Vic evolution using data from GISAID",
   "color_options": {
     "gt": {
       "menuItem": "genotype",
