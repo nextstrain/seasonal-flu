@@ -1,31 +1,6 @@
 import argparse, json
 import numpy as np
-
-population_sizes = {
-    'africa':1.02,
-    'europe': 0.74,
-    'north_america': 0.54,
-    'china': 1.36,
-    'south_asia': 1.45,
-    'japan_korea': 0.20,
-    'oceania': 0.04,
-    'south_america': 0.41,
-    'southeast_asia': 0.62,
-    'west_asia': 0.75
-}
-
-region_abbreviations = {
-    'africa':'AF',
-    'europe': 'EU',
-    'north_america': 'NA',
-    'china': 'CN',
-    'south_asia': 'SAS',
-    'japan_korea': 'JK',
-    'oceania': 'OC',
-    'south_america': 'SA',
-    'southeast_asia': 'SEA',
-    'west_asia': "WAS"
-}
+from flu_regions import region_properties
 
 def format_frequencies(x):
     return [round(y,4) for y in x]
@@ -54,21 +29,27 @@ if __name__ == '__main__':
     pivots = frequencies[args.regions[0]]['pivots']
     frequencies['global']['pivots'] = format_frequencies(pivots)
 
+    # determine the seasonal profiles and weights of different regions for later equitable global frequency calculation below
     seasonal_profile = {}
     total_weights = {}
     for region in frequencies:
-        all_genes = sorted(filter(lambda x:'counts' in x, frequencies[region].keys()))
+        props = region_properties[region]
+        all_gene_counts = sorted(filter(lambda x:'counts' in x, frequencies[region].keys()))
         seasonal_profile[region] = {}
-        for x in all_genes:
+        for x in all_gene_counts:
             gene = x.split(':')[0]
+            # calculate a smoothed seasonal profile from the samples counts.
             tmp_counts = np.convolve(np.ones(6)/6.0, np.array(frequencies[region][x]), mode='same')
-            seasonal_profile[region][gene] = np.maximum(0.1, tmp_counts/tmp_counts.max())
+            # calculate temporal weight for each region as the product of region population size and seasonal pattern
+            seasonal_profile[region][gene] = props['popsize']*np.maximum(0.1, tmp_counts/tmp_counts.max())
             if gene not in total_weights: total_weights[gene]=[]
             total_weights[gene].append(seasonal_profile[region][gene])
 
+    # sum the weights for each gene to obtain the total weight (denominator)
     for gene in total_weights:
         total_weights[gene] = np.sum(total_weights[gene], axis=0)
 
+    # calculate the mutation frequencies by spatio-temporal weighing
     for mutation in all_mutations:
         gene = mutation.split(':')[0]
         freqs = []
@@ -87,8 +68,9 @@ if __name__ == '__main__':
 
     json_for_export = {'pivots':format_frequencies(pivots)}
     for region in frequencies:
+        props = region_properties[region]
         for mutation in frequencies[region]:
-            key = '%s_%s'%(region_abbreviations.get(region, region), mutation)
+            key = '%s_%s'%(props.get('abbr', region), mutation)
             json_for_export[key] = frequencies[region][mutation]
 
     if args.tree_frequencies:

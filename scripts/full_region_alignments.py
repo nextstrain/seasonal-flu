@@ -8,7 +8,7 @@ from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates, load_features
 from augur import align
 from augur.translate import safe_translate
-from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
+from select_strains import read_strain_list, determine_time_interval, parse_metadata
 from codon_align import codon_align, get_cds
 
 class pseudo_args(object):
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         if seq.name in metadata:
             if metadata[seq.name]["num_date"]>=time_interval[0] and \
                metadata[seq.name]["num_date"]<time_interval[1] and \
-               metadata[seq.name]["region"].lower().replace(' ', '_')==region:
+               metadata[seq.name]["region"]==region:
                 sequences.append(seq)
 
     tmp_str = "".join(sample('ABCDEFGHILKLMOPQRSTUVWXYZ', 20))

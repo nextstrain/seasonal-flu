@@ -33,7 +33,7 @@ def get_extra_muts(w):
     extra_muts = {'h1n1pdm':'156K 156D', 'h3n2':'', 'vic':'133R', 'yam':''}
     return extra_muts[w.lineage]
 
-regions_to_graph = ['china', 'europe', 'japan_korea', 'oceania', 'north_america', 'south_america', 'global']
+regions_to_graph = ['China', 'Europe', 'Japan Korea', 'Oceania', 'North America', 'South America', 'South Asia', 'global']
 
 rule figures:
     input:
@@ -57,7 +57,7 @@ rule mutation_frequency_graphs:
         """
         python3 scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
                                             --mutations {params.mutations} \
-                                            --regions {params.regions} \
+                                            --regions {params.regions:q} \
                                             --output-mutations {output.mutations} \
                                             --output-total-counts {output.total_counts} \
         """
@@ -77,7 +77,7 @@ rule clade_frequency_graphs:
         python3 scripts/graph_frequencies.py --tree-frequencies {input.tree} \
                                             --clade-annotation {input.clades} \
                                             --clades {params.clades} \
-                                            --regions {params.regions} \
+                                            --regions {params.regions:q} \
                                             --output-clades {output.clades} \
                                             --output-tree-counts {output.tree_counts}
         """

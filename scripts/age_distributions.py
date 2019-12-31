@@ -5,8 +5,8 @@ from collections import defaultdict
 from Bio import SeqIO, AlignIO
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
-from select_strains import read_strain_list, regions, determine_time_interval, parse_metadata
-from graph_frequencies import region_label, region_colors
+from select_strains import read_strain_list, determine_time_interval, parse_metadata
+from flu_regions import region_names, region_properties
 
 def age_distribution(metadata, fname, title=None):
     import matplotlib
@@ -19,14 +19,14 @@ def age_distribution(metadata, fname, title=None):
     bc = 0.5*(bins[1:]+bins[:-1])
     plt.figure()
 
-    for region in ['africa','china','europe','japan_korea','north_america','oceania',
-                   'south_america','south_asia','southeast_asia','west_asia','global']:
+    for region in region_names:
+        props = region_properties[region]
         y,x = np.histogram([m['age'] for m in metadata
                             if m['age']!='unknown' and (m['region']==region or region=='global')], bins=bins)
         total = np.sum(y)
         y = np.array(y, dtype=float)/total
-        plt.plot(bc, y, label=region_label.get(region, region),
-                 lw=4 if region=='global' else 2, c=region_colors[region])
+        plt.plot(bc, y, label=props.get('label', region),
+                 lw=4 if region=='global' else 2, c=props['color'])
 
     plt.legend(fontsize=fs*0.8, ncol=2)
     if title:

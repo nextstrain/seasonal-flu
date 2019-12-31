@@ -8,10 +8,9 @@ import Bio.SeqIO
 import numpy as np
 from treetime.utils import numeric_date
 from augur.utils import read_metadata, get_numerical_dates
+from flu_regions import region_names
 
-regions = ['africa', 'europe', 'north_america', 'china', 'south_asia',
-           'japan_korea', 'oceania', 'south_america', 'southeast_asia', 'west_asia']
-subcats = regions
+subcats = region_names
 
 def read_strain_list(fname):
     """

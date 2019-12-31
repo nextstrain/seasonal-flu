@@ -59,9 +59,10 @@ for seg, genes in genes_to_translate.items():
                                                  --metadata {input.metadata} \
                                                  --exclude {input.exclude} \
                                                  --genes {params.genes} \
-                                                 --region {params.region} \
+                                                 --region {params.region:q} \
+                                                 --resolution {wildcards.resolution} \
                                                  --reference {input.reference} \
-                                                 --output {output.alignments}
+                                                 --output {output.alignments:q}
             """
 
 
@@ -82,7 +83,7 @@ rule complete_mutation_frequencies_by_region:
     shell:
         """
         augur frequencies --method diffusion \
-                          --alignments {input.alignment} \
+                          --alignments {input.alignment:q} \
                           --metadata {input.metadata} \
                           --gene-names {params.genes} \
                           --pivot-interval {params.pivot_interval} \
@@ -92,7 +93,7 @@ rule complete_mutation_frequencies_by_region:
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
                           --minimal-frequency {params.min_freq} \
-                          --output {output.mut_freq}
+                          --output {output.mut_freq:q}
         """
 
 rule global_mutation_frequencies:
@@ -107,9 +108,9 @@ rule global_mutation_frequencies:
         augur="results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
     shell:
         '''
-        python3 scripts/global_frequencies.py --region-frequencies {input.frequencies} \
+        python3 scripts/global_frequencies.py --region-frequencies {input.frequencies:q} \
                                               --tree-frequencies {input.tree_freq} \
-                                              --regions {params.regions} \
+                                              --regions {params.regions:q} \
                                               --output-auspice {output.auspice} \
                                               --output-augur {output.augur}
         '''
