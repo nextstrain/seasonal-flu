@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 import numpy as np
 import matplotlib
-from flu_regions import *
+from flu_regions import region_properties, region_names
 # important to use a non-interactive backend, otherwise will crash on cluster
 # this needs to be right after the matplotlib import!
 matplotlib.use('agg')
@@ -67,18 +67,20 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
             pivots = [offset+(x-2000)*365.25 for x in pivots]
             if mut in frequencies[region]:
                 tmp_freq = np.array(frequencies[region][mut])
-                ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
-                        ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
-                        label=props.get('label', region) if region not in region_labeled else '',
-                        c=props['color'])
-                region_labeled.add(region)
-                if show_errorbars and region!="global":
-                    std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
-                    ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
-                                    (tmp_freq+n_std_dev*std_dev)[:-drop],
-                                    facecolor=props['color'], linewidth=0, alpha=0.1)
             else:
+                tmp_freq = np.zeros_like(pivots)
                 print("Mutation %s not calculated in region %s"%(mut, region))
+
+            ax.plot(pivots[:-drop], tmp_freq[:-drop], '-o',
+                    ms=7 if region=='global' else 4, lw=3 if region=='global' else 1,
+                    label=props.get('label', region) if region not in region_labeled else '',
+                    c=props['color'])
+            region_labeled.add(region)
+            if show_errorbars and region!="global" and mut in frequencies[region]:
+                std_dev = np.sqrt(tmp_freq*(1-tmp_freq)/(smoothed_count_by_region[(gene, region)]+1))
+                ax.fill_between(pivots[:-drop], (tmp_freq-n_std_dev*std_dev)[:-drop],
+                                (tmp_freq+n_std_dev*std_dev)[:-drop],
+                                facecolor=props['color'], linewidth=0, alpha=0.1)
             # if mi==0:
             #     ax.legend(ncol=1, bbox_to_anchor=(1.02, 0.2))
             ax.set_ylabel(mut, fontsize=fs)
