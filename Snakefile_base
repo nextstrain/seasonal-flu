@@ -571,29 +571,6 @@ rule titers_tree:
             --output {output.titers_model}
         """
 
-rule mutation_frequencies:
-    input:
-        metadata = rules.parse.output.metadata,
-        alignment = translations
-    params:
-        genes = gene_names,
-        min_date = min_date,
-        max_date = max_date,
-        pivot_interval = pivot_interval
-    output:
-        mut_freq = "results/mutation-frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
-    shell:
-        """
-        augur frequencies \
-            --alignments {input.alignment} \
-            --metadata {input.metadata} \
-            --gene-names {params.genes} \
-            --min-date {params.min_date} \
-            --max-date {params.max_date} \
-            --pivot-interval {params.pivot_interval} \
-            --output {output.mut_freq}
-        """
-
 rule tip_frequencies:
     input:
         tree = rules.refine.output.tree,

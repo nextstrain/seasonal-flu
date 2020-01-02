@@ -74,7 +74,7 @@ rule complete_mutation_frequencies_by_region:
         genes = gene_names,
         min_date = min_date,
         max_date = max_date,
-        min_freq = 0.01,
+        min_freq = 0.003,
         pivot_interval = pivot_interval,
         stiffness = 20,
         inertia = 0.2
