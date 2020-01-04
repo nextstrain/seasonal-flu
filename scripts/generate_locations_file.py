@@ -10,9 +10,11 @@ def get_geo_info(location_tuple):
 
 def determine_coordinates(metadata, field):
     existing_coordinates = read_lat_longs()
-    new_locations = {}
+    new_coordinates = {}
     for m in metadata.values():
         if (field, m[field].lower()) in existing_coordinates:
+            continue
+        elif (field, m[field].lower()) in new_coordinates:
             continue
         else:
             if field=='country':
@@ -26,11 +28,11 @@ def determine_coordinates(metadata, field):
                 continue
             loc = get_geo_info(loc_tuple)
             if loc:
-                new_locations[(field, m[field])] = {'latitude':loc.latitude,
+                new_coordinates[(field, m[field].lower())] = {'latitude':loc.latitude,
                                                     'longitude':loc.longitude}
             else:
                 print(loc_tuple, "not found")
-    return new_locations
+    return new_coordinates
 
 if __name__ == '__main__':
     import argparse
