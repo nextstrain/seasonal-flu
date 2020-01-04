@@ -1,20 +1,31 @@
 import numpy as np
+import time
 from geopy.geocoders import Nominatim as geocoder
 from augur.utils import read_lat_longs, read_metadata
 
 geoloc = geocoder(user_agent='augur/flu')
+last_request = 0
 
 def get_geo_info(location_tuple):
+    # Nominatim usage policy limits requests to 1/s
+    global last_request
+    if time.time()-last_request<1.1:
+        time.sleep(1.1 - time.time()+last_request)
+    last_request = time.time()
+    print('requesting geo info for:', location_tuple)
     return geoloc.geocode(", ".join(location_tuple))
 
 
 def determine_coordinates(metadata, field):
     existing_coordinates = read_lat_longs()
     new_coordinates = {}
+    failed_queries = {}
     for m in metadata.values():
         if (field, m[field].lower()) in existing_coordinates:
             continue
         elif (field, m[field].lower()) in new_coordinates:
+            continue
+        elif (field, m[field].lower()) in failed_queries:
             continue
         else:
             if field=='country':
@@ -32,6 +43,7 @@ def determine_coordinates(metadata, field):
                                                     'longitude':loc.longitude}
             else:
                 print(loc_tuple, "not found")
+                failed_queries[(field, m[field].lower())] = None
     return new_coordinates
 
 if __name__ == '__main__':
@@ -52,7 +64,7 @@ if __name__ == '__main__':
     if args.filter:
         assert len(args.filter)%2==0
         for sname, s in metadata.items():
-            if all([s[args.filter[2*fi]]==args.filter[2*fi+1] for fi in range(len(args.filter)/2)]):
+            if all([s[args.filter[2*fi]].lower()==args.filter[2*fi+1].lower() for fi in range(len(args.filter)//2)]):
                 subset[sname]=s
     else:
         subset = metadata
