@@ -17,8 +17,8 @@ def get_geo_info(location_tuple):
     return geoloc.geocode(", ".join(location_tuple))
 
 
-def determine_coordinates(metadata, field):
-    existing_coordinates = read_lat_longs()
+def determine_coordinates(metadata, field, custom_coordinates=None):
+    existing_coordinates = read_lat_longs(overrides=custom_coordinates)
     new_coordinates = {}
     failed_queries = {}
     for m in metadata.values():
@@ -60,7 +60,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--metadata', type=str, help="metadata file")
     parser.add_argument('--field', type=str, help="location field to use")
-    parser.add_argument('--filter', type=str, nargs='+', help="subset of entries by higher level geographic location")
+    parser.add_argument('--filter', type=str, nargs='+', help="subset of entries by higher level geographic location. This needs to an even number of arguments like 'country france' ")
+    parser.add_argument('--existing-locations', type=str, help="existing location file to complete")
     parser.add_argument('--output', type=str, help="output file")
     args = parser.parse_args()
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
     else:
         subset = metadata
 
-    locations = determine_coordinates(subset, args.field)
+    locations = determine_coordinates(subset, args.field, custom_coordinates=args.existing_locations)
 
     with open(args.output, 'wt') as fh:
         # TODO add header in future
