@@ -14,7 +14,10 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"], "BI":["Ireland", "United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
+countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"],
+	     "BI":["Ireland", "United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"],
+	     "east-asia":["China", "Japan", "Korea", "Hong Kong"],
+	     "aus-nz":["Australia", "New Zealand"]}
 
 def focal_vpm(v):
     focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
@@ -31,7 +34,7 @@ def get_title(w):
     elif w.center=='NorthAmerica':
         return f"Influenza {lineage_label[w.lineage]} in NorthAmerica -- using data from US CDC & GISAID"
     else:
-        return f"Real-time tracking of influenza {lineage_label[w.lineage]} evolution"
+        return f"Real-time tracking of influenza {lineage_label[w.lineage]} evolution using data from GISAID"
 
 
 def get_maintainers(w):
@@ -41,7 +44,7 @@ def get_maintainers(w):
         return "not specified"
 
 def get_geo_resolution(w):
-    if w.center in ["NorthAmerica", "BI", "netherlands", "scandinavia"]:
+    if w.center in ["NorthAmerica", "BI", "netherlands", "scandinavia", "east-asia", "aus-nz"]:
         return "region country division"
     else:
         return "region country"
