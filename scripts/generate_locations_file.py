@@ -5,12 +5,13 @@ from augur.utils import read_lat_longs, read_metadata
 
 geoloc = geocoder(user_agent='augur/flu')
 last_request = 0
+time_limit = 3
 
 def get_geo_info(location_tuple):
     # Nominatim usage policy limits requests to 1/s
     global last_request
-    if time.time()-last_request<1.1:
-        time.sleep(1.1 - time.time()+last_request)
+    if time.time()-last_request<time_limit:
+        time.sleep(time_limit - time.time()+last_request)
     last_request = time.time()
     print('requesting geo info for:', location_tuple)
     return geoloc.geocode(", ".join(location_tuple))
@@ -37,7 +38,11 @@ def determine_coordinates(metadata, field):
             else:
                 print(f'field {field} not supported')
                 continue
-            loc = get_geo_info(loc_tuple)
+            try:
+                loc = get_geo_info(loc_tuple)
+            except:
+                print("request failed")
+                
             if loc:
                 new_coordinates[(field, m[field].lower())] = {'latitude':loc.latitude,
                                                     'longitude':loc.longitude}

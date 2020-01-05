@@ -14,7 +14,7 @@ assays = ['hi']
 
 include: "Snakefile_base"
 
-countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"]} #, "france":["France"], "UK":["United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
+countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"], "BI":["Ireland", "United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"]}
 
 def focal_vpm(v):
     focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
@@ -41,7 +41,7 @@ def get_maintainers(w):
         return "not specified"
 
 def get_geo_resolution(w):
-    if w.center=="NorthAmerica":
+    if w.center in ["NorthAmerica", "BI", "netherlands", "scandinavia"]:
         return "region country division"
     else:
         return "region country"
@@ -104,7 +104,8 @@ rule export:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
-        node_data = _get_node_data_for_export
+        node_data = _get_node_data_for_export,
+	lat_longs = "config/lat_longs.tsv"
     output:
         auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json"
         #auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
@@ -120,6 +121,7 @@ rule export:
             --title {params.title:q} \
             --maintainers {params.maintainers:q} \
             --geo-resolutions {params.geo} \
+	    --lat-longs {input.lat_longs} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_main} \
