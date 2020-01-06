@@ -1,6 +1,6 @@
 configfile: "config/config.json"
 
-localrules: all_live, download_all, download_titers, download_sequences
+localrules: all_live, download_all, download_titers, download_sequences, rename_output
 ruleorder: select_strains_countries > select_strains
 ruleorder: titers_rename>download_titers
 
@@ -76,7 +76,7 @@ rule download_all:
 
 
 def _get_focus_countries(wildcards):
-    return " ".join(countries[wildcards.center])
+    return countries[wildcards.center]
 
 def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
@@ -165,7 +165,7 @@ rule select_strains_countries:
             --sequences {input.sequences} \
             --metadata {input.metadata} \
             --segments {segments} \
-            --focus-countries {params.focus_countries} \
+            --focus-countries {params.focus_countries:q} \
             --extra-viruses-per-month {params.extra_viruses_per_month} \
             --include {input.include} \
             --lineage {wildcards.lineage} \
