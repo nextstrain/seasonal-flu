@@ -1,0 +1,29 @@
+{
+ "predictors": [
+  "fra_cTiter_x",
+  "ne_star"
+ ],
+ "cv_error_mean": 6.450745403766632,
+ "cv_error_std": 1.5197830484368442,
+ "coefficients_mean": [
+  0.7437831246349175,
+  -0.08970983108637962
+ ],
+ "coefficients_std": [
+  0.2715229073861192,
+  0.07994799948941614
+ ],
+ "mean_stds_mean": [
+  0.014512916100718216,
+  1.1356939490365228
+ ],
+ "mean_stds_std": [
+  0.0013262260552707255,
+  0.021887145941695038
+ ],
+ "cost_function": "diffsum",
+ "l1_lambda": 0.1,
+ "delta_months": 12,
+ "training_window": 6,
+ "pseudocount": null
+}

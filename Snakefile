@@ -157,7 +157,7 @@ rule forecast_tips:
         attributes = rules.merge_node_data_and_frequencies.output.table,
         distances = rules.target_distances.output.distances,
         frequencies = rules.tip_frequencies.output.tip_freq,
-        model = "models/lbi-ne_star.json"
+        model = config["fitness_model"]["model_json"]
     output:
         node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
