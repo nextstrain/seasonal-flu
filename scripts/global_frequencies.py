@@ -41,7 +41,7 @@ if __name__ == '__main__':
             # calculate a smoothed seasonal profile from the samples counts.
             tmp_counts = np.convolve(np.ones(6)/6.0, np.array(frequencies[region][x]), mode='same')
             # calculate temporal weight for each region as the product of region population size and seasonal pattern
-            seasonal_profile[region][gene] = props['popsize']*np.maximum(0.1, tmp_counts/tmp_counts.max())
+            seasonal_profile[region][gene] = props['popsize']*np.ones_like(tmp_counts) #np.maximum(0.1, tmp_counts/tmp_counts.max())
             if gene not in total_weights: total_weights[gene]=[]
             total_weights[gene].append(seasonal_profile[region][gene])
 
