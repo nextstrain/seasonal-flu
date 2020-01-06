@@ -21,10 +21,13 @@ if __name__ == '__main__':
     # Load tip attributes.
     tips = pd.read_csv(args.tip_attributes, sep="\t", parse_dates=["timepoint"])
 
+    # Open output file handle to enable streaming distances to disk instead of
+    # storing them in memory.
+    output_handle = open(args.output, "w")
+    output_handle.write("\t".join(["sample", "other_sample", "distance"]) + "\n")
+
     # Calculate pairwise distances between all tips within a timepoint and at
     # the next timepoint as defined by the given delta months.
-    distances = []
-
     for timepoint, timepoint_df in tips.groupby("timepoint"):
         current_tips = [
             tuple(values)
@@ -47,12 +50,7 @@ if __name__ == '__main__':
             for future_tip, future_tip_sequence in comparison_tips:
                 future_tip_sequence_array = np.frombuffer(future_tip_sequence.encode(), dtype="S1")
                 distance = (current_tip_sequence_array != future_tip_sequence_array).sum()
-                distances.append({
-                    "sample": current_tip,
-                    "other_sample": future_tip,
-                    "distance": distance
-                })
+                output_handle.write("\t".join([current_tip, future_tip, str(distance)]) + "\n")
 
-    # Save distances table.
-    distances = pd.DataFrame(distances)
-    distances.to_csv(args.output, sep="\t", index=False)
+    # Close output.
+    output_handle.close()

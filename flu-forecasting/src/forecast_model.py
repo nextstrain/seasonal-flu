@@ -1,9 +1,11 @@
 """Forecast given tip data into future using the given previously trained model.
 """
 import argparse
+import csv
 import json
 import numpy as np
 import pandas as pd
+import sys
 
 from fit_model import DistanceExponentialGrowthModel
 from weighted_distances import get_distances_by_sample_names
@@ -16,11 +18,22 @@ if __name__ == "__main__":
     parser.add_argument("--frequencies", help="JSON representing historical frequencies to project from")
     parser.add_argument("--model", required=True, help="JSON representing the model fit with training and cross-validation results, beta coefficients for predictors, and summary statistics")
     parser.add_argument("--delta-months", required=True, type=int, nargs="+", help="number of months to project clade frequencies into the future")
-    parser.add_argument("--output-node-data", required=True, help="node data JSON of forecasts for the given tips")
+    parser.add_argument("--output-node-data", help="node data JSON of forecasts for the given tips")
     parser.add_argument("--output-frequencies", help="frequencies JSON extended with forecasts for the given tips")
     parser.add_argument("--output-table", help="table of forecasts for the given tips")
 
     args = parser.parse_args()
+
+    # Confirm that at least one output file has been specified.
+    outputs = [
+        args.output_node_data,
+        args.output_frequencies,
+        args.output_table
+    ]
+    outputs_missing =[output is None for output in outputs]
+    if all(outputs_missing):
+        print("ERROR: No output files were specified", file=sys.stderr)
+        sys.exit(1)
 
     # Load standardized tip attributes subsetting to tip name, clade, frequency,
     # and requested predictors.
@@ -31,8 +44,9 @@ if __name__ == "__main__":
     )
 
     # Load distances.
-    distances = pd.read_csv(args.distances, sep="\t")
-    distances_by_sample_names = get_distances_by_sample_names(distances)
+    with open(args.distances, "r") as fh:
+        reader = csv.DictReader(fh, delimiter="\t")
+        distances_by_sample_names = get_distances_by_sample_names(reader)
 
     # Load model details
     with open(args.model, "r") as fh:
@@ -61,34 +75,44 @@ if __name__ == "__main__":
     # collect fitness and projection
     forecasts_df = model.predict(tips)
     forecasts_df["weighted_distance_to_future_by_%s" % "-".join(predictors)] = forecasts_df["y"]
+    forecasts_df["future_timepoint"] = forecasts_df["timepoint"] + delta_offset
 
     # collect dicts from dataframe
     strain_to_fitness = {}
+    strain_to_future_timepoint = {}
+    strain_to_projected_frequency = {}
     strain_to_weighted_distance_to_future = {}
     for index, row in forecasts_df.iterrows():
         strain_to_fitness[row['strain']] = row['fitness']
+        strain_to_future_timepoint[row['strain']] = row["future_timepoint"].strftime("%Y-%m-%d")
+        strain_to_projected_frequency[row['strain']] = row['projected_frequency']
         strain_to_weighted_distance_to_future[row['strain']] = row['y']
 
-    # populate node data
-    node_data = {}
-    strains = list(tips['strain'])
-    for strain in strains:
-        node_data[strain] = {
-            "fitness": strain_to_fitness[strain],
-            "weighted_distance_to_future": strain_to_weighted_distance_to_future[strain]
-        }
-
     # output to file
-    with open(args.output_node_data, "w") as jsonfile:
-        json.dump({"nodes": node_data}, jsonfile, indent=1)
+    if args.output_node_data:
+        # populate node data
+        node_data = {}
+        strains = list(tips['strain'])
+        for strain in strains:
+            node_data[strain] = {
+                "fitness": strain_to_fitness[strain],
+                "future_timepoint": strain_to_future_timepoint[strain],
+                "projected_frequency": strain_to_projected_frequency[strain],
+                "weighted_distance_to_future": strain_to_weighted_distance_to_future[strain]
+            }
+
+        with open(args.output_node_data, "w") as jsonfile:
+            json.dump({"nodes": node_data}, jsonfile, indent=1)
 
     # load historic frequencies
-    with open(args.frequencies, "r") as fh:
-        frequencies = json.load(fh)
-    frequencies.pop("generated_by", None)
+    if args.frequencies:
+        with open(args.frequencies, "r") as fh:
+            frequencies = json.load(fh)
 
-    pivots = frequencies.pop("pivots")
-    projection_pivot = pivots[-1]
+        pivots = frequencies.pop("pivots")
+        projection_pivot = pivots[-1]
+    else:
+        frequencies = None
 
     forecasts = []
     for delta_month in args.delta_months:
@@ -114,30 +138,34 @@ if __name__ == "__main__":
         for index, row in forecasts_df.iterrows():
             strain_to_projected_frequency[row['strain']] = row['projected_frequency']
 
-        # extend frequencies
-        for strain in frequencies.keys():
-            trajectory = frequencies[strain]['frequencies']
-            if strain in strain_to_projected_frequency:
-                trajectory.append(strain_to_projected_frequency[strain])
-            else:
-                trajectory.append(0.0)
+        if frequencies is not None:
+            # extend frequencies
+            for strain in frequencies.keys():
+                trajectory = frequencies[strain]['frequencies']
+                if strain in strain_to_projected_frequency:
+                    trajectory.append(strain_to_projected_frequency[strain])
+                else:
+                    trajectory.append(0.0)
 
-        # extend pivots
-        pivots.append(projection_pivot + delta_time)
+            # extend pivots
+            pivots.append(projection_pivot + delta_time)
 
         # Collect forecast data frames, if requested.
         if args.output_table:
             forecasts.append(forecasts_df)
 
     # reconnect pivots and label projection pivot
-    frequencies['pivots'] = pivots
-    frequencies['projection_pivot'] = projection_pivot
+    if frequencies is not None:
+        frequencies['pivots'] = pivots
+        frequencies['projection_pivot'] = projection_pivot
 
     # output to file
-    with open(args.output_frequencies, "w") as jsonfile:
-        json.dump(frequencies, jsonfile, indent=1)
+    if args.output_frequencies:
+        with open(args.output_frequencies, "w") as jsonfile:
+            json.dump(frequencies, jsonfile, indent=1)
 
     # Save forecasts table, if requested.
     if args.output_table:
         all_forecasts = pd.concat(forecasts, ignore_index=True)
+        all_forecasts["model"] = "-".join(predictors)
         all_forecasts.to_csv(args.output_table, sep="\t", index=False, header=True, na_rep="N/A")
