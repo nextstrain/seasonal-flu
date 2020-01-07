@@ -108,9 +108,9 @@ if __name__ == "__main__":
                     args.model_attribute_name
                 )
 
-            comparisons += 1
-            if comparisons % 1000 == 0:
-                print("Completed", comparisons, "comparisons, with last distance of", distances_by_node[current_sample][args.attribute_name][past_sample], flush=True)
+                comparisons += 1
+                if comparisons % 1000 == 0:
+                    print("Completed", comparisons, "comparisons, with last distance of", distances_by_node[current_sample][args.attribute_name][past_sample], flush=True)
 
     print("Calculated %i comparisons" % comparisons)
     # Prepare params for export.
