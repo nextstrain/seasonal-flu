@@ -71,6 +71,7 @@ def _get_node_data_for_predictors(wildcards):
         rules.titers_sub.output.titers_model,
         rules.lbi.output.lbi,
         rules.convert_translations_to_json.output.translations,
+        rules.titer_tree_cross_immunities.output.cross_immunities
     ]
 
     # Only request a distance file for builds that have distance map

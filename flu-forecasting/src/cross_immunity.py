@@ -28,8 +28,9 @@ if __name__ == '__main__':
 
     # Identify maximum frequency per sample.
     max_frequency_per_sample = {
-        sample: float(max(sample_frequencies))
-        for sample, sample_frequencies in frequencies["data"]["frequencies"].items()
+        sample: float(max(sample_frequencies["frequencies"]))
+        for sample, sample_frequencies in frequencies.items()
+        if sample not in ["pivots", "generated_by"] and not sample.startswith("count")
     }
 
     # Load distances.

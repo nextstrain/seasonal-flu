@@ -1,11 +1,12 @@
 """Calculate the distance between sequences between seasons.
 """
 import argparse
-from augur.frequency_estimators import TreeKdeFrequencies
+from augur.frequency_estimators import float_to_datestring, timestamp_to_float
 from augur.utils import annotate_parents_for_tree, read_node_data, write_json
 import Bio.Phylo
 import json
 import numpy as np
+import pandas as pd
 
 
 def get_titer_distance_between_nodes(tree, past_node, current_node, titer_attr="dTiter"):
@@ -22,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--attribute-name", help="name to store distances", required=True)
     parser.add_argument("--model", help="JSON providing the titer tree model", required=True)
     parser.add_argument("--date-annotations", help="JSON of branch lengths and date annotations from augur refine for samples in the given tree; required for comparisons to earliest or latest date", required=True)
+    parser.add_argument("--months-back-for-current-samples", type=int, help="number of months prior to the last date with estimated frequencies to include samples as current", required=True)
     parser.add_argument("--years-back-to-compare", type=int, help="number of years prior to the current season to search for samples to calculate pairwise comparisons with", required=True)
     parser.add_argument("--max-past-samples", type=int, default=200, help="maximum number of past samples to randomly select for comparison to current samples")
     parser.add_argument("--min-frequency", type=float, default=0.0, help="minimum frequency to consider a sample alive")
@@ -35,13 +37,29 @@ if __name__ == "__main__":
 
     # Load frequencies.
     with open(args.frequencies, "r") as fh:
-        frequencies_json = json.load(fh)
+        frequencies = json.load(fh)
 
-    frequencies = TreeKdeFrequencies.from_json(frequencies_json)
-    pivots = frequencies.pivots
+    pivots = np.array(frequencies.pop("pivots"))
 
     # Identify pivots that belong within our search window for past samples.
-    past_pivot_indices = (pivots < pivots[-1]) & (pivots >= pivots[-1] - args.years_back_to_compare)
+    # First, calculate dates associated with the interval for current samples
+    # based on the number of months back requested. Then, calculate interval for
+    # past samples with an upper bound based on the earliest current samples and
+    # a lower bound based on the years back requested.
+    last_pivot_datetime = pd.to_datetime(float_to_datestring(pivots[-1]))
+    last_current_datetime = last_pivot_datetime - pd.DateOffset(months=args.months_back_for_current_samples)
+    last_past_datetime = last_pivot_datetime - pd.DateOffset(years=args.years_back_to_compare)
+
+    # Find the pivot indices that correspond to the current and past pivots.
+    current_pivot_indices = np.array([
+        pd.to_datetime(float_to_datestring(pivot)) >= last_current_datetime
+        for pivot in pivots
+    ])
+    past_pivot_indices = np.array([
+        ((pd.to_datetime(float_to_datestring(pivot)) >= last_past_datetime) &
+         (pd.to_datetime(float_to_datestring(pivot)) < last_current_datetime))
+        for pivot in pivots
+    ])
 
     # Load date and titer model annotations and annotate tree with them.
     annotations = read_node_data([args.date_annotations, args.model])
@@ -59,10 +77,11 @@ if __name__ == "__main__":
         # Samples with nonzero frequencies in the last timepoint are current
         # samples. Those with one or more nonzero frequencies in the search
         # window of the past timepoints are past samples.
-        if frequencies.frequencies[tip.name][-1] > args.min_frequency:
+        frequencies[tip.name]["frequencies"] = np.array(frequencies[tip.name]["frequencies"])
+        if (frequencies[tip.name]["frequencies"][current_pivot_indices] > args.min_frequency).sum() > 0:
             current_samples.append(tip.name)
             tips_by_sample[tip.name] = tip
-        elif (frequencies.frequencies[tip.name][past_pivot_indices] > args.min_frequency).sum() > 0:
+        elif (frequencies[tip.name]["frequencies"][past_pivot_indices] > args.min_frequency).sum() > 0:
             past_samples.append(tip.name)
             tips_by_sample[tip.name] = tip
 

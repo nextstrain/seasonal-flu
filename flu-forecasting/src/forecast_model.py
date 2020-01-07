@@ -42,6 +42,7 @@ if __name__ == "__main__":
         sep="\t",
         parse_dates=["timepoint"]
     )
+    tips = tips[tips["frequency"] > 0].copy()
 
     # Load distances.
     with open(args.distances, "r") as fh:
@@ -53,6 +54,21 @@ if __name__ == "__main__":
         model_json = json.load(fh)
 
     predictors = model_json["predictors"]
+
+    # Confirm that the requested predictors have columns in the given tip
+    # attributes table.
+    missing_predictors = [
+        predictor
+        for predictor in predictors
+        if predictor not in tips.columns
+    ]
+    if len(missing_predictors) > 0:
+        print(
+            "ERROR: the following predictors are missing columns in the tip attributes table:", ", ".join(missing_predictors),
+            file=sys.stderr
+        )
+        sys.exit(1)
+
     cost_function = model_json["cost_function"]
     l1_lambda = model_json["l1_lambda"]
     coefficients = np.array(model_json["coefficients_mean"])
@@ -110,6 +126,7 @@ if __name__ == "__main__":
             frequencies = json.load(fh)
 
         pivots = frequencies.pop("pivots")
+        generated_by = frequencies.pop("generated_by", None)
         projection_pivot = pivots[-1]
     else:
         frequencies = None
