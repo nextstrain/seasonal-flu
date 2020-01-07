@@ -1,5 +1,4 @@
 {
-    "frequency_max_date_month_offset": 1,
     "excluded_node_data_fields": [
         "aa_muts",
         "aa_sequences",
