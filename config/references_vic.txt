@@ -15,6 +15,7 @@ B/HongKong/286/2017-egg
 B/HongKong/330/2001
 B/Iceland/56/2015
 B/Indiana/25/2015
+B/Iowa/6/2017
 B/Ireland/3154/2016
 B/Kazakhstan/128/2017
 B/Kazakhstan/128/2017-egg
@@ -39,7 +40,7 @@ B/Texas/2/2013
 B/Townsville/8/2016
 B/Utah/8/2012
 B/Vologda/CRIE-323/2016
-B/Washington/3/2014
 B/Washington/2/2019
 B/Washington/2/2019-egg
+B/Washington/3/2014
 B/Wisconsin/44/2016
