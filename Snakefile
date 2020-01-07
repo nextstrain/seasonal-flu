@@ -70,7 +70,6 @@ def _get_node_data_for_predictors(wildcards):
         rules.titers_tree.output.titers_model,
         rules.titers_sub.output.titers_model,
         rules.lbi.output.lbi,
-        rules.delta_frequency.output.delta_frequency,
         rules.convert_translations_to_json.output.translations,
     ]
 
