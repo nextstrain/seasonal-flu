@@ -9,11 +9,11 @@ include: "Snakefile_WHO"
 
 def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:128A", "HA1:131K", "HA1:135K", "HA1:137F",
-                                 "HA1:91N", "HA1:193S", "HA1:197R"],
+                                 "HA1:91N", "HA1:94N", "HA1:193S", "HA1:197R"],
                  ('h3n2', 'na'):["NA:329S","NA:329T", "NA:386S", "NA:126L", "NA:344K"],
                  ('h1n1pdm', 'ha'):["HA1:121N", "HA1:130N", "HA1:156K", "HA1:183P", "HA1:185I", "HA1:187A",  "HA1:296N"],
                  ('h1n1pdm', 'na'):["NA:74S", "NA:85I", "NA:188I",  "NA:389K", "NA:416N"],
-                 ('vic', 'ha'):["HA1:128K", "HA1:163-", "HA1:164-","HA1:164D", "HA1:133R"],
+                 ('vic', 'ha'):["HA1:128K", "HA1:163-", "HA1:164-","HA1:164D", "HA1:133R", "HA1:197D"],
                  ('vic', 'na'):["NA:371Q","NA:395T"],
                  ('yam', 'ha'):["HA1:232N","HA1:229N"],
                  ('yam', 'na'):["NA:402P", "NA:395S", "NA:65H"],
