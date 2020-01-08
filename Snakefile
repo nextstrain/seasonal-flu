@@ -52,6 +52,7 @@ def _get_node_data_for_export(wildcards):
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
         inputs.append(rules.forecast_tips.output.node_data)
+        inputs.append(rules.calculate_weighted_distance_to_future.output.node_data)
 
     # Only request a distance file for builds that have distance map
     # configurations defined.
@@ -161,7 +162,8 @@ rule forecast_tips:
         model = config["fitness_model"]["model_json"]
     output:
         node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
-        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json",
+        table = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
     params:
         delta_months = _get_delta_months_to_forecast
     shell:
@@ -173,8 +175,25 @@ rule forecast_tips:
             --model {input.model} \
             --delta-months {params.delta_months} \
             --output-node-data {output.node_data} \
-            --output-frequencies {output.frequencies}
+            --output-frequencies {output.frequencies} \
+            --output-table {output.table}
         """
+
+
+rule calculate_weighted_distance_to_future:
+    input:
+        attributes = rules.merge_node_data_and_frequencies.output.table,
+        forecasts = rules.forecast_tips.output.table
+    output:
+        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    shell:
+        """
+        python3 flu-forecasting/scripts/calculate_weighted_distances.py \
+            --tip-attributes {input.attributes} \
+            --forecasts {input.forecasts} \
+            --output {output.node_data}
+        """
+
 
 rule export:
     input:

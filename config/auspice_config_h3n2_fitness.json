@@ -33,6 +33,16 @@
       "type": "continuous"
     },
     {
+      "key": "projected_frequency",
+      "title": "Projected frequency",
+      "type": "continuous"
+    },
+    {
+      "key": "ne_star",
+      "title": "Mutational load",
+      "type": "continuous"
+    },
+    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"

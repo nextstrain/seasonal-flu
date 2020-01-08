@@ -89,16 +89,16 @@ if __name__ == "__main__":
     model.mean_stds_ = mean_stds
 
     # collect fitness and projection
-    forecasts_df = model.predict(tips)
-    forecasts_df["weighted_distance_to_future_by_%s" % "-".join(predictors)] = forecasts_df["y"]
-    forecasts_df["future_timepoint"] = forecasts_df["timepoint"] + delta_offset
+    final_forecasts = model.predict(tips)
+    final_forecasts["weighted_distance_to_future_by_%s" % "-".join(predictors)] = final_forecasts["y"]
+    final_forecasts["future_timepoint"] = final_forecasts["timepoint"] + delta_offset
 
     # collect dicts from dataframe
     strain_to_fitness = {}
     strain_to_future_timepoint = {}
     strain_to_projected_frequency = {}
     strain_to_weighted_distance_to_future = {}
-    for index, row in forecasts_df.iterrows():
+    for index, row in final_forecasts.iterrows():
         strain_to_fitness[row['strain']] = row['fitness']
         strain_to_future_timepoint[row['strain']] = row["future_timepoint"].strftime("%Y-%m-%d")
         strain_to_projected_frequency[row['strain']] = row['projected_frequency']
@@ -113,8 +113,7 @@ if __name__ == "__main__":
             node_data[strain] = {
                 "fitness": strain_to_fitness[strain],
                 "future_timepoint": strain_to_future_timepoint[strain],
-                "projected_frequency": strain_to_projected_frequency[strain],
-                "weighted_distance_to_future": strain_to_weighted_distance_to_future[strain]
+                "projected_frequency": strain_to_projected_frequency[strain]
             }
 
         with open(args.output_node_data, "w") as jsonfile:
@@ -131,7 +130,6 @@ if __name__ == "__main__":
     else:
         frequencies = None
 
-    forecasts = []
     for delta_month in args.delta_months:
         delta_time = delta_month / 12.0
         delta_offset = pd.DateOffset(months=delta_month)
@@ -167,10 +165,6 @@ if __name__ == "__main__":
             # extend pivots
             pivots.append(projection_pivot + delta_time)
 
-        # Collect forecast data frames, if requested.
-        if args.output_table:
-            forecasts.append(forecasts_df)
-
     # reconnect pivots and label projection pivot
     if frequencies is not None:
         frequencies['pivots'] = pivots
@@ -183,6 +177,16 @@ if __name__ == "__main__":
 
     # Save forecasts table, if requested.
     if args.output_table:
-        all_forecasts = pd.concat(forecasts, ignore_index=True)
-        all_forecasts["model"] = "-".join(predictors)
-        all_forecasts.to_csv(args.output_table, sep="\t", index=False, header=True, na_rep="N/A")
+        # Annotate the model used to make this forecast for self-documentation
+        # and debugging.
+        final_forecasts["model"] = "-".join(predictors)
+
+        # Annotate amino acid sequences along with forecasts to enable weighted
+        # distance calculations to the estimated future population.
+        tip_sequences = tips.loc[:, ["strain", "aa_sequence"]].copy()
+        final_forecasts = final_forecasts.merge(
+            tip_sequences,
+            on="strain"
+        )
+
+        final_forecasts.to_csv(args.output_table, sep="\t", index=False, header=True, na_rep="N/A")
