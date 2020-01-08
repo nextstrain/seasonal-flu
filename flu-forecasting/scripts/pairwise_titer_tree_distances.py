@@ -10,9 +10,30 @@ import pandas as pd
 
 
 def get_titer_distance_between_nodes(tree, past_node, current_node, titer_attr="dTiter"):
-    ancestor = tree.common_ancestor([past_node, current_node])
-    nodes_between_tips = ancestor.get_path(past_node) + ancestor.get_path(current_node)
-    return sum([node.attr[titer_attr] for node in nodes_between_tips])
+    # Find MRCA of tips from one tip up. Sum the titer attribute of interest
+    # while walking up to the MRCA, to avoid an additional pass later. The loop
+    # below stops when the past node is found in the list of the candidate
+    # MRCA's terminals. This test should always evaluate to true when the MRCA
+    # is the root node, so we should not have to worry about trying to find the
+    # parent of the root.
+    current_node_branch_sum = 0.0
+    mrca = current_node
+    while past_node.name not in mrca.terminals:
+        current_node_branch_sum += mrca.attr[titer_attr]
+        mrca = mrca.parent
+
+    # Sum the node weights for the other tip from the bottom up until we reach
+    # the MRCA. The value of the MRCA is intentionally excluded here, as it
+    # would represent the branch leading to the MRCA and would be outside the
+    # path between the two tips.
+    past_node_branch_sum = 0.0
+    current_node = past_node
+    while current_node != mrca:
+        past_node_branch_sum += current_node.attr[titer_attr]
+        current_node = current_node.parent
+
+    final_sum = past_node_branch_sum + current_node_branch_sum
+    return final_sum
 
 
 if __name__ == "__main__":
@@ -34,6 +55,18 @@ if __name__ == "__main__":
     # Load tree and annotate parents.
     tree = Bio.Phylo.read(args.tree, "newick")
     tree = annotate_parents_for_tree(tree)
+
+    # Make a single pass through the tree in postorder to store a set of all
+    # terminals descending from each node. This uses more memory, but it allows
+    # faster identification of MRCAs between any pair of tips in the tree and
+    # speeds up pairwise distance calculations by orders of magnitude.
+    for node in tree.find_clades(order="postorder"):
+        node.terminals = set()
+        for child in node.clades:
+            if child.is_terminal():
+                node.terminals.add(child.name)
+            else:
+                node.terminals.update(child.terminals)
 
     # Load frequencies.
     with open(args.frequencies, "r") as fh:
