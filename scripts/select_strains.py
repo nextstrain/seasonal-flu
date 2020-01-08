@@ -197,6 +197,8 @@ def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
 
         numerical_dates = get_numerical_dates(tmp_meta, fmt=date_format)
         for x in tmp_meta:
+            if numerical_dates[x] is None:
+                continue
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
             tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
             tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)

@@ -81,6 +81,8 @@ if __name__ == '__main__':
     sequences = []
     print(time_interval)
     for seq in metadata:
+        if not "num_date" in metadata[seq]:
+            continue
         if metadata[seq]["num_date"]>=time_interval[0] and \
            metadata[seq]["num_date"]<time_interval[1]:
             sequences.append(metadata[seq])
