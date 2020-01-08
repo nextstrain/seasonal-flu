@@ -23,7 +23,7 @@ def mutations_to_plot(v):
 def clades_to_plot(v):
     clades = {
         ('h3n2', 'ha'): ["A1b/135K", "A1b/131K", "A1b/137F", "A1b/197R", "A2/re", "3c3.A"],
-        ('h1n1pdm', 'ha'): ["6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-5"],
+        ('h1n1pdm', 'ha'): ["6b1.A/183P-5","6b1.A/183P-7"],
         ('vic', 'ha'): ["V1A.1", "V1A.2", "V1A.3"],
         ('yam', 'ha'): ["172Q", "3"],
     }
