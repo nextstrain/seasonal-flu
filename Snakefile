@@ -44,6 +44,7 @@ def _get_node_data_for_export(wildcards):
         rules.translate.output.node_data,
         rules.titers_tree.output.titers_model,
         rules.titers_sub.output.titers_model,
+        rules.titer_tree_cross_immunities.output.cross_immunities,
         rules.clades.output.clades,
         rules.traits.output.node_data,
         rules.lbi.output.lbi,
