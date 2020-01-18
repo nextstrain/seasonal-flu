@@ -769,7 +769,6 @@ rule titer_tree_cross_immunities:
             --distance-attributes {params.distance_attributes} \
             --immunity-attributes {params.immunity_attributes} \
             --decay-factors {params.decay_factors} \
-            --years-to-wane {params.years_to_wane} \
             --output {output}
         """
 

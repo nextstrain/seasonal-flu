@@ -85,12 +85,12 @@ if __name__ == "__main__":
 
     # Find the pivot indices that correspond to the current and past pivots.
     current_pivot_indices = np.array([
-        pd.to_datetime(float_to_datestring(pivot)) >= last_current_datetime
+        pd.to_datetime(float_to_datestring(pivot)) > last_current_datetime
         for pivot in pivots
     ])
     past_pivot_indices = np.array([
         ((pd.to_datetime(float_to_datestring(pivot)) >= last_past_datetime) &
-         (pd.to_datetime(float_to_datestring(pivot)) < last_current_datetime))
+         (pd.to_datetime(float_to_datestring(pivot)) <= last_current_datetime))
         for pivot in pivots
     ])
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
         date_by_sample[tip.name] = tip.attr["numdate"]
 
-    print("Expecting %i comparisons for %i current and %i past samples" % (len(current_samples) * args.max_past_samples, len(current_samples), len(past_samples)))
+    print("Expecting %i comparisons for %i current and %i past samples" % (len(current_samples) * len(past_samples), len(current_samples), len(past_samples)))
     distances_by_node = {}
     comparisons = 0
 
@@ -131,18 +131,18 @@ if __name__ == "__main__":
         if not args.attribute_name in distances_by_node[current_sample]:
             distances_by_node[current_sample][args.attribute_name] = {}
 
-        for past_sample in np.random.choice(past_samples, size=min(args.max_past_samples, len(past_samples)), replace=False):
+        for past_sample in past_samples:
             # The past is in the past.
             if date_by_sample[past_sample] < date_by_sample[current_sample]:
-                distances_by_node[current_sample][args.attribute_name][past_sample] = get_titer_distance_between_nodes(
+                distances_by_node[current_sample][args.attribute_name][past_sample] = np.around(get_titer_distance_between_nodes(
                     tree,
                     tips_by_sample[past_sample],
                     tips_by_sample[current_sample],
                     args.model_attribute_name
-                )
+                ), 4)
 
                 comparisons += 1
-                if comparisons % 1000 == 0:
+                if comparisons % 10000 == 0:
                     print("Completed", comparisons, "comparisons, with last distance of", distances_by_node[current_sample][args.attribute_name][past_sample], flush=True)
 
     print("Calculated %i comparisons" % comparisons)
@@ -153,4 +153,4 @@ if __name__ == "__main__":
     }
 
     # Export distances to JSON.
-    write_json({"params": params, "nodes": distances_by_node}, args.output)
+    write_json({"params": params, "nodes": distances_by_node}, args.output, indent=None)
