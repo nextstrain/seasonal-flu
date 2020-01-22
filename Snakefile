@@ -38,6 +38,7 @@ def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
     """
     # Define inputs shared by all builds.
+    wildcards_dict = dict(wildcards)
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
@@ -52,6 +53,7 @@ def _get_node_data_for_export(wildcards):
     ]
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
+        wildcards_dict["model"] = config["fitness_model"]["best_model"]
         inputs.append(rules.forecast_tips.output.node_data)
         inputs.append(rules.calculate_weighted_distance_to_future.output.node_data)
 
@@ -61,7 +63,7 @@ def _get_node_data_for_export(wildcards):
         inputs.append(rules.distances.output.distances)
 
     # Convert input files from wildcard strings to real file names.
-    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
     return inputs
 
 def _get_node_data_for_predictors(wildcards):
@@ -160,11 +162,11 @@ rule forecast_tips:
         attributes = rules.merge_node_data_and_frequencies.output.table,
         distances = rules.target_distances.output.distances,
         frequencies = rules.tip_frequencies.output.tip_freq,
-        model = config["fitness_model"]["model_json"]
+        model = "models/{model}.json"
     output:
-        node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
-        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json",
-        table = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+        node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.json",
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}_forecast-tip-frequencies.json",
+        table = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.tsv"
     params:
         delta_months = _get_delta_months_to_forecast
     shell:
@@ -181,10 +183,14 @@ rule forecast_tips:
         """
 
 
+def _get_forecast_table_for_best_model(wildcards):
+    return rules.forecast_tips.output.table.format(model=config["fitness_model"]["best_model"], **wildcards)
+
+
 rule calculate_weighted_distance_to_future:
     input:
         attributes = rules.merge_node_data_and_frequencies.output.table,
-        forecasts = rules.forecast_tips.output.table
+        forecasts = _get_forecast_table_for_best_model
     output:
         node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     shell:
@@ -219,7 +225,10 @@ rule export:
 
 def get_tip_frequencies(wildcards):
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
-        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_forecast-tip-frequencies.json"
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_{model}_forecast-tip-frequencies.json".format(
+            model=config["fitness_model"]["best_model"],
+            **wildcards
+        )
     else:
         return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
 
@@ -233,7 +242,7 @@ rule simplify_auspice_names:
     shell:
         '''
         mv {input.main} {output.main} &
-        mv {input.frequencies} {output.frequencies} &
+        cp -f {input.frequencies} {output.frequencies} &
         '''
 
 rule targets:
@@ -246,6 +255,9 @@ rule targets:
         '''
         touch {output.target}
         '''
+
+rule forecasts:
+    input: expand(rules.forecast_tips.output.frequencies, center="cdc", lineage="h3n2", segment="ha", resolution="2y", passage="cell", assay="hi", model=config["fitness_model"]["models"])
 
 rule clean:
     message: "Removing directories: {params}"

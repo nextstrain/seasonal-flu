@@ -7,7 +7,11 @@
         "sequence"
     ],
     "fitness_model": {
-        "model_json": "models/cTiter_x-ne_star.json",
+        "models": [
+            "cTiter_x-ne_star",
+            "ne_star-lbi"
+        ],
+        "best_model": "cTiter_x-ne_star",
         "delta_months": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         "pivot_interval": 6,
         "delta_pivots": 1,
