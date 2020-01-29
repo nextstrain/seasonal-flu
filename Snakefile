@@ -257,7 +257,7 @@ rule targets:
         '''
 
 rule forecasts:
-    input: expand(rules.forecast_tips.output.frequencies, center="cdc", lineage="h3n2", segment="ha", resolution="2y", passage="cell", assay="hi", model=config["fitness_model"]["models"])
+    input: expand(rules.forecast_tips.output.frequencies, center="who", lineage="h3n2", segment="ha", resolution="2y", passage="cell", assay="hi", model=config["fitness_model"]["models"])
 
 rule clean:
     message: "Removing directories: {params}"
