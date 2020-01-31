@@ -55,7 +55,7 @@ def _get_node_data_for_export(wildcards):
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
         wildcards_dict["model"] = config["fitness_model"]["best_model"]
         inputs.append(rules.forecast_tips.output.node_data)
-        inputs.append(rules.calculate_weighted_distance_to_future.output.node_data)
+        inputs.append(rules.merge_weighted_distances_to_future.output.node_data)
 
     # Only request a distance file for builds that have distance map
     # configurations defined.
@@ -183,23 +183,42 @@ rule forecast_tips:
         """
 
 
-def _get_forecast_table_for_best_model(wildcards):
-    return rules.forecast_tips.output.table.format(model=config["fitness_model"]["best_model"], **wildcards)
-
-
 rule calculate_weighted_distance_to_future:
     input:
         attributes = rules.merge_node_data_and_frequencies.output.table,
-        forecasts = _get_forecast_table_for_best_model
+        forecasts = rules.forecast_tips.output.table
     output:
-        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.json",
     shell:
         """
         python3 flu-forecasting/scripts/calculate_weighted_distances.py \
             --tip-attributes {input.attributes} \
             --forecasts {input.forecasts} \
+            --distance-attribute-name weighted_distance_to_future_by_{wildcards.model} \
             --output {output.node_data}
         """
+
+
+rule merge_weighted_distances_to_future:
+    input:
+        distances = expand("results/weighted_distances_{{center}}_{{lineage}}_{{segment}}_{{resolution}}_{{passage}}_{{assay}}_{model}.json", model=config["fitness_model"]["models"])
+    output:
+        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    run:
+        # Start with a single base JSON in node data format.
+        with open(input.distances[0], "r") as fh:
+            base_json = json.load(fh)
+
+        # Update the base JSON with each subsequent model's distances to the future.
+        for json_file in input.distances[1:]:
+            with open(json_file, "r") as fh:
+                model_json = json.load(fh)
+                for strain, distances in model_json["nodes"].items():
+                    base_json["nodes"][strain].update(distances)
+
+        # Save merged data.
+        with open(output.node_data, "w") as oh:
+            json.dump(base_json, oh)
 
 
 rule export:

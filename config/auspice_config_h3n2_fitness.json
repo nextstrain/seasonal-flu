@@ -33,6 +33,16 @@
       "type": "continuous"
     },
     {
+      "key": "weighted_distance_to_future_by_cTiter_x-ne_star",
+      "title": "Distance to future population (by HI antigenic novelty and mutational load)",
+      "type": "continuous"
+    },
+    {
+      "key": "weighted_distance_to_future_by_ne_star-lbi",
+      "title": "Distance to future population (by mutational load and LBI)",
+      "type": "continuous"
+    },
+    {
       "key": "projected_frequency",
       "title": "Projected frequency",
       "type": "continuous"
