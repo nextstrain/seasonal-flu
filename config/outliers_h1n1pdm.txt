@@ -1,4 +1,3 @@
-8207f449-fddb-4703-a6f2-ce01b6e85d3d
 A/Arkansas/14/2013
 A/Arkansas/15/2013
 A/Astrakhan/1/2019
@@ -18,6 +17,7 @@ A/Christchurch/16/2010NIB-74xp13/202
 A/Dakar/3/2014
 A/EasternIndia/107/2009
 A/Guatemala/150/2018
+A/Hebei-haigang/SWL1572/2019
 A/HongKong/H090-665-V1/2009
 A/HongKong/H090-667-V1/2009
 A/HongKong/H090-667-V2/2009
@@ -61,6 +61,7 @@ A/Poland/16/2013
 A/RioGrandedoNorte/117490/2012
 A/Shandong/1/2009
 A/Shandong/1/2009-egg
+A/Shanghai-Xuhui/SWL1809/2019
 A/Shanghai/Mix1/2014
 A/Singapore/SM15/2009
 A/SouthAfrica/1857/2013
