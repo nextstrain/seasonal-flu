@@ -33,6 +33,11 @@
       "type": "continuous"
     },
     {
+      "key": "cTiter_x",
+      "title": "HI antigenic novelty",
+      "type": "continuous"
+    },
+    {
       "key": "lbi",
       "title": "Local branching index",
       "type": "continuous"

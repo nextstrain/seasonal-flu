@@ -28,11 +28,6 @@
       "type": "continuous"
     },
     {
-      "key": "weighted_distance_to_future",
-      "title": "Distance to future population",
-      "type": "continuous"
-    },
-    {
       "key": "weighted_distance_to_future_by_cTiter_x-ne_star",
       "title": "Distance to future population (by HI antigenic novelty and mutational load)",
       "type": "continuous"
