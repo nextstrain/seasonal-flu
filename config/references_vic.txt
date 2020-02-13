@@ -2,6 +2,8 @@ B/Aichi/62/2013
 B/Arkansas/6/2016
 B/Bangladesh/3004/2017
 B/Brazil/5247/2016
+B/Brisbane/35/2018
+B/Brisbane/35/2018-egg
 B/Brisbane/46/2015
 B/Brisbane/46/2015-egg
 B/Brisbane/60/2008
@@ -13,6 +15,7 @@ B/Florida/33/2014
 B/Florida/78/2015
 B/Florida/78/2015-egg
 B/Hebei-Cixian/149/2018-egg
+B/HongKong/269/2017-egg
 B/HongKong/286/2017
 B/HongKong/286/2017-egg
 B/HongKong/330/2001
@@ -45,6 +48,8 @@ B/StPetersburg/293/2016-egg
 B/Texas/2/2013
 B/Townsville/8/2016
 B/Utah/8/2012
+B/Victoria/705/2018
+B/Victoria/705/2018-egg
 B/Victoria/900/2018
 B/Vologda/CRIE-323/2016
 B/Washington/2/2019

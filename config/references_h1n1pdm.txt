@@ -33,6 +33,7 @@ A/Ireland/84630/2018
 A/Israel/Q-504/2015
 A/Kazakhstan/581/2018
 A/Michigan/45/2015
+A/Michigan/45/2015-egg
 A/Michigan/272/2017
 A/Michigan/272/2017-egg
 A/Minnesota/32/2015
