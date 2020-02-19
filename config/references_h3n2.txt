@@ -38,6 +38,7 @@ A/Idaho/33/2016
 A/Idaho/33/2016-egg
 A/Indiana/8/2018
 A/Kansas/14/2017
+A/Kansas/14/2017-egg
 A/Kobe/63/2014
 A/LaRioja/2202/2018
 A/Maryland/23/2016
@@ -53,6 +54,7 @@ A/NewCaledonia/8/2018
 A/NewCaledonia/71/2014
 A/NewCaledonia/71/2014-egg
 A/Newcastle/30/2016
+A/Newcastle/82/2018
 A/NewJersey/26/2014
 A/NewMexico/14/2018
 A/NorthCarolina/4/2016
