@@ -15,9 +15,9 @@ assays = ['hi']
 include: "Snakefile_base"
 
 countries = {"netherlands":["Netherlands"], "NorthAmerica":["USA", "Canada"],
-	     "BI":["Ireland", "United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"],
-	     "east-asia":["China", "Japan", "Korea", "Hong Kong"],
-	     "aus-nz":["Australia", "New Zealand"]}
+         "BI":["Ireland", "United Kingdom"], "scandinavia":["Norway", "Sweden", "Denmark"],
+         "east-asia":["China", "Japan", "Korea", "Hong Kong"],
+         "aus-nz":["Australia", "New Zealand"]}
 
 def focal_vpm(v):
     focal_vpm = {'6m':300, '2y':70, '3y':50, '6y':20, '12y':10, '60y':4}
@@ -63,8 +63,8 @@ rule titers_rename:
          titer_file = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
      shell:
          '''
-	 cp {input.titer_file} {output.titer_file}
-	 '''
+     cp {input.titer_file} {output.titer_file}
+     '''
 
 
 # separate rule for interaction with fauna
@@ -108,7 +108,7 @@ rule export:
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export,
-	lat_longs = "config/lat_longs.tsv"
+        lat_longs = files.lat_longs
     output:
         auspice_main = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json"
         #auspice_rs = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree_root-sequence.json",
@@ -124,7 +124,7 @@ rule export:
             --title {params.title:q} \
             --maintainers {params.maintainers:q} \
             --geo-resolutions {params.geo} \
-	    --lat-longs {input.lat_longs} \
+            --lat-longs {input.lat_longs} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_main} \

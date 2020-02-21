@@ -240,7 +240,8 @@ rule files:
         colors = "config/colors.tsv",
         auspice_config = _get_auspice_config,
         vaccine_json = "config/vaccines_{lineage}.json",
-        description = "config/description.md"
+        description = "config/description.md",
+        lat_longs = "config/lat_longs.tsv"
 
 files = rules.files.params
 
@@ -289,7 +290,8 @@ rule parse:
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
         fasta_fields =  "strain virus accession date region country division location passage originating_lab submitting_lab age gender",
-        prettify_fields = "region country division location originating_lab submitting_lab"
+        prettify_fields = "region country division location originating_lab submitting_lab",
+        lat_longs = files.lat_longs
     shell:
         """
         augur parse \
@@ -297,7 +299,8 @@ rule parse:
             --output-sequences {output.sequences} \
             --output-metadata {output.metadata} \
             --fields {params.fasta_fields} \
-            --prettify-fields {params.prettify_fields}
+            --prettify-fields {params.prettify_fields} &&
+        python3 scripts/split_russia.py --metadata {output.metadata} --output {output.metadata} --locations {params.lat_longs}
         """
 
 rule filter:

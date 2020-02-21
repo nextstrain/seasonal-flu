@@ -1,0 +1,42 @@
+localrules: all_live, download_all, download_titers, download_sequences
+ruleorder: select_strains_region > select_strains_countries > select_strains
+
+include: "Snakefile_countries"
+
+regions = ['Europe']
+
+rule all_regions:
+    input:
+        auspice_tree = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}.json",
+                              center=regions, lineage=lineages, segment=segments, resolution=resolutions),
+        auspice_tip_frequencies = expand("auspice_FBC/FluByCountry_{center}_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+                              center=regions, lineage=lineages, segment=segments, resolution=resolutions)
+
+
+rule select_strains_region:
+    input:
+        sequences = expand("results/filtered_{{lineage}}_{segment}_{{passage}}.fasta", segment=segments),
+        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments),
+        titers = "data/who_{lineage}_{passage}_{assay}_titers.tsv",
+        include = files.references
+    output:
+        strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
+    params:
+        viruses_per_month = vpm,
+        priority_region = "{center}",
+        priority_fraction = 0.8
+    shell:
+        """
+        python3 scripts/select_strains.py \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
+            --segments {segments} \
+            --priority-region {params.priority_region:q} \
+            --priority-region-fraction {params.priority_fraction} \
+            --include {input.include} \
+            --lineage {wildcards.lineage} \
+            --resolution {wildcards.resolution} \
+            --viruses-per-month {params.viruses_per_month} \
+            --titers {input.titers} \
+            --output {output.strains}
+        """
