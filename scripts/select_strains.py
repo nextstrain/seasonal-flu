@@ -324,7 +324,9 @@ if __name__ == '__main__':
         completeness=completeness
     )
 
+    print("Sampling from focal countries")
     if args.focus_countries:
+        print(args.focus_countries)
         selected_strains_countries = flu_subsampling(
             {x:filtered_metadata[guide_segment][x] for x in strain_names if filtered_metadata[guide_segment][x]['country'] in args.focus_countries},
             args.extra_viruses_per_month,
@@ -332,6 +334,8 @@ if __name__ == '__main__':
             titer_fnames=args.titers,
             completeness=completeness
         )
+        print("Selected strains from focal countries:", len(selected_strains_countries))
+        print("Selected strains from other:", len(selected_strains))
         selected_strains = list(set.union(set(selected_strains), selected_strains_countries))
 
 

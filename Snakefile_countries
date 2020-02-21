@@ -2,7 +2,7 @@ configfile: "config/config.json"
 
 localrules: all_live, download_all, download_titers, download_sequences, rename_output
 ruleorder: select_strains_countries > select_strains
-ruleorder: titers_rename>download_titers
+ruleorder: titers_rename > download_titers
 
 segments = ['ha', 'na']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
@@ -44,7 +44,7 @@ def get_maintainers(w):
         return "not specified"
 
 def get_geo_resolution(w):
-    if w.center in ["NorthAmerica", "BI", "netherlands", "scandinavia", "east-asia", "aus-nz"]:
+    if w.center in ["NorthAmerica", "BI", "netherlands", "scandinavia", "east-asia", "aus-nz", "Europe"]:
         return "region country division"
     else:
         return "region country"
