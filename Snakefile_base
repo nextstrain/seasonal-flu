@@ -64,29 +64,29 @@ def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
     rate = {
      ('h1n1pdm', 'ha'): 0.00329,
- 	 ('h1n1pdm', 'na'): 0.00326,
- 	 ('h1n1pdm', 'np'): 0.00221,
- 	 ('h1n1pdm', 'pa'): 0.00217,
-	 ('h1n1pdm', 'pb1'): 0.00205,
- 	 ('h1n1pdm', 'pb2'): 0.00277,
- 	 ('h3n2', 'ha'): 0.00382,
- 	 ('h3n2', 'na'): 0.00267,
-	 ('h3n2', 'np'): 0.00157,
- 	 ('h3n2', 'pa'): 0.00178,
- 	 ('h3n2', 'pb1'): 0.00139,
- 	 ('h3n2', 'pb2'): 0.00218,
- 	 ('vic', 'ha'): 0.00145,
- 	 ('vic', 'na'): 0.00133,
- 	 ('vic', 'np'): 0.00132,
- 	 ('vic', 'pa'): 0.00178,
- 	 ('vic', 'pb1'): 0.00114,
- 	 ('vic', 'pb2'): 0.00106,
- 	 ('yam', 'ha'): 0.00176,
- 	 ('yam', 'na'): 0.00177,
- 	 ('yam', 'np'): 0.00133,
- 	 ('yam', 'pa'): 0.00112,
- 	 ('yam', 'pb1'): 0.00092,
- 	 ('yam', 'pb2'): 0.00113}
+     ('h1n1pdm', 'na'): 0.00326,
+     ('h1n1pdm', 'np'): 0.00221,
+     ('h1n1pdm', 'pa'): 0.00217,
+     ('h1n1pdm', 'pb1'): 0.00205,
+     ('h1n1pdm', 'pb2'): 0.00277,
+     ('h3n2', 'ha'): 0.00382,
+     ('h3n2', 'na'): 0.00267,
+     ('h3n2', 'np'): 0.00157,
+     ('h3n2', 'pa'): 0.00178,
+     ('h3n2', 'pb1'): 0.00139,
+     ('h3n2', 'pb2'): 0.00218,
+     ('vic', 'ha'): 0.00145,
+     ('vic', 'na'): 0.00133,
+     ('vic', 'np'): 0.00132,
+     ('vic', 'pa'): 0.00178,
+     ('vic', 'pb1'): 0.00114,
+     ('vic', 'pb2'): 0.00106,
+     ('yam', 'ha'): 0.00176,
+     ('yam', 'na'): 0.00177,
+     ('yam', 'np'): 0.00133,
+     ('yam', 'pa'): 0.00112,
+     ('yam', 'pb1'): 0.00092,
+     ('yam', 'pb2'): 0.00113}
     return rate.get((w.lineage, w.segment), 0.001)
 
 
@@ -357,7 +357,7 @@ rule select_strains:
 rule extract:
     input:
         sequences = rules.filter.output.sequences,
-        strains = rules.select_strains.output.strains
+        strains = "results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
     output:
         sequences = 'results/extracted_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.fasta'
     shell:
@@ -520,16 +520,20 @@ rule traits:
         """
     input:
         tree = rules.refine.output.tree,
-        metadata = rules.parse.output.metadata
+        metadata = rules.parse.output.metadata,
+        weights = "config/region_weights.csv"
     output:
         node_data = "results/traits_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
     params:
-        columns = "region"
+        columns = "region",
+        sbc = 5
     shell:
         """
         augur traits \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --weights {input.weights} \
+            --sampling-bias-correction {params.sbc} \
             --output {output.node_data} \
             --columns {params.columns} \
             --confidence
