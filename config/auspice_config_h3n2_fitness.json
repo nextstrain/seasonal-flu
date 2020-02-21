@@ -48,6 +48,11 @@
       "type": "continuous"
     },
     {
+      "key": "hi_titer_count",
+      "title": "number of HI titers",
+      "type": "ordinal"
+    },
+    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -115,7 +120,8 @@
     "clade_membership",
     "region",
     "country",
-    "submitting_lab"
+    "submitting_lab",
+    "hi_titer_count"
   ],
   "panels": [
     "tree",
