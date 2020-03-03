@@ -2,7 +2,6 @@
 """
 import argparse
 import csv
-import cv2
 import json
 import numpy as np
 import pandas as pd
@@ -420,6 +419,8 @@ class DistanceExponentialGrowthModel(ExponentialGrowthModel):
             error between estimated values using the given coefficients and
             input data and the observed values
         """
+        import cv2
+
         # Estimate target values.
         y_hat = self.predict(X, coefficients)
 
