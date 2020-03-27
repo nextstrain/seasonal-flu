@@ -550,7 +550,7 @@ class fitness_model(object):
                 else:
                     node.fit_frequencies[time] = self.node_parents[node].fit_frequencies[time]
                 try:
-                    slope, intercept, rval, pval, stderr = linregress(pivots[pivots_fit:-1], node.fit_frequencies[time][pivots_fit:-1])
+                    slope, intercept, rval, pval, stderr = linregress(self.pivots[pivots_fit:-1], node.fit_frequencies[time][pivots_fit:-1])
                     node.freq_slope[time] = slope
                 except:
                     import ipdb; ipdb.set_trace()
