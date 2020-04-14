@@ -28,9 +28,29 @@
       "type": "continuous"
     },
     {
-      "key": "weighted_distance_to_future",
-      "title": "Distance to future population",
+      "key": "weighted_distance_to_future_by_cTiter_x-ne_star",
+      "title": "Distance to future population (by HI antigenic novelty and mutational load)",
       "type": "continuous"
+    },
+    {
+      "key": "weighted_distance_to_future_by_ne_star-lbi",
+      "title": "Distance to future population (by mutational load and LBI)",
+      "type": "continuous"
+    },
+    {
+      "key": "projected_frequency",
+      "title": "Projected frequency",
+      "type": "continuous"
+    },
+    {
+      "key": "ne_star",
+      "title": "Mutational load",
+      "type": "continuous"
+    },
+    {
+      "key": "hi_titer_count",
+      "title": "number of HI titers",
+      "type": "ordinal"
     },
     {
       "key": "cTiter",
@@ -40,6 +60,11 @@
     {
       "key": "cTiterSub",
       "title": "Antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x",
+      "title": "HI antigenic novelty",
       "type": "continuous"
     },
     {
@@ -95,7 +120,8 @@
     "clade_membership",
     "region",
     "country",
-    "submitting_lab"
+    "submitting_lab",
+    "hi_titer_count"
   ],
   "panels": [
     "tree",

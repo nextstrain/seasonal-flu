@@ -1,11 +1,13 @@
 """Fit a model for the given data using the requested predictors and evaluate the model by time series cross-validation.
 """
 import argparse
+import csv
 import json
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 import sys
+import time
 
 from forecast.fitness_model import get_train_validate_timepoints
 from forecast.metrics import add_pseudocounts_to_frequencies, negative_information_gain
@@ -14,6 +16,8 @@ from weighted_distances import get_distances_by_sample_names, get_distance_matri
 
 MAX_PROJECTED_FREQUENCY = 1e3
 FREQUENCY_TOLERANCE = 1e-3
+
+np.random.seed(314159)
 
 
 def sum_of_differences(observed, estimated, y_diff, **kwargs):
@@ -88,7 +92,7 @@ class ExponentialGrowthModel(object):
         # whereas numpy requires the use of specific NaN-aware functions (nanstd).
         return X.loc[:, ["timepoint"] + predictors].groupby("timepoint").std().mean().values
 
-    def standardize_predictors(self, predictors, mean_stds):
+    def standardize_predictors(self, predictors, mean_stds, initial_frequencies):
         """Standardize the values for the given predictors by centering on the mean of
         each predictor and scaling by the mean standard deviation provided.
 
@@ -101,33 +105,27 @@ class ExponentialGrowthModel(object):
             mean standard deviations of predictors across all training
             timepoints
 
+        initial_frequencies : ndarray
+            initial frequencies of samples corresponding to each row of the
+            given predictors
+
         Returns
         -------
         ndarray :
             standardized predictor values
 
         """
-        # Determine mean value of each predictor, ignoring missing data.
-        predictor_means = np.nanmean(predictors, axis=0)
+        means = np.average(predictors, weights=initial_frequencies, axis=0)
+        variances = np.average((predictors - means) ** 2, weights=initial_frequencies, axis=0)
+        stds = np.sqrt(variances)
 
-        # Center all predictors to the mean and replace missing data with zeros
-        # to place them at the mean.
-        centered_predictors = np.nan_to_num(predictors - predictor_means)
-
-        # Select predictors with non-zero standard deviations where scaling is
-        # possible.
-        nonzero_stds = np.where(mean_stds)[0]
+        nonzero_stds = np.where(stds)[0]
 
         if len(nonzero_stds) == 0:
-            print(
-                "Warning: all mean standard deviations are zero, so predictors will not be scaled",
-                file=sys.stderr
-            )
-            return centered_predictors
+            return predictors
 
-        # Scale the centered predictors to unit scale.
-        standardized_predictors = centered_predictors
-        standardized_predictors[:, nonzero_stds] = standardized_predictors[:, nonzero_stds] / mean_stds[nonzero_stds]
+        standardized_predictors = predictors
+        standardized_predictors[:, nonzero_stds] = (predictors[:, nonzero_stds] - means[nonzero_stds]) / stds[nonzero_stds]
 
         return standardized_predictors
 
@@ -284,7 +282,14 @@ class ExponentialGrowthModel(object):
         self.mean_stds_ = self.calculate_mean_stds(X, self.predictors)
 
         # Find coefficients that minimize the model's cost function.
-        initial_coefficients = np.zeros(len(self.predictors))
+        if hasattr(self, "coef_"):
+            # Use the previous coefficients +/- a small random offset (+/- 0.05)
+            # to prevent getting stuck in local minima.
+            initial_coefficients = self.coef_ + (0.1 * np.random.random(len(self.predictors)) - 0.05)
+        else:
+            # If no previous coefficients exist, sample random values between -0.5 and 0.5.
+            initial_coefficients = np.random.random(len(self.predictors)) - 0.5
+
         results = minimize(
             self._fit,
             initial_coefficients,
@@ -331,15 +336,15 @@ class ExponentialGrowthModel(object):
 
         estimated_frequencies = []
         for timepoint, timepoint_df in X.groupby("timepoint"):
+            # Select frequencies from timepoint.
+            initial_frequencies = timepoint_df["frequency"].values
+
             # Select predictors from the timepoint.
             predictors = timepoint_df.loc[:, self.predictors].values
 
             # Standardize predictors by timepoint centering by means at
             # timepoint and mean standard deviation provided.
-            standardized_predictors = self.standardize_predictors(predictors, mean_stds)
-
-            # Select frequencies from timepoint.
-            initial_frequencies = timepoint_df["frequency"].values
+            standardized_predictors = self.standardize_predictors(predictors, mean_stds, initial_frequencies)
 
             # Calculate fitnesses.
             fitnesses = self.get_fitnesses(coefficients, standardized_predictors)
@@ -414,6 +419,75 @@ class DistanceExponentialGrowthModel(ExponentialGrowthModel):
             error between estimated values using the given coefficients and
             input data and the observed values
         """
+        import cv2
+
+        # Estimate target values.
+        y_hat = self.predict(X, coefficients)
+
+        # Calculate EMD for each timepoint in the estimated values and sum that
+        # distance across all timepoints.
+        error = 0.0
+        count = 0
+        for timepoint, timepoint_df in y_hat.groupby("timepoint"):
+            samples_a = timepoint_df["strain"]
+            sample_a_initial_frequencies = timepoint_df["frequency"].values.astype(np.float32)
+            sample_a_frequencies = timepoint_df["projected_frequency"].values.astype(np.float32)
+
+            future_timepoint_df = y[y["timepoint"] == timepoint]
+            assert future_timepoint_df.shape[0] > 0
+
+            samples_b = future_timepoint_df["strain"]
+            sample_b_frequencies = future_timepoint_df["frequency"].values.astype(np.float32)
+
+            distance_matrix = get_distance_matrix_by_sample_names(
+                samples_a,
+                samples_b,
+                self.distances
+            ).astype(np.float32)
+
+            # Estimate the distance between the model's estimated future and the
+            # observed future populations.
+            model_emd, _, self.model_flow = cv2.EMD(
+                sample_a_frequencies,
+                sample_b_frequencies,
+                cv2.DIST_USER,
+                cost=distance_matrix
+            )
+
+            error += model_emd
+            count += 1
+
+        error = error / float(count)
+
+        if use_l1_penalty:
+            l1_penalty = self.l1_lambda * np.abs(coefficients).sum()
+        else:
+            l1_penalty = 0.0
+
+        return error + l1_penalty
+
+    def _fit_distance(self, coefficients, X, y, use_l1_penalty=True):
+        """Calculate the error between observed and estimated values for the given
+        parameters and data.
+
+        Parameters
+        ----------
+        coefficients : ndarray
+            coefficients for each of the model's predictors
+
+        X : pandas.DataFrame
+            standardized tip attributes by timepoint
+
+        y : pandas.DataFrame
+            final weighted distances at delta time in the future from each
+            timepoint in the given tip attributes table
+
+        Returns
+        -------
+        float :
+            error between estimated values using the given coefficients and
+            input data and the observed values
+        """
         # Estimate target values.
         y_hat = self.predict(X, coefficients)
 
@@ -439,7 +513,6 @@ class DistanceExponentialGrowthModel(ExponentialGrowthModel):
             d_u_hat_u = (sample_a_frequencies * sample_a_weighted_distance_to_future).sum()
             d_u_u = (sample_b_frequencies * sample_b_weighted_distance_to_present).sum()
 
-            #error += d_u_hat_u
             null_error += d_t_u
 
             error += (d_u_hat_u - d_u_u) / d_t_u
@@ -447,12 +520,6 @@ class DistanceExponentialGrowthModel(ExponentialGrowthModel):
 
         null_error = null_error / float(count)
         error = error / float(count)
-
-        #print("null = %s" % null_error)
-        #print("model / null = %s" % (error / null_error))
-
-        #error = ((error - null_error) / null_error) * 100
-        #print("model = %s" % error)
 
         if use_l1_penalty:
             l1_penalty = self.l1_lambda * np.abs(coefficients).sum()
@@ -497,16 +564,16 @@ class DistanceExponentialGrowthModel(ExponentialGrowthModel):
 
         estimated_targets = []
         for timepoint, timepoint_df in X.groupby("timepoint"):
+            # Select frequencies from timepoint.
+            initial_frequencies = timepoint_df["frequency"].values
+
             # Select predictors from the timepoint.
             predictors = timepoint_df.loc[:, self.predictors].values
 
             # Standardize predictors by timepoint centering by means at
             # timepoint and mean standard deviation provided.
             mean_stds = timepoint_df.loc[:, self.predictors].std().values
-            standardized_predictors = self.standardize_predictors(predictors, mean_stds)
-
-            # Select frequencies from timepoint.
-            initial_frequencies = timepoint_df["frequency"].values
+            standardized_predictors = self.standardize_predictors(predictors, mean_stds, initial_frequencies)
 
             # Calculate fitnesses.
             fitnesses = self.get_fitnesses(coefficients, standardized_predictors)
@@ -596,9 +663,14 @@ def cross_validate(model_class, model_kwargs, data, targets, train_validate_time
 
     """
     results = []
+    differences_of_model_and_naive_errors = []
+    previous_coefficients = None
 
     for timepoints in train_validate_timepoints:
         model = model_class(**model_kwargs)
+
+        if previous_coefficients is not None:
+            model.coef_ = previous_coefficients
 
         # Get training and validation timepoints.
         training_timepoints = pd.to_datetime(timepoints["train"])
@@ -610,9 +682,13 @@ def cross_validate(model_class, model_kwargs, data, targets, train_validate_time
 
         # Fit a model to the training data.
         if coefficients is None:
+            start_time = time.time()
             training_error = model.fit(training_X, training_y)
+            end_time = time.time()
+            previous_coefficients = model.coef_
             null_training_error = model._fit(np.zeros_like(model.coef_), training_X, training_y)
         else:
+            start_time = end_time = time.time()
             model.coef_ = coefficients
             model.mean_stds_ = model.calculate_mean_stds(training_X, model.predictors)
             training_error = model.score(training_X, training_y)
@@ -625,15 +701,18 @@ def cross_validate(model_class, model_kwargs, data, targets, train_validate_time
         # Calculate the model score for the validation data.
         validation_error = model.score(validation_X, validation_y)
         null_validation_error = model._fit(np.zeros_like(model.coef_), validation_X, validation_y)
+        differences_of_model_and_naive_errors.append(validation_error - null_validation_error)
         print(
-            "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%s" % (
+            "%s\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%s\t%.2f\t%.2f" % (
                 training_timepoints[-1].strftime("%Y-%m"),
                 validation_timepoint.strftime("%Y-%m"),
                 training_error,
                 null_training_error,
                 validation_error,
                 null_validation_error,
-                model.coef_
+                model.coef_,
+                (np.array(differences_of_model_and_naive_errors) < 0).sum() / float(len(differences_of_model_and_naive_errors)),
+                end_time - start_time
             ),
             flush=True
         )
@@ -665,6 +744,7 @@ def cross_validate(model_class, model_kwargs, data, targets, train_validate_time
             },
             "validation_n": validation_X[group_by].unique().shape[0],
             "validation_error": validation_error,
+            "null_validation_error": null_validation_error,
             "last_training_timepoint": training_timepoints[-1].strftime("%Y-%m-%d"),
             "validation_timepoint": validation_timepoint.strftime("%Y-%m-%d")
         }
@@ -677,28 +757,134 @@ def cross_validate(model_class, model_kwargs, data, targets, train_validate_time
         results.append(result)
 
     # Return results for all validation timepoints.
+    print("Mean difference between model and naive: %.4f" % (sum(differences_of_model_and_naive_errors) / len(differences_of_model_and_naive_errors)), flush=True)
+    print("Proportion of timepoints when model < naive: %.2f" % ((np.array(differences_of_model_and_naive_errors) < 0).sum() / float(len(differences_of_model_and_naive_errors))))
     return results
 
 
-def summarize_cross_validation_scores(scores, include_scores=False):
-    """Summarize model errors including in-sample errors by AIC, out-of-sample
-    errors by cross-validation, and beta parameters across timepoints.
+def test(model_class, model_kwargs, data, targets, timepoints, coefficients=None, group_by="clade_membership",
+                   include_attributes=False):
+    """Calculate test scores for the given data and targets across the given
+    timepoints.
+
+    Parameters
+    ----------
+    model : ExponentialGrowthModel
+        an instance of a model with defined hyperparameters including a list of
+        predictors to use for fitting
+
+    data : pandas.DataFrame
+        standardized input attributes to use for model fitting
+
+    targets : pandas.DataFrame
+        observed outputs to test the model with
+
+    timepoints : list
+        a list of timepoint strings in YYYY-MM-DD format
+
+    coefficients : ndarray
+        an array of fixed coefficients for the given model's predictors
+
+    group_by : string
+        column of the tip attributes by which they should be grouped to
+        calculate the total number of samples in the model (e.g., group by clade
+        or strain)
+
+    include_attributes : boolean
+        specifies whether tip attribute data used to test models should be
+        included in the output per timepoint
+
+    Returns
+    -------
+    list
+        a list of dictionaries containing test results with scores per timepoint
+
+    """
+    results = []
+    differences_of_model_and_naive_errors = []
+
+    for timepoint in timepoints:
+        model = model_class(**model_kwargs)
+        model.coef_ = coefficients
+        model.mean_stds_ = np.zeros_like(coefficients)
+
+        # Get training and validation timepoints.
+        test_timepoint = pd.to_datetime(timepoint)
+
+        # Get test data by timepoints.
+        test_X = data[data["timepoint"] == test_timepoint].copy()
+        test_y = targets[targets["timepoint"] == test_timepoint].copy()
+
+        # Calculate the model score for the validation data.
+        test_error = model.score(test_X, test_y)
+        null_test_error = model._fit(np.zeros_like(model.coef_), test_X, test_y)
+        differences_of_model_and_naive_errors.append(test_error - null_test_error)
+        print(
+            "%s\t%.2f\t%.2f\t%s\t%.2f" % (
+                test_timepoint.strftime("%Y-%m"),
+                test_error,
+                null_test_error,
+                model.coef_,
+                (np.array(differences_of_model_and_naive_errors) < 0).sum() / float(len(differences_of_model_and_naive_errors))
+            ),
+            flush=True
+        )
+
+        # Get the estimated frequencies for test sets to export.
+        test_y_hat = model.predict(test_X)
+
+        # Convert timestamps to a serializable format.
+        for df in [test_X, test_y, test_y_hat]:
+            for column in ["timepoint", "future_timepoint"]:
+                if column in df.columns:
+                    df[column] = df[column].dt.strftime("%Y-%m-%d")
+
+        # Store test results and beta coefficients.
+        result = {
+            "predictors": model.predictors,
+            "coefficients": model.coef_.tolist(),
+            "mean_stds": model.mean_stds_.tolist(),
+            "validation_data": {
+                "y": test_y.to_dict(orient="records"),
+                "y_hat": test_y_hat.to_dict(orient="records")
+            },
+            "validation_n": test_X[group_by].unique().shape[0],
+            "validation_error": test_error,
+            "null_validation_error": null_test_error,
+            "validation_timepoint": test_timepoint.strftime("%Y-%m-%d")
+        }
+
+        # Include tip attributes, if requested.
+        if include_attributes:
+            result["validation_data"]["X"] = test_X.to_dict(orient="records")
+
+        results.append(result)
+
+    # Return results for all validation timepoints.
+    print("Mean difference between model and naive: %.4f" % (sum(differences_of_model_and_naive_errors) / len(differences_of_model_and_naive_errors)), flush=True)
+    print("Proportion of timepoints when model < naive: %.2f" % ((np.array(differences_of_model_and_naive_errors) < 0).sum() / float(len(differences_of_model_and_naive_errors))))
+    return results
+
+
+def summarize_scores(scores, include_scores=False):
+    """Summarize model errors across timepoints.
 
     Parameters
     ----------
     scores : list
         a list of cross-validation results including training errors,
-        cross-validation errors, and beta coefficients
+        cross-validation errors, and beta coefficients OR a list of test errors
 
     include_scores : boolean
         specifies whether cross-validation scores should be included in the
-        output per training window
+        output per timepoint
 
     Returns
     -------
     dict :
         a dictionary of all cross-validation results plus summary statistics for
-        training, cross-validation, and beta coefficients
+        training, cross-validation, and beta coefficients OR test results
+
     """
     summary = {
         "predictors": scores[0]["predictors"]
@@ -748,6 +934,7 @@ def get_errors_by_timepoint(scores):
             "predictors": predictors,
             "validation_timepoint": pd.to_datetime(score["validation_timepoint"]),
             "validation_error": score["validation_error"],
+            "null_validation_error": score["null_validation_error"],
             "validation_n": score["validation_n"]
         })
 
@@ -778,7 +965,6 @@ def get_coefficients_by_timepoint(scores):
                 "validation_timepoint": pd.to_datetime(score["validation_timepoint"])
             })
 
-    print(coefficients_by_time)
     return pd.DataFrame(coefficients_by_time)
 
 
@@ -786,8 +972,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--tip-attributes", required=True, help="tab-delimited file describing tip attributes at all timepoints with standardized predictors")
     parser.add_argument("--output", required=True, help="JSON representing the model fit with training and cross-validation results, beta coefficients for predictors, and summary statistics")
-    parser.add_argument("--predictors", required=True, nargs="+", help="tip attribute columns to use as predictors of final clade frequencies")
-    parser.add_argument("--delta-months", required=True, type=int, help="number of months to project clade frequencies into the future")
+    parser.add_argument("--predictors", nargs="+", help="tip attribute columns to use as predictors of final clade frequencies; optional if a fixed model is provided")
+    parser.add_argument("--delta-months", type=int, help="number of months to project clade frequencies into the future")
     parser.add_argument("--target", required=True, choices=["clades", "distances"], help="target for models to fit")
     parser.add_argument("--final-clade-frequencies", help="tab-delimited file of clades per timepoint and their corresponding tips and tip frequencies at the given delta time in the future")
     parser.add_argument("--distances", help="tab-delimited file of distances between pairs of samples")
@@ -799,8 +985,17 @@ if __name__ == "__main__":
     parser.add_argument("--include-scores", action="store_true", help="include score data resulting from cross-validation output")
     parser.add_argument("--errors-by-timepoint", help="optional data frame of cross-validation errors by validation timepoint")
     parser.add_argument("--coefficients-by-timepoint", help="optional data frame of coefficients by validation timepoint")
+    parser.add_argument("--fixed-model", help="optional model JSON to use as a fixed model for calculation of test error in forecasts")
 
     args = parser.parse_args()
+
+    cost_functions_by_name = {
+        "sse": sum_of_squared_errors,
+        "rmse": root_mean_square_error,
+        "mae": mean_absolute_error,
+        "information_gain": negative_information_gain,
+        "diffsum": sum_of_differences
+    }
 
     # Load standardized tip attributes subsetting to tip name, clade, frequency,
     # and requested predictors.
@@ -856,74 +1051,125 @@ if __name__ == "__main__":
         # make them appropriate as targets for the model.
         targets = tips.loc[:, ["strain", "timepoint", "frequency", "weighted_distance_to_present", "weighted_distance_to_future", "y"]].copy()
         targets["future_timepoint"] = targets["timepoint"]
-        targets["timepoint"] = targets["timepoint"] - pd.DateOffset(months=args.delta_months)
 
         model_class = DistanceExponentialGrowthModel
-        distances = pd.read_csv(args.distances, sep="\t")
-        distances_by_sample_names = get_distances_by_sample_names(distances)
+
+        with open(args.distances, "r") as fh:
+            print("Read distances", flush=True)
+            reader = csv.DictReader(fh, delimiter="\t")
+            print("Get distances by sample names", flush=True)
+            distances_by_sample_names = get_distances_by_sample_names(reader)
+            print("Data loaded", flush=True)
+
         model_kwargs = {"distances": distances_by_sample_names}
         group_by_attribute = "strain"
 
     # Identify all available timepoints from tip attributes.
     timepoints = tips["timepoint"].dt.strftime("%Y-%m-%d").unique()
 
-    # Identify train/validate splits from timepoints.
-    train_validate_timepoints = get_train_validate_timepoints(
-        timepoints,
-        args.delta_months,
-        args.training_window
-    )
+    # If a fixed model is provided, calculate test errors. Otherwise, calculate
+    # cross-validation errors.
+    if args.fixed_model is not None:
+        # Load model details and extract mean coefficients.
+        with open(args.fixed_model, "r") as fh:
+            model_json = json.load(fh)
 
-    # Select the cost function.
-    if args.cost_function == "sse":
-        cost_function = sum_of_squared_errors
-    elif args.cost_function == "rmse":
-        cost_function = root_mean_square_error
-    elif args.cost_function == "mae":
-        cost_function = mean_absolute_error
-    elif args.cost_function == "information_gain":
-        cost_function = negative_information_gain
-    elif args.cost_function == "diffsum":
-        cost_function = sum_of_differences
+        coefficients = np.array(model_json["coefficients_mean"])
+        delta_months = model_json["delta_months"]
+        delta_time = delta_months / 12.0
+        l1_lambda = model_json["l1_lambda"]
+        training_window = model_json["training_window"]
+        cost_function_name = model_json["cost_function"]
+        cost_function = cost_functions_by_name[cost_function_name]
+        model_kwargs.update({
+            "predictors": model_json["predictors"],
+            "delta_time": delta_time,
+            "l1_lambda": l1_lambda,
+            "cost_function": cost_function
+        })
 
-    # For each train/validate split, fit a model to the training data, and
-    # evaluate the model with the validation data, storing the training results,
-    # beta parameters, and validation results.
-    delta_time = args.delta_months / 12.0
-    model_kwargs.update({
-        "predictors": args.predictors,
-        "delta_time": delta_time,
-        "l1_lambda": args.l1_lambda,
-        "cost_function": cost_function
-    })
+        # Find the latest timepoint we can project from based on the given delta
+        # months.
+        latest_timepoint = pd.to_datetime(timepoints[-1]) - pd.DateOffset(months=delta_months)
+        test_timepoints = [
+            timepoint
+            for timepoint in timepoints
+            if pd.to_datetime(timepoint) <= latest_timepoint
+        ]
 
-    # If this is a naive model, set the coefficients to zero so cross-validation
-    # can run under naive model conditions.
-    if "naive" in args.predictors:
-        coefficients = np.zeros(len(args.predictors))
+        # Calculate test errors/scores for the given coefficients and data at
+        # the identified test timepoints.
+        targets["timepoint"] = targets["timepoint"] - pd.DateOffset(months=delta_months)
+        scores = test(
+            model_class,
+            model_kwargs,
+            tips,
+            targets,
+            test_timepoints,
+            coefficients,
+            group_by=group_by_attribute,
+            include_attributes=args.include_attributes
+        )
     else:
-        coefficients = None
+        # First, confirm that all predictors are defined in the given tip
+        # attributes.
+        if not all([predictor in tips.columns for predictor in args.predictors]):
+            print("ERROR: Not all predictors could be found in the given tip attributes table.", file=sys.stderr)
+            sys.exit(1)
 
-    scores = cross_validate(
-        model_class,
-        model_kwargs,
-        tips,
-        targets,
-        train_validate_timepoints,
-        coefficients,
-        group_by=group_by_attribute,
-        include_attributes=args.include_attributes
-    )
+        # Select the cost function.
+        cost_function_name = args.cost_function
+        cost_function = cost_functions_by_name[cost_function_name]
+
+        # Identify train/validate splits from timepoints.
+        training_window = args.training_window
+        train_validate_timepoints = get_train_validate_timepoints(
+            timepoints,
+            args.delta_months,
+            training_window
+        )
+
+        # For each train/validate split, fit a model to the training data, and
+        # evaluate the model with the validation data, storing the training results,
+        # beta parameters, and validation results.
+        delta_months = args.delta_months
+        delta_time = delta_months / 12.0
+        l1_lambda = args.l1_lambda
+        model_kwargs.update({
+            "predictors": args.predictors,
+            "delta_time": delta_time,
+            "l1_lambda": l1_lambda,
+            "cost_function": cost_function
+        })
+
+        # If this is a naive model, set the coefficients to zero so cross-validation
+        # can run under naive model conditions.
+        if "naive" in args.predictors:
+            coefficients = np.zeros(len(args.predictors))
+        else:
+            coefficients = None
+
+        targets["timepoint"] = targets["timepoint"] - pd.DateOffset(months=delta_months)
+        scores = cross_validate(
+            model_class,
+            model_kwargs,
+            tips,
+            targets,
+            train_validate_timepoints,
+            coefficients,
+            group_by=group_by_attribute,
+            include_attributes=args.include_attributes
+        )
 
     # Summarize model errors including in-sample errors by AIC, out-of-sample
     # errors by cross-validation, and beta parameters across timepoints.
-    model_results = summarize_cross_validation_scores(scores, args.include_scores)
+    model_results = summarize_scores(scores, args.include_scores)
 
     # Annotate parameters used to produce models.
-    model_results["cost_function"] = args.cost_function
-    model_results["l1_lambda"] = args.l1_lambda
-    model_results["delta_months"] = args.delta_months
-    model_results["training_window"] = args.training_window
+    model_results["cost_function"] = cost_function_name
+    model_results["l1_lambda"] = l1_lambda
+    model_results["delta_months"] = delta_months
+    model_results["training_window"] = training_window
     model_results["pseudocount"] = args.pseudocount
 
     # Save model fitting hyperparameters, raw results, and summary of results to

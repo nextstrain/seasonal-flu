@@ -23,6 +23,11 @@
       "type": "categorical"
     },
     {
+      "key": "ne_star",
+      "title": "Mutational load",
+      "type": "continuous"
+    },
+    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -30,6 +35,11 @@
     {
       "key": "cTiterSub",
       "title": "Antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x",
+      "title": "HI antigenic novelty",
       "type": "continuous"
     },
     {

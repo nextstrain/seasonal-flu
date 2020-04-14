@@ -10,3 +10,11 @@ Special thanks to Jackie Katz, Dave Wentworth, Becky Kondor, Vivien Dugan, Xiyan
         <img alt="gisrs-logo" width="120" src="https://www.who.int/influenza/gip-anniversary/GISRS_insignia_web_resize_.jpg"/>
     </a>
 </div>
+
+## Forecasts
+
+The frequency panel shows projections of currently circulating strain frequencies one year into the future in one month intervals.
+Frequency projections are calculated from a previously trained fitness model based on the current frequency and estimated fitness of each strain.
+We estimate strain fitness by a combination of antigenic novelty and mutational load.
+Antigenic novelty is based on inferred measurements of antigenic advance from hemaggluttination inhibition (HI) assays.
+Mutational load is the number of amino acid mutations each strain carries at putative non-epitope sites relative to its most recent ancestor from the previous season.

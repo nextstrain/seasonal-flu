@@ -38,12 +38,14 @@ def _get_node_data_for_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
     """
     # Define inputs shared by all builds.
+    wildcards_dict = dict(wildcards)
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.titers_tree.output.titers_model,
         rules.titers_sub.output.titers_model,
+        rules.titer_tree_cross_immunities.output.cross_immunities,
         rules.clades.output.clades,
         rules.traits.output.node_data,
         rules.lbi.output.lbi,
@@ -51,7 +53,9 @@ def _get_node_data_for_export(wildcards):
     ]
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
+        wildcards_dict["model"] = config["fitness_model"]["best_model"]
         inputs.append(rules.forecast_tips.output.node_data)
+        inputs.append(rules.merge_weighted_distances_to_future.output.node_data)
 
     # Only request a distance file for builds that have distance map
     # configurations defined.
@@ -59,7 +63,7 @@ def _get_node_data_for_export(wildcards):
         inputs.append(rules.distances.output.distances)
 
     # Convert input files from wildcard strings to real file names.
-    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
     return inputs
 
 def _get_node_data_for_predictors(wildcards):
@@ -71,6 +75,7 @@ def _get_node_data_for_predictors(wildcards):
         rules.titers_sub.output.titers_model,
         rules.lbi.output.lbi,
         rules.convert_translations_to_json.output.translations,
+        rules.titer_tree_cross_immunities.output.cross_immunities
     ]
 
     # Only request a distance file for builds that have distance map
@@ -157,10 +162,11 @@ rule forecast_tips:
         attributes = rules.merge_node_data_and_frequencies.output.table,
         distances = rules.target_distances.output.distances,
         frequencies = rules.tip_frequencies.output.tip_freq,
-        model = "models/lbi-ne_star.json"
+        model = "models/{model}.json"
     output:
-        node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
-        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_forecast-tip-frequencies.json"
+        node_data = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.json",
+        frequencies = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}_forecast-tip-frequencies.json",
+        table = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.tsv"
     params:
         delta_months = _get_delta_months_to_forecast
     shell:
@@ -172,8 +178,48 @@ rule forecast_tips:
             --model {input.model} \
             --delta-months {params.delta_months} \
             --output-node-data {output.node_data} \
-            --output-frequencies {output.frequencies}
+            --output-frequencies {output.frequencies} \
+            --output-table {output.table}
         """
+
+
+rule calculate_weighted_distance_to_future:
+    input:
+        attributes = rules.merge_node_data_and_frequencies.output.table,
+        forecasts = rules.forecast_tips.output.table
+    output:
+        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.json",
+    shell:
+        """
+        python3 flu-forecasting/scripts/calculate_weighted_distances.py \
+            --tip-attributes {input.attributes} \
+            --forecasts {input.forecasts} \
+            --distance-attribute-name weighted_distance_to_future_by_{wildcards.model} \
+            --output {output.node_data}
+        """
+
+
+rule merge_weighted_distances_to_future:
+    input:
+        distances = expand("results/weighted_distances_{{center}}_{{lineage}}_{{segment}}_{{resolution}}_{{passage}}_{{assay}}_{model}.json", model=config["fitness_model"]["models"])
+    output:
+        node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    run:
+        # Start with a single base JSON in node data format.
+        with open(input.distances[0], "r") as fh:
+            base_json = json.load(fh)
+
+        # Update the base JSON with each subsequent model's distances to the future.
+        for json_file in input.distances[1:]:
+            with open(json_file, "r") as fh:
+                model_json = json.load(fh)
+                for strain, distances in model_json["nodes"].items():
+                    base_json["nodes"][strain].update(distances)
+
+        # Save merged data.
+        with open(output.node_data, "w") as oh:
+            json.dump(base_json, oh)
+
 
 rule export:
     input:
@@ -198,7 +244,10 @@ rule export:
 
 def get_tip_frequencies(wildcards):
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
-        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_forecast-tip-frequencies.json"
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_{model}_forecast-tip-frequencies.json".format(
+            model=config["fitness_model"]["best_model"],
+            **wildcards
+        )
     else:
         return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
 
@@ -212,7 +261,7 @@ rule simplify_auspice_names:
     shell:
         '''
         mv {input.main} {output.main} &
-        mv {input.frequencies} {output.frequencies} &
+        cp -f {input.frequencies} {output.frequencies} &
         '''
 
 rule targets:
@@ -225,6 +274,9 @@ rule targets:
         '''
         touch {output.target}
         '''
+
+rule forecasts:
+    input: expand(rules.forecast_tips.output.frequencies, center="who", lineage="h3n2", segment="ha", resolution="2y", passage="cell", assay="hi", model=config["fitness_model"]["models"])
 
 rule clean:
     message: "Removing directories: {params}"
