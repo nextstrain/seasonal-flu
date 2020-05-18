@@ -30,6 +30,7 @@ A/HongKong/50/2016-egg
 A/HongKong/656/2018
 A/HongKong/2286/2017
 A/HongKong/2286/2017-egg
+A/HongKong/2671/2019
 A/HongKong/4801/2014
 A/HongKong/4801/2014-egg
 A/HongKong/7127/2014
