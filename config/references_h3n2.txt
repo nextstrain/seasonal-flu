@@ -26,6 +26,7 @@ A/Florida/23/2017
 A/Greece/4/2017-egg
 A/Hawaii/22/2012
 A/Hawaii/47/2014
+A/HongKong/45/2019
 A/HongKong/50/2016-egg
 A/HongKong/656/2018
 A/HongKong/2286/2017
