@@ -54,6 +54,16 @@
             "vaccine": {
                 "selection_date": "2019-09-27"
             }
+        },
+        "A/HongKong/2671/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
+        },
+        "A/HongKong/45/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
         }
     }
 }

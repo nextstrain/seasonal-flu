@@ -270,13 +270,14 @@ rule download_titers:
         titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
     params:
         dbs = _get_tdb_databases,
+        assays = lambda wildcards: "fra,hint" if wildcards.assay == "fra" else wildcards.assay
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
             --database {params.dbs} \
             --virus flu \
             --subtype {wildcards.lineage} \
-            --select assay_type:{wildcards.assay} serum_passage_category:{wildcards.passage} \
+            --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
             --path data \
             --fstem {wildcards.center}_{wildcards.lineage}_{wildcards.passage}_{wildcards.assay}
         """

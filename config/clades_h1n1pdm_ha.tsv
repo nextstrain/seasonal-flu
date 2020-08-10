@@ -40,6 +40,8 @@ clade	gene	site	alt
 6b1.A	HA1	164	T
 6b1.A	nuc	1163	T
 6b1.A	nuc	1271	T
+6b1.A/156K	HA1	156	K
+6b1.A/156K	HA1	161	I
 6b1.A/183P-1	nuc	1703	A
 6b1.A/183P-1	nuc	384	C
 6b1.A/183P-1	nuc	618	C
@@ -60,6 +62,9 @@ clade	gene	site	alt
 6b1.A/183P-5	nuc	618	C
 6b1.A/183P-5	nuc	1364	C
 6b1.A/183P-5	nuc	1487	C
+6b1.A/183P-5a	HA1	129	D
+6b1.A/183P-5a	HA1	185	I
+6b1.A/183P-5b	HA1	160	M
 6b1.A/183P-6	nuc	209	A
 6b1.A/183P-6	nuc	536	G
 6b1.A/183P-6	nuc	618	C
@@ -67,3 +72,6 @@ clade	gene	site	alt
 6b1.A/183P-7	nuc	317	G
 6b1.A/183P-7	nuc	976	C
 6b1.A/183P-7	nuc	1558	G
+6b1.A/187A	HA1	187	A
+6b1.A/187A	HA1	189	E
+

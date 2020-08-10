@@ -22,6 +22,8 @@ A/Fiji/3/2016
 A/Fiji/3/2016-egg
 A/Florida/62/2014
 A/Florida/62/2014
+A/Guangdong-Maonan/SWL1536/2019-egg
+A/Hawaii/70/2019
 A/Idaho/7/2018
 A/India/322/2017
 A/India/3405/2017
