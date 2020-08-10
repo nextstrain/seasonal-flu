@@ -2,9 +2,9 @@ configfile: "config/config.json"
 
 passages = ['cell', 'egg']
 assays = ['hi', 'fra']
-centers = ['who', 'cdc', 'crick', 'niid', 'vidrl']
-resolutions = ['2y', '6y']
-lineages = ['h3n2' , 'h1n1pdm', 'vic', 'yam']
+centers = ['who', 'cdc'] #, 'crick', 'niid', 'vidrl']
+resolutions = ['2y'] #[, '6y']
+lineages = ['h3n2' , 'h1n1pdm'] #, 'vic', 'yam']
 segments = ['ha', 'na']
 
 include: "Snakefile_base"

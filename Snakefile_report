@@ -1,3 +1,4 @@
+include: "Snakefile_WHO"
 resolutions = ['2y']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
@@ -5,20 +6,20 @@ centers = ['cdc'] #, 'vidrl', 'crick', 'niid', 'who']
 assays = ['hi', 'fra']
 passages = ['cell', 'egg']
 
-include: "Snakefile_WHO"
+
 
 def rare_mutations_to_plot(v):
-    mutations = {('h1n1pdm', 'ha'):["HA1:156K", "HA1:156D","HA1:186T"],
-                 ('h3n2', 'ha'):["HA1:94N", "HA1:94S","HA1:198P"],
+    mutations = {('h1n1pdm', 'ha'):["HA1:156D","HA1:186T"],
+                 ('h3n2', 'ha'):["HA1:94S","HA1:198P"],
                  ('vic', 'ha'):["HA1:126K", "HA1:128K", "HA1:197D"],
                   }
     return mutations[(v.lineage, v.segment)]
 
 def mutations_to_plot(v):
     mutations = {('h3n2', 'ha'):["HA1:91N", "HA1:137F",
-                                 "HA1:193S", "HA1:197R", "HA1:207R"],
+                                 "HA1:193S", "HA1:197R", "HA1:207R", "HA1:186D", "HA1:94N"],
                  ('h3n2', 'na'):["NA:386S", "NA:344K", "NA:380I"],
-                 ('h1n1pdm', 'ha'):["HA1:130N", "HA1:183P", "HA1:185I", "HA1:187A",  "HA1:296N"],
+                 ('h1n1pdm', 'ha'):["HA1:130N", "HA1:183P", "HA1:185I", "HA1:187A",  "HA1:296N", "HA1:156K"],
                  ('h1n1pdm', 'na'):["NA:74S", "NA:85I", "NA:188I",  "NA:389K", "NA:416N"],
                  ('vic', 'ha'):["HA1:163-", "HA1:164-","HA1:164D", "HA1:133R"],
                  ('vic', 'na'):["NA:371Q","NA:283G","NA:395T"],
@@ -29,8 +30,8 @@ def mutations_to_plot(v):
 
 def clades_to_plot(v):
     clades = {
-        ('h3n2', 'ha'): ["A1b/135K", "A1b/131K", "A1b/137F", "A1b/197R", "3c3.A"],
-        ('h1n1pdm', 'ha'): ["6b1.A/183P-5","6b1.A/183P-7"],
+        ('h3n2', 'ha'): ["A1b/135K", "A1b/186D", "A1b/131K", "A1b/137F", "A1b/197R", "A1b/94N", "3c3.A"],
+        ('h1n1pdm', 'ha'): ["6b1.A/183P-5a", "6b1.A/183P-5b", "6b1.A/187A", "6b1.A/156K"],
         ('vic', 'ha'): ["V1A.2", "V1A.1", "V1A.3"],
         ('yam', 'ha'): ["172Q", "3"],
     }

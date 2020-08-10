@@ -535,7 +535,6 @@ rule traits:
         augur traits \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --weights {input.weights} \
             --sampling-bias-correction {params.sbc} \
             --output {output.node_data} \
             --columns {params.columns} \
