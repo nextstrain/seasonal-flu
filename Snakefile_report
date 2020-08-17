@@ -2,15 +2,15 @@ include: "Snakefile_WHO"
 resolutions = ['2y']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
-centers = ['cdc'] #, 'vidrl', 'crick', 'niid', 'who']
+centers = ['cdc', 'who'] #, 'vidrl', 'crick', 'niid', 'who']
 assays = ['hi', 'fra']
 passages = ['cell', 'egg']
 
 
 
 def rare_mutations_to_plot(v):
-    mutations = {('h1n1pdm', 'ha'):["HA1:156D","HA1:186T"],
-                 ('h3n2', 'ha'):["HA1:94S","HA1:198P"],
+    mutations = {('h1n1pdm', 'ha'):["HA1:209M", "HA2:147A"],
+                 ('h3n2', 'ha'):["HA1:214T", "HA1:144N"],
                  ('vic', 'ha'):["HA1:126K", "HA1:128K", "HA1:197D"],
                   }
     return mutations[(v.lineage, v.segment)]
