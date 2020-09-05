@@ -16,6 +16,7 @@
         "pivot_interval": 6,
         "delta_pivots": 1,
         "months_back_for_current_samples": 6,
-        "max_years_for_distances": 5
+        "max_years_for_distances": 5,
+        "number_of_forecast_samples": 10
     }
 }
