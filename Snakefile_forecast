@@ -9,6 +9,7 @@ centers = ['cdc']
 assays = ['hi']
 
 forecast_samples = list(range(config["fitness_model"]["number_of_forecast_samples"]))
+models = config["fitness_model"]["models"]
 
 wildcard_constraints:
     lineage = "[A-Za-z0-9]{3,7}",
@@ -32,10 +33,7 @@ frequency_regions = region_names
 
 rule all_live:
     input:
-        auspice_main = expand("auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}.json",
-                              center=centers, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays, forecast_sample=forecast_samples),
-        auspice_tip_frequencies = expand("auspice/flu_cdc_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}_{model}_forecast-tip-frequencies.json",
-                                         center=centers, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays, forecast_sample=forecast_samples, model=config["fitness_model"]["models"])
+        "results/forecasted_frequencies.tsv",
 
 localrules: download_titers, download_sequences
 
@@ -278,7 +276,7 @@ rule download_sequences:
     output:
         sequences = "data/{lineage}_{segment}.fasta"
     params:
-        fasta_fields = "strain virus accession collection_date region country division location passage_category originating_lab submitting_lab age gender"
+        fasta_fields = "strain virus accession collection_date virus_inclusion_date region country division location passage_category originating_lab submitting_lab age gender"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -317,7 +315,7 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus accession date region country division location passage originating_lab submitting_lab age gender",
+        fasta_fields =  "strain virus accession date virus_inclusion_date region country division location passage originating_lab submitting_lab age gender",
         prettify_fields = "region country division location originating_lab submitting_lab"
     shell:
         """
@@ -377,8 +375,23 @@ rule select_strains:
             --min-date 2018-04-01 \
             --max-date 2020-04-01 \
             --group-by region year month \
-            --subsample-max-sequences 1500 \
+            --subsample-max-sequences 1800 \
             --subsample-seed {wildcards.forecast_sample} \
+            --output {output.sequences}
+        """
+
+rule filter_early_strains:
+    input:
+        sequences = "results/extracted_{center}_{lineage}_{resolution}_{passage}_{assay}_{forecast_sample}.fasta",
+        metadata = expand("results/metadata_{{lineage}}_{segment}.tsv", segment=segments)
+    output:
+        sequences = "results/extracted_and_filtered_{center}_{lineage}_{resolution}_{passage}_{assay}_{forecast_sample}.fasta",
+    shell:
+        """
+        augur filter \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
+            --min-date 2013-12-01 \
             --output {output.sequences}
         """
 
@@ -388,7 +401,7 @@ rule align:
         Aligning sequences to {input.reference}
         """
     input:
-        sequences = rules.select_strains.output.sequences,
+        sequences = rules.filter_early_strains.output.sequences,
         reference = files.reference
     output:
         alignment = "results/aligned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}.fasta"
@@ -407,12 +420,13 @@ rule tree:
         exclude_sites = files.exclude_sites
     output:
         tree = "results/tree-raw_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}.nwk"
+    threads: 4
     shell:
         """
         augur tree \
             --alignment {input.alignment} \
             --output {output.tree} \
-            --nthreads 1 \
+            --nthreads {threads} \
             --exclude-sites {input.exclude_sites}
         """
 
@@ -1036,4 +1050,33 @@ rule export:
             --output {output.auspice_json} \
             --description {input.description} \
             --minify-json
+        """
+
+
+rule convert_forecasted_frequencies_to_table:
+    input:
+        tree = rules.export.output.auspice_json,
+        frequencies = rules.forecast_tips.output.frequencies
+    output:
+        table = "results/forecasted_frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}_{model}.tsv"
+    shell:
+        """
+        python3 scripts/forecast_frequencies_to_table.py \
+            --tree {input.tree} \
+            --frequencies {input.frequencies} \
+            --annotations sample={wildcards.forecast_sample} model={wildcards.model} \
+            --output {output}
+        """
+
+
+rule aggregate_forecasted_frequencies_tables:
+    input:
+        frequencies = expand("results/forecasted_frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{forecast_sample}_{model}.tsv", center=centers, lineage=lineages, segment=segments, resolution=resolutions, passage=passages, assay=assays, forecast_sample=forecast_samples, model=models)
+    output:
+        frequencies = "results/forecasted_frequencies.tsv"
+    shell:
+        """
+        python3 scripts/collect_tables.py \
+            --tables {input.frequencies} \
+            --output {output.frequencies}
         """
