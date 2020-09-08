@@ -49,6 +49,7 @@ A/Guangxi-Gangbei/190/2019
 A/Guatemala/116/2018
 A/Hawaii/3/2012
 A/Hawaii/28/2020
+A/Hawaii/28/2020-egg
 A/Helsinki/798/2013
 A/Helsinki/823/2013
 A/Helsinki/897/2013
