@@ -227,7 +227,7 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
-    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.35))
+    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.30))
     plt.subplots_adjust(left=0.08, right=0.81, top=0.9, bottom=0.22)
     if fname:
         plt.savefig(fname)
