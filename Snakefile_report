@@ -16,9 +16,9 @@ def rare_mutations_to_plot(v):
     return mutations[(v.lineage, v.segment)]
 
 def mutations_to_plot(v):
-    mutations = {('h3n2', 'ha'):["HA1:91N", "HA1:137F",
+    mutations = {('h3n2', 'ha'):["HA1:91N", "HA1:131K", "HA1:135K", "HA1:137F",
                                  "HA1:193S", "HA1:197R", "HA1:207R", "HA1:186D", "HA1:94N"],
-                 ('h3n2', 'na'):["NA:386S", "NA:344K", "NA:380I"],
+                 ('h3n2', 'na'):["NA:386S", "NA:344K", "NA:315R"],
                  ('h1n1pdm', 'ha'):["HA1:130N", "HA1:183P", "HA1:185I", "HA1:187A",  "HA1:296N", "HA1:156K"],
                  ('h1n1pdm', 'na'):["NA:74S", "NA:85I", "NA:188I",  "NA:389K", "NA:416N"],
                  ('vic', 'ha'):["HA1:163-", "HA1:164-","HA1:164D", "HA1:133R"],
