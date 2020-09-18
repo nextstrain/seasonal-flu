@@ -31,7 +31,7 @@ def load_frequencies(fname):
         return json.load(fh)
 
 def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
-                             n_std_dev=1, n_smooth=3, drop=3, regions=None):
+                             n_std_dev=1, n_smooth=3, drop=3, regions=None, ymax=1):
 
     if regions is None:
         regions = default_regions
@@ -83,15 +83,20 @@ def plot_mutations_by_region(frequencies, mutations, fname, show_errorbars=True,
                                 facecolor=props['color'], linewidth=0, alpha=0.1)
             # if mi==0:
             #     ax.legend(ncol=1, bbox_to_anchor=(1.02, 0.2))
-            ax.set_ylabel(mut, fontsize=fs)
-            ax.set_ylim(0, 1)
+        ax.set_ylabel(mut, fontsize=fs)
+        if ymax:
+            ax.set_ylim(0, ymax)
             ax.set_yticklabels(['{:3.0f}%'.format(x*100) for x in [0, 0.2, 0.4, 0.6, 0.8, 1.0]])
-            ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
-            ax.tick_params(axis='x', which='minor', pad=7)
-            ax.xaxis.set_major_locator(years)
-            ax.xaxis.set_major_formatter(yearsFmt)
-            ax.xaxis.set_minor_locator(months)
-            ax.xaxis.set_minor_formatter(monthsFmt)
+        else:
+            ax.set_ylim(ymin=0)
+            yticks = ax.get_yticks()
+            ax.set_yticklabels(['{:3.0f}%'.format(x*100) for x in yticks])
+        ax.tick_params(axis='x', which='major', labelsize=fs, pad=20)
+        ax.tick_params(axis='x', which='minor', pad=7)
+        ax.xaxis.set_major_locator(years)
+        ax.xaxis.set_major_formatter(yearsFmt)
+        ax.xaxis.set_minor_locator(months)
+        ax.xaxis.set_minor_formatter(monthsFmt)
 
     # axs[1].legend(regions, loc=3, bbox_to_anchor=(-0.05, 1.15), ncol=2, fontsize=fs)
     fig.legend(regions, loc=2, ncol=2, fontsize=fs)
@@ -227,7 +232,7 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
-    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.30))
+    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.35))
     plt.subplots_adjust(left=0.08, right=0.81, top=0.9, bottom=0.22)
     if fname:
         plt.savefig(fname)
@@ -252,13 +257,16 @@ if __name__ == '__main__':
     parser.add_argument('--output-total-counts', help="file name to save figure to")
     parser.add_argument('--output-tree-counts', help="file name to save figure to")
     parser.add_argument('--output-clades', help="file name to save figure to")
+    parser.add_argument('--rare-mutations', action='store_true', help="limit mutation frequency graphs to 1")
 
     args=parser.parse_args()
 
     if args.mutation_frequencies:
         frequencies = load_frequencies(args.mutation_frequencies)
-        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations, drop=1, regions=args.regions)
-        sample_count_by_region(frequencies, args.output_total_counts, regions=args.regions)
+        plot_mutations_by_region(frequencies, args.mutations, args.output_mutations, drop=1,
+                                 regions=args.regions, ymax=None if args.rare_mutations else 1)
+        if args.output_total_counts:
+            sample_count_by_region(frequencies, args.output_total_counts, regions=args.regions)
 
 
     if args.tree_frequencies:
