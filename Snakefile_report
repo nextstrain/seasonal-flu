@@ -2,7 +2,7 @@ include: "Snakefile_WHO"
 resolutions = ['2y']
 lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
 segments = ['ha', 'na']
-centers = ['cdc', 'who', 'vidrl', 'crick', 'niid'] #, 'who']
+centers = ['cdc', 'who', 'vidrl', 'crick', 'niid']
 assays = ['hi', 'fra']
 passages = ['cell', 'egg']
 

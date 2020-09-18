@@ -43,7 +43,7 @@ analysis and the files, alongside:
 * `Snakefile` for the standard "live" build housed at
   [nextstrain.org/flu](https://nextstrain.org/flu)
 * `Snakefile_WHO` for the WHO CC builds
-* `Snakefile_reports` to generate figures and additional analysis for the biannual reports
+* `Snakefile_report` to generate figures and additional analysis for the biannual reports
 to the WHO
 
 The latter Snakefiles import the rules specified in `Snakefile_base`, define additional
