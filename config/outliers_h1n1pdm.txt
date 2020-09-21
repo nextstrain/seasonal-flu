@@ -51,6 +51,7 @@ A/Netherlands/10407/2018
 A/Norway/1929/2014
 A/Novosibirsk/3/2019
 A/Novosibirsk/716/2009
+A/Novosibirsk/RII-27028S/2020
 A/Ohio/1/2007
 A/Ohio/2/2007
 A/Ohio/9/2015
@@ -59,6 +60,7 @@ A/Ontario/N163578/2012
 A/Philippines/8/2018
 A/Poland/16/2013
 A/RioGrandedoNorte/117490/2012
+A/SaintLucia/7340/2020
 A/Shandong/1/2009
 A/Shandong/1/2009-egg
 A/Shanghai-Xuhui/SWL1809/2019
@@ -74,5 +76,5 @@ A/Tyumen/1V/2018
 A/Vietnam/102/2015
 A/Wisconsin/28/2011
 A/Wisconsin/87/2005
-A/Yunnan-Longyang/SWL1982/2015
 A/Yunnan-Hongta/SWL1618/2020
+A/Yunnan-Longyang/SWL1982/2015
