@@ -59,6 +59,7 @@ A/Ohio/9/2015-egg
 A/Ontario/N163578/2012
 A/Philippines/8/2018
 A/Poland/16/2013
+A/RheinlandPfalz/1/2020
 A/RioGrandedoNorte/117490/2012
 A/SaintLucia/7340/2020
 A/Shandong/1/2009
