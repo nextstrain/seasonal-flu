@@ -24,6 +24,16 @@
             "vaccine": {
                 "selection_date": "2020-02-28"
             }
+        },
+        "A/Victoria/2570/2019": {
+            "vaccine": {
+                "selection_date": "2020-09-25"
+            }
+        },
+        "A/Wisconsin/588/2019": {
+            "vaccine": {
+                "selection_date": "2020-09-25"
+            }
         }
     }
 }
