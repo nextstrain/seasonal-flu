@@ -13,7 +13,7 @@ from select_strains import read_strain_list, determine_time_interval, parse_meta
 
 
 h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/137F','A1b/135N', 'A1b/131K', 'A1b/197R', 'A1b/94N', 'A1b/186D', 'A2', 'A2/re', '3c3.A']
-h1n1_clades = ["6b1.A", "6b1.A/183P-1", "6b1.A/183P-2", "6b1.A/183P-3", "6b1.A/183P-5", "6b1.A/183P-6", "6b1.A/183P-7", "6b1.A/156K", "6b1.A/187A"]
+h1n1_clades = ["6b1.A", "6b1.A/183P-5a", "6b1.A/183P-5b", "6b1.A/156K", "6b1.A/187A"]
 vic_clades =  ["V1A", "V1A.1","V1A.2", "V1A.3", "V1A/165N"]
 yam_clades = ["172Q", "3"]
 
@@ -63,7 +63,7 @@ def get_average_titer_by_clade(titers, clades, normalized=False,
         else:
             return np.mean(d)
     emuts = [(int(x[:-1])-1, x[-1]) for x in extra_muts] if extra_muts else []
-    extra_label = ",".join(extra_muts)
+    extra_label = ",".join(extra_muts) if extra_muts else ""
     def get_clade(strain):
         if aaseqs and emuts:
             if any([aaseqs[strain][p]==v if strain in aaseqs else False for p,v in emuts]):
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     args=parser.parse_args()
     # metadata = {k:val for k,val in parse_metadata(['segment'], [args.metadata]).items()}['segment']
 
-    date_cutoff = 2018
+    date_cutoff = 2019
 
     titers = load_json(args.titers)
     potency = load_json(args.model)["potency"] if args.model else defaultdict(dict)
@@ -122,13 +122,13 @@ if __name__ == '__main__':
     to_pop = []
     for antigen in titers:
         titers[antigen] = {k:v for k,v in titers[antigen].items()
-                            if any([x in k for x in ['/2019']])}
+                            if any([x in k for x in ['/2018', '/2019', '/2020']])}
 #                           if metadata[k]["num_date"]>date_cutoff}
-        if len(titers[antigen])<8 or any([x in antigen for x in ["/2014", "/2015"]]):
+        if len(titers[antigen]) < 1 or any([x in antigen for x in ["/2014", "/2015"]]):
             to_pop.append(antigen)
 
     for a in to_pop:
-        print("dropping reference strain ",a)
+        print("dropping reference strain ", a)
         titers.pop(a)
 
     clades = load_json(args.clades)["nodes"]
@@ -166,10 +166,11 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(average_titers).T
     # sort columns
-    df = df[[x for x in h3n2_clades+h1n1_clades+vic_clades+yam_clades+[",".join(args.exclude_extra_muts)]
+    extra_label = [",".join(args.exclude_extra_muts)] if args.exclude_extra_muts else []
+    df = df[[x for x in h3n2_clades + h1n1_clades + vic_clades + yam_clades + extra_label
              if x in df.columns]]
     rows = list(df.iterrows())
-    rows.sort(key=lambda x:('Z',x[0][1]) if x[0][0]=='3c3.A' else x[0])
+    # rows.sort(key=lambda x:('Z',x[0][1]) if x[0][0]=='3c3.A' else x[0])
     df = pd.DataFrame({x[0]:x[1] for x in rows}).T
 
     try:
@@ -177,7 +178,7 @@ if __name__ == '__main__':
     except:
         pass
 
-    plt.figure(figsize=(8,4))
+    plt.figure(figsize=(7,4.5))
     cmap = sns.cubehelix_palette(start=2.6, rot=.1, as_cmap=True)
     sns.heatmap(df, vmin=0, vmax=4, cmap=cmap, square=True, cbar_kws={"shrink": min(1.0,(df.shape[0]+.1)/(df.shape[1]+.1))})
     plt.ylabel('')
