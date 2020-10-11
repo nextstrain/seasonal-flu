@@ -1,5 +1,10 @@
 {
   "title": "Real-time tracking of influenza A/H1N1pdm evolution using data from GISAID",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
   "color_options": {
     "gt": {
       "menuItem": "genotype",
@@ -78,10 +83,6 @@
     "mapTriplicate": true,
     "colorBy": "clade_membership"
   },
-  "maintainer": [
-    "Trevor Bedford and Barney Potter",
-    "http://bedford.io/"
-  ],
   "filters": [
     "clade_membership",
     "region",
@@ -90,11 +91,8 @@
   ],
   "panels": [
     "tree",
+    "map",
     "entropy",
     "frequencies"
-  ],
-  "vaccine_choices": {
-    "A/Michigan/45/2015": "2016-09-29",
-    "A/California/7/2009": "2009-09-25"
-  }
+  ]
 }

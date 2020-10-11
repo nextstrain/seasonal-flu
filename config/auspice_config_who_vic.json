@@ -1,5 +1,10 @@
 {
   "title": "Real-time tracking of influenza B/Vic evolution using data from GISAID",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
   "color_options": {
     "gt": {
       "menuItem": "genotype",
@@ -66,10 +71,6 @@
     "mapTriplicate": true,
     "colorBy": "clade_membership"
   },
-  "maintainer": [
-    "Trevor Bedford and Barney Potter",
-    "http://bedford.io/"
-  ],
   "filters": [
     "clade_membership",
     "region",
@@ -78,13 +79,8 @@
   ],
   "panels": [
     "tree",
+    "map",
     "entropy",
     "frequencies"
-  ],
-  "vaccine_choices": {
-    "B/Malaysia/2506/2004": "2006-09-25",
-    "B/Brisbane/60/2008": "2009-09-25",
-    "B/Colorado/6/2017": "2018-02-22",
-    "B/Washington/2/2019": "2019-09-27"    
-  }
+  ]
 }

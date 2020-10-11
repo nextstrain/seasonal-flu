@@ -1,5 +1,10 @@
 {
   "title": "Real-time tracking of influenza B/Yam evolution using data from GISAID",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
   "color_options": {
     "gt": {
       "title": "genotype",
@@ -47,10 +52,6 @@
     "mapTriplicate": true,
     "colorBy": "clade_membership"
   },
-  "maintainer": [
-    "Trevor Bedford and Barney Potter",
-    "http://bedford.io/"
-  ],
   "filters": [
     "clade_membership",
     "region",
@@ -59,13 +60,8 @@
   ],
   "panels": [
     "tree",
+    "map",
     "entropy",
     "frequencies"
-  ],
-  "vaccine_choices": {
-    "B/Shanghai/361/2002": "2004-09-25",
-    "B/Florida/4/2006": "2008-09-25",
-    "B/Wisconsin/1/2010": "2012-02-25",
-    "B/Phuket/3073/2013": "2014-09-25"
-  }
+  ]
 }
