@@ -1,10 +1,5 @@
 {
   "title": "Real-time tracking of influenza A/H3N2 evolution using data from GISAID",
-  "maintainers": [
-    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
-    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
-    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
-  ],
   "color_options": {
     "gt": {
       "menuItem": "genotype",
@@ -95,6 +90,10 @@
     "mapTriplicate": true,
     "colorBy": "clade_membership"
   },
+  "maintainer": [
+    "Trevor Bedford and Barney Potter",
+    "http://bedford.io/"
+  ],
   "filters": [
     "clade_membership",
     "region",
@@ -106,5 +105,18 @@
     "map",
     "entropy",
     "frequencies"
-  ]
+  ],
+  "vaccine_choices": {
+    "A/Wisconsin/67/2005": "2006-02-21",
+    "A/Brisbane/10/2007": "2007-09-25",
+    "A/Perth/16/2009": "2009-09-25",
+    "A/Victoria/361/2011": "2012-02-21",
+    "A/Texas/50/2012": "2013-09-25",
+    "A/Switzerland/9715293/2013": "2014-09-25",
+    "A/HongKong/4801/2014": "2015-09-24",
+    "A/Singapore/Infimh-16-0019/2016": "2017-09-28",
+    "A/Switzerland/8060/2017": "2018-09-27",
+    "A/Kansas/14/2017": "2019-03-21",
+    "A/SouthAustralia/34/2019": "2019-09-27"
+  }
 }
