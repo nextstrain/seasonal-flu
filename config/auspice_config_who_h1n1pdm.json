@@ -93,9 +93,5 @@
     "map",
     "entropy",
     "frequencies"
-  ],
-  "vaccine_choices": {
-    "A/Michigan/45/2015": "2016-09-29",
-    "A/California/7/2009": "2009-09-25"
-  }
+  ]
 }
