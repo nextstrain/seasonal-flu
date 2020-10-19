@@ -272,6 +272,7 @@ A/Minnesota/11/2010-egg
 A/Minnesota/11/2012
 A/Minnesota/15/2012
 A/Minnesota/38/2015
+A/Montpellier/F_004_107_MF/2020
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/Netherlands/233/1982
@@ -361,6 +362,13 @@ A/Pennsylvania/40/2010
 A/Piaui/494713/2017
 A/Quebec/167936/2011
 A/Quebec/170658/2011
+A/Rennes/F_006_009_PR/2020
+A/Rennes/F_006_015_JH/2020
+A/Rennes/F_006_078_AD/2020
+A/Rennes/F_006_101_LG/2020
+A/Rennes/F_006_107_CA/2020
+A/Rennes/F_006_116_PN/2020
+A/Rennes/F_006_118_JF/2020
 A/Santiago/6764/2006
 A/SaoPaulo/3-34891/2014
 A/SaoPaulo/36178/2015
