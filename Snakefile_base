@@ -781,7 +781,7 @@ rule glyc:
         glyc = "results/glyc_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     shell:
         """
-        python scripts/glyc.py \
+        python3 scripts/glyc.py \
             --tree {input.tree} \
             --alignment {input.alignment} \
             --output {output}
