@@ -239,6 +239,7 @@ rule export:
             --auspice-config {input.auspice_config} \
             --output {output.auspice_json} \
             --description {input.description} \
+            --include-root-sequence \
             --minify-json
         """
 
