@@ -255,20 +255,24 @@ def get_tip_frequencies(wildcards):
 rule simplify_auspice_names:
     input:
         main = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
-        frequencies = get_tip_frequencies
+        frequencies = get_tip_frequencies,
+        root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json"
     output:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json"
     shell:
         '''
         mv {input.main} {output.main} &
         cp -f {input.frequencies} {output.frequencies} &
+        mv {input.root_sequence} {output.root_sequence} &
         '''
 
 rule targets:
     input:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
-        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
+        root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json"
     output:
         target = "targets/flu_seasonal_{lineage}_{segment}_{resolution}"
     shell:
