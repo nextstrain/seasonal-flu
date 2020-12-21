@@ -229,7 +229,8 @@ rule export:
         node_data = _get_node_data_for_export,
         description = files.description
     output:
-        auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+        auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
     shell:
         """
         augur export v2 \
