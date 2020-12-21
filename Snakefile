@@ -259,7 +259,7 @@ rule simplify_auspice_names:
         root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json"
     output:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
-        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json"
+        frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
         root_sequence = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_root-sequence.json"
     shell:
         '''
