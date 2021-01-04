@@ -273,8 +273,10 @@ A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
 A/Minnesota/11/2012
 A/Minnesota/15/2012
+A/Minnesota/18/2012
 A/Minnesota/38/2015
 A/Montpellier/F_004_107_MF/2020
+A/Myanmar/18M090/2018
 A/Nanjing/1/2010
 A/Nepal/142/2011
 A/Netherlands/233/1982
@@ -410,3 +412,4 @@ A/Wisconsin/35/2012
 A/Zhejiang-Nanxun/12/2018
 A/Zhejiang-Wuxin/1300/2016
 A/Zhejiang-Wuxin/1916/2018
+A/Zhejiang-Yongkang/1137/2018
