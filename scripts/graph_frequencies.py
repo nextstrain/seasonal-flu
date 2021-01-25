@@ -19,7 +19,7 @@ import seaborn as sns
 default_regions = ['North America', 'China', 'Japan Korea', 'Oceania', 'Europe', 'Southeast Asia']
 
 fs = 12
-ymax = 800
+ymax = 2000
 years = YearLocator()
 months = MonthLocator(range(1, 13), bymonthday=1, interval=2)
 yearsFmt = DateFormatter('%Y')
@@ -232,8 +232,9 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
-    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.35))
-    plt.subplots_adjust(left=0.08, right=0.81, top=0.9, bottom=0.22)
+    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.25))
+    #plt.subplots_adjust(left=0.08, right=0.81, top=0.9, bottom=0.22)
+    plt.tight_layout()
     if fname:
         plt.savefig(fname)
 
