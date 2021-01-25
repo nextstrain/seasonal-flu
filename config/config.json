@@ -16,6 +16,126 @@
         "pivot_interval": 6,
         "delta_pivots": 1,
         "months_back_for_current_samples": 6,
-        "max_years_for_distances": 5
-    }
+        "max_years_for_distances": 5,
+        "number_of_forecast_samples": 1
+    },
+    "mutations_to_plot": {
+        "h3n2": {
+            "ha": [
+                "HA1:159N",
+                "HA1:160I",
+                "HA1:171N",
+                "HA1:186D",
+                "HA1:186S",
+                "HA1:190N",
+                "HA1:193S",
+                "HA1:195F",
+                "HA1:198P"
+            ],
+            "na": [
+                "NA:62M",
+                "NA:315R",
+                "NA:346D"
+            ]
+        },
+        "h1n1pdm": {
+            "ha": [
+                "HA1:120A",
+                "HA1:130N",
+                "HA1:156K",
+                "HA1:161I",
+                "HA1:187A",
+                "HA1:250A"
+            ],
+            "na": [
+                "NA:40T",
+                "NA:52N",
+                "NA:66F",
+                "NA:72N",
+                "NA:222K"
+            ]
+        },
+        "vic": {
+            "ha": [
+                "HA1:128K",
+                "HA1:129N",
+                "HA1:133R",
+                "HA1:150K",
+                "HA1:184E",
+                "HA1:197D",
+                "HA1:220M",
+                "HA1:241Q",
+                "HA1:279K"
+            ],
+            "na": [
+                "NA:283G",
+                "NA:303I",
+                "NA:343E",
+                "NA:371Q",
+                "NA:378E"
+            ]
+        },
+        "yam": {
+            "ha": [
+                "HA1:120T",
+                "HA1:211R",
+                "HA1:229N",
+                "HA1:232N"
+            ],
+            "na": [
+                "NA:65H",
+                "NA:395S",
+                "NA:402P"
+            ]
+        }
+    },
+    "clades_to_plot": {
+        "h3n2": {
+            "ha": [
+                "A1b/135K",
+                "A1b/186D",
+                "A1b/131K",
+                "A1b/137F",
+                "A1b/197R",
+                "A1b/94N",
+                "3c3.A"
+            ]
+        },
+        "h1n1pdm": {
+            "ha": [
+                "6b1.A/183P-5a",
+                "6b1.A/183P-5b",
+                "6b1.A/187A",
+                "6b1.A/156K"
+            ]
+        },
+        "vic": {
+            "ha": [
+                "V1A.2",
+                "V1A.1",
+                "V1A.3"
+            ]
+        },
+        "yam": {
+            "ha": [
+                "172Q"
+            ]
+        }
+    },
+    "extra_mutations_for_titer_matrix": {
+        "h3n2": "159N 186D",
+        "h1n1pdm": "156K 156D",
+        "vic": "133R",
+        "yam": ""
+    },
+    "regions_to_graph": [
+        "China",
+        "Europe",
+        "Japan Korea",
+        "Oceania",
+        "North America",
+        "South America",
+        "South Asia",
+        "global"
+    ]
 }
