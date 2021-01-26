@@ -10,7 +10,7 @@ passages = ['cell', 'egg']
 
 def rare_mutations_to_plot(v):
     mutations = {('h1n1pdm', 'ha'):["HA1:209M", "HA2:147A"],
-                 ('h3n2', 'ha'):["HA1:214T", "HA1:144N"],
+                 ('h3n2', 'ha'):["HA1:192F"],
                  ('vic', 'ha'):["HA1:126K", "HA1:128K", "HA1:197D"],
                   }
     return mutations[(v.lineage, v.segment)]
