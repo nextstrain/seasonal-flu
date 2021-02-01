@@ -124,7 +124,7 @@
         }
     },
     "extra_mutations_for_titer_matrix": {
-        "h3n2": "159N 186D",
+        "h3n2": "159N 186D 186S",
         "h1n1pdm": "156K 156D",
         "vic": "133R",
         "yam": ""
