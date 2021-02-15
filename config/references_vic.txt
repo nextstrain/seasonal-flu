@@ -39,6 +39,8 @@ B/Nigeria/3352/2018
 B/NordrheinWestfalen/1/2016
 B/Norway/2409/2017
 B/Ohio/1/2005
+B/RhodeIsland/1/2019
+B/RhodeIsland/1/2019-egg
 B/Shangdong/7/1997
 B/Sichuan-Gaoxin/531/2018
 B/Singapore/TT1243/2015
