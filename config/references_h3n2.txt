@@ -19,12 +19,16 @@ A/Brisbane/318/2016
 A/Brisbane/321/2016
 A/California/179/2016
 A/Canberra/7/2016
+A/Christchurch/515/2019-egg
 A/Christchurch/516/2012
+A/Darwin/726/2019
 A/Delaware/32/2016
+A/Delaware/39/2019
 A/Fiji/2/2015
 A/Florida/23/2017
 A/Greece/4/2017-egg
 A/Hawaii/22/2012
+A/Hawaii/42/2019
 A/Hawaii/47/2014
 A/HongKong/45/2019
 A/HongKong/50/2016-egg
@@ -72,6 +76,7 @@ A/Ontario/RV2414/2015
 A/Perth/16/2009
 A/Peru/27/2015
 A/Peru/3817/2017
+A/Qatar/16-VI-19-0049409/2019
 A/Saitama/103/2014
 A/Saitama/103/2014-egg
 A/Sapporo/71/2015
@@ -100,6 +105,7 @@ A/Texas/50/2012-egg
 A/Texas/68/2017
 A/Texas/71/2017
 A/Texas/88/2016
+A/Victoria/223/2019
 A/Victoria/361/2011
 A/Victoria/653/2017
 A/Victoria/653/2017-egg

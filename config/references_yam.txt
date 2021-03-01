@@ -4,6 +4,7 @@ B/Beijing/184/1993
 B/Brisbane/9/2014
 B/California/12/2015
 B/Canterbury/5/2017
+B/Darwin/58/2019
 B/Florida/4/2006
 B/Guangdong-Liwan/1133/2014
 B/Guyane/5/2018
@@ -29,3 +30,4 @@ B/Texas/81/2016-egg
 B/Utah/9/2014
 B/Wellington/40/2017
 B/Wisconsin/1/2010
+B/Yokohama/9/2019
