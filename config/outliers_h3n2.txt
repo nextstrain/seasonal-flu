@@ -6,6 +6,7 @@ A/Asaka/2/2017
 A/Austria/838902/2015
 A/Austria/839669/2015
 A/Austria/839906/2015
+A/Bangladesh/3010/2020
 A/Busan/15453/2009
 A/California/NHRC0001/2011
 A/Cambodia/NHRCC00001/2009
