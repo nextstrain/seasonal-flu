@@ -201,6 +201,7 @@ def _get_node_data_for_report_export(wildcards):
     """
     # Define inputs shared by all builds.
     inputs = [
+        rules.annotate_recency_of_submissions.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
@@ -232,6 +233,7 @@ rule export_who:
         metadata = rules.parse.output.metadata,
         auspice_config = "config/auspice_config_who_{lineage}.json",
         node_data = _get_node_data_for_report_export,
+        colors = files.colors,
     output:
         tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
@@ -242,6 +244,7 @@ rule export_who:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
+            --colors {input.colors} \
             --output-tree {output.tree} \
             --output-meta {output.meta} \
             --minify-json

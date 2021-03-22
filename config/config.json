@@ -1,4 +1,10 @@
 {
+    "submission_date_field": "date_submitted",
+    "recency": {
+        "date_bins": [7, 30, 90],
+        "date_bin_labels": ["last week", "last month", "last quarter"],
+        "upper_bin_label": "older"
+    },
     "excluded_node_data_fields": [
         "aa_muts",
         "aa_sequences",

@@ -250,7 +250,7 @@ rule download_sequences:
     output:
         sequences = "data/{lineage}_{segment}.fasta"
     params:
-        fasta_fields = "strain virus accession collection_date region country division location passage_category originating_lab submitting_lab age gender"
+        fasta_fields = "strain virus accession collection_date virus_inclusion_date region country division location passage_category originating_lab submitting_lab age gender"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -289,7 +289,7 @@ rule parse:
         sequences = "results/sequences_{lineage}_{segment}.fasta",
         metadata = "results/metadata_{lineage}_{segment}.tsv"
     params:
-        fasta_fields =  "strain virus accession date region country division location passage originating_lab submitting_lab age gender",
+        fasta_fields =  "strain virus accession date date_submitted region country division location passage originating_lab submitting_lab age gender",
         prettify_fields = "region country division location originating_lab submitting_lab"
     shell:
         """
@@ -367,6 +367,27 @@ rule extract:
             --sequences {input.sequences} \
             --samples {input.strains} \
             --output {output}
+        """
+
+rule annotate_recency_of_submissions:
+    input:
+        metadata = rules.parse.output.metadata,
+    params:
+        submission_date_field=config["submission_date_field"],
+        date_bins=config["recency"]["date_bins"],
+        date_bin_labels=config["recency"]["date_bin_labels"],
+        upper_bin_label=config["recency"]["upper_bin_label"],
+    output:
+        node_data = "results/recency_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    shell:
+        """
+        python3 scripts/construct-recency-from-submission-date.py \
+            --metadata {input.metadata} \
+            --submission-date-field {params.submission_date_field} \
+            --date-bins {params.date_bins} \
+            --date-bin-labels {params.date_bin_labels:q} \
+            --upper-bin-label {params.upper_bin_label} \
+            --output {output.node_data}
         """
 
 rule align:
