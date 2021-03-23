@@ -64,6 +64,11 @@
             "vaccine": {
                 "selection_date": "2020-02-28"
             }
+        },
+        "A/Cambodia/e0826360/2020": {
+            "vaccine": {
+                "selection_date": "2021-02-26"
+            }
         }
     }
 }
