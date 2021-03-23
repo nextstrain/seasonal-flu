@@ -71,6 +71,11 @@
       "key": "originating_lab",
       "title": "Originating lab",
       "type": "categorical"
+    },
+    {
+      "key": "recency",
+      "title": "Submission date",
+      "type": "ordinal"
     }
   ],
   "geo_resolutions": [
@@ -85,7 +90,8 @@
     "clade_membership",
     "region",
     "country",
-    "submitting_lab"
+    "submitting_lab",
+    "recency"
   ],
   "panels": [
     "tree",

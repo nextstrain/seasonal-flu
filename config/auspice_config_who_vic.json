@@ -56,6 +56,12 @@
       "key": "lbi",
       "menuItem": "local branching index",
       "type": "continuous"
+    },
+    "recency": {
+      "menuItem": "submission date",
+      "legendTitle": "Submission date",
+      "type": "discrete",
+      "key": "recency"
     }
   },
   "geo": [
@@ -74,7 +80,8 @@
     "clade_membership",
     "region",
     "country",
-    "authors"
+    "authors",
+    "recency"
   ],
   "panels": [
     "tree",

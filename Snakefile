@@ -40,6 +40,7 @@ def _get_node_data_for_export(wildcards):
     # Define inputs shared by all builds.
     wildcards_dict = dict(wildcards)
     inputs = [
+        rules.annotate_recency_of_submissions.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
@@ -227,7 +228,8 @@ rule export:
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export,
-        description = files.description
+        description = files.description,
+        colors = files.colors,
     output:
         auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
@@ -238,6 +240,7 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
+            --colors {input.colors} \
             --output {output.auspice_json} \
             --description {input.description} \
             --include-root-sequence \
