@@ -50,17 +50,17 @@
     {
       "key": "ep",
       "title": "Epitope mutations",
-      "type": "ordinal"
+      "type": "continuous"
     },
     {
       "key": "ne",
       "title": "Non-epitope mutations",
-      "type": "ordinal"
+      "type": "continuous"
     },
     {
       "key": "rb",
       "title": "RBS adjacent mutations",
-      "type": "ordinal"
+      "type": "continuous"
     },
     {
       "key": "region",
