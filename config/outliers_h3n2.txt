@@ -384,6 +384,7 @@ A/SaoPaulo/554097/2017
 A/Sari/388/2006
 A/Shanghai-Minxing/1482/2017
 A/Shanghai/6/2014
+A/SouthAustralia/1/2021
 A/SouthAustralia/22/2018
 A/SouthAustralia/47/2016
 A/SouthAustralia/85/2018
