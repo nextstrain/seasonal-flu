@@ -256,6 +256,7 @@ A/Maryland/77/2017
 A/Maryland/79/2017
 A/Maryland/87/2017
 A/Mendoza/176711/2012
+A/Michigan/14/2012
 A/Michigan/16/2012
 A/Michigan/19/2012
 A/Michigan/20/2012
