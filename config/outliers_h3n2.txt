@@ -223,6 +223,7 @@ A/Louisiana/4/2003
 A/Lousiana/4/2003
 A/Luxembourg/19008307/2019
 A/Maine/6/2011
+A/Manitoba/3/2021
 A/MardelPlata/14041/2018
 A/Maryland/20/2012
 A/Maryland/22/2012
