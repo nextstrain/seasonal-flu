@@ -114,6 +114,14 @@ def _get_tdb_databases(wildcards):
         return "cdc_tdb crick_tdb niid_tdb vidrl_tdb tdb"
 
 
+def _get_tdb_assays(wildcards):
+    if wildcards.assay == 'fra':
+        return 'fra,hint'
+    if wildcards.assay == 'hi':
+        return 'hi,hi_oseltamivir'
+    return wildcards.assay
+
+
 def exclude_where(wildcards):
     if wildcards.passage == 'cell':
         return "country=? region=? passage=egg"
@@ -269,7 +277,7 @@ rule download_titers:
         titers = "data/{center}_{lineage}_{passage}_{assay}_titers.tsv"
     params:
         dbs = _get_tdb_databases,
-        assays = lambda wildcards: "fra,hint" if wildcards.assay == "fra" else wildcards.assay
+        assays = _get_tdb_assays
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
