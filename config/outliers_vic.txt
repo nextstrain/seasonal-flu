@@ -11,6 +11,7 @@ B/Cambodia/62/2011
 B/Cambodia/89/2011
 B/Cambodia/V1005378/2011
 B/Darwin/14/2011
+B/Hunan-Wuling/11182/2021
 B/Kol/2024/2008
 B/Kolkata/372/2010
 B/Kolkata/1373/2008
@@ -27,3 +28,10 @@ B/Stockholm/7/2011
 B/Sydney/6/2016
 B/Thailand/CU-B11637/2015
 B/Togo/LNG/419/2013
+B/Zhejiang-Lanxi/320/2019
+B/Zhejiang-Linhai/11097/2019
+B/Zhejiang-Wuxin/1211/2021
+B/Zhejiang-Yiwu/1101/2021
+B/Zhejiang-Yiwu/1168/2020
+B/Zhejiang-Yiwu/1226/2021
+B/Zhejiang-Yongkang/1274/2021
