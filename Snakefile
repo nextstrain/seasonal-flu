@@ -262,13 +262,13 @@ def get_wildcards_dict(wildcards):
 
 def get_main_auspice_json(wildcards):
     wildcards_dict = get_wildcards_dict(wildcards)
-    return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}.json".format(
+    return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_{assay}.json".format(
         **wildcards_dict
     )
 
 def get_root_sequence_json(wildcards):
     wildcards_dict = get_wildcards_dict(wildcards)
-    return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_root-sequence.json".format(
+    return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_{assay}_root-sequence.json".format(
         **wildcards_dict
     )
 
@@ -276,12 +276,12 @@ def get_tip_frequencies(wildcards):
     wildcards_dict = get_wildcards_dict(wildcards)
 
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
-        return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_{model}_forecast-tip-frequencies.json".format(
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_{assay}_{model}_forecast-tip-frequencies.json".format(
             model=config["fitness_model"]["best_model"],
             **wildcards_dict
         )
     else:
-        return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_tip-frequencies.json".format(
+        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_{assay}_tip-frequencies.json".format(
             **wildcards_dict
         )
 
