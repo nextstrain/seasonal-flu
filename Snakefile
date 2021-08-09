@@ -247,20 +247,49 @@ rule export:
             --minify-json
         """
 
+def get_assay_by_lineage(wildcards):
+    if wildcards.lineage == "h3n2":
+        return "fra"
+    else:
+        return "hi"
+
+def get_wildcards_dict(wildcards):
+    wildcards_dict = dict(wildcards)
+    assay = get_assay_by_lineage(wildcards)
+    wildcards_dict["assay"] = assay
+
+    return wildcards_dict
+
+def get_main_auspice_json(wildcards):
+    wildcards_dict = get_wildcards_dict(wildcards)
+    return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}.json".format(
+        **wildcards_dict
+    )
+
+def get_root_sequence_json(wildcards):
+    wildcards_dict = get_wildcards_dict(wildcards)
+    return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_root-sequence.json".format(
+        **wildcards_dict
+    )
+
 def get_tip_frequencies(wildcards):
+    wildcards_dict = get_wildcards_dict(wildcards)
+
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
-        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_{model}_forecast-tip-frequencies.json".format(
+        return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_{model}_forecast-tip-frequencies.json".format(
             model=config["fitness_model"]["best_model"],
-            **wildcards
+            **wildcards_dict
         )
     else:
-        return "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_tip-frequencies.json"
+        return "auspice/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_tip-frequencies.json".format(
+            **wildcards_dict
+        )
 
 rule simplify_auspice_names:
     input:
-        main = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
+        main = get_main_auspice_json,
         frequencies = get_tip_frequencies,
-        root_sequence = "auspice/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_root-sequence.json"
+        root_sequence = get_root_sequence_json,
     output:
         main = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}.json",
         frequencies = "auspice/flu_seasonal_{lineage}_{segment}_{resolution}_tip-frequencies.json",
