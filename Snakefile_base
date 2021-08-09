@@ -730,6 +730,28 @@ rule clades:
                     --output {output.clades}
             """)
 
+rule antigenic_distances_between_strains:
+    input:
+        clades="results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        titer_model="results/titers-sub-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        branch_lengths="results/branch-lengths_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        frequencies="auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
+    output:
+        distances="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv",
+    benchmark:
+        "benchmarks/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt"
+    log:
+        "logs/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt"
+    shell:
+        """
+        python3 scripts/get_antigenic_distances_between_strains.py \
+            --clades {input.clades} \
+            --titers {input.titer_model} \
+            --branch-lengths {input.branch_lengths} \
+            --frequencies {input.frequencies} \
+            --output {output.distances} &> {log}
+        """
+
 rule distances:
     input:
         tree = rules.refine.output.tree,
