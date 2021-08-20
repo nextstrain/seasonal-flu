@@ -1,12 +1,10 @@
 include: "Snakefile_WHO"
 resolutions = ['2y']
-lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
+lineages = ['h3n2', 'h1n1pdm', 'vic']
 segments = ['ha', 'na']
 centers = ['cdc', 'who', 'vidrl', 'crick', 'niid']
 assays = ['hi', 'fra']
 passages = ['cell', 'egg']
-
-
 
 def rare_mutations_to_plot(v):
     mutations = {('h1n1pdm', 'ha'):["HA1:209M", "HA2:147A"],
@@ -34,6 +32,14 @@ rule figures:
         expand("figures/titer_matrix_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.pdf",
                 lineage=lineages, resolution=['2y'], center=centers, passage=passages, assay=assays)
 
+rule antigenic_distances:
+    input:
+        h3n2=expand("results/antigenic_distances_between_strains_who_h3n2_ha_2y_{passage}_fra.tsv",
+                    passage=passages),
+        h1n1pdm=expand("results/antigenic_distances_between_strains_who_h1n1pdm_ha_2y_{passage}_hi.tsv",
+                       passage=passages),
+        vic=expand("results/antigenic_distances_between_strains_who_vic_ha_2y_{passage}_hi.tsv",
+                   passage=passages)
 
 rule mutation_frequency_graphs:
     input:
