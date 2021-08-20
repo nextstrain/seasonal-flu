@@ -767,6 +767,7 @@ rule antigenic_distances_between_strains:
     input:
         clades="results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         titer_model="results/titers-sub-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        titers="data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
         branch_lengths="results/branch-lengths_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         frequencies="auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
     output:
@@ -780,9 +781,11 @@ rule antigenic_distances_between_strains:
         """
         python3 scripts/get_antigenic_distances_between_strains.py \
             --clades {input.clades} \
-            --titers {input.titer_model} \
+            --titer-model {input.titer_model} \
+            --titers {input.titers} \
             --branch-lengths {input.branch_lengths} \
             --frequencies {input.frequencies} \
+            --annotations lineage={wildcards.lineage} passage={wildcards.passage} assay={wildcards.assay} \
             --output {output.distances} &> {log}
         """
 

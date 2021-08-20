@@ -7,11 +7,14 @@ import pandas as pd
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--titers", required=True, help="titer model JSON with raw and normalized titers annotated in 'titers' key")
+    parser.add_argument("--titer-model", required=True, help="titer model JSON with raw and normalized titers annotated in 'titers' key")
+    parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
     parser.add_argument("--branch-lengths", required=True, help="branch length annotations including `numdate` calculated by TreeTime")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON from augur frequencies")
+    parser.add_argument("--annotations", nargs="+", help="additional annotations to add to the output table in the format of 'key=value' pairs")
     parser.add_argument("--output", required=True, help="table of antigenic distances in log2 titers between reference and test strains with clade annotations")
+
     args = parser.parse_args()
 
     # Load branch lengths.
@@ -31,8 +34,21 @@ if __name__ == '__main__':
         if "frequencies" in strain_data
     }
 
-    # Load titer data.
-    with open(args.titers, "r") as fh:
+    # Load raw titer data, to get the original source for each tuple of test
+    # virus/reference virus/ferret.
+    raw_titers = pd.read_csv(
+        args.titers,
+        sep="\t",
+        usecols=("virus_strain", "serum_strain", "serum_id", "source"),
+    )
+
+    # The source column starts with the original collaborating center (e.g.,
+    # "cdc" or "crick_something"), so we split on the underscore and take the
+    # first piece as the center.
+    raw_titers["source"] = raw_titers["source"].apply(lambda source: source.split("_")[0])
+
+    # Load titer model data.
+    with open(args.titer_model, "r") as fh:
         titer_data = json.load(fh)
 
     titers = titer_data.pop("titers")
@@ -42,13 +58,22 @@ if __name__ == '__main__':
     titer_records = []
     for reference_strain, reference_titers in titers.items():
         reference_date = date_by_strain[reference_strain]
+        reference_titer_index = (raw_titers["serum_strain"] == reference_strain)
 
         for test_strain, test_titers in reference_titers.items():
             test_date = date_by_strain[test_strain]
             test_frequency = current_frequency_by_strain[test_strain]
+            test_titer_index = (raw_titers["virus_strain"] == test_strain)
 
             for serum, serum_titers in test_titers.items():
                 log2_titer, raw_titer = serum_titers
+                serum_index = (raw_titers["serum_id"] == serum)
+
+                sources = raw_titers.loc[
+                    reference_titer_index & test_titer_index & serum_index,
+                    "source"
+                ].values
+                source = sources[0] if len(sources) > 0 else "unknown"
 
                 titer_records.append({
                     "reference_strain": reference_strain,
@@ -58,7 +83,8 @@ if __name__ == '__main__':
                     "serum": serum,
                     "log2_titer": log2_titer,
                     "raw_titer": raw_titer,
-                    "test_frequency": test_frequency
+                    "test_frequency": test_frequency,
+                    "source": source,
                 })
 
     titer_table = pd.DataFrame(titer_records)
@@ -110,6 +136,14 @@ if __name__ == '__main__':
     ).drop(
         columns=["strain"]
     )
+
+    # Add any additional annotations requested by the user in the format of
+    # "key=value" pairs where each key becomes a new column with the given
+    # value.
+    if args.annotations:
+        for annotation in args.annotations:
+            key, value = annotation.split("=")
+            titer_table[key] = value
 
     # Save the annotated table.
     titer_table.to_csv(
