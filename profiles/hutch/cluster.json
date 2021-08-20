@@ -1,0 +1,30 @@
+{
+    "__default__": {
+        "partition": "restart-new --qos=restart-new",
+        "time" : "00:05:00",
+        "name": "{rule}.{wildcards}",
+        "stdout": "log/cluster/{rule}.{wildcards}.%j.out",
+        "stderr": "log/cluster/{rule}.{wildcards}.%j.err"
+    },
+    "align": {
+        "partition": "campus-new",
+        "time": "0:30:00"
+    },
+    "tree": {
+        "partition": "campus-new",
+        "time": "2:00:00"
+    },
+    "refine": {
+        "partition": "campus-new",
+        "time": "4:00:00"
+    },
+    "ancestral": {
+        "time": "0:15:00"
+    },
+    "distances": {
+        "time" : "00:30:00"
+    },
+    "pairwise_titer_tree_distances": {
+        "time" : "00:10:00"
+    }
+}

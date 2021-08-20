@@ -53,6 +53,7 @@ for seg, genes in genes_to_translate.items():
         output:
             alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
                                 gene=genes)
+        conda: "environment.yaml"
         shell:
             """
             python3 scripts/full_region_alignments.py  --sequences {input.sequences}\
@@ -80,6 +81,7 @@ rule complete_mutation_frequencies_by_region:
         inertia = 0.2
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
+    conda: "environment.yaml"
     shell:
         """
         augur frequencies --method diffusion \
@@ -106,6 +108,7 @@ rule global_mutation_frequencies:
     output:
         auspice="auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json",
         augur="results/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_frequencies.json"
+    conda: "environment.yaml"
     shell:
         '''
         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies:q} \
@@ -122,6 +125,7 @@ rule scores:
         tree = rules.refine.output.tree
     output:
         scores = "results/scores_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/scores.py  --metadata {input.metadata} \
@@ -169,6 +173,7 @@ rule export_entropy:
         genes = gene_names
     output:
         "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_entropy.json",
+    conda: "environment.yaml"
     shell:
         '''
         python3 scripts/entropy.py --alignment {input.aln} \
@@ -186,6 +191,7 @@ rule export_sequence_json:
         genes = gene_names
     output:
         "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_sequences.json",
+    conda: "environment.yaml"
     shell:
         '''
         python3 scripts/sequence_export.py --alignment {input.aln} \
@@ -237,6 +243,7 @@ rule export_who:
     output:
         tree = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tree.json",
         meta = "auspice-who/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_meta.json",
+    conda: "environment.yaml"
     shell:
         """
         augur export v1 \

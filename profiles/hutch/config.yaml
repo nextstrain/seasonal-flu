@@ -1,0 +1,49 @@
+# Custom settings for running builds on a SLURM cluster with DRMAA bindings.
+
+# Submit a reasonable number of simultaneous jobs, accounting for the number of
+# CPUs alloted to our lab's SLURM account.
+jobs: 20
+
+# Always let the user know which commands are being executed for each rule and
+# why each rule is being run.
+printshellcmds: True
+reason: True
+
+# Track the run times of each job for debugging.
+stats: stats.json
+
+# Allow jobs to restart multiple times, since most jobs will run on the
+# "restart" partition of the Hutch's cluster and can thus be killed at any time
+# to make room for higher priority jobs.
+restart-times: 3
+
+# Wait a fixed number of seconds for missing files since the cluster file system
+# can be quite slow and the workflow can fail unnecessarily due to this latency.
+latency-wait: 60
+
+# Use conda environments for augur and related binaries. This is important in a
+# cluster environment where Docker is not available and Singularity may be
+# prohibitively complicated to setup.
+use-conda: True
+conda-frontend: mamba
+
+# Cluster-specific settings for resources required by any rule. This file
+# provides default resources for all rules and allows users to specify resources
+# per rule by name. An important resource for the Hutch cluster is the requested
+# "partition". Jobs submitted to the "restart" partition will start running
+# almost immediately, but they may also be killed at any moment when someone
+# else needs those resources. This is analogous to the spot resources on AWS.
+default-resources: mem_mb=256
+cluster-config: profiles/hutch/cluster.json
+
+# Submit jobs to the cluster with Python's DRMAA bindings instead of the SLURM
+# sbatch command. The string associated with this key tells DRMAA how to connect
+# cluster resources with those defined in the cluster config above. Jobs
+# submitted with DRMAA will submit, finish, or die much faster than jobs
+# submitted with sbatch because DRMAA does not use files on disk to track job
+# status. This speed can be noticeable when running workflows with hundreds of
+# jobs. More about DRMAA bindings here: https://pypi.org/project/drmaa/
+cluster: "sbatch -p {cluster.partition} --nodes=1 --ntasks=1 --mem={resources.mem_mb} --cpus-per-task={threads} --time={cluster.time}"
+
+# Set the name for the job as display in the cluster queue.
+jobname: "{rulename}.{jobid}.sh"

@@ -1,0 +1,13 @@
+name: nextstrain
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - augur=13.0.0
+  - iqtree=2.1.2
+  - mafft=7.475
+  - python>=3.7*
+  - pip>=21.1.1
+  - pip:
+    - rethinkdb==2.3.0.post6

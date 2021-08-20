@@ -98,6 +98,7 @@ rule convert_node_data_to_table:
     params:
         annotations = _get_annotations_for_node_data,
         excluded_fields_arg = _get_excluded_fields_arg
+    conda: "environment.yaml"
     shell:
         """
         python3 flu-forecasting/scripts/node_data_to_table.py \
@@ -116,6 +117,7 @@ rule convert_frequencies_to_table:
         frequencies = rules.tip_frequencies.output.tip_freq
     output:
         table = "results/frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/frequencies_to_table.py \
@@ -149,6 +151,7 @@ rule target_distances:
         distances = "results/target-distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
     params:
         delta_months = _get_delta_months_to_forecast
+    conda: "environment.yaml"
     shell:
         """
         python3 flu-forecasting/scripts/calculate_target_distances.py \
@@ -170,6 +173,7 @@ rule forecast_tips:
         table = "results/forecast_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.tsv"
     params:
         delta_months = _get_delta_months_to_forecast
+    conda: "environment.yaml"
     shell:
         """
         python3 flu-forecasting/src/forecast_model.py \
@@ -190,6 +194,7 @@ rule calculate_weighted_distance_to_future:
         forecasts = rules.forecast_tips.output.table
     output:
         node_data = "results/weighted_distances_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_{model}.json",
+    conda: "environment.yaml"
     shell:
         """
         python3 flu-forecasting/scripts/calculate_weighted_distances.py \
@@ -233,6 +238,7 @@ rule export:
     output:
         auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
+    conda: "environment.yaml"
     shell:
         """
         augur export v2 \

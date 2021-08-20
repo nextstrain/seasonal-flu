@@ -44,6 +44,7 @@ rule mutation_frequency_graphs:
     output:
         mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.pdf",
         total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.pdf",
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
@@ -61,6 +62,7 @@ rule rare_mutation_frequency_graphs:
         regions = regions_to_graph,
     output:
         mutations = "figures/rare_mutation_frequencies_{lineage}_{segment}_{resolution}.pdf"
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/graph_frequencies.py --mutation-frequencies {input.mutations} \
@@ -80,6 +82,7 @@ rule clade_frequency_graphs:
     output:
         tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.pdf",
         clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}.pdf"
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/graph_frequencies.py --tree-frequencies {input.tree} \
@@ -117,6 +120,7 @@ rule age_distributions:
         resolution="{resolution}"
     output:
         "figures/age-distribution_{lineage}_{resolution}.pdf"
+    conda: "environment.yaml"
     shell:
         """
         python3 scripts/age_distributions.py  --metadata {input.metadata} \
@@ -136,6 +140,7 @@ rule titer_matrix:
         "figures/titer_matrix_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.pdf"
     params:
         exclude_extra_muts = get_extra_muts
+    conda: "environment.yaml"
     shell:
         '''
         python3 scripts/plot_titer_matrices.py --metadata {input.metadata} \
