@@ -72,6 +72,8 @@ A/Taiwan/80693/2018
 A/Tasmania/24/2014
 A/Tasmania/24/2014-egg
 A/Texas/157/2016
+A/Togo/881/2020
+A/Togo/881/2020-egg
 A/Tokyo/EH1608/2017
 A/Townsville/21/2018
 A/Victoria/2455/2019
