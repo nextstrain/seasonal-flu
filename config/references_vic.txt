@@ -48,6 +48,7 @@ B/Maryland/15/2016
 B/Maryland/15/2016-egg
 B/Maryland/24/2019
 B/Michigan/1/2021
+B/Michigan/1/2021-egg
 B/Missouri/9/2016
 B/Montana/5/2012
 B/Mozambique/203/2019
@@ -66,6 +67,7 @@ B/RhodeIsland/1/2019-egg
 B/Shangdong/7/1997
 B/Sichuan-Gaoxin/531/2018
 B/Sichuan-Jingyang/12048/2019
+B/Sichuan-Jingyang/12048/2019-egg
 B/Singapore/TT1243/2015
 B/Slovenia/1604/2016
 B/SouthAfrica/1921/2020
