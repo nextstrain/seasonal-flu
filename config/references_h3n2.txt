@@ -8,6 +8,9 @@ A/Alaska/240/2015
 A/Antananarivo/1067/2016
 A/Antananarivo/1067/2016-egg
 A/Arizona/67/2016
+A/Bangladesh/10006/2020
+A/Bangladesh/911009/2020
+A/Bangladesh/911009/2020-egg
 A/Bretagne/1413/2017
 A/Bretagne/1565/2017-egg
 A/Brisbane/1/2018
@@ -19,10 +22,13 @@ A/Brisbane/321/2016
 A/Brisbane/45/2015
 A/California/179/2016
 A/Cambodia/e0826360/2020
+A/Cambodia/e0826360/2020-egg
 A/Canberra/7/2016
 A/Christchurch/515/2019-egg
 A/Christchurch/516/2012
+A/Darwin/6/2021
 A/Darwin/726/2019
+A/Darwin/9/2021
 A/Delaware/32/2016
 A/Delaware/39/2019
 A/Fiji/2/2015
@@ -51,6 +57,7 @@ A/Kobe/63/2014
 A/LaRioja/2202/2018
 A/Maryland/23/2016
 A/Michigan/15/2014
+A/Michigan/173/2020
 A/Montana/28/2015
 A/Nagano/2731/2017
 A/Nebraska/19/2015
@@ -63,6 +70,7 @@ A/NewCaledonia/71/2014-egg
 A/NewCaledonia/8/2018
 A/NewJersey/26/2014
 A/NewMexico/14/2018
+A/NewYork/21/2020
 A/Newcastle/30/2016
 A/Newcastle/82/2018
 A/NorthCarolina/4/2016
@@ -74,6 +82,8 @@ A/Norway/4465/2017
 A/Norway/4465/2017-egg
 A/Norway/466/2014
 A/Ontario/RV2414/2015
+A/Pennsylvania/1026/2019
+A/Pennsylvania/1026/2019-egg
 A/Perth/16/2009
 A/Peru/27/2015
 A/Peru/3817/2017
@@ -101,6 +111,8 @@ A/Switzerland/9715293/2013
 A/Switzerland/9715293/2013-egg
 A/Sydney/22/2018
 A/Tasmania/11/2014
+A/Tasmania/503/2020
+A/Tasmania/503/2020-egg
 A/Texas/50/2012
 A/Texas/50/2012-egg
 A/Texas/68/2017
