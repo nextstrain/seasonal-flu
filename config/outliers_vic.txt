@@ -32,6 +32,7 @@ B/Zhejiang-Lanxi/320/2019
 B/Zhejiang-Linhai/11097/2019
 B/Zhejiang-Wuxin/1211/2021
 B/Zhejiang-Yiwu/1101/2021
+B/Zhejiang-Yiwu/1104/2021
 B/Zhejiang-Yiwu/1168/2020
 B/Zhejiang-Yiwu/1226/2021
 B/Zhejiang-Yongkang/1274/2021
