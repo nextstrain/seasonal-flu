@@ -16,6 +16,10 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 import seaborn as sns
 
+import matplotlib.dates as mdates
+old_epoch = '0000-12-31T00:00:00'
+mdates.set_epoch(old_epoch)
+
 default_regions = ['North America', 'China', 'Japan Korea', 'Oceania', 'Europe', 'Southeast Asia']
 
 fs = 12
