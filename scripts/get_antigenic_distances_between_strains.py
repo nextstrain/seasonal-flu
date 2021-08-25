@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
-from augur.utils import read_node_data
+from augur.utils import annotate_parents_for_tree, read_node_data, read_tree
+from collections import defaultdict
 import json
 import pandas as pd
 
@@ -9,6 +10,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--titer-model", required=True, help="titer model JSON with raw and normalized titers annotated in 'titers' key")
     parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
+    parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
     parser.add_argument("--branch-lengths", required=True, help="branch length annotations including `numdate` calculated by TreeTime")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON from augur frequencies")
@@ -104,14 +106,35 @@ if __name__ == '__main__':
         on="reference_strain"
     )
 
+    # Load tree.
+    tree = read_tree(args.tree)
+    tree = annotate_parents_for_tree(tree)
+
     # Load clade data.
     clades = read_node_data(args.clades)
+
+    # Track all clade memberships in a new attribute to properly handle nested
+    # clades.
+    clades_by_name = defaultdict(set)
+    for node in tree.find_clades():
+        clades_by_name[node.name].add(clades["nodes"][node.name]["clade_membership"])
+        if node.parent is not None:
+            clades_by_name[node.name].update(
+                clades_by_name[node.parent.name]
+            )
+
+    # Calculate clade frequencies.
+    frequency_by_clade = defaultdict(float)
+    for node in tree.find_clades(terminal=True):
+        for clade in clades_by_name[node.name]:
+            frequency_by_clade[clade] += current_frequency_by_strain[node.name]
 
     # Convert clade data to a data frame.
     clade_table = pd.DataFrame([
         {
             "strain": strain,
-            "clade": strain_data["clade_membership"]
+            "clade": strain_data["clade_membership"],
+            "clade_frequency": frequency_by_clade[strain_data["clade_membership"]],
         }
         for strain, strain_data in clades["nodes"].items()
         if not strain.startswith("NODE")

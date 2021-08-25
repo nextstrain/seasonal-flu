@@ -784,6 +784,7 @@ rule clades:
 
 rule antigenic_distances_between_strains:
     input:
+        tree="results/tree_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk",
         clades="results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         titer_model="results/titers-sub-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         titers="data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
@@ -799,6 +800,7 @@ rule antigenic_distances_between_strains:
     shell:
         """
         python3 scripts/get_antigenic_distances_between_strains.py \
+            --tree {input.tree} \
             --clades {input.clades} \
             --titer-model {input.titer_model} \
             --titers {input.titers} \
