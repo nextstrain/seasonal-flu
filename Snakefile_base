@@ -405,6 +405,25 @@ rule annotate_recency_of_submissions:
             --output {output.node_data}
         """
 
+rule annotate_epiweeks:
+    input:
+        metadata="results/metadata_{lineage}_{segment}.tsv",
+        strains="results/strains_{center}_{lineage}_{resolution}_{passage}_{assay}.txt",
+    output:
+        node_data="results/epiweeks_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    benchmark:
+        "benchmarks/annotate_epiweeks_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt",
+    conda: "environment.yaml"
+    log:
+        "logs/annotate_epiweeks_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt",
+    shell:
+        """
+        python3 scripts/calculate_epiweek.py \
+            --metadata {input.metadata} \
+            --strains {input.strains} \
+            --output-node-data {output.node_data}
+        """
+
 rule align:
     message:
         """

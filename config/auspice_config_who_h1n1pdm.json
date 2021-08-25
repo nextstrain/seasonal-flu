@@ -74,6 +74,12 @@
       "legendTitle": "Submission date",
       "type": "discrete",
       "key": "recency"
+    },
+    "epiweek": {
+      "menuItem": "epiweek (CDC)",
+      "legendTitle": "Epiweek (CDC)",
+      "type": "discrete",
+      "key": "epiweek"
     }
   },
   "geo": [
@@ -85,7 +91,7 @@
     "colorBy": "clade_membership"
   },
   "maintainer": [
-    "Trevor Bedford and Barney Potter",
+    "Jover Lee, Richard Neher, and Trevor Bedford",
     "http://bedford.io/"
   ],
   "filters": [
@@ -93,7 +99,8 @@
     "region",
     "country",
     "authors",
-    "recency"
+    "recency",
+    "epiweek"
   ],
   "panels": [
     "tree",

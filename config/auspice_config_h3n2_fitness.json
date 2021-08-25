@@ -9,7 +9,7 @@
     {
       "name": "GISAID"
     }
-  ],  
+  ],
   "build_url": "https://github.com/nextstrain/seasonal-flu",
   "colorings": [
     {
@@ -116,6 +116,11 @@
       "key": "recency",
       "title": "Submission date",
       "type": "ordinal"
+    },
+    {
+      "key": "epiweek",
+      "title": "Epiweek (CDC)",
+      "type": "ordinal"
     }
   ],
   "geo_resolutions": [
@@ -131,7 +136,8 @@
     "region",
     "country",
     "submitting_lab",
-    "recency"
+    "recency",
+    "epiweek"
   ],
   "panels": [
     "tree",

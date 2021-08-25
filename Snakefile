@@ -40,6 +40,7 @@ def _get_node_data_for_export(wildcards):
     # Define inputs shared by all builds.
     wildcards_dict = dict(wildcards)
     inputs = [
+        rules.annotate_epiweeks.output.node_data,
         rules.annotate_recency_of_submissions.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
