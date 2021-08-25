@@ -27,8 +27,10 @@ A/Canberra/7/2016
 A/Christchurch/515/2019-egg
 A/Christchurch/516/2012
 A/Darwin/6/2021
+A/Darwin/6/2021-egg
 A/Darwin/726/2019
 A/Darwin/9/2021
+A/Darwin/9/2021-egg
 A/Delaware/32/2016
 A/Delaware/39/2019
 A/Fiji/2/2015
@@ -58,6 +60,7 @@ A/LaRioja/2202/2018
 A/Maryland/23/2016
 A/Michigan/15/2014
 A/Michigan/173/2020
+A/Michigan/173/2020-egg
 A/Montana/28/2015
 A/Nagano/2731/2017
 A/Nebraska/19/2015
