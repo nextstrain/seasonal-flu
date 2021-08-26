@@ -25,7 +25,8 @@ if __name__ == '__main__':
     strains = read_strains(args.strains)
 
     # Find metadata for requested strains.
-    metadata_for_strains = metadata.loc[strains].copy()
+    # Use `metadata.index.isin` in case listed strain does not exist in metadata
+    metadata_for_strains = metadata.loc[metadata.index.isin(strains)].copy()
 
     # Find records with unambiguous dates.
     metadata_with_dates = metadata_for_strains.loc[~metadata["date"].str.contains("X"), ["date"]].copy()
