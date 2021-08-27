@@ -1,2 +1,4 @@
 B/Michigan/1/2021
+B/Michigan/1/2021-egg
 B/Sichuan-Jingyang/12048/2019
+B/Sichuan-Jingyang/12048/2019-egg
