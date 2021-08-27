@@ -236,7 +236,10 @@ def plot_counts(counts, date_bins, fname, drop=3, regions=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_ylabel('Sample count', fontsize=fs*1.1)
-    ax.legend(loc=3, ncol=1, bbox_to_anchor=(1.01, 0.25))
+
+    # Place the legend's lower left corner at the specified anchor position.
+    ax.legend(loc="lower left", ncol=1, bbox_to_anchor=(1.01, 0.0))
+
     #plt.subplots_adjust(left=0.08, right=0.81, top=0.9, bottom=0.22)
     plt.tight_layout()
     if fname:

@@ -136,13 +136,16 @@
         "yam": ""
     },
     "regions_to_graph": [
+        "Africa",
         "China",
         "Europe",
         "Japan Korea",
         "Oceania",
         "North America",
         "South America",
+        "Southeast Asia",
         "South Asia",
+        "West Asia",
         "global"
     ]
 }
