@@ -19,6 +19,12 @@
       "menuItem":"region",
       "type":"discrete"
     },
+    "country": {
+      "key":"country",
+      "legendTitle":"Country",
+      "menuItem":"country",
+      "type":"discrete"
+    },
     "avgage": {
       "menuItem": "average age",
       "legendTitle": "average age",

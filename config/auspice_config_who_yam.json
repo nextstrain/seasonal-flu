@@ -16,6 +16,12 @@
       "title":"Region",
       "type":"categorical"
     },
+    "country": {
+      "key":"country",
+      "legendTitle":"Country",
+      "menuItem":"country",
+      "type":"discrete"
+    },
     "clade_membership": {
       "key": "clade_membership",
       "title": "Clade",
