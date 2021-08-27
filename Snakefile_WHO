@@ -82,6 +82,12 @@ rule complete_mutation_frequencies_by_region:
     output:
         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
     conda: "environment.yaml"
+    benchmark:
+        "benchmarks/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.txt"
+    log:
+        "logs/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.txt"
+    resources:
+        mem_mb=4000,
     shell:
         """
         augur frequencies --method diffusion \
@@ -95,7 +101,7 @@ rule complete_mutation_frequencies_by_region:
                           --min-date {params.min_date} \
                           --max-date {params.max_date} \
                           --minimal-frequency {params.min_freq} \
-                          --output {output.mut_freq:q}
+                          --output {output.mut_freq:q} &> {log:q}
         """
 
 rule global_mutation_frequencies:
