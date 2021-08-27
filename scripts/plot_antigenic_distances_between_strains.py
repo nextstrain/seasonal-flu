@@ -132,7 +132,7 @@ if __name__ == '__main__':
     sources = ", ".join([NAME_BY_SOURCE[source] for source in filtered_df["source"].drop_duplicates().sort_values().values])
 
     # Initialize the figure
-    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(12, 10))
     sns.despine()
 
     if args.plot_raw_data:
@@ -146,6 +146,7 @@ if __name__ == '__main__':
             data=filtered_df,
             palette=color_by_clade,
             dodge=True,
+            size=8,
             alpha=0.5,
             jitter=0.2,
             zorder=1
