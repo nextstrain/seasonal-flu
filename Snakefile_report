@@ -26,30 +26,36 @@ regions_to_graph = config["regions_to_graph"]
 
 rule figures:
     input:
-        expand("figures/mutation_frequencies_{lineage}_{segment}_{resolution}.pdf", segment=segments, lineage=lineages, resolution=resolutions),
-        expand("figures/clade-frequencies_{lineage}_ha_{resolution}.pdf", lineage=lineages, resolution=resolutions),
-        expand("figures/age-distribution_{lineage}_{resolution}.pdf", lineage=lineages, resolution=resolutions),
-        expand("figures/titer_matrix_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.pdf",
-                lineage=lineages, resolution=['2y'], center=centers, passage=passages, assay=assays)
+        expand("figures/mutation_frequencies_h3n2_{segment}_2y_fra.pdf", segment=segments),
+        expand("figures/mutation_frequencies_{lineage}_{segment}_2y_hi.pdf", lineage=["h1n1pdm", "vic"], segment=segments),
+        #expand("figures/clade-frequencies_{lineage}_ha_{resolution}_{assay}.pdf", lineage=lineages, resolution=resolutions),
+        #expand("figures/age-distribution_{lineage}_{resolution}_{assay}.pdf", lineage=lineages, resolution=resolutions),
+        #expand("figures/titer_matrix_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.pdf",
+        #        lineage=lineages, resolution=['2y'], center=centers, passage=passages, assay=assays)
 
-rule antigenic_distances:
+rule trees:
     input:
-        h3n2=expand("results/antigenic_distances_between_strains_who_h3n2_ha_2y_{passage}_fra.tsv",
+        expand("auspice-who/flu_who_h3n2_{segment}_2y_{passage}_fra_tree.json", segment=segments, passage=passages),
+        expand("auspice-who/flu_who_{lineage}_{segment}_2y_{passage}_hi_tree.json", lineage=["h1n1pdm", "vic"], segment=segments, passage=passages),
+
+rule antigenic_distance_plots:
+    input:
+        h3n2=expand("results/antigenic_distances_between_strains_who_h3n2_ha_2y_{passage}_fra.pdf",
                     passage=passages),
-        h1n1pdm=expand("results/antigenic_distances_between_strains_who_h1n1pdm_ha_2y_{passage}_hi.tsv",
+        h1n1pdm=expand("results/antigenic_distances_between_strains_who_h1n1pdm_ha_2y_{passage}_hi.pdf",
                        passage=passages),
-        vic=expand("results/antigenic_distances_between_strains_who_vic_ha_2y_{passage}_hi.tsv",
+        vic=expand("results/antigenic_distances_between_strains_who_vic_ha_2y_{passage}_hi.pdf",
                    passage=passages)
 
 rule mutation_frequency_graphs:
     input:
-        mutations = "results/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_frequencies.json"
+        mutations = "results/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_frequencies.json",
     params:
         mutations = mutations_to_plot,
         regions = regions_to_graph,
     output:
-        mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}.pdf",
-        total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}.pdf",
+        mutations = "figures/mutation_frequencies_{lineage}_{segment}_{resolution}_{assay}.pdf",
+        total_counts = "figures/total-sample-count_{lineage}_{segment}_{resolution}_{assay}.pdf",
     conda: "environment.yaml"
     shell:
         """
