@@ -2,3 +2,21 @@ recency	last week	#d94701
 recency	last month	#fd8d3c
 recency	last quarter	#fdbe85
 recency	older	#feedde
+
+# H3N2 clade colors
+clade_membership	3c2.A	#f5c546
+clade_membership	3c3.A	#4a3fdd
+clade_membership	A1	#aad66c
+clade_membership	A1b	#4c89e8
+clade_membership	A1b/131K	#57a5d7
+clade_membership	A1b/135K	#66bbbe
+clade_membership	A1b/135N	#79c9a1
+clade_membership	A1b/137F	#7fb975
+clade_membership	A1b/159N	#e39b39
+clade_membership	A1b/186D	#dfd24e
+clade_membership	A1b/186S	#3e59cf
+clade_membership	A1b/197R	#5c22be
+clade_membership	A1b/94N	#e2572b
+clade_membership	A2	#ff8e3a
+clade_membership	A2/re	#c6d65a
+clade_membership	A3	#f93529
