@@ -4,3 +4,4 @@ B/Colorado/6/2017
 B/Colorado/6/2017-egg
 B/Iowa/6/2017
 B/Maryland/15/2016-egg
+B/Nigeria/3352/2018
