@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
     parser.add_argument("--color-schemes", required=True, help="table of color schemes for different number of items")
     parser.add_argument("--clades", nargs="+", help="a list of clades for which test strains should be plotted")
+    parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
     parser.add_argument("--references-to-include", help="a list of reference strains to force include in plots")
     parser.add_argument("--references-to-exclude", help="a list of reference strains to exclude from plots")
     parser.add_argument("--top-references-to-keep", type=int, default=10, help="top N number of references to keep by number of titer measurements")
@@ -62,43 +63,61 @@ if __name__ == '__main__':
     if args.clades:
         df = df[df["clade_test"].isin(args.clades)].copy()
 
+    # Annotate reference names with clade.
+    df["reference_name"] = df.apply(
+        lambda row: f"{row['reference_strain']}\n({row['clade_reference']})",
+        axis=1
+    )
+
     # Load color schemes.
     color_schemes = []
     with open(args.color_schemes, "r") as fh:
         for line in fh:
             color_schemes.append(line.strip().split("\t"))
 
-    # Load references to include or exclude.
-    references_to_include = set()
-    if args.references_to_include:
-        references_to_include = read_strains(args.references_to_include)
+    reference_order = None
+    if args.references:
+        # If references are given in order, we take these as they are.
+        with open(args.references, "r") as fh:
+            references_to_use = [line.strip() for line in fh]
 
-        # Limit references to include to those present in the data.
-        references_to_include &= set(df["reference_strain"].values)
+        record_by_strain = df.loc[
+            :,
+            ["reference_strain", "reference_name"]
+        ].drop_duplicates().set_index("reference_strain").to_dict(orient="index")
 
-    references_to_exclude = set()
-    if args.references_to_exclude:
-        references_to_exclude = read_strains(args.references_to_exclude)
+        reference_order = [
+            record_by_strain[strain]["reference_name"]
+            for strain in references_to_use
+            if strain in record_by_strain
+        ]
+    else:
+        # Otherwise, look for references to populate the plot.
+        # Load references to include or exclude.
+        references_to_include = set()
+        if args.references_to_include:
+            references_to_include = read_strains(args.references_to_include)
 
-    # Take the references with the most titer measurements, in addition to the
-    # references requested by the user.
-    top_references_to_keep = max(args.top_references_to_keep - len(references_to_include), 0)
-    recent_references = set(df["reference_strain"].value_counts().head(top_references_to_keep).index.values)
+            # Limit references to include to those present in the data.
+            references_to_include &= set(df["reference_strain"].values)
 
-    # Force include specific references.
-    recent_references.update(references_to_include)
+        references_to_exclude = set()
+        if args.references_to_exclude:
+            references_to_exclude = read_strains(args.references_to_exclude)
 
-    # Exclude specific references.
-    recent_references -= references_to_exclude
+        # Take the references with the most titer measurements, in addition to the
+        # references requested by the user.
+        top_references_to_keep = max(args.top_references_to_keep - len(references_to_include), 0)
+        references_to_use = set(df["reference_strain"].value_counts().head(top_references_to_keep).index.values)
+
+        # Force include specific references.
+        references_to_use.update(references_to_include)
+
+        # Exclude specific references.
+        references_to_use -= references_to_exclude
 
     # Filter distances to those with requested references.
-    filtered_df = df[df["reference_strain"].isin(recent_references)].copy()
-
-    # Annotate reference names with clade.
-    filtered_df["reference_name"] = filtered_df.apply(
-        lambda row: f"{row['reference_strain']}\n({row['clade_reference']})",
-        axis=1
-    )
+    filtered_df = df[df["reference_strain"].isin(references_to_use)].copy()
 
     # Use the user-defined clade order, when possible. If clades haven't been
     # provided, order test clades by global frequency in descending order.
@@ -110,17 +129,18 @@ if __name__ == '__main__':
             ascending=False
         )["clade_test"].drop_duplicates().values
 
-    # Order reference strains by clade (in descending order of global frequency)
-    # and mean log2 distance to test strains in ascending order.
-    filtered_df["negative_clade_frequency_reference"] = -1 * filtered_df["clade_frequency_reference"]
+    if reference_order is None:
+        # Order reference strains by clade (in descending order of global
+        # frequency) and mean log2 distance to test strains in ascending order.
+        filtered_df["negative_clade_frequency_reference"] = -1 * filtered_df["clade_frequency_reference"]
 
-    reference_order = filtered_df.groupby([
-        "reference_name",
-        "negative_clade_frequency_reference"
-    ])["log2_titer"].mean().reset_index().sort_values([
-        "negative_clade_frequency_reference",
-        "log2_titer",
-    ])["reference_name"].values
+        reference_order = filtered_df.groupby([
+            "reference_name",
+            "negative_clade_frequency_reference"
+        ])["log2_titer"].mean().reset_index().sort_values([
+            "negative_clade_frequency_reference",
+            "log2_titer",
+        ])["reference_name"].values
 
     # Assign colors to clades.
     number_of_clades = len(clade_order)

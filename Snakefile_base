@@ -813,8 +813,7 @@ rule antigenic_distances_between_strains:
 rule plot_antigenic_distances_between_strains:
     input:
         distances="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv",
-        references_to_include="config/references_to_include_in_titer_plots_{lineage}.txt",
-        references_to_exclude="config/references_to_exclude_in_titer_plots_{lineage}.txt",
+        references="config/references_for_titer_plots_{lineage}.txt",
         color_schemes="config/color_schemes.tsv",
     output:
         plot="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.pdf",
@@ -824,7 +823,6 @@ rule plot_antigenic_distances_between_strains:
         "logs/plot_antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt"
     params:
         min_test_date=2020.0,
-        top_references_to_keep=10,
         clades=lambda wildcards: config["clades_to_plot"][wildcards.lineage][wildcards.segment],
     conda: "environment.yaml"
     shell:
@@ -833,11 +831,9 @@ rule plot_antigenic_distances_between_strains:
             --antigenic-distances {input.distances} \
             --min-test-date {params.min_test_date} \
             --clades {params.clades} \
-            --references-to-include {input.references_to_include} \
-            --references-to-exclude {input.references_to_exclude} \
+            --references {input.references} \
             --color-schemes {input.color_schemes} \
             --plot-raw-data \
-            --top-references-to-keep {params.top_references_to_keep} \
             --output {output.plot} &> {log}
         """
 
