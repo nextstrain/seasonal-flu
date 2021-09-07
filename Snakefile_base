@@ -824,18 +824,18 @@ rule plot_antigenic_distances_between_strains:
         "logs/plot_antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt"
     params:
         min_test_date=2020.0,
-        min_clade_frequency=0.05,
         top_references_to_keep=10,
+        clades=lambda wildcards: config["clades_to_plot"][wildcards.lineage][wildcards.segment],
     conda: "environment.yaml"
     shell:
         """
         python3 scripts/plot_antigenic_distances_between_strains.py \
             --antigenic-distances {input.distances} \
             --min-test-date {params.min_test_date} \
+            --clades {params.clades} \
             --references-to-include {input.references_to_include} \
             --references-to-exclude {input.references_to_exclude} \
             --color-schemes {input.color_schemes} \
-            --min-clade-frequency {params.min_clade_frequency} \
             --plot-raw-data \
             --top-references-to-keep {params.top_references_to_keep} \
             --output {output.plot} &> {log}
