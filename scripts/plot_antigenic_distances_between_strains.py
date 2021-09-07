@@ -134,7 +134,7 @@ if __name__ == '__main__':
     sources = ", ".join([NAME_BY_SOURCE[source] for source in filtered_df["source"].drop_duplicates().sort_values().values])
 
     # Initialize the figure
-    fig, ax = plt.subplots(1, 1, figsize=(12, 10))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 10))
     sns.despine()
 
     if args.plot_raw_data:
