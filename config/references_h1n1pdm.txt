@@ -31,6 +31,8 @@ A/Idaho/7/2018
 A/India/322/2017
 A/India/3405/2017
 A/Indiana/21/2016
+A/Iowa/22/2020-egg
+A/Iowa/23/2020
 A/Iowa/33/2019
 A/Iowa/53/2015
 A/Iowa/59/2018
@@ -38,6 +40,7 @@ A/Iowa/59/2018-egg
 A/Ireland/84630/2018
 A/Israel/Q-504/2015
 A/Kazakhstan/581/2018
+A/Louisiana/1/2020
 A/Michigan/272/2017
 A/Michigan/272/2017-egg
 A/Michigan/45/2015
@@ -47,9 +50,11 @@ A/Minnesota/34/2018
 A/Montana/50/2016
 A/Montana/50/2016-egg
 A/Navarra/1985/2017
+A/Newcaledonia/58/2014
 A/NewJersey/13/2018
 A/NewMexico/19/2017
-A/Newcaledonia/58/2014
+A/NorthCarolina/1/2021
+A/NorthCarolina/1/2021-egg
 A/Norway/3433/2018
 A/Okinawa/93/2019-egg
 A/Oman/3192/2017

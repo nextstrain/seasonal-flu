@@ -1,3 +1,7 @@
+A/Iowa/22/2020-egg
+A/Iowa/23/2020
+A/NorthCarolina/1/2021
+A/NorthCarolina/1/2021-egg
+A/Louisiana/1/2020
 A/Togo/881/2020
-A/Togo/881/2020-egg
 A/Wisconsin/588/2019
