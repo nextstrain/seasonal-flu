@@ -7,11 +7,11 @@ A/Wisconsin/588/2019
 A/Arkansas/8/2020
 A/Iowa/23/2020
 A/Louisiana/1/2020
+A/Darwin/6/2018-egg
 A/Guangdong-Maonan/SWL1536/2019-egg
 A/Victoria/2454/2019-egg
 A/Hawaii/66/2019-egg
 A/NorthCarolina/1/2021-egg
 A/Victoria/2570/2019-egg
 A/Arkansas/8/2020-egg
-A/Darwin/6/2018-egg
 A/Iowa/22/2020-egg
