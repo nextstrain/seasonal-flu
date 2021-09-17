@@ -53,6 +53,7 @@ A/HongKong/7127/2014-egg
 A/Idaho/33/2016
 A/Idaho/33/2016-egg
 A/Indiana/8/2018
+A/Iowa/60/2018
 A/Kansas/14/2017
 A/Kansas/14/2017-egg
 A/Kobe/63/2014
