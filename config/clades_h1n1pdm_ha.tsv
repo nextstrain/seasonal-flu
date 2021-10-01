@@ -40,8 +40,6 @@ clade	gene	site	alt
 6b1.A	HA1	164	T
 6b1.A	nuc	1163	T
 6b1.A	nuc	1271	T
-A2	HA1	156	K
-A2	HA1	161	I
 A1	nuc	1703	A
 A1	nuc	384	C
 A1	nuc	618	C
@@ -74,3 +72,5 @@ A7	nuc	976	C
 A7	nuc	1558	G
 A5a.1	HA1	187	A
 A5a.1	HA1	189	E
+A5a.2	HA1	156	K
+A5a.2	HA1	161	I
