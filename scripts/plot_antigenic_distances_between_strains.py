@@ -5,11 +5,12 @@ matplotlib.use('agg')
 
 import argparse
 
-from augur.utils import read_strains
+from augur.utils import read_colors, read_strains
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import sys
 
 NAME_BY_LINEAGE = {
     "h3n2": "A/H3N2",
@@ -28,7 +29,7 @@ NAME_BY_SOURCE = {
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
-    parser.add_argument("--color-schemes", required=True, help="table of color schemes for different number of items")
+    parser.add_argument("--colors", required=True, help="table of Nextstrain colors with `clade_membership` in the first column, clade name in the second column, and hex color in the third column.")
     parser.add_argument("--clades", nargs="+", help="a list of clades for which test strains should be plotted")
     parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
     parser.add_argument("--references-to-include", help="a list of reference strains to force include in plots")
@@ -42,12 +43,12 @@ if __name__ == '__main__':
 
     # Configure plotting style.
     sns.set_style("ticks")
-    mpl.rcParams['figure.dpi'] = 150
-    mpl.rcParams['font.size'] = 14
-    mpl.rcParams['axes.labelsize'] = 14
-    mpl.rcParams['legend.fontsize'] = 12
-    mpl.rcParams['xtick.labelsize'] = 14
-    mpl.rcParams['ytick.labelsize'] = 14
+    mpl.rcParams['figure.dpi'] = 300
+    mpl.rcParams['font.size'] = 16
+    mpl.rcParams['axes.labelsize'] = 16
+    mpl.rcParams['legend.fontsize'] = 14
+    mpl.rcParams['xtick.labelsize'] = 16
+    mpl.rcParams['ytick.labelsize'] = 16
 
     # Load distances.
     df = pd.read_csv(
@@ -69,11 +70,17 @@ if __name__ == '__main__':
         axis=1
     )
 
-    # Load color schemes.
-    color_schemes = []
-    with open(args.color_schemes, "r") as fh:
-        for line in fh:
-            color_schemes.append(line.strip().split("\t"))
+    # Load colors.
+    colors = read_colors(args.colors)
+    if not "clade_membership" in colors:
+        print(
+            f"No colors for `clade_membership` are defined in the given colors file, '{args.colors}'.",
+            file=sys.stderr
+        )
+        sys.exit(1)
+
+    # Colors indexed by lower-cased clade name.
+    clade_colors = dict(colors["clade_membership"])
 
     reference_order = None
     if args.references:
@@ -144,8 +151,10 @@ if __name__ == '__main__':
 
     # Assign colors to clades.
     number_of_clades = len(clade_order)
-    clade_colors = color_schemes[number_of_clades - 1]
-    color_by_clade = dict(zip(reversed(clade_order), clade_colors))
+    color_by_clade = {
+        clade: clade_colors.get(clade.lower(), "#CCCCCC")
+        for clade in clade_order
+    }
 
     # Get features of current dataset for display in the title.
     lineage = NAME_BY_LINEAGE[filtered_df["lineage"].values[0]]

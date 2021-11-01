@@ -814,7 +814,7 @@ rule plot_antigenic_distances_between_strains:
     input:
         distances="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv",
         references="config/references_for_titer_plots_{lineage}.txt",
-        color_schemes="config/color_schemes.tsv",
+        colors="config/colors_for_titer_plots.tsv",
     output:
         plot="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.pdf",
     benchmark:
@@ -832,7 +832,7 @@ rule plot_antigenic_distances_between_strains:
             --min-test-date {params.min_test_date} \
             --clades {params.clades} \
             --references {input.references} \
-            --color-schemes {input.color_schemes} \
+            --colors {input.colors} \
             --plot-raw-data \
             --output {output.plot} &> {log}
         """
