@@ -68,12 +68,12 @@ rule mutation_frequency_graphs:
 
 rule rare_mutation_frequency_graphs:
     input:
-        mutations = "results/flu_cdc_{lineage}_{segment}_{resolution}_cell_hi_frequencies.json"
+        mutations = "results/flu_who_{lineage}_{segment}_{resolution}_cell_{assay}_frequencies.json"
     params:
         mutations = rare_mutations_to_plot,
         regions = regions_to_graph,
     output:
-        mutations = "figures/rare_mutation_frequencies_{lineage}_{segment}_{resolution}.pdf"
+        mutations = "figures/rare_mutation_frequencies_{lineage}_{segment}_{resolution}_{assay}.pdf"
     conda: "environment.yaml"
     shell:
         """
@@ -86,14 +86,14 @@ rule rare_mutation_frequency_graphs:
 
 rule clade_frequency_graphs:
     input:
-        tree = "results/tree-frequencies_cdc_{lineage}_{segment}_{resolution}_cell_hi.json",
-        clades = "results/clades_cdc_{lineage}_{segment}_{resolution}_cell_hi.json"
+        tree = "results/tree-frequencies_who_{lineage}_{segment}_{resolution}_cell_{assay}.json",
+        clades = "results/clades_who_{lineage}_{segment}_{resolution}_cell_{assay}.json"
     params:
         regions = regions_to_graph,
         clades = clades_to_plot,
     output:
-        tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}.pdf",
-        clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}.pdf"
+        tree_counts = "figures/tree-sample-count_{lineage}_{segment}_{resolution}_{assay}.pdf",
+        clades = "figures/clade-frequencies_{lineage}_{segment}_{resolution}_{assay}.pdf"
     conda: "environment.yaml"
     shell:
         """
@@ -114,9 +114,9 @@ rule mutation_statistics:
         offset = 4,
         n_out=20
     output:
-        rising = "results/rising_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
-        recurring_mut = "results/recurring_mutations_{region}_{lineage}_{segment}_{resolution}.txt",
-        recurring_pos = "results/recurring_positions_{region}_{lineage}_{segment}_{resolution}.txt"
+        rising = "results/rising_mutations_{center}_{region}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt",
+        recurring_mut = "results/recurring_mutations_{center}_{region}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt",
+        recurring_pos = "results/recurring_positions_{center}_{region}_{lineage}_{segment}_{resolution}_{passage}_{assay}.txt"
     run:
         from scripts.mutation_statistics import rising_mutations, recurring_mutations
         rising_mutations(input.mutations, offset=params.offset, fname=output.rising, n_out=params.n_out)
