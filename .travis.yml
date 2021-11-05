@@ -3,7 +3,7 @@ services:
   - docker
 language: python
 python:
-  - "3.6"
+  - "3.9"
 install:
   - pip3 install git+https://github.com/nextstrain/cli
   - nextstrain version
