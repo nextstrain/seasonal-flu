@@ -102,6 +102,11 @@
       "title": "Country",
       "type": "categorical"
     },
+     {
+      "key": "division",
+      "title": "Division",
+      "type": "categorical"
+    },
     {
       "key": "submitting_lab",
       "title": "Submitting lab",
@@ -124,6 +129,7 @@
     }
   ],
   "geo_resolutions": [
+    "division",
     "country",
     "region"
   ],
@@ -135,6 +141,7 @@
     "clade_membership",
     "region",
     "country",
+    "division",
     "submitting_lab",
     "recency",
     "epiweek"

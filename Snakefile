@@ -236,6 +236,7 @@ rule export:
         node_data = _get_node_data_for_export,
         description = files.description,
         colors = files.colors,
+        lat_longs = files.lat_longs,
     output:
         auspice_json = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         root_sequence = "auspice/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
@@ -248,6 +249,7 @@ rule export:
             --node-data {input.node_data} \
             --auspice-config {input.auspice_config} \
             --colors {input.colors} \
+            --lat-longs {input.lat_longs} \
             --output {output.auspice_json} \
             --description {input.description} \
             --include-root-sequence \
