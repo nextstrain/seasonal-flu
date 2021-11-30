@@ -248,7 +248,8 @@ rule files:
         colors = "config/colors.tsv",
         auspice_config = _get_auspice_config,
         vaccine_json = "config/vaccines_{lineage}.json",
-        description = "config/description.md"
+        description = "config/description.md",
+        lat_longs = "config/lat_longs.tsv",
 
 files = rules.files.params
 
