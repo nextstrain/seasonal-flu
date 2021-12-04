@@ -1,0 +1,9 @@
+data_source: fauna
+
+segments:
+  h3n2:
+    - ha
+    - na
+  h1n1pdm:
+    - ha
+    - na

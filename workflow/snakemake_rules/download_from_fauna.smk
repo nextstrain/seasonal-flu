@@ -4,7 +4,7 @@ It produces files in the directory `data` and requires no input files.
 the endpoints are
 
 sequences = "data/{lineage}/{segment}.fasta"
-metadata = "data/{lineage}/{segment}.tsv"
+metadata = "data/{lineage}/metadata.tsv"
 titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
@@ -52,7 +52,7 @@ rule download_sequences:
             --resolve_method split_passage \
             --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
             --path data \
-            --fstem {wildcards.lineage}_{wildcards.segment}
+            --fstem {wildcards.lineage}/raw_{wildcards.segment}
         """
 
 rule download_titers:
@@ -80,7 +80,7 @@ rule parse:
         sequences = rules.download_sequences.output.sequences
     output:
         sequences = "data/{lineage}/{segment}.fasta",
-        metadata = "data/{lineage}/{segment}.tsv"
+        metadata = "data/{lineage}/metadata_{segment}.tsv"
     params:
         fasta_fields =  " ".join(fasta_fields),
         prettify_fields = " ".join(prettify_fields)
@@ -95,3 +95,32 @@ rule parse:
             --prettify-fields {params.prettify_fields} && \
         rm {input}
         """
+
+
+rule metadata:
+    input:
+        segment_metadata = lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments'][w.lineage]]
+    output:
+        "data/{lineage}/metadata.tsv"
+    params:
+        segments = lambda w: config['segments'][w.lineage]
+    run:
+        import pandas as pd
+
+        # read each metadata file
+        def segment(f):
+            return f.split('/')[-1].split('.')[0].split('_')[-1]
+
+        # this should be a proper join -- currently assuming all fields but the segment accession are redundant
+        f = input.segment_metadata[0]
+        s = segment(f)
+        segment_metadata = pd.read_csv(f, sep='\t', index_col=0).rename({'accession': f'accession_{s}'}, axis=1)
+        segment_metadata[s]=True
+        for f in input.segment_metadata[1:]:
+            s = segment(f)
+            d = pd.read_csv(f, sep='\t', index_col=0).loc[:,["accession"]]
+            d[s] = True
+            segment_metadata = pd.merge(segment_metadata, d.rename({'accession': f'accession_{s}'}, axis=1), how='outer', on='strain')
+
+
+        segment_metadata.to_csv(output[0], sep='\t')
