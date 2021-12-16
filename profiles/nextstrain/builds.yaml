@@ -7,3 +7,25 @@ segments:
   h1n1pdm:
     - ha
     - na
+
+
+array_builds:
+  fields:
+    center:
+      - who
+      - cdc
+    assay:
+      - hi
+      - fra
+    resolution:
+      - 6m
+      - 2y
+      - 3y
+  build_name: "{center}_{assay}_{resolution}"
+  subsampling_parameters:
+    size: "4000"
+    min-date: '"2016-01-01"'
+  subsamples:
+    global:
+        filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date}"
+        priorities: titers
