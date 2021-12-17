@@ -305,6 +305,7 @@ A/NorthDakota/19/2017
 A/Novosibirsk/1/2019
 A/Ohio/2/2014
 A/Ohio/5/2013
+A/Ohio/6/2021
 A/Ohio/13/2012
 A/Ohio/13/2012-egg
 A/Ohio/13/2017
