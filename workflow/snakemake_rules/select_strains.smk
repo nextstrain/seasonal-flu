@@ -14,39 +14,42 @@ output:
  - builds/{build_name}/{segment}/sequences.fasta
 '''
 
-
-rule select_strains:
+rule subsample:
     input:
-        sequences = expand("data/{{lineage}}/{segment}.fasta", segment=segments),
-        metadata = "data/{lineage}/metadata.tsv",
-        titers = expand("data/{{lineage}}/{center}_{passage}_{assay}_titers.tsv",
-                        center=config[wildcards.build_name]["center"],
-                        passage=config[wildcards.build_name]["passage"],
-                        assay=config[wildcards.build_name]["assay"])
-        include = files.references
+        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv",
     output:
-        strains = "builds/{build_name}/strains.txt",
+        strains = "builds/{build_name}/strains_{subsample}.txt",
     params:
-        viruses_per_month = vpm
+        filters =  lambda w: config["builds"][w.build_name]["subsamples"][w.subsample]["filters"]
     conda: "environment.yaml"
     shell:
         """
-        python3 scripts/select_strains.py \
-            --sequences {input.sequences} \
+        augur filter \
             --metadata {input.metadata} \
-            --segments {segments} \
-            --include {input.include} \
-            --lineage {wildcards.lineage} \
-            --resolution {wildcards.resolution} \
-            --viruses-per-month {params.viruses_per_month} \
-            --titers {input.titers} \
-            --output {output.strains}
+            {params.filters} \
+            --output-strains {output.strains} 2>&1 | tee {log}
         """
+
+rule select_strains:
+    input:
+        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv",
+        subsamples = lambda w: [f"builds/{w.build_name}/strains_{s}.txt" for s in config['builds'][w.build_name]['subsamples']]
+    output:
+        strains = "builds/{build_name}/strains.txt",
+    run:
+        strains = set()
+        for fname in input.subsamples:
+            with open(fname) as fh:
+                for line in fh:
+                    strains.add(line.strip())
+
+        with open(output.strains, 'w') as fh:
+            fh.write('\n'.join(strains)+'\n')
 
 rule select_sequences:
     input:
         strains = "builds/{build_name}/strains.txt",
-        sequences = "data/{lineage}/{segment}.fasta"
+        sequences = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}.fasta"
     output:
         sequences = "builds/{build_name}/{segment}/sequences.fasta"
     shell:
@@ -57,7 +60,7 @@ rule select_sequences:
 rule select_metadata:
     input:
         strains = "builds/{build_name}/strains.txt",
-        metadata = "data/{lineage}/metadata.tsv"
+        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"
     output:
         metadata = "builds/{build_name}/metadata.tsv"
     run:
@@ -68,28 +71,6 @@ rule select_metadata:
         d = pd.read_csv(input.metadata, sep='\t', index_col=0).loc[strains]
 
         d.to_csv(output.metadata, sep='\t')
-
-rule select_titers:
-    input:
-        strains = "builds/{build_name}/strains.txt",
-        titers = expand("data/{{lineage}}/{center}_{passage}_{assay}_titers.tsv",
-                        center=config[wildcards.build_name]["center"],
-                        passage=config[wildcards.build_name]["passage"],
-                        assay=config[wildcards.build_name]["assay"])
-    output:
-        titers = "builds/{build_name}/titers.tsv"
-    run:
-        import pandas as pd
-        with open(input.strains) as fh:
-            strains = set([x.strip() for x in fh])
-
-        d = pd.read_csv(input.titers, sep='\t')
-        relevant_titers = []
-        for ri, row in d.rowiter():
-            if row[0] in strains and row[1] in strains:
-                relevant_titers.append(row)
-
-        pd.DataFrame(relevant_titers).to_csv(output.titers, sep='\t')
 
 
 

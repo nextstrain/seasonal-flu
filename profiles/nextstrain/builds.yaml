@@ -9,23 +9,32 @@ segments:
     - na
 
 
-array_builds:
-  fields:
-    center:
-      - who
-      - cdc
-    assay:
-      - hi
-      - fra
-    resolution:
-      - 6m
-      - 2y
-      - 3y
-  build_name: "{center}_{assay}_{resolution}"
-  subsampling_parameters:
-    size: "4000"
-    min-date: '"2016-01-01"'
-  subsamples:
-    global:
-        filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date}"
-        priorities: titers
+array-builds:
+  nextstrain:
+    patterns:
+      lineage:
+        - h3n2
+        - h1n1pdm
+      center:
+        - who
+        - cdc
+      assay:
+        - hi
+        - fra
+      resolution:
+        - 0.5
+        - 2
+        - 3
+    build_name: "{lineage}_{center}_{assay}_{resolution}y"
+    reference: "config/{lineage}/{{segment}}/reference.fasta"
+    annotation: "config/{lineage}/{{segment}}/genemap.gff"
+    tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+    subsampling_parameters:
+      size: "4000"
+      min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      global:
+          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude}"
+          priorities: titers
