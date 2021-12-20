@@ -8,27 +8,26 @@ segments:
     - ha
     - na
 
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
 
 array-builds:
   nextstrain:
     patterns:
       lineage:
         - h3n2
-        - h1n1pdm
       center:
         - who
-        - cdc
       assay:
         - hi
-        - fra
       resolution:
-        - 0.5
-        - 2
         - 3
     build_name: "{lineage}_{center}_{assay}_{resolution}y"
-    reference: "config/{lineage}/{{segment}}/reference.fasta"
-    annotation: "config/{lineage}/{{segment}}/genemap.gff"
-    tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+    build_params:
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
     subsampling_parameters:
       size: "4000"
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
@@ -36,5 +35,5 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude}"
+          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
           priorities: titers

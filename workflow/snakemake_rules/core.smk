@@ -16,6 +16,8 @@ output:
  - builds/{build_name}/{segment}/traits.json
 '''
 
+build_dir = config.get("build_dir", "builds")
+
 def genes(segment):
     return {'ha':['HA'], 'na':['NA']}[segment]
 
@@ -25,14 +27,14 @@ rule align:
         Aligning sequences to {input.reference}
         """
     input:
-        sequences = "builds/{build_name}/{segment}/sequences.fasta",
+        sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
         reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
     output:
-        alignment = "builds/{build_name}/{segment}/aligned.fasta"
+        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta"
     params:
         genes = lambda w: ','.join(genes(w.segment)),
-        outdir =  "builds/{build_name}/{segment}/nextalign",
+        outdir =  build_dir + "/{build_name}/{segment}/nextalign",
     threads: 1
     resources:
         mem_mb=16000
@@ -51,7 +53,9 @@ rule tree:
     input:
         alignment = rules.align.output.alignment,
     output:
-        tree = "builds/{build_name}/{segment}/tree_raw.nwk"
+        tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
+    params:
+        tree_builder_args = config["tree"]["tree-builder-args"]
     threads: 8
     resources:
         mem_mb=16000
@@ -59,6 +63,7 @@ rule tree:
         """
         augur tree \
             --alignment {input.alignment} \
+            --tree-builder-args {params.tree_builder_args} \
             --output {output.tree} \
             --nthreads {threads}
         """
@@ -90,7 +95,10 @@ def clock_rate(w):
  	 ('yam', 'pa'): 0.00112,
  	 ('yam', 'pb1'): 0.00092,
  	 ('yam', 'pb2'): 0.00113}
-    return rate.get((w.lineage, w.segment), 0.001)
+    return rate.get((config['builds'][w.build_name]["lineage"], w.segment), 0.001)
+
+def clock_std_dev(w):
+    return clock_rate(w)/5
 
 rule refine:
     message:
@@ -104,16 +112,16 @@ rule refine:
     input:
         tree = rules.tree.output.tree,
         alignment = rules.align.output,
-        metadata = "builds/{build_name}/metadata.tsv"
+        metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        tree = "builds/{build_name}/{segment}/tree.nwk",
-        node_data = "builds/{build_name}/{segment}/branch-lengths.json"
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = 4,
         clock_rate = clock_rate,
-        clock_std_dev = 0.0001
+        clock_std_dev = clock_std_dev
     conda: "environment.yaml"
     resources:
         mem_mb=16000
@@ -141,7 +149,7 @@ rule ancestral:
         tree = rules.refine.output.tree,
         alignment = rules.align.output
     output:
-        node_data = "builds/{build_name}/{segment}/nt-muts.json"
+        node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
     params:
         inference = "joint"
     conda: "environment.yaml"
@@ -156,43 +164,107 @@ rule ancestral:
             --inference {params.inference}
         """
 
-# rule translate:
-#     message: "Translating amino acid sequences"
-#     input:
-#         tree = rules.refine.output.tree,
-#         node_data = rules.ancestral.output.node_data,
-#         reference = files.reference
-#     output:
-#         node_data = "builds/{build_name}/{segment}/aa-muts.json",
-#     conda: "environment.yaml"
-#     shell:
-#         """
-#         augur translate \
-#             --tree {input.tree} \
-#             --ancestral-sequences {input.node_data} \
-#             --reference-sequence {input.reference} \
-#             --output {output.node_data} \
-#         """
+rule translate:
+    message: "Translating amino acid sequences"
+    input:
+        tree = rules.refine.output.tree,
+        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
+        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/aa_muts.json",
+    params:
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in genes(w.segment)],
+        genes = lambda w: genes(w.segment)
+    conda: "environment.yaml"
+    shell:
+        """
+        python3 scripts/translations_aamuts.py \
+            --tree {input.tree} \
+            --annotation {input.annotation} \
+            --reference {input.reference} \
+            --translations {params.translations:q} \
+            --genes {params.genes} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
 
-# rule traits:
-#     message:
-#         """
-#         Inferring ancestral traits for {params.columns!s}
-#         """
-#     input:
-#         tree = rules.refine.output.tree,
-#         metadata = "builds/{build_name}/metadata.tsv"
-#     output:
-#         node_data = "builds/{build_name}/{segment}/traits.json",
-#     params:
-#         columns = "region"
-#     conda: "environment.yaml"
-#     shell:
-#         """
-#         augur traits \
-#             --tree {input.tree} \
-#             --metadata {input.metadata} \
-#             --output {output.node_data} \
-#             --columns {params.columns} \
-#             --confidence
-#         """
+rule traits:
+    message:
+        """
+        Inferring ancestral traits for {params.columns!s}
+        """
+    input:
+        tree = rules.refine.output.tree,
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/traits.json",
+    params:
+        columns = "region"
+    conda: "environment.yaml"
+    shell:
+        """
+        augur traits \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --output {output.node_data} \
+            --columns {params.columns} \
+            --confidence
+        """
+
+rule clades:
+    message: "Annotating clades"
+    input:
+        tree = build_dir + "/{build_name}/ha/tree.nwk",
+        nt_muts = rules.ancestral.output.node_data,
+        aa_muts = rules.translate.output.node_data,
+        clades = lambda w: config[build_dir + ""][w.build_name]["clades"] if w.segment=='ha' else f"{build_dir}/{w.build_name}/ha/clades.json"
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/clades.json"
+    run:
+        if wildcards.segment == 'ha':
+            shell("""
+                augur clades \
+                    --tree {input.tree} \
+                    --mutations {input.nt_muts} {input.aa_muts} \
+                    --clades {input.clades} \
+                    --output {output.node_data}
+            """)
+        else:
+            shell("""
+                python3 scripts/import_tip_clades.py \
+                    --tree {input.tree} \
+                    --clades {input.clades} \
+                    --output {output.node_data}
+            """)
+
+rule tip_frequencies:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = build_dir + "/{build_name}/metadata.tsv",
+        weights = "config/frequency_weights_by_region.json"
+    params:
+        narrow_bandwidth = 2 / 12.0,
+        wide_bandwidth = 3 / 12.0,
+        proportion_wide = 0.0,
+        weight_attribute = "region",
+        min_date = lambda w: config["builds"][w.build_name]["min-date"],
+        max_date = lambda w: datetime.datetime.today().strftime("%Y-%m-%d"),
+        pivot_interval = 2
+    output:
+        tip_freq = "auspice/{build_name}/{segment}_tip-frequencies.json"
+    conda: "environment.yaml"
+    shell:
+        """
+        augur frequencies \
+            --method kde \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --wide-bandwidth {params.wide_bandwidth} \
+            --proportion-wide {params.proportion_wide} \
+            --weights {input.weights} \
+            --weights-attribute {params.weight_attribute} \
+            --pivot-interval {params.pivot_interval} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output}
+        """

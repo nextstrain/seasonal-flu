@@ -19,9 +19,8 @@ for array_build in config["array-builds"].values():
         build_params.update({k:eval(v.format(**build_params)) for k,v in array_build.get('subsampling_parameters',{}).items()})
 
         build_name = array_build["build_name"].format(**build_params)
-        build_params['reference'] = array_build["reference"].format(**build_params)
-        build_params['annotation'] = array_build["annotation"].format(**build_params)
-        build_params['tree_exclude_sites'] = array_build["tree_exclude_sites"].format(**build_params)
+        for k,v in array_build.get("build_params",{}).items():
+            build_params[k] = v.format(**build_params)
 
         tmp = {}
         for subsample in subsamples:

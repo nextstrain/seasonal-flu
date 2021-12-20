@@ -13,6 +13,10 @@ fasta_fields = ["strain", "virus", "accession", "collection_date", "virus_inclus
                 "region",  "country", "division", "location", "passage_category",
                 "originating_lab", "submitting_lab", "age", "gender"]
 
+output_fasta_fields = ["strain", "virus", "accession", "date", "virus_inclusion_date",
+                "region",  "country", "division", "location", "passage_category",
+                "originating_lab", "submitting_lab", "age", "gender"]
+
 # fields that will be canonicized by augur parse (upper/lower casing etc)
 prettify_fields = ["region","country","division","location","originating_lab","submitting_lab"]
 
@@ -34,7 +38,6 @@ def _get_tdb_assays(wildcards):
     if wildcards.assay == 'hi':
         return 'hi,hi_oseltamivir'
     return wildcards.assay
-
 
 rule download_sequences:
     message: "Downloading sequences from fauna"
@@ -82,7 +85,7 @@ rule parse:
         sequences = "data/{lineage}/{segment}.fasta",
         metadata = "data/{lineage}/metadata_{segment}.tsv"
     params:
-        fasta_fields =  " ".join(fasta_fields),
+        fasta_fields =  " ".join(output_fasta_fields),
         prettify_fields = " ".join(prettify_fields)
     conda: "environment.yaml"
     shell:
