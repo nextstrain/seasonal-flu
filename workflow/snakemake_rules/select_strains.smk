@@ -14,11 +14,14 @@ output:
  - builds/{build_name}/{segment}/sequences.fasta
 '''
 
+build_dir = config.get("build_dir", "builds")
+
+
 rule subsample:
     input:
-        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv",
+        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"
     output:
-        strains = "builds/{build_name}/strains_{subsample}.txt",
+        strains = build_dir + "/{build_name}/strains_{subsample}.txt",
     params:
         filters =  lambda w: config["builds"][w.build_name]["subsamples"][w.subsample]["filters"]
     conda: "environment.yaml"
@@ -33,9 +36,9 @@ rule subsample:
 rule select_strains:
     input:
         metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv",
-        subsamples = lambda w: [f"builds/{w.build_name}/strains_{s}.txt" for s in config['builds'][w.build_name]['subsamples']]
+        subsamples = lambda w: [f"{build_dir}/{w.build_name}/strains_{s}.txt" for s in config['builds'][w.build_name]['subsamples']]
     output:
-        strains = "builds/{build_name}/strains.txt",
+        strains = build_dir + "/{build_name}/strains.txt",
     run:
         strains = set()
         for fname in input.subsamples:
@@ -48,21 +51,21 @@ rule select_strains:
 
 rule select_sequences:
     input:
-        strains = "builds/{build_name}/strains.txt",
+        strains = build_dir + "/{build_name}/strains.txt",
         sequences = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}.fasta"
     output:
-        sequences = "builds/{build_name}/{segment}/sequences.fasta"
+        sequences = build_dir + "/{build_name}/{segment}/sequences.fasta"
     shell:
         """
-        seqkit grep -f {input.strains} {input.sequences} -o {output.sequences}
+        seqkit grep -f {input.strains} {input.sequences} | seqkit replace -p "[^acgtACGT-]|N" -s -o {output.sequences}
         """
 
 rule select_metadata:
     input:
-        strains = "builds/{build_name}/strains.txt",
+        strains = build_dir + "/{build_name}/strains.txt",
         metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"
     output:
-        metadata = "builds/{build_name}/metadata.tsv"
+        metadata = build_dir + "/{build_name}/metadata.tsv"
     run:
         import pandas as pd
         with open(input.strains) as fh:
