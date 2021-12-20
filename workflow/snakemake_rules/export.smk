@@ -13,6 +13,9 @@ def _get_node_data_by_wildcards(wildcards):
         rules.traits.output.node_data
     ]
 
+    if config.get('titer-models',False):
+        #inputs.append(rules.titers_sub.output.titers_model)
+        inputs.append(rules.titers_tree.output.titers_model)
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
     return inputs

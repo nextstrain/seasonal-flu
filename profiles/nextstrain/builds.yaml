@@ -1,12 +1,10 @@
 data_source: fauna
 
 segments:
-  h3n2:
-    - ha
-    - na
-  h1n1pdm:
-    - ha
-    - na
+  - ha
+  - na
+
+titer-models: True
 
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
@@ -20,20 +18,22 @@ array-builds:
         - who
       assay:
         - hi
+      passage:
+        - cell
       resolution:
-        - 3
-    build_name: "{lineage}_{center}_{assay}_{resolution}y"
+        - 2
+    build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y"
     build_params:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
     subsampling_parameters:
-      size: "4000"
+      size: "200"
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
           filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
-          priorities: titers
+          priorities: "titers"
