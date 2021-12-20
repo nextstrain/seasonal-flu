@@ -74,7 +74,7 @@ rule download_titers:
             --subtype {wildcards.lineage} \
             --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
             --path data \
-            --fstem {wildcards.center}_{wildcards.lineage}_{wildcards.passage}_{wildcards.assay}
+            --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay}
         """
 
 rule parse:
@@ -102,11 +102,11 @@ rule parse:
 
 rule metadata:
     input:
-        segment_metadata = lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments'][w.lineage]]
+        segment_metadata = lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']]
     output:
         "data/{lineage}/metadata.tsv"
     params:
-        segments = lambda w: config['segments'][w.lineage]
+        segments = lambda w: config['segments']
     run:
         import pandas as pd
 

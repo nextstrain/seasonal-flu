@@ -68,6 +68,26 @@ rule tree:
             --nthreads {threads}
         """
 
+rule sanitize_trees:
+    input:
+        trees = lambda w: [f"{build_dir}/{w.build_name}/{segment}/tree_raw.nwk" for segment in config['segments']],
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir])
+    run:
+        from Bio import Phylo
+
+        trees = [Phylo.read(fname, 'newick') for fname in input.trees]
+        common_leaves = set.intersection(*[set([x.name for x in tree.get_terminals()]) for tree in trees])
+        for ti,tree in enumerate(trees):
+            for leaf in set([x.name for x in tree.get_terminals()]).difference(common_leaves):
+                tree.prune(leaf)
+
+            tree.root_at_midpoint()
+            tree.ladderize()
+            Phylo.write(tree, output.trees[ti], 'newick')
+
+
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
     rate = {
@@ -110,7 +130,7 @@ rule refine:
           - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
-        tree = rules.tree.output.tree,
+        tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
         alignment = rules.align.output,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
