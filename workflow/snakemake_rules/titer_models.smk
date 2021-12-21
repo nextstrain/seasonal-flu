@@ -16,7 +16,7 @@ rule titers_sub:
         titers = build_dir +"/{build_name}/titers.tsv",
         tree = rules.refine.output.tree
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in genes(w.segment)],
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}_withInternalNodes.fasta" for gene in genes(w.segment)],
         genes = lambda w: genes(w.segment)
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model.json",

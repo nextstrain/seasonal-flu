@@ -1,5 +1,7 @@
 data_source: fauna
 
+lat-longs: "config/lat_longs.tsv"
+
 segments:
   - ha
   - na
@@ -28,6 +30,7 @@ array-builds:
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
     subsampling_parameters:
       size: "200"
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
