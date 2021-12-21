@@ -19,7 +19,7 @@ output:
 build_dir = config.get("build_dir", "builds")
 
 def genes(segment):
-    return {'ha':['HA'], 'na':['NA']}[segment]
+    return {'ha':['SigPep','HA1', 'HA2'], 'na':['NA']}[segment]
 
 rule align:
     message:

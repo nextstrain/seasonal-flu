@@ -14,7 +14,7 @@ def _get_node_data_by_wildcards(wildcards):
     ]
 
     if config.get('titer-models',False):
-        #inputs.append(rules.titers_sub.output.titers_model)
+        inputs.append(rules.titers_sub.output.titers_model)
         inputs.append(rules.titers_tree.output.titers_model)
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
@@ -26,6 +26,8 @@ rule export:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
+        auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
+        lat_longs = config['lat-longs']
     output:
         auspice_json = "auspice/{build_name}/{segment}.json",
         root_sequence_json = "auspice/{build_name}/{segment}_root-sequence.json",
@@ -39,5 +41,7 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.node_data} \
             --include-root-sequence \
+            --lat-longs {input.lat_longs} \
+            --auspice-config {input.auspice_config} \
             --output {output.auspice_json} 2>&1 | tee {log}
         """

@@ -40,5 +40,6 @@ for array_build in config["array-builds"].values():
         if("deploy_urls" in array_build):
             deploy_urls = array_build["deploy_urls"]
             config['builds'][build_name]['deploy_urls'] = set([deploy_urls] if type(deploy_urls)==str else deploy_urls)
-    for b in config["builds"]:
-        print(b, config["builds"][b])
+
+    # for b in config["builds"]:
+    #     print(b, config["builds"][b])
