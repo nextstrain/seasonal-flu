@@ -192,6 +192,7 @@ rule translate:
         annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
     output:
         node_data = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
         translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in genes(w.segment)],
         genes = lambda w: genes(w.segment)
@@ -204,7 +205,7 @@ rule translate:
             --reference {input.reference} \
             --translations {params.translations:q} \
             --genes {params.genes} \
-            --output {output.node_data} 2>&1 | tee {log}
+            --output {output.node_data} 2>&1 | tee {log} && touch {output.translations_done}
         """
 
 rule traits:
