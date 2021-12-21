@@ -14,7 +14,8 @@ build_dir = config.get("build_dir", "builds")
 rule titers_sub:
     input:
         titers = build_dir +"/{build_name}/titers.tsv",
-        tree = rules.refine.output.tree
+        tree = rules.refine.output.tree,
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
         translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}_withInternalNodes.fasta" for gene in genes(w.segment)],
         genes = lambda w: genes(w.segment)
