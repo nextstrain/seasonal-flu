@@ -271,7 +271,7 @@ rule tip_frequencies:
         max_date = lambda w: datetime.datetime.today().strftime("%Y-%m-%d"),
         pivot_interval = 2
     output:
-        tip_freq = "auspice/{build_name}/{segment}_tip-frequencies.json"
+        tip_freq = "auspice/{build_name}_{segment}_tip-frequencies.json"
     conda: "environment.yaml"
     shell:
         """
