@@ -42,7 +42,10 @@ array-builds:
         - cell
       resolution:
         - 2
-    build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y"
+      size:
+        - 800
+        - 1600
+    build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y_{size}"
     build_params:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
@@ -50,7 +53,6 @@ array-builds:
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
     subsampling_parameters:
-      size: "2000"
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
