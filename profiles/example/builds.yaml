@@ -1,0 +1,22 @@
+data_source: fauna
+lat-longs: "config/lat_longs.tsv"
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+builds:
+    "example_build":
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      lineage: "h3n2"
+      min-date: "2019-01-01"
+      auspice_config: "config/h3n2/auspice_config.json"
+      subsamples:
+        global:
+            filters: "--group-by region year month --subsample-max-sequences 200 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
+
