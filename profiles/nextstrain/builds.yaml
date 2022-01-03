@@ -2,6 +2,9 @@ data_source: fauna
 
 lat-longs: "config/lat_longs.tsv"
 
+glycosilation: true
+lbi: true
+
 segments:
   - ha
   - na
@@ -67,6 +70,7 @@ array-builds:
       country:
         - netherlands
         - switzerland
+        - sweden
       resolution:
         - 2
     build_name: "{lineage}_{country}_{resolution}y"
