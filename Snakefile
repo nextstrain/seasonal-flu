@@ -15,11 +15,9 @@ include:  "workflow/snakemake_rules/export.smk"
 
 include:  "workflow/snakemake_rules/titer_models.smk"
 
-
 rule all:
     input:
         [f"auspice/{b}_ha.json" for b in config[build_dir + ""]] + \
         [f"auspice/{b}_ha_tip-frequencies.json" for b in config[build_dir + ""]] + \
         [f"auspice/{b}_na.json" for b in config[build_dir + ""]] + \
         [f"auspice/{b}_na_tip-frequencies.json" for b in config[build_dir + ""]]
-        #        [fbuild_dir + "/{b}/ha/aa_muts.json" for b in config[build_dir + ""]]
