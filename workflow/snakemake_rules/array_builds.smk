@@ -3,7 +3,6 @@ This file generated the build configurations for the array builds
 '''
 
 from itertools import product
-import datetime
 
 if "builds" not in config:
     config["builds"] = {}
