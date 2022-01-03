@@ -14,22 +14,22 @@ titer-models: True
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
 
-builds:
-    "standard_build":
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
-      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-      clades: "config/h3n2/ha/clades.tsv"
-      lineage: "h3n2"
-      center: "who"
-      passage: "cell"
-      assay: "hi"
-      min-date: "2019-01-01"
-      auspice_config: "config/h3n2/auspice_config.json"
-      subsamples:
-        global:
-            filters: "--group-by region year month --subsample-max-sequences 2000 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
-            priorities: "titers"
+# builds:
+#     "standard_build":
+#       reference: "config/h3n2/{segment}/reference.fasta"
+#       annotation: "config/h3n2/{segment}/genemap.gff"
+#       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+#       clades: "config/h3n2/ha/clades.tsv"
+#       lineage: "h3n2"
+#       center: "who"
+#       passage: "cell"
+#       assay: "hi"
+#       min-date: "2019-01-01"
+#       auspice_config: "config/h3n2/auspice_config.json"
+#       subsamples:
+#         global:
+#             filters: "--group-by region year month --subsample-max-sequences 2000 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
+#             priorities: "titers"
 
 
 array-builds:
@@ -37,18 +37,23 @@ array-builds:
     patterns:
       lineage:
         - h3n2
+        - h1n1pdm
+        - yam
+        - vic
       center:
         - who
+        - cdc
       assay:
         - hi
+        - fra
       passage:
         - cell
+        - egg
       resolution:
         - 2
-      size:
-        - 800
-        - 1600
-    build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y_{size}"
+        - 6
+        - 12
+    build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y"
     build_params:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
@@ -61,37 +66,5 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
-          priorities: "titers"
-  europe:
-    patterns:
-      lineage:
-        - h3n2
-      country:
-        - netherlands
-        - switzerland
-        - sweden
-      resolution:
-        - 2
-    build_name: "{lineage}_{country}_{resolution}y"
-    build_params:
-      center: who
-      assay: hi
-      passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
-    subsampling_parameters:
-      size: "2000"
-      min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
-      include: "'config/{lineage}/reference_strains.txt'"
-      exclude: "'config/{lineage}/outliers.txt'"
-    subsamples:
-      global:
-          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
-          priorities: "titers"
-      country:
-          filters: "--group-by region year month --subsample-max-sequences {size} --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
+          filters: "--group-by region year month --subsample-max-sequences 3000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
           priorities: "titers"
