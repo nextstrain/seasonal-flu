@@ -118,7 +118,6 @@ rule select_titers:
         with open(input.strains) as fh:
             strains = set([x.strip() for x in fh.readlines()])
 
-        print(strains)
         with open(input.titers) as fh:
             with open(output.titers, 'w') as out_fh:
                 for line in fh:

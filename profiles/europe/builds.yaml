@@ -23,8 +23,8 @@ array-builds:
         - vic
         - yam
       resolution:
-        - 2
-    build_name: "{lineage}_{resolution}y"
+        - 1.5
+    build_name: "{lineage}_europe_{resolution}y"
     build_params:
       center: who
       assay: hi
@@ -40,7 +40,7 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       country:
           filters: "--group-by country year month --subsample-max-sequences 1500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
@@ -57,7 +57,7 @@ array-builds:
         - switzerland
         - sweden
       resolution:
-        - 2
+        - 1.5
     build_name: "{lineage}_{country}_{resolution}y"
     build_params:
       center: who
@@ -74,7 +74,7 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region==europe'"
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       europe:
           filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
