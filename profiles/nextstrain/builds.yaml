@@ -14,24 +14,6 @@ titer-models: True
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
 
-# builds:
-#     "standard_build":
-#       reference: "config/h3n2/{segment}/reference.fasta"
-#       annotation: "config/h3n2/{segment}/genemap.gff"
-#       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-#       clades: "config/h3n2/ha/clades.tsv"
-#       lineage: "h3n2"
-#       center: "who"
-#       passage: "cell"
-#       assay: "hi"
-#       min-date: "2019-01-01"
-#       auspice_config: "config/h3n2/auspice_config.json"
-#       subsamples:
-#         global:
-#             filters: "--group-by region year month --subsample-max-sequences 2000 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
-#             priorities: "titers"
-
-
 array-builds:
   nextstrain:
     patterns:
@@ -60,6 +42,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
     subsampling_parameters:
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"

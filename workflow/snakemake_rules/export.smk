@@ -20,6 +20,8 @@ def _get_node_data_by_wildcards(wildcards):
         inputs.append(rules.glyc.output.glyc)
     if config.get('lbi', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.lbi.output.lbi)
+    if config['builds'][wildcards.build_name].get('vaccines', False):
+        inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
 
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
