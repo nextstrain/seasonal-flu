@@ -34,6 +34,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
     subsampling_parameters:
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
@@ -68,6 +69,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
     subsampling_parameters:
       min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
