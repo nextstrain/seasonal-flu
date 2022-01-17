@@ -160,6 +160,7 @@ A/Indiana/14/2012
 A/Indiana/14/2013
 A/Indiana/15/2012
 A/Indiana/16/2012
+A/Indiana/17/2012
 A/Indiana/17/2013
 A/Indiana/18/2012
 A/Indiana/19/2012
