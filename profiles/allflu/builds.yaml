@@ -1,0 +1,39 @@
+data_source: fauna
+
+lat-longs: "config/lat_longs.tsv"
+
+glycosilation: true
+lbi: true
+
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+array-builds:
+  allflu:
+    patterns:
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+        - yam
+      resolution:
+        - 60
+    build_name: "{lineage}_{resolution}y"
+    build_params:
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+    subsampling_parameters:
+      min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      global:
+          filters: "--group-by region year --subsample-max-sequences 4000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'
