@@ -16,6 +16,8 @@ output:
  - builds/{build_name}/{segment}/traits.json
 '''
 
+localrules: clades, sanitize_trees
+
 build_dir = config.get("build_dir", "builds")
 
 def genes(segment):

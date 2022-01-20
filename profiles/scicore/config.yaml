@@ -1,5 +1,5 @@
 configfile:
-  - profiles/nextstrain/builds.yaml
+  - profiles/europe/builds.yaml
 
 cluster-config: profiles/scicore/cluster.json
 cluster: "sbatch --time={cluster.time} --mem={cluster.mem} --cpus-per-task={cluster.n} --qos={cluster.qos}"
@@ -13,7 +13,7 @@ jobname: "{rulename}.{jobid}.sh"
 
 
 cores: 4
-keep-going: False
+keep-going: True
 printshellcmds: True
 show-failed-logs: True
 reason: True
