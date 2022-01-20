@@ -36,4 +36,4 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year --subsample-max-sequences 4000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'
+          filters: "--group-by region year --subsample-max-sequences 4000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
