@@ -19,6 +19,8 @@ include:  "workflow/snakemake_rules/titer_models.smk"
 
 include:  "workflow/snakemake_rules/fitness.smk"
 
+include:  "workflow/snakemake_rules/report.smk"
+
 rule all:
     input:
         [f"auspice/{b}_ha.json" for b in config[build_dir + ""]] + \
