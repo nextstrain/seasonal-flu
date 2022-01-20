@@ -1,5 +1,6 @@
 
 build_dir = config.get("build_dir", "builds")
+localrules: glyc, lbi
 
 glyc_gene = {'ha':'HA1', 'na':'NA'}
 

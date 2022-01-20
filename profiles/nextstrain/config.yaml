@@ -2,7 +2,7 @@ configfile:
   - profiles/nextstrain/builds.yaml
 
 cores: 8
-keep-going: False
+keep-going: True
 printshellcmds: True
 show-failed-logs: True
 reason: True

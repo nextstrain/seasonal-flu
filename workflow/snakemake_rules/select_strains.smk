@@ -14,7 +14,10 @@ output:
  - builds/{build_name}/{segment}/sequences.fasta
 '''
 
+localrules: titer_priorities, select_strains, select_metadata, select_titers
+
 build_dir = config.get("build_dir", "builds")
+
 
 def get_titers_for_build(w):
     return "data/{lineage}/{center}_{passage}_{assay}_titers.tsv".format(**config['builds'][w.build_name])
@@ -30,11 +33,14 @@ rule titer_priorities:
         metadata = pd.read_csv(input.metadata, sep='\t')
         titer_counts = {s:0 for s in metadata.strain}
 
-        titers = pd.read_csv(input.titers, sep='\t')
-        for ri, row in titers.iterrows():
-            test_strain = row.iloc[0]
-            if test_strain in titer_counts:
-                titer_counts[test_strain] += 1
+        try:
+            titers = pd.read_csv(input.titers, sep='\t')
+            for ri, row in titers.iterrows():
+                test_strain = row.iloc[0]
+                if test_strain in titer_counts:
+                    titer_counts[test_strain] += 1
+        except:
+            pass
 
         with open(output.priorities, 'w') as fh:
             for s,p in titer_counts.items():
