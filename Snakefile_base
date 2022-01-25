@@ -654,12 +654,10 @@ rule tip_frequencies:
     input:
         tree = rules.refine.output.tree,
         metadata = rules.parse.output.metadata,
-        weights = "config/frequency_weights_by_region.json"
     params:
         narrow_bandwidth = 2 / 12.0,
         wide_bandwidth = 3 / 12.0,
         proportion_wide = 0.0,
-        weight_attribute = "region",
         min_date = min_date,
         max_date = max_date,
         pivot_interval = pivot_interval
@@ -675,8 +673,6 @@ rule tip_frequencies:
             --narrow-bandwidth {params.narrow_bandwidth} \
             --wide-bandwidth {params.wide_bandwidth} \
             --proportion-wide {params.proportion_wide} \
-            --weights {input.weights} \
-            --weights-attribute {params.weight_attribute} \
             --pivot-interval {params.pivot_interval} \
             --min-date {params.min_date} \
             --max-date {params.max_date} \
