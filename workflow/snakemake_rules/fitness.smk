@@ -6,7 +6,7 @@ glyc_gene = {'ha':'HA1', 'na':'NA'}
 
 rule glyc:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     output:
         glyc = build_dir + "/{build_name}/{segment}/glyc.json"
@@ -24,8 +24,8 @@ rule glyc:
 rule lbi:
     message: "Calculating LBI"
     input:
-        tree = rules.refine.output.tree,
-        branch_lengths = rules.refine.output.node_data
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
+        branch_lengths = build_dir+"/{build_name}/{segment}/branch-length.json"
     params:
         tau = 0.5,
         window = 0.5,

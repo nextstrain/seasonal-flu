@@ -6,7 +6,7 @@ def _get_node_data_by_wildcards(wildcards):
     # Define inputs shared by all builds.
     wildcards_dict = dict(wildcards)
     inputs = [
-        rules.refine.output.node_data,
+        build_dir+"/{build_name}/{segment}/branch-lengths.json",
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.clades.output.node_data,
@@ -30,7 +30,7 @@ def _get_node_data_by_wildcards(wildcards):
 rule export:
     message: "Exporting data files for auspice"
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],

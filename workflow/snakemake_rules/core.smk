@@ -89,6 +89,27 @@ rule sanitize_trees:
             tree.ladderize()
             Phylo.write(tree, output.trees[ti], 'newick')
 
+rule treeknit:
+    input:
+        trees = rules.sanitize_trees.output.trees,
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.resolved.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        mccs = build_dir + "/{build_name}/TreeKnit/MCCs.dat"
+    params:
+        treetime_tmpdir = build_dir + "/{build_name}/TreeTime_tmp",
+        tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit"
+    shell:
+        """
+        treetime clock --tree {input.trees[0]} --dates {input.metadata} --sequence-length 1000 --outdir {params.treetime_tmpdir}
+        mv {params.treetime_tmpdir}/rerooted.newick {params.tmp_trees[0]}
+
+        treetime clock --tree {input.trees[1]} --dates {input.metadata} --sequence-length 1000 --outdir {params.treetime_tmpdir}
+        mv {params.treetime_tmpdir}/rerooted.newick {params.tmp_trees[1]}
+
+        treeknit {params.tmp_trees} --outdir {params.treeknit_tmpdir}
+        """
 
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
@@ -127,48 +148,47 @@ rule refine:
         """
         Refining tree
           - estimate timetree
-          - use {params.coalescent} coalescent timescale
-          - estimate {params.date_inference} node dates
-          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
-        alignment = rules.align.output,
+        trees = rules.treeknit.output.trees,
+        mccs = rules.treeknit.output.mccs,
+        alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
-        node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'], build_dir=[build_dir]),
     params:
+        treetime_tmpdir =  build_dir + "/{build_name}/treetime_arg",
         coalescent = "const",
-        date_inference = "marginal",
-        clock_filter_iqd = 4,
-        clock_rate = clock_rate,
-        clock_std_dev = clock_std_dev
+        date_inference = "marginal"
     conda: "environment.yaml"
     resources:
         mem_mb=16000
     shell:
         """
-        augur refine \
-            --tree {input.tree} \
-            --alignment {input.alignment} \
-            --metadata {input.metadata} \
-            --output-tree {output.tree} \
-            --output-node-data {output.node_data} \
-            --timetree \
-            --no-covariance \
-            --clock-rate {params.clock_rate} \
-            --clock-std-dev {params.clock_std_dev} \
-            --coalescent {params.coalescent} \
-            --date-confidence \
-            --date-inference {params.date_inference} \
-            --clock-filter-iqd {params.clock_filter_iqd}
+        treetime arg --trees {input.trees} \
+                      --mccs {input.mccs} \
+                      --alignments {input.alignments} \
+                      --confidence --clock-std-dev 0.001 \
+                      --outdir  {params.treetime_tmpdir} \
+                      --dates {input.metadata} --keep-root --keep-polytomies
+
+        python scripts/make-branch-length-json.py --timetree {params.treetime_tmpdir}/timetree_1.nexus \
+                --divtree {params.treetime_tmpdir}/divergence_tree_1.nexus \
+                --dates {params.treetime_tmpdir}/dates_1.tsv --mccs {input.mccs} \
+                --output-tree {output.trees[0]} --output-node-data {output.node_data[0]}
+
+        python scripts/make-branch-length-json.py --timetree {params.treetime_tmpdir}/timetree_2.nexus \
+                --divtree {params.treetime_tmpdir}/divergence_tree_2.nexus
+                --dates {params.treetime_tmpdir}/dates_2.tsv  --mccs {input.mccs}  \
+                --output-tree {output.trees[1]} --output-node-data {output.node_data[1]}
+
         """
 
 rule ancestral:
     message: "Reconstructing ancestral sequences and mutations"
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         alignment = rules.align.output
     output:
         node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
@@ -189,7 +209,7 @@ rule ancestral:
 rule translate:
     message: "Translating amino acid sequences"
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
         annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
     output:
@@ -216,7 +236,7 @@ rule traits:
         Inferring ancestral traits for {params.columns!s}
         """
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
@@ -261,7 +281,7 @@ rule clades:
 
 rule tip_frequencies:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = build_dir + "/{build_name}/metadata.tsv",
         weights = "config/frequency_weights_by_region.json"
     params:

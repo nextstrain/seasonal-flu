@@ -14,7 +14,7 @@ build_dir = config.get("build_dir", "builds")
 rule titers_sub:
     input:
         titers = build_dir +"/{build_name}/titers.tsv",
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
         translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}_withInternalNodes.fasta" for gene in genes(w.segment)],
@@ -36,7 +36,7 @@ rule titers_sub:
 rule titers_tree:
     input:
         titers = build_dir +"/{build_name}/titers.tsv",
-        tree = rules.refine.output.tree
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk"
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-tree-model.json",
     conda: "environment.yaml"
