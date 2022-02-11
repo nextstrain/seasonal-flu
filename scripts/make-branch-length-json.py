@@ -16,12 +16,12 @@ if __name__=="__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--timetree', type = str, help='timetree for clock length.')
-    parser.add_argument('--divtree', type = str, help='divtree for branch length.')
-    parser.add_argument('--mccs', type = str, help='mccs.')
-    parser.add_argument('--dates', type=str)
-    parser.add_argument('--output-tree', type=str)
-    parser.add_argument('--output-node-data', help="name of the file to write node data to")
+    parser.add_argument('--timetree', type = str, help='timetree for clock length.', required=True)
+    parser.add_argument('--divtree', type = str, help='divtree for branch length.', required=True)
+    parser.add_argument('--mccs', type = str, help='mccs.', required=True)
+    parser.add_argument('--dates', type=str, required=True)
+    parser.add_argument('--output-tree', type=str, required=True)
+    parser.add_argument('--output-node-data', help="name of the file to write node data to", required=True)
     args = parser.parse_args()
 
     dates = pd.read_csv(args.dates, sep='\t', index_col=0, skiprows=1)

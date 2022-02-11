@@ -143,7 +143,7 @@ def clock_rate(w):
 def clock_std_dev(w):
     return clock_rate(w)/5
 
-rule refine:
+rule treetime_arg:
     message:
         """
         Refining tree
@@ -155,10 +155,8 @@ rule refine:
         alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'], build_dir=[build_dir]),
-        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'], build_dir=[build_dir]),
+        directory(build_dir + "/{build_name}/treetime_arg")
     params:
-        treetime_tmpdir =  build_dir + "/{build_name}/treetime_arg",
         coalescent = "const",
         date_inference = "marginal"
     conda: "environment.yaml"
@@ -170,20 +168,44 @@ rule refine:
                       --mccs {input.mccs} \
                       --alignments {input.alignments} \
                       --confidence --clock-std-dev 0.001 \
-                      --outdir  {params.treetime_tmpdir} \
+                      --outdir  {output} \
                       --dates {input.metadata} --keep-root --keep-polytomies
+        """
 
-        python scripts/make-branch-length-json.py --timetree {params.treetime_tmpdir}/timetree_1.nexus \
-                --divtree {params.treetime_tmpdir}/divergence_tree_1.nexus \
-                --dates {params.treetime_tmpdir}/dates_1.tsv --mccs {input.mccs} \
+
+rule refine:
+    message:
+        """
+        Refining tree
+          - estimate timetree
+        """
+    input:
+        treetime_arg = rules.treetime_arg.output,
+        mccs = rules.treeknit.output.mccs,
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'], build_dir=[build_dir]),
+    params:
+        coalescent = "const",
+        date_inference = "marginal"
+    conda: "environment.yaml"
+    resources:
+        mem_mb=16000
+    shell:
+        """
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_1.nexus \
+                --divtree {input.treetime_arg}/divergence_tree_1.nexus \
+                --dates {input.treetime_arg}/dates_1.tsv --mccs {input.mccs} \
                 --output-tree {output.trees[0]} --output-node-data {output.node_data[0]}
 
-        python scripts/make-branch-length-json.py --timetree {params.treetime_tmpdir}/timetree_2.nexus \
-                --divtree {params.treetime_tmpdir}/divergence_tree_2.nexus
-                --dates {params.treetime_tmpdir}/dates_2.tsv  --mccs {input.mccs}  \
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_2.nexus \
+                --divtree {input.treetime_arg}/divergence_tree_2.nexus \
+                --dates {input.treetime_arg}/dates_2.tsv  --mccs {input.mccs}  \
                 --output-tree {output.trees[1]} --output-node-data {output.node_data[1]}
 
         """
+
 
 rule ancestral:
     message: "Reconstructing ancestral sequences and mutations"
