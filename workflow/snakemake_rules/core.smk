@@ -84,6 +84,7 @@ rule sanitize_trees:
         for ti,tree in enumerate(trees):
             for leaf in set([x.name for x in tree.get_terminals()]).difference(common_leaves):
                 tree.prune(leaf)
+            tree.collapse_all(lambda c: c.branch_length < 1e-4)
 
             tree.root_at_midpoint()
             tree.ladderize()

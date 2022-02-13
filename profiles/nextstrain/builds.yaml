@@ -3,7 +3,7 @@ data_source: fauna
 lat-longs: "config/lat_longs.tsv"
 
 glycosilation: true
-lbi: true
+lbi: false
 
 segments:
   - ha
@@ -20,21 +20,17 @@ array-builds:
       lineage:
         - h3n2
         - h1n1pdm
-        - yam
         - vic
       center:
         - who
-        - cdc
       assay:
         - hi
         - fra
       passage:
         - cell
-        - egg
       resolution:
         - 2
         - 6
-        - 12
     build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y"
     build_params:
       reference: "config/{lineage}/{{segment}}/reference.fasta"

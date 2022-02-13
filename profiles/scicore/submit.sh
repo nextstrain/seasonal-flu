@@ -5,7 +5,9 @@
 
 # activate conda environment
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate nextstrain
+export PATH="/scicore/home/neher/GROUP/bin:/scicore/home/neher/neher/julia-1.7.2/bin:/scicore/home/neher/neher/.julia/bin:"$PATH
+conda activate treeknit
+
 #Test
 export AUGUR_MINIFY_JSON=1
 export AUGUR_RECURSION_LIMIT=10000

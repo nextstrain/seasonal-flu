@@ -11,10 +11,19 @@
       "qos": "6hours",
       "n": 1
     },
+    "treetime_arg":{
+      "time": "05:59:00",
+      "qos": "6hours",
+      "n": 1
+    },
     "tree": {
       "n": 4,
       "qos": "6hours",
       "time": "05:59:00"
+    },
+    "treeknit": {
+	"time": "05:59:59",
+	"qos": "6hours"
     },
     "align": {
       "n": 4,

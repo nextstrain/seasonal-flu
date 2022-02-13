@@ -25,7 +25,7 @@ rule lbi:
     message: "Calculating LBI"
     input:
         tree = build_dir+"/{build_name}/{segment}/tree.nwk",
-        branch_lengths = build_dir+"/{build_name}/{segment}/branch-length.json"
+        branch_lengths = build_dir+"/{build_name}/{segment}/branch-lengths.json"
     params:
         tau = 0.5,
         window = 0.5,
