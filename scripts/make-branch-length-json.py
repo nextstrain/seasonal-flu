@@ -44,6 +44,10 @@ if __name__=="__main__":
 
     node_data = {}
     for node in timetree.find_clades():
+        numdate = to_float(dates.loc[node_name,"numeric date"])
+        if node.is_terminals() and (numdate is None):
+            timetree.prune(node)
+            continue
         node_name = node.name or node.confidence
         node.confidence = None
         node.name = node_name
@@ -51,7 +55,7 @@ if __name__=="__main__":
         node_data[node_name] = {"branch_length":node.branch_length,
                                 "clock_length":node.branch_length,
                                 "date": dates.loc[node_name,"date"],
-                                "numdate": to_float(dates.loc[node_name,"numeric date"]),
+                                "numdate": numdate,
                                 "num_date_confidence":
                                     [to_float(dates.loc[node_name,"lower bound"]),
                                      to_float(dates.loc[node_name,"upper bound"])],
@@ -61,7 +65,8 @@ if __name__=="__main__":
 
     for node in divtree.find_clades():
         node_name = node.name or node.confidence
-        node_data[node_name]["mutation_length"] = node.branch_length
+        if node_name in node_data:
+            node_data[node_name]["mutation_length"] = node.branch_length
 
     Phylo.write(timetree, args.output_tree, 'newick')
 
