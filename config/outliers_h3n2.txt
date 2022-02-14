@@ -273,6 +273,8 @@ A/Maryland/75/2017
 A/Maryland/77/2017
 A/Maryland/79/2017
 A/Maryland/87/2017
+A/MatoGrosso/IAL/C8816/2021
+A/MatoGrosso/IAL/C8817/2021
 A/Mendoza/176711/2012
 A/Michigan/14/2012
 A/Michigan/16/2012
@@ -406,6 +408,7 @@ A/SaoPaulo/36178/2015
 A/SaoPaulo/61282/2015
 A/SaoPaulo/65194/2015
 A/SaoPaulo/554097/2017
+A/SaoPaulo/IAL/C8809/2022
 A/Sari/388/2006
 A/Shanghai-Minxing/1482/2017
 A/Shanghai/6/2014
