@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.7"
+          
+      - run: python3 -m pip install --upgrade pip setuptools wheel
+      - run: python3 -m pip install nextstrain-cli
+      - run: nextstrain version
+      - run: nextstrain check-setup
+      - run: nextstrain update
+      - name: Copy example data
+        run: |
+          mkdir -p data/
+          cp -v example_data/* data/
+
+      - run: nextstrain build --docker . auspice/flu_seasonal_h3n2_ha_12y.json auspice/flu_seasonal_h3n2_ha_12y_tip-frequencies.json
+
+# The above can later be replaced with a parameterized CI
+#  ci:
+#    uses: nextstrain/.github/.github/workflows/pathogen-repo-ci.yaml@master

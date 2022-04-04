@@ -1,5 +1,7 @@
 # nextstrain.org/flu
 
+[![Build Status](https://github.com/nextstrain/seasonal-flu/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/nextstrain/seasonal-flu/actions/workflows/ci.yaml)
+
 This is the [Nextstrain](https://nextstrain.org) build for seasonal influenza viruses,
 available online at [nextstrain.org/flu](https://nextstrain.org/flu).
 
