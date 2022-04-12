@@ -9,6 +9,6 @@ Special thanks to Jackie Katz, Dave Wentworth, Becky Kondor, Vivien Dugan, Xiyan
         <img alt="gisaid-logo" width="120" src="https://www.gisaid.org/fileadmin/gisaid/img/schild.png"/>
     </a>
     <a href="http://www.who.int/influenza/gisrs_laboratory/en/">
-        <img alt="gisrs-logo" width="120" src="https://www.who.int/influenza/gip-anniversary/GISRS_insignia_web_resize_.jpg"/>
+        <img alt="gisrs-logo" width="120" src="https://www.who.int/images/default-source/departments/global-influenza-programme/gisrs-insignia-no-tagline-full-colour4cbbe30db0a548ab9795c48b748ef921.tmb-1920v.jpg"/>
     </a>
 </div>
