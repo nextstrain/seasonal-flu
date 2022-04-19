@@ -1,0 +1,232 @@
+configfile: "config/config.json"
+
+# passages = ['cell', 'egg']
+# assays = ['hi', 'fra']
+# centers = ['who']
+# resolutions = ['2y']
+# lineages = ['h3n2', 'h1n1pdm', 'vic', 'yam']
+# segments = ['ha', 'na']
+
+passages = ['cell']
+assays = ['fra']
+centers = ['who']
+resolutions = ['2y']
+lineages = ['h3n2']
+segments = ['ha', 'na']
+
+include: "Snakefile_base"
+localrules: all_builds, download_all, download_titers, download_sequences
+
+lineage_name_by_abbreviation = {
+    "h3n2": "H3N2",
+    "h1n1pdm": "H1N1pdm",
+    "vic": "Vic",
+    "yam": "Yam",
+}
+
+
+def all_builds(w):
+    builds = []
+    for lineage in lineages:
+        lineage_assays = assays if lineage=='h3n2' else ['hi']
+
+        builds.extend(
+            expand("auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+                   center=centers, lineage=[lineage], segment=segments,
+                   resolution=resolutions, assay=lineage_assays, passage=passages)
+        )
+
+        builds.extend(
+            expand("auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json",
+                center=centers, lineage=[lineage], segment=segments,
+                resolution=resolutions, assay=lineage_assays, passage=passages)
+        )
+
+        builds.extend(
+            expand("auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_measurements.json",
+                center=centers, lineage=[lineage], segment=["ha"],
+                resolution=resolutions, assay=lineage_assays, passage=passages)
+        )
+
+    return builds
+
+
+def region_translations(w):
+    genes = gene_names(w)
+    return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
+            for g in genes]
+
+rule all_nextflu:
+    input:
+        all_builds
+
+# separate rule for interaction with fauna
+rule download_all:
+    input:
+        titers = expand("data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
+                         lineage=lineages, center=centers, assay=assays, passage=passages),
+        sequences = expand("data/{lineage}_{segment}.fasta", lineage=lineages, segment=segments)
+
+
+for seg, genes in genes_to_translate.items():
+    rule:
+        input:
+            metadata = rules.parse.output.metadata,
+            sequences = rules.parse.output.sequences,
+            exclude = files.outliers,
+            reference = files.reference
+        params:
+            genes=genes,
+            region="{region}"
+        output:
+            alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
+                                gene=genes)
+        conda: "environment.yaml"
+        shell:
+            """
+            python3 scripts/full_region_alignments.py  --sequences {input.sequences}\
+                                                 --metadata {input.metadata} \
+                                                 --exclude {input.exclude} \
+                                                 --genes {params.genes} \
+                                                 --region {params.region:q} \
+                                                 --resolution {wildcards.resolution} \
+                                                 --reference {input.reference} \
+                                                 --output {output.alignments:q}
+            """
+
+
+rule scores:
+    input:
+        metadata = rules.parse.output.metadata,
+        tree = rules.refine.output.tree
+    output:
+        scores = "results/scores_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    conda: "environment.yaml"
+    shell:
+        """
+        python3 scripts/scores.py  --metadata {input.metadata} \
+                                  --tree {input.tree} \
+                                  --output {output}
+        """
+
+
+def _get_node_data_for_report_export(wildcards):
+    """Return a list of node data files to include for a given build's wildcards.
+    """
+    # Define inputs shared by all builds.
+    inputs = [
+        rules.annotate_epiweeks.output.node_data,
+        rules.annotate_recency_of_submissions.output.node_data,
+        rules.refine.output.node_data,
+        rules.ancestral.output.node_data,
+        rules.translate.output.node_data,
+        rules.titers_tree.output.titers_model,
+        rules.titers_sub.output.titers_model,
+        rules.clades.output.clades,
+        rules.traits.output.node_data,
+        rules.lbi.output.lbi,
+        rules.scores.output.scores,
+    ]
+
+    # glycosilation only makes sense for surface proteins
+    if wildcards.segment in ['ha', 'na']:
+        inputs.append(rules.glyc.output.glyc)
+
+    # Only request a distance file for builds that have mask configurations
+    # defined.
+    if _get_build_distance_map_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    # Convert input files from wildcard strings to real file names.
+    inputs = [input_file.format(**wildcards) for input_file in inputs]
+    return inputs
+
+
+rule export_nextflu:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+        auspice_config = "config/auspice_config_nextflu_{lineage}.json",
+        node_data = _get_node_data_for_report_export,
+        colors = files.colors,
+    output:
+        auspice_json = "auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+        root_sequence = "auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_root-sequence.json"
+    conda: "environment.yaml"
+    params:
+        panels=["tree", "measurements", "map", "entropy", "frequencies"]
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --auspice-config {input.auspice_config} \
+            --panels {params.panels:q} \
+            --colors {input.colors} \
+            --output {output.auspice_json} \
+            --include-root-sequence \
+            --minify-json
+        """
+
+rule tip_frequencies_nextflu:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = rules.parse.output.metadata,
+    params:
+        narrow_bandwidth = 2 / 12.0,
+        wide_bandwidth = 3 / 12.0,
+        proportion_wide = 0.0,
+        min_date = min_date,
+        max_date = max_date,
+        pivot_interval = pivot_interval
+    output:
+        tip_freq = "auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_tip-frequencies.json"
+    conda: "environment.yaml"
+    shell:
+        """
+        augur frequencies \
+            --method kde \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --wide-bandwidth {params.wide_bandwidth} \
+            --proportion-wide {params.proportion_wide} \
+            --pivot-interval {params.pivot_interval} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output}
+        """
+
+rule export_measurements:
+    input:
+        distances="results/antigenic_distances_between_strains_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv",
+    output:
+        measurements="auspice-nextflu/flu_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}_measurements.json",
+    conda: "environment.yaml"
+    params:
+        strain_column="test_strain",
+        value_column="log2_titer",
+        grouping_column=["reference_strain", "clade_reference", "source"],
+        key=lambda wildcards: f"{wildcards.lineage}_{wildcards.segment}_{wildcards.resolution}_{wildcards.passage}_{wildcards.assay}",
+        title=lambda wildcards: f"{lineage_name_by_abbreviation[wildcards.lineage]} {wildcards.passage}-passaged {wildcards.assay.upper()} measurements",
+        x_axis_label="normalized log2 titer",
+        threshold=2.0,
+        filters=["reference_strain", "clade_reference", "source"],
+    shell:
+        """
+        augur measurements export \
+            --collection {input.distances} \
+            --strain-column {params.strain_column} \
+            --value-column {params.value_column} \
+            --grouping-column {params.grouping_column} \
+            --key {params.key} \
+            --title {params.title:q} \
+            --x-axis-label {params.x_axis_label:q} \
+            --threshold {params.threshold} \
+            --filters {params.filters} \
+            --show-threshold \
+            --hide-overall-mean \
+            --minify-json \
+            --output-json {output.measurements}
+        """
