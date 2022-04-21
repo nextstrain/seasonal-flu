@@ -196,8 +196,10 @@ def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
         tmp_meta, columns = read_metadata(fname)
 
         numerical_dates = get_numerical_dates(tmp_meta, fmt=date_format)
-        for x in tmp_meta:
+        for x in list(tmp_meta.keys()):
             if numerical_dates[x] is None:
+                # Remove strain that does not have valid date
+                del tmp_meta[x]
                 continue
             tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
             tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
