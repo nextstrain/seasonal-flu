@@ -2,6 +2,8 @@ A/AbuDhabi/18/2017
 A/AbuDhabi/186/2017
 A/Aichi/190/2018
 A/Arizona/33/2017
+A/Arkansas/8/2020
+A/Arkansas/8/2020-egg
 A/Austria/1048413/2018
 A/Bangladesh/2021/2012
 A/Bangladesh/3002/2015
@@ -16,10 +18,13 @@ A/California/7/2009
 A/Cambodia/1095/2017
 A/Canberra/337/2019-egg
 A/Catalonia/738728S/2018
+A/Connecticut/1/2021
 A/Darwin/102/2019
 A/Darwin/102/2019-egg
 A/Darwin/6/2018
 A/Darwin/6/2018-egg
+A/Delaware/55/2019
+A/Denmark/3280/2019
 A/England/62/2017
 A/Fiji/3/2016
 A/Fiji/3/2016-egg
@@ -27,12 +32,14 @@ A/Florida/62/2014
 A/Florida/62/2014
 A/Guangdong-Maonan/SWL1536/2019
 A/Guangdong-Maonan/SWL1536/2019-egg
+A/Hawaii/66/2019-egg
 A/Hawaii/70/2019
 A/HongKong/110/2019
 A/Idaho/7/2018
 A/India/322/2017
 A/India/3405/2017
 A/India/PUN-NIV323546/2021
+A/Indiana/2/2020-egg
 A/Indiana/21/2016
 A/Iowa/12/2019
 A/Iowa/22/2020-egg
