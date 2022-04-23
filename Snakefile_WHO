@@ -88,21 +88,39 @@ rule complete_mutation_frequencies_by_region:
         "logs/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.txt"
     resources:
         mem_mb=4000,
-    shell:
-        """
-        augur frequencies --method diffusion \
-                          --alignments {input.alignment:q} \
-                          --metadata {input.metadata} \
-                          --gene-names {params.genes} \
-                          --pivot-interval {params.pivot_interval} \
-                          --stiffness {params.stiffness} \
-                          --inertia {params.inertia} \
-                          --ignore-char X \
-                          --min-date {params.min_date} \
-                          --max-date {params.max_date} \
-                          --minimal-frequency {params.min_freq} \
-                          --output {output.mut_freq:q} &> {log:q}
-        """
+    run:
+        import os
+        alignments = [alignment
+            for alignment in input.alignment
+            if os.path.getsize(alignment) > 0]
+
+        genes = [filename.split('results/full-aaseq-',1)[1].split('_', 1)[0]
+            for filename in alignments]
+
+        # Make sure our filename splitting worked as expected and we got expected gene names
+        assert all(gene in params.genes for gene in genes), \
+            "Gene parsed from file path did not match any expected gene names."
+
+        if alignments:
+            shell("""
+                augur frequencies --method diffusion \
+                                  --alignments {alignments:q} \
+                                  --metadata {input.metadata} \
+                                  --gene-names {genes:q} \
+                                  --pivot-interval {params.pivot_interval} \
+                                  --stiffness {params.stiffness} \
+                                  --inertia {params.inertia} \
+                                  --ignore-char X \
+                                  --min-date {params.min_date} \
+                                  --max-date {params.max_date} \
+                                  --minimal-frequency {params.min_freq} \
+                                  --output {output.mut_freq:q} &> {log:q}
+            """)
+        else:
+            # Create an empty JSON file if there are no alignments
+            shell("""
+                echo {{}} > {output.mut_freq:q}
+            """)
 
 rule global_mutation_frequencies:
     input:
