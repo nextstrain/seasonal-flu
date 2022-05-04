@@ -159,7 +159,7 @@ rule treetime_arg:
         directory(build_dir + "/{build_name}/treetime_arg")
     params:
         coalescent = "const",
-        date_inference = "marginal"
+        date_inference = "always"
     conda: "environment.yaml"
     resources:
         mem_mb=16000
@@ -170,6 +170,7 @@ rule treetime_arg:
                       --alignments {input.alignments} \
                       --confidence --clock-std-dev 0.001 \
                       --outdir  {output} \
+		      --time-marginal {params.date_inference} \
                       --dates {input.metadata} --keep-root --keep-polytomies
         """
 
@@ -224,6 +225,7 @@ rule ancestral:
         """
         augur ancestral \
             --tree {input.tree} \
+	    --inference marginal \
             --alignment {input.alignment} \
             --output-node-data {output.node_data} \
             --inference {params.inference}

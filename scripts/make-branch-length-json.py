@@ -1,8 +1,10 @@
 import argparse
+from treetime.arg import assign_mccs
 from Bio import Phylo
 import numpy as np
 import pandas as pd
 import json
+import random
 
 def to_float(x):
     try:
@@ -27,7 +29,11 @@ if __name__=="__main__":
     dates = pd.read_csv(args.dates, sep='\t', index_col=0, skiprows=1)
 
     timetree = Phylo.read(args.timetree, 'nexus')
-
+    timetree.root.up = None
+    for n in timetree.get_nonterminals():
+        for c in n:
+            c.up = n
+    
     divtree = Phylo.read(args.divtree, 'nexus')
 
     MCCs = []
@@ -36,22 +42,31 @@ if __name__=="__main__":
             if line.strip():
                 MCCs.append(line.strip().split(','))
 
+
+
+    mcc_map = list(range(len(MCCs)))
+    random.seed(987)
+    random.shuffle(mcc_map)
+
     leaf_to_MCC = {}
     for mi,mcc in enumerate(MCCs):
         for leaf in mcc:
-            leaf_to_MCC[leaf] = mi
+            leaf_to_MCC[leaf] = mcc_map[mi]
 
+    assign_mccs(timetree, leaf_to_MCC, 0)
 
     node_data = {}
     for node in timetree.find_clades():
-        numdate = to_float(dates.loc[node_name,"numeric date"])
-        if node.is_terminals() and (numdate is None):
-            timetree.prune(node)
-            continue
         node_name = node.name or node.confidence
+        numdate = to_float(dates.loc[node_name,"numeric date"])
         node.confidence = None
         node.name = node_name
         node.comment = ''
+        if node.is_terminal() and (numdate is None):
+#            timetree.prune(node)
+            print("pruning node:", node_name, dates.loc[node_name,"numeric date"])
+#            continue
+
         node_data[node_name] = {"branch_length":node.branch_length,
                                 "clock_length":node.branch_length,
                                 "date": dates.loc[node_name,"date"],
@@ -59,7 +74,7 @@ if __name__=="__main__":
                                 "num_date_confidence":
                                     [to_float(dates.loc[node_name,"lower bound"]),
                                      to_float(dates.loc[node_name,"upper bound"])],
-                                "mcc": leaf_to_MCC.get(node_name, None)
+                                "mcc": node.mcc
                                 }
 
 
