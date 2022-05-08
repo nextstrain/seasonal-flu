@@ -21,7 +21,7 @@ localrules: clades, sanitize_trees
 build_dir = config.get("build_dir", "builds")
 
 def genes(segment):
-    return {'ha':['SigPep','HA1', 'HA2'], 'na':['NA']}[segment]
+    return {'ha':['HA1'], 'na':['NA']}[segment]
 
 rule align:
     message:
@@ -46,6 +46,7 @@ rule align:
                   -m {input.annotation} \
                   --genes {params.genes} \
                   -i {input.sequences} \
+                  --nuc-seed-length 21 --nuc-mismatches-allowed 5 \
                   -o {output.alignment} \
                   --output-dir {params.outdir}
         """
@@ -73,21 +74,35 @@ rule tree:
 rule sanitize_trees:
     input:
         trees = lambda w: [f"{build_dir}/{w.build_name}/{segment}/tree_raw.nwk" for segment in config['segments']],
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{segment}/aligned.fasta" for segment in config['segments']],
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir])
+    params:
+        clock_filter = 4
     run:
-        from Bio import Phylo
+        from Bio import Phylo, AlignIO
+        from treetime import TreeTime, utils
 
         trees = [Phylo.read(fname, 'newick') for fname in input.trees]
+        alignments = [AlignIO.read(fname, 'fasta') for fname in input.alignments]
+        dates = utils.parse_dates(input.metadata)
+        for ti,tree in enumerate(trees):
+            tt = TreeTime(tree=tree, dates=dates, aln=alignments[ti])
+            tt.clock_filter(reroot='least-squares', n_iqd=params.clock_filter)
+
+            for leaf in [l.name for l in tt.tree.get_terminals() if l.bad_branch==True]:
+                tt.tree.prune(leaf)
+
         common_leaves = set.intersection(*[set([x.name for x in tree.get_terminals()]) for tree in trees])
         for ti,tree in enumerate(trees):
             for leaf in set([x.name for x in tree.get_terminals()]).difference(common_leaves):
                 tree.prune(leaf)
-            tree.collapse_all(lambda c: c.branch_length < 1e-4)
 
-            tree.root_at_midpoint()
-            tree.ladderize()
+            tt = TreeTime(tree=tree, dates=dates, aln=alignments[ti])
+            tt.infer_ancestral_sequences(infer_gtr=True)
+            tt.prune_short_branches()
+
             Phylo.write(tree, output.trees[ti], 'newick')
 
 rule treeknit:
@@ -100,13 +115,14 @@ rule treeknit:
     params:
         treetime_tmpdir = build_dir + "/{build_name}/TreeTime_tmp",
         tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",  segment=config['segments'], build_dir=[build_dir]),
-        treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit"
+        treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit",
+        clock_filter=4
     shell:
         """
-        treetime clock --tree {input.trees[0]} --dates {input.metadata} --sequence-length 1000 --outdir {params.treetime_tmpdir}
+        treetime clock --tree {input.trees[0]} --dates {input.metadata} --sequence-length 1000 --clock-filter {params.clock_filter} --outdir {params.treetime_tmpdir}
         mv {params.treetime_tmpdir}/rerooted.newick {params.tmp_trees[0]}
 
-        treetime clock --tree {input.trees[1]} --dates {input.metadata} --sequence-length 1000 --outdir {params.treetime_tmpdir}
+        treetime clock --tree {input.trees[1]} --dates {input.metadata} --sequence-length 1000 --clock-filter {params.clock_filter} --outdir {params.treetime_tmpdir}
         mv {params.treetime_tmpdir}/rerooted.newick {params.tmp_trees[1]}
 
         treeknit {params.tmp_trees} --outdir {params.treeknit_tmpdir}
@@ -139,7 +155,7 @@ def clock_rate(w):
  	 ('yam', 'pa'): 0.00112,
  	 ('yam', 'pb1'): 0.00092,
  	 ('yam', 'pb2'): 0.00113}
-    return rate.get((config['builds'][w.build_name]["lineage"], w.segment), 0.001)
+    return rate.get((config['builds'][w.build_name]["lineage"], w.segment), 0.002)
 
 def clock_std_dev(w):
     return clock_rate(w)/5
@@ -169,8 +185,9 @@ rule treetime_arg:
                       --mccs {input.mccs} \
                       --alignments {input.alignments} \
                       --confidence --clock-std-dev 0.001 \
+                      --clock-filter 0 \
                       --outdir  {output} \
-		      --time-marginal {params.date_inference} \
+                      --time-marginal {params.date_inference} \
                       --dates {input.metadata} --keep-root --keep-polytomies
         """
 
