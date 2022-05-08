@@ -21,7 +21,7 @@ localrules: clades, sanitize_trees
 build_dir = config.get("build_dir", "builds")
 
 def genes(segment):
-    return {'ha':['HA1'], 'na':['NA']}[segment]
+    return {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA']}[segment]
 
 rule align:
     message:
