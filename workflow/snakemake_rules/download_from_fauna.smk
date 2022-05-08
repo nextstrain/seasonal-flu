@@ -39,21 +39,30 @@ def _get_tdb_assays(wildcards):
         return 'hi,hi_oseltamivir'
     return wildcards.assay
 
+def _get_download_type(w):
+    if w.lineage=='h5n1':
+        return f"subtype:{w.lineage}"
+    elif w.lineage=='h5nx':
+        return "subtype:h5n1,h5n2,h5n3,h5n4,h5n5,h5n6,h5n7,h5n8,h5n9"
+    else:
+        f"lineage:{w.lineage}"
+
 rule download_sequences:
     message: "Downloading sequences from fauna"
     output:
         sequences = "data/{lineage}/raw_{segment}.fasta"
     params:
-        fasta_fields = " ".join(fasta_fields)
+        fasta_fields = " ".join(fasta_fields),
+        download_type = _get_download_type
     conda: "environment.yaml"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
             --database vdb \
-            --virus flu \
+            --virus avian_flu \
             --fasta_fields {params.fasta_fields} \
             --resolve_method split_passage \
-            --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
+            --select locus:{wildcards.segment} {params.download_type} \
             --path data \
             --fstem {wildcards.lineage}/raw_{wildcards.segment}
         """
