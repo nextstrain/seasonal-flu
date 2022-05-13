@@ -272,7 +272,7 @@ if __name__ == '__main__':
     parser.add_argument('--titers', nargs='+', help="a text file titers. this will only read in how many titer measurements are available for a each virus"
                                           " and use this count as a priority for inclusion during subsampling.")
     parser.add_argument('--include', help="a text file containing strains (one per line) that will be included regardless of subsampling")
-    parser.add_argument('--max-include-range', type=float, default=5, help="number of years prior to the lower date limit for reference strain inclusion")
+    parser.add_argument('--max-include-range', type=float, default=6, help="number of years prior to the lower date limit for reference strain inclusion")
     parser.add_argument('--exclude', help="a text file containing strains (one per line) that will be excluded")
 
     args = parser.parse_args()
