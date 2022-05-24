@@ -64,8 +64,8 @@
       "type": "continuous"
     },
     "glyc": {
-      "menuItem": "Glycosilation changes",
-      "legendTitle": "Glycosilation gain/loss relative to root",
+      "menuItem": "Glycosylation changes",
+      "legendTitle": "Glycosylation gain/loss relative to root",
       "type": "continuous",
       "key": "glyc"
     },

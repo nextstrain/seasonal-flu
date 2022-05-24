@@ -2,7 +2,7 @@ data_source: fauna
 
 lat-longs: "config/lat_longs.tsv"
 
-glycosilation: true
+glycosylation: true
 lbi: true
 
 segments:

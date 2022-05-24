@@ -16,7 +16,7 @@ def _get_node_data_by_wildcards(wildcards):
     if config.get('titer-models',False):
         inputs.append(rules.titers_sub.output.titers_model)
         inputs.append(rules.titers_tree.output.titers_model)
-    if config.get('glycosilation', False) and wildcards.segment in ['ha', 'na']:
+    if config.get('glycosylation', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.glyc.output.glyc)
     if config.get('lbi', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.lbi.output.lbi)
