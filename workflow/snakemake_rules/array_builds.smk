@@ -11,7 +11,7 @@ for array_build in config["array-builds"].values():
     patterns = array_build["patterns"]
     subsamples = array_build["subsamples"]
 
-    for build_vars in product(*[x for x in patterns.values()]):
+    for build_vars in product(*patterns.values()):
         # e.g. center:cdc, assay:hi
         build_params = {k:v for k,v in zip(patterns.keys(), build_vars)}
         # additional parameters like size:4000
