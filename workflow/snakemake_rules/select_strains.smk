@@ -61,7 +61,7 @@ rule subsample:
         filters =  lambda w: config["builds"][w.build_name]["subsamples"][w.subsample]["filters"],
         priorities = lambda w: f"--priority {build_dir}/{w.build_name}/titer_priorities.tsv" \
                                if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers' else ''
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur filter \

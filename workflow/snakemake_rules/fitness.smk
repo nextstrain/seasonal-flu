@@ -12,7 +12,7 @@ rule glyc:
         glyc = build_dir + "/{build_name}/{segment}/glyc.json"
     params:
         alignment = lambda w: f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{glyc_gene.get(w.segment)}_withInternalNodes.fasta",
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         python3 scripts/glyc.py \
@@ -32,7 +32,7 @@ rule lbi:
         names = "lbi"
     output:
         lbi =  build_dir + "/{build_name}/{segment}/lbi.json"
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur lbi \

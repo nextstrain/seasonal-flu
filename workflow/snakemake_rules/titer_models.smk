@@ -21,7 +21,7 @@ rule titers_sub:
         genes = lambda w: GENES[w.segment]
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model.json",
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur titers sub \
@@ -39,7 +39,7 @@ rule titers_tree:
         tree = rules.refine.output.tree
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-tree-model.json",
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur titers tree \

@@ -36,6 +36,7 @@ rule align:
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta"
+    conda: "../envs/nextstrain.yaml"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
         outdir =  build_dir + "/{build_name}/{segment}/nextalign",
@@ -59,6 +60,7 @@ rule tree:
         alignment = rules.align.output.alignment,
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
+    conda: "../envs/nextstrain.yaml"
     params:
         tree_builder_args = config["tree"]["tree-builder-args"]
     threads: 8
@@ -147,7 +149,7 @@ rule refine:
         clock_filter_iqd = 4,
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     resources:
         mem_mb=16000
     shell:
@@ -177,7 +179,7 @@ rule ancestral:
         node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
     params:
         inference = "joint"
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     resources:
         mem_mb=4000
     shell:
@@ -201,7 +203,7 @@ rule translate:
     params:
         translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment]
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         python3 scripts/translations_aamuts.py \
@@ -225,7 +227,7 @@ rule traits:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
     params:
         columns = "region"
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur traits \
@@ -277,7 +279,7 @@ rule tip_frequencies:
         pivot_interval = 2
     output:
         tip_freq = "auspice/{build_name}_{segment}_tip-frequencies.json"
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur frequencies \

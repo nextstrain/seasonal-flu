@@ -45,7 +45,7 @@ rule download_sequences:
         sequences = "data/{lineage}/raw_{segment}.fasta"
     params:
         fasta_fields = " ".join(fasta_fields)
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -65,7 +65,7 @@ rule download_titers:
     params:
         dbs = _get_tdb_databases,
         assays = _get_tdb_assays
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
@@ -87,7 +87,7 @@ rule parse:
     params:
         fasta_fields =  " ".join(output_fasta_fields),
         prettify_fields = " ".join(prettify_fields)
-    conda: "environment.yaml"
+    conda: "../envs/nextstrain.yaml"
     shell:
         """
         augur parse \

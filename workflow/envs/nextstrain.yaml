@@ -4,13 +4,12 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - augur=13.0.0
+  - augur=15.0.2
   - epiweeks=2.1.2
-  - iqtree=2.1.2
+  - iqtree=2.2.0_beta
   - mafft=7.475
-  - nextalign>0.2.0
+  - nextalign=1.11.0
   - python>=3.7*
-  - pip>=21.1.1
   - seaborn>=0.11*
   - pip:
     - rethinkdb==2.3.0.post6

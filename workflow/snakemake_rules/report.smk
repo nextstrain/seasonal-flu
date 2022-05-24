@@ -6,6 +6,7 @@ localrules: get_nextclade_dataset
 rule get_nextclade_dataset:
     output:
         nextclade = "report_statistics/nextclade_{lineage}/dataset/reference.fasta"
+    conda: "../envs/nextstrain.yaml"
     params:
         nextclade_dir = "report_statistics/nextclade_{lineage}/dataset",
         dataset = "flu_{lineage}_ha"
@@ -20,6 +21,7 @@ rule nextclade_all:
         nextclade = "report_statistics/nextclade_{lineage}/dataset/reference.fasta"
     output:
         nextclade = "report_statistics/nextclade_{lineage}/nextclade.tsv"
+    conda: "../envs/nextstrain.yaml"
     params:
         nextclade_dataset = "report_statistics/nextclade_{lineage}/dataset",
         nextclade_outdir = "report_statistics/nextclade_{lineage}/alignments",
@@ -38,6 +40,7 @@ rule clade_frequencies:
         total_counts = "report_statistics/figures/{lineage}_total_counts.png"
         # clade_frequency_by_region = "report_statistics/figures/{lineage}_clade_by_region.png",
         # clade_frequency_by_clade = "report_statistics/figures/{lineage}_clade_by_clade.png"
+    conda: "../envs/nextstrain.yaml"
     params:
         min_date = "2020-01-01"
     shell:
