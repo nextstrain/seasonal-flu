@@ -48,5 +48,3 @@ rule clade_frequencies:
         python3 scripts/graph_frequencies.py --metadata {input.metadata} --nextclade {input.nextclade} \
             --output-total-counts {output.total_counts}
         """
-
-
