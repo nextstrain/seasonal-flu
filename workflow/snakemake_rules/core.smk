@@ -25,17 +25,32 @@ GENES = {
     'na': ['NA'],
 }
 
-rule align:
+rule mask:
+    input:
+        sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
+    output:
+        sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        augur mask \
+            --sequences {input.sequences} \
+            --mask-invalid \
+            --output {output.sequences}
+        """
+
+checkpoint align:
     message:
         """
         Aligning sequences to {input.reference}
         """
     input:
-        sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
+        sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
         reference =  lambda w: config['builds'][w.build_name]['reference'],
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
-        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta"
+        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
+        translations = directory(build_dir + "/{build_name}/{segment}/nextalign"),
     conda: "../envs/nextstrain.yaml"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
@@ -53,6 +68,14 @@ rule align:
                   -o {output.alignment} \
                   --output-dir {params.outdir}
         """
+
+def aggregate_translations(wildcards):
+    checkpoint_output = checkpoints.align.get(**wildcards).output.translations
+    print(f"checkpoint output: {checkpoint_output}")
+    return expand(build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
+                  build_name=wildcards.build_name,
+                  segment=wildcards.segment,
+                  gene=glob_wildcards(os.path.join(checkpoint_output, "masked.gene.{gene}.fasta")).gene)
 
 rule tree:
     message: "Building tree"
@@ -138,7 +161,7 @@ rule refine:
         """
     input:
         tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
-        alignment = rules.align.output,
+        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
@@ -194,14 +217,14 @@ rule ancestral:
 rule translate:
     message: "Translating amino acid sequences"
     input:
+        translations = aggregate_translations,
         tree = rules.refine.output.tree,
         reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
+        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
     output:
         node_data = build_dir + "/{build_name}/{segment}/aa_muts.json",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment]
     conda: "../envs/nextstrain.yaml"
     shell:
@@ -210,7 +233,7 @@ rule translate:
             --tree {input.tree} \
             --annotation {input.annotation} \
             --reference {input.reference} \
-            --translations {params.translations:q} \
+            --translations {input.translations:q} \
             --genes {params.genes} \
             --output {output.node_data} 2>&1 | tee {log} && touch {output.translations_done}
         """
