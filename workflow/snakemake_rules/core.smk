@@ -39,7 +39,7 @@ rule align:
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
         outdir =  build_dir + "/{build_name}/{segment}/nextalign",
-    threads: 1
+    threads: 8
     resources:
         mem_mb=16000
     shell:
@@ -47,6 +47,7 @@ rule align:
         nextalign -r {input.reference} \
                   -m {input.annotation} \
                   --genes {params.genes} \
+                  --jobs {threads} \
                   -i {input.sequences} \
                   -o {output.alignment} \
                   --output-dir {params.outdir}
