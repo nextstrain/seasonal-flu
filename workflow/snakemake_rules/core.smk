@@ -32,8 +32,8 @@ rule align:
         """
     input:
         sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
-        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}"
+        reference =  lambda w: config['builds'][w.build_name]['reference'],
+        annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta"
     params:
