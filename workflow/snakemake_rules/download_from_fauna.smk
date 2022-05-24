@@ -96,7 +96,6 @@ rule parse:
             --output-metadata {output.metadata} \
             --fields {params.fasta_fields} \
             --prettify-fields {params.prettify_fields} && \
-        rm {input}
         """
 
 
