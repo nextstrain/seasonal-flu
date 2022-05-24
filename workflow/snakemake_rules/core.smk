@@ -20,8 +20,10 @@ localrules: clades, sanitize_trees
 
 build_dir = config.get("build_dir", "builds")
 
-def genes(segment):
-    return {'ha':['SigPep','HA1', 'HA2'], 'na':['NA']}[segment]
+GENES = {
+    'ha': ['SigPep', 'HA1', 'HA2'],
+    'na': ['NA'],
+}
 
 rule align:
     message:
@@ -35,7 +37,7 @@ rule align:
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta"
     params:
-        genes = lambda w: ','.join(genes(w.segment)),
+        genes = lambda w: ','.join(GENES[w.segment]),
         outdir =  build_dir + "/{build_name}/{segment}/nextalign",
     threads: 1
     resources:
@@ -196,8 +198,8 @@ rule translate:
         node_data = build_dir + "/{build_name}/{segment}/aa_muts.json",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in genes(w.segment)],
-        genes = lambda w: genes(w.segment)
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}.fasta" for gene in GENES[w.segment]],
+        genes = lambda w: GENES[w.segment]
     conda: "environment.yaml"
     shell:
         """

@@ -17,8 +17,8 @@ rule titers_sub:
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}_withInternalNodes.fasta" for gene in genes(w.segment)],
-        genes = lambda w: genes(w.segment)
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        genes = lambda w: GENES[w.segment]
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model.json",
     conda: "environment.yaml"
