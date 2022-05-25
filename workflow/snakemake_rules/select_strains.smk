@@ -122,7 +122,3 @@ rule select_titers:
                 for line in fh:
                     if line.split('\t')[0] in strains:
                         out_fh.write(line)
-
-
-
-
