@@ -98,30 +98,22 @@ rule parse:
             --prettify-fields {params.prettify_fields}
         """
 
-rule metadata:
+rule join_metadata:
     input:
-        segment_metadata = lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']]
+        segment_metadata=lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']],
     output:
-        "data/{lineage}/metadata.tsv"
+        metadata="data/{lineage}/metadata.tsv",
+    conda: "../envs/nextstrain.yaml"
     params:
-        segments = lambda w: config['segments']
-    run:
-        import pandas as pd
-
-        # read each metadata file
-        def segment(f):
-            return f.split('/')[-1].split('.')[0].split('_')[-1]
-
-        # this should be a proper join -- currently assuming all fields but the segment accession are redundant
-        f = input.segment_metadata[0]
-        s = segment(f)
-        segment_metadata = pd.read_csv(f, sep='\t', index_col=0).rename({'accession': f'accession_{s}'}, axis=1)
-        segment_metadata[s]=True
-        for f in input.segment_metadata[1:]:
-            s = segment(f)
-            d = pd.read_csv(f, sep='\t', index_col=0).loc[:,["accession"]]
-            d[s] = True
-            segment_metadata = pd.merge(segment_metadata, d.rename({'accession': f'accession_{s}'}, axis=1), how='outer', on='strain')
-
-
-        segment_metadata.to_csv(output[0], sep='\t')
+        segments=lambda w: config['segments'],
+        segment_columns=["accession"],
+        how="outer",
+    shell:
+        """
+        python3 scripts/join_metadata.py \
+            --metadata {input.segment_metadata:q} \
+            --segments {params.segments:q} \
+            --segment-columns {params.segment_columns:q} \
+            --how {params.how:q} \
+            --output {output.metadata:q}
+        """
