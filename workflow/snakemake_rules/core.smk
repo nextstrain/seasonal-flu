@@ -70,8 +70,16 @@ checkpoint align:
         """
 
 def aggregate_translations(wildcards):
+    """The alignment rule produces multiple outputs that we cannot easily name prior
+    to running the rule. The names of the outputs depend on the segment being
+    aligned and Snakemake's `expand` function does not provide a way to lookup
+    the gene names per segment. Instead, we use Snakemake's checkpoint
+    functionality to determine the names of the output files after alignment
+    runs. Downstream rules refer to this function to specify the translations
+    for a given segment.
+
+    """
     checkpoint_output = checkpoints.align.get(**wildcards).output.translations
-    print(f"checkpoint output: {checkpoint_output}")
     return expand(build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
                   build_name=wildcards.build_name,
                   segment=wildcards.segment,
