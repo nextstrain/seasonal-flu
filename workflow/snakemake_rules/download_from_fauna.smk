@@ -21,7 +21,7 @@ output_fasta_fields = ["strain", "virus", "segment", "accession", "date", "virus
 prettify_fields = ["region","country","division","location","originating_lab","submitting_lab"]
 
 path_to_fauna = '../fauna'
-localrules: download_sequences, download_titers, parse, metadata
+localrules: download_sequences, download_titers, parse
 #
 # Define titer data sets to be used.
 #
