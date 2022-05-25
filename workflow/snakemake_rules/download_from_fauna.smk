@@ -9,11 +9,11 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
 
-fasta_fields = ["strain", "virus", "accession", "collection_date", "virus_inclusion_date",
+fasta_fields = ["strain", "virus", "locus", "accession", "collection_date", "virus_inclusion_date",
                 "region",  "country", "division", "location", "passage_category",
                 "originating_lab", "submitting_lab", "age", "gender"]
 
-output_fasta_fields = ["strain", "virus", "accession", "date", "virus_inclusion_date",
+output_fasta_fields = ["strain", "virus", "segment", "accession", "date", "virus_inclusion_date",
                 "region",  "country", "division", "location", "passage_category",
                 "originating_lab", "submitting_lab", "age", "gender"]
 
