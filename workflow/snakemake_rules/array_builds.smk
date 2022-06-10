@@ -7,6 +7,21 @@ from itertools import product
 if "builds" not in config:
     config["builds"] = {}
 
+# Expand variables in subsamples for named builds.
+for build_name, build_params in config["builds"].items():
+    subsamples = build_params.pop("subsamples", None)
+
+    if subsamples is not None:
+        tmp = {}
+        for subsample in subsamples:
+            tmp[subsample] = {}
+            tmp[subsample]["filters"] = subsamples[subsample]["filters"].format(**build_params)
+            if "priorities" in subsamples[subsample]:
+                tmp[subsample]["priorities"] = subsamples[subsample]["priorities"].format(**build_params)
+        config['builds'][build_name] = {'subsamples': tmp}
+        config['builds'][build_name].update(build_params)
+
+# Expand array builds.
 for array_build in config["array-builds"].values():
     patterns = array_build["patterns"]
     subsamples = array_build["subsamples"]
