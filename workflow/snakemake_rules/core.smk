@@ -307,8 +307,8 @@ rule tip_frequencies:
         wide_bandwidth = 3 / 12.0,
         proportion_wide = 0.0,
         weight_attribute = "region",
-        min_date = lambda w: config["builds"][w.build_name]["min-date"],
-        max_date = lambda w: datetime.datetime.today().strftime("%Y-%m-%d"),
+        min_date_arg = lambda w: f"--min-date {config['builds'][w.build_name]['min-date']}" if "min-date" in config["builds"].get(w.build_name, {}) else "",
+        max_date = lambda w: config['builds'][w.build_name]['max_date'] if "max_date" in config["builds"].get(w.build_name, {}) else "0D",
         pivot_interval = 2
     output:
         tip_freq = "auspice/{build_name}_{segment}_tip-frequencies.json"
@@ -325,7 +325,7 @@ rule tip_frequencies:
             --weights {input.weights} \
             --weights-attribute {params.weight_attribute} \
             --pivot-interval {params.pivot_interval} \
-            --min-date {params.min_date} \
+            {params.min_date_arg} \
             --max-date {params.max_date} \
             --output {output}
         """
