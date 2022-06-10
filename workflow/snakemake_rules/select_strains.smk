@@ -25,26 +25,13 @@ def get_titers_for_build(w):
 rule titer_priorities:
     input:
         titers = get_titers_for_build,
-        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"
     output:
-        priorities = build_dir + "/{build_name}/titer_priorities.tsv"
-    run:
-        import pandas as pd
-        metadata = pd.read_csv(input.metadata, sep='\t')
-        titer_counts = {s:0 for s in metadata.strain}
-
-        try:
-            titers = pd.read_csv(input.titers, sep='\t')
-            for ri, row in titers.iterrows():
-                test_strain = row.iloc[0]
-                if test_strain in titer_counts:
-                    titer_counts[test_strain] += 1
-        except:
-            pass
-
-        with open(output.priorities, 'w') as fh:
-            for s,p in titer_counts.items():
-                fh.write(f"{s}\t{p}\n")
+        priorities = build_dir + "/{build_name}/titer_priorities.tsv",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        tsv-summarize -H --group-by virus_strain --count {input.titers} | sed 1d > {output.priorities}
+        """
 
 def get_subsample_input(w):
     files = {"metadata": f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"}
@@ -113,12 +100,11 @@ rule select_titers:
         titers = get_titers_for_build
     output:
         titers = build_dir + "/{build_name}/titers.tsv"
-    run:
-        with open(input.strains) as fh:
-            strains = set([x.strip() for x in fh.readlines()])
-
-        with open(input.titers) as fh:
-            with open(output.titers, 'w') as out_fh:
-                for line in fh:
-                    if line.split('\t')[0] in strains:
-                        out_fh.write(line)
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        tsv-join \
+            --key-fields 1 \
+            --filter-file {input.strains} \
+            {input.titers} > {output.titers}
+        """

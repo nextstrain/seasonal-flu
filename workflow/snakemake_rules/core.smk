@@ -16,8 +16,6 @@ output:
  - builds/{build_name}/{segment}/traits.json
 '''
 
-localrules: clades, sanitize_trees
-
 build_dir = config.get("build_dir", "builds")
 
 GENES = {
@@ -108,23 +106,16 @@ rule tree:
 
 rule sanitize_trees:
     input:
-        trees = lambda w: [f"{build_dir}/{w.build_name}/{segment}/tree_raw.nwk" for segment in config['segments']],
-        metadata = build_dir + "/{build_name}/metadata.tsv"
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_raw.nwk",  segment=config['segments'], build_dir=[build_dir]),
     output:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir])
-    run:
-        from Bio import Phylo
-
-        trees = [Phylo.read(fname, 'newick') for fname in input.trees]
-        common_leaves = set.intersection(*[set([x.name for x in tree.get_terminals()]) for tree in trees])
-        for ti,tree in enumerate(trees):
-            for leaf in set([x.name for x in tree.get_terminals()]).difference(common_leaves):
-                tree.prune(leaf)
-
-            tree.root_at_midpoint()
-            tree.ladderize()
-            Phylo.write(tree, output.trees[ti], 'newick')
-
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/sanitize_trees.py \
+            --trees {input.trees:q} \
+            --output {output.trees:q}
+        """
 
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
@@ -205,7 +196,7 @@ rule ancestral:
     message: "Reconstructing ancestral sequences and mutations"
     input:
         tree = rules.refine.output.tree,
-        alignment = rules.align.output
+        alignment = rules.align.output.alignment,
     output:
         node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
     params:
@@ -269,31 +260,42 @@ rule traits:
             --confidence
         """
 
+# Determine clades with HA mutations.
 rule clades:
-    message: "Annotating clades"
     input:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
-        nt_muts = rules.ancestral.output.node_data,
-        aa_muts = rules.translate.output.node_data,
-        clades = lambda w: config[build_dir + ""][w.build_name]["clades"] if w.segment=='ha' else f"{build_dir}/{w.build_name}/ha/clades.json"
+        nt_muts = build_dir + "/{build_name}/ha/nt-muts.json",
+        aa_muts = build_dir + "/{build_name}/ha/aa_muts.json",
+        clades = lambda wildcards: config[build_dir + ""][wildcards.build_name]["clades"],
     output:
-        node_data = build_dir + "/{build_name}/{segment}/clades.json"
-    run:
-        if wildcards.segment == 'ha':
-            shell("""
-                augur clades \
-                    --tree {input.tree} \
-                    --mutations {input.nt_muts} {input.aa_muts} \
-                    --clades {input.clades} \
-                    --output {output.node_data}
-            """)
-        else:
-            shell("""
-                python3 scripts/import_tip_clades.py \
-                    --tree {input.tree} \
-                    --clades {input.clades} \
-                    --output {output.node_data}
-            """)
+        node_data = build_dir + "/{build_name}/ha/clades.json",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        augur clades \
+            --tree {input.tree} \
+            --mutations {input.nt_muts} {input.aa_muts} \
+            --clades {input.clades} \
+            --output {output.node_data}
+        """
+
+# Assign clade annotations to non-HA segments from HA.
+rule import_clades:
+    input:
+        tree = build_dir + "/{build_name}/ha/tree.nwk",
+        nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
+        aa_muts = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        clades = build_dir + "/{build_name}/ha/clades.json",
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/clades.json",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/import_tip_clades.py \
+            --tree {input.tree} \
+            --clades {input.clades} \
+            --output {output.node_data}
+        """
 
 rule tip_frequencies:
     input:
