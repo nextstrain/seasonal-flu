@@ -307,7 +307,7 @@ rule tip_frequencies:
         wide_bandwidth = 3 / 12.0,
         proportion_wide = 0.0,
         weight_attribute = "region",
-        min_date_arg = lambda w: f"--min-date {config['builds'][w.build_name]['min-date']}" if "min-date" in config["builds"].get(w.build_name, {}) else "",
+        min_date_arg = lambda w: f"--min-date {config['builds'][w.build_name]['min_date']}" if "min_date" in config["builds"].get(w.build_name, {}) else "",
         max_date = lambda w: config['builds'][w.build_name]['max_date'] if "max_date" in config["builds"].get(w.build_name, {}) else "0D",
         pivot_interval = 2
     output:

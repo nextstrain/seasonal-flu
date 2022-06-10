@@ -14,9 +14,8 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       lineage: "h3n2"
-      min-date: "2019-01-01"
+      min_date: "2019-01-01"
       auspice_config: "config/h3n2/auspice_config.json"
       subsamples:
         global:
             filters: "--group-by region year month --subsample-max-sequences 200 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
-

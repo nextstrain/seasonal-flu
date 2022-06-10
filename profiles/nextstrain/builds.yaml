@@ -44,7 +44,7 @@ array-builds:
       auspice_config: "config/{lineage}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
     subsampling_parameters:
-      min-date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
