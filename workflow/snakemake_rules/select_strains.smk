@@ -53,7 +53,7 @@ rule subsample:
         """
         augur filter \
             --metadata {input.metadata} \
-            {params.filters:q} \
+            {params.filters} \
             {params.priorities} \
             --output-strains {output.strains} 2>&1 | tee {log}
         """
