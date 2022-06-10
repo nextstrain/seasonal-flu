@@ -43,6 +43,9 @@ if __name__ == "__main__":
             )
             metadata[segment] = metadata[segment].fillna(False)
 
+    # Fill any segments that happened to be missing during the join.
+    metadata[args.segments] = metadata[args.segments].fillna(False)
+
     metadata.to_csv(
         args.output,
         sep='\t',
