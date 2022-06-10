@@ -13,6 +13,7 @@ titer-models: True
 
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
+  override_default_args: true
 
 array-builds:
   hi_builds:

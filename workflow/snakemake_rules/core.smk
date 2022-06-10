@@ -91,7 +91,8 @@ rule tree:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
     conda: "../envs/nextstrain.yaml"
     params:
-        tree_builder_args = config["tree"]["tree-builder-args"]
+        tree_builder_args = config["tree"]["tree-builder-args"],
+        override_default_args = lambda wildcards: "--override-default-args" if config["tree"].get("override_default_args", False) else "",
     threads: 8
     resources:
         mem_mb=16000
@@ -100,6 +101,7 @@ rule tree:
         augur tree \
             --alignment {input.alignment} \
             --tree-builder-args {params.tree_builder_args} \
+            {params.override_default_args} \
             --output {output.tree} \
             --nthreads {threads}
         """
