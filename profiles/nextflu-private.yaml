@@ -1,0 +1,66 @@
+data_source: fauna
+
+lat-longs: "config/lat_longs.tsv"
+
+glycosylation: true
+lbi: true
+
+segments:
+  - ha
+  - na
+
+titer-models: True
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+array-builds:
+  hi_builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - vic
+    build_name: "{lineage}_2y_cell_hi"
+    build_params:
+      center: "who"
+      assay: "hi"
+      passage: "cell"
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      min_date: "2Y"
+      include: "config/{lineage}/reference_strains.txt"
+      exclude: "config/{lineage}/outliers.txt"
+    subsamples:
+      regions_except_europe:
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 2625 --min-date {min_date} --include {include} --exclude {exclude}
+          priorities: "titers"
+      europe:
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 375 --min-date {min_date} --include {include} --exclude {exclude}
+          priorities: "titers"
+
+builds:
+    "h3n2_2y_cell_fra":
+      lineage: "h3n2"
+      center: "who"
+      assay: "fra"
+      passage: "cell"
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      auspice_config: "config/h3n2/auspice_config.json"
+      vaccines: "config/h3n2/vaccine.json"
+      min_date: "2Y"
+      include: "config/h3n2/reference_strains.txt"
+      exclude: "config/h3n2/outliers.txt"
+      subsamples:
+        regions_except_europe:
+            filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 2625 --min-date {min_date} --include {include} --exclude {exclude}
+            priorities: "titers"
+        europe:
+            filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 375 --min-date {min_date} --include {include} --exclude {exclude}
+            priorities: "titers"
