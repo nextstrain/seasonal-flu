@@ -2,7 +2,7 @@ import argparse
 import sys
 import os
 from collections import defaultdict
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import Bio
 import Bio.SeqIO
 import numpy as np

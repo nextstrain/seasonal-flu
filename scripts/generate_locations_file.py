@@ -1,4 +1,3 @@
-import numpy as np
 import time
 from geopy.geocoders import Nominatim as geocoder
 from augur.utils import read_lat_longs, read_metadata
@@ -42,7 +41,7 @@ def determine_coordinates(metadata, field, custom_coordinates=None):
                 loc = get_geo_info(loc_tuple)
             except:
                 print("request failed")
-                
+
             if loc:
                 new_coordinates[(field, m[field].lower())] = {'latitude':loc.latitude,
                                                     'longitude':loc.longitude}

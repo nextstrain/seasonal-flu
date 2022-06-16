@@ -1,7 +1,6 @@
 import argparse
 from augur.utils import read_metadata, write_json
 import datetime
-import json
 import numpy as np
 import pandas as pd
 

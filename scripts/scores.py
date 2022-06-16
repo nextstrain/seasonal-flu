@@ -1,9 +1,7 @@
-import argparse, sys, os, glob, json
+import argparse, json
 import numpy as np
-from collections import defaultdict
 from Bio import Phylo
-from augur.utils import read_metadata, get_numerical_dates
-from select_strains import read_strain_list, determine_time_interval, parse_metadata
+from select_strains import parse_metadata
 from vaccination_coverage import read_all_vaccination_data
 
 def calculate_average_on_tree(tree, func, min_clade_size=20):
