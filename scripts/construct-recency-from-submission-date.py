@@ -1,5 +1,6 @@
 import argparse
-from augur.utils import read_metadata, write_json
+from augur.io import read_metadata
+from augur.utils import write_json
 import datetime
 import numpy as np
 import pandas as pd
@@ -53,8 +54,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    meta, columns = read_metadata(args.metadata)
-    meta = pd.DataFrame.from_dict(meta, "index")
+    meta = read_metadata(args.metadata)
     meta[args.submission_date_field] = pd.to_datetime(meta[args.submission_date_field])
 
     node_data = {'nodes': {}}

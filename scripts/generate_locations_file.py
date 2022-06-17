@@ -1,6 +1,7 @@
 import time
 from geopy.geocoders import Nominatim as geocoder
-from augur.utils import read_lat_longs, read_metadata
+from augur.io import read_metadata
+from augur.utils import read_lat_longs
 
 geoloc = geocoder(user_agent='augur/flu')
 last_request = 0
@@ -64,11 +65,11 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=str, help="output file")
     args = parser.parse_args()
 
-    metadata, columns = read_metadata(args.metadata)
+    metadata = read_metadata(args.metadata)
     subset = {}
     if args.filter:
         assert len(args.filter)%2==0
-        for sname, s in metadata.items():
+        for sname, s in metadata.iterrows():
             if all([s[args.filter[2*fi]].lower()==args.filter[2*fi+1].lower() for fi in range(len(args.filter)//2)]):
                 subset[sname]=s
     else:
