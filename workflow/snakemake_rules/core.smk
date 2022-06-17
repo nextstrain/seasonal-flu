@@ -60,7 +60,6 @@ checkpoint align:
         "logs/align_{build_name}_{segment}.txt"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
-        outdir =  build_dir + "/{build_name}/{segment}/nextalign",
     threads: 8
     resources:
         mem_mb=16000
@@ -72,7 +71,7 @@ checkpoint align:
                   --jobs {threads} \
                   -i {input.sequences} \
                   -o {output.alignment} \
-                  --output-dir {params.outdir} 2>&1 | tee {log}
+                  --output-dir {output.translations} 2>&1 | tee {log}
         """
 
 def aggregate_translations(wildcards):
