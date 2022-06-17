@@ -11,7 +11,7 @@ rule glyc:
     output:
         glyc = build_dir + "/{build_name}/{segment}/glyc.json"
     params:
-        alignment = lambda w: f"{build_dir}/{w.build_name}/{w.segment}/nextalign/sequences.gene.{glyc_gene.get(w.segment)}_withInternalNodes.fasta",
+        alignment = lambda w: f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{glyc_gene.get(w.segment)}_withInternalNodes.fasta",
     conda: "../envs/nextstrain.yaml"
     shell:
         """
