@@ -39,6 +39,8 @@ rule export:
         auspice_json = "auspice/{build_name}_{segment}.json",
         root_sequence_json = "auspice/{build_name}_{segment}_root-sequence.json",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/export_{build_name}_{segment}.txt"
     log:
         "logs/export_{build_name}_{segment}.txt"
     shell:

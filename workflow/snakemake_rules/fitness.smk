@@ -13,12 +13,16 @@ rule glyc:
     params:
         alignment = lambda w: f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{glyc_gene.get(w.segment)}_withInternalNodes.fasta",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/glyc_{build_name}_{segment}.txt"
+    log:
+        "logs/glyc_{build_name}_{segment}.txt"
     shell:
         """
         python3 scripts/glyc.py \
             --tree {input.tree} \
             --alignment {params.alignment} \
-            --output {output.glyc}
+            --output {output.glyc} 2>&1 | tee {log}
         """
 
 rule lbi:
@@ -33,6 +37,10 @@ rule lbi:
     output:
         lbi =  build_dir + "/{build_name}/{segment}/lbi.json"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/lbi_{build_name}_{segment}.txt"
+    log:
+        "logs/lbi_{build_name}_{segment}.txt"
     shell:
         """
         augur lbi \
@@ -41,5 +49,5 @@ rule lbi:
             --output {output} \
             --attribute-names {params.names} \
             --tau {params.tau} \
-            --window {params.window}
+            --window {params.window} 2>&1 | tee {log}
         """

@@ -28,9 +28,13 @@ rule titer_priorities:
     output:
         priorities = build_dir + "/{build_name}/titer_priorities.tsv",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/titer_priorities_{build_name}.txt"
+    log:
+        "logs/titer_priorities_{build_name}.txt"
     shell:
         """
-        tsv-summarize -H --group-by virus_strain --count {input.titers} | sed 1d > {output.priorities}
+        tsv-summarize -H --group-by virus_strain --count {input.titers} | sed 1d > {output.priorities} 2> {log}
         """
 
 def get_subsample_input(w):
@@ -49,6 +53,10 @@ rule subsample:
         priorities = lambda w: f"--priority {build_dir}/{w.build_name}/titer_priorities.tsv" \
                                if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers' else ''
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/subsample_{build_name}_{subsample}.txt"
+    log:
+        "logs/subsample_{build_name}_{subsample}.txt"
     shell:
         """
         augur filter \
@@ -66,6 +74,10 @@ rule select_strains:
         metadata = build_dir + "/{build_name}/metadata.tsv",
         strains = build_dir + "/{build_name}/strains.txt",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/select_strains_{build_name}.txt"
+    log:
+        "logs/select_strains_{build_name}.txt"
     shell:
         """
         augur filter \
@@ -73,7 +85,7 @@ rule select_strains:
             --exclude-all \
             --include {input.subsamples} \
             --output-metadata {output.metadata} \
-            --output-strains {output.strains}
+            --output-strains {output.strains} 2>&1 | tee {log}
         """
 
 rule select_sequences:
@@ -84,6 +96,10 @@ rule select_sequences:
     output:
         sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/select_sequences_{build_name}_{segment}.txt"
+    log:
+        "logs/select_sequences_{build_name}_{segment}.txt"
     shell:
         """
         augur filter \
@@ -91,7 +107,7 @@ rule select_sequences:
             --metadata {input.metadata} \
             --exclude-all \
             --include {input.strains} \
-            --output-sequences {output.sequences}
+            --output-sequences {output.sequences} 2>&1 | tee {log}
         """
 
 rule select_titers:
@@ -101,10 +117,14 @@ rule select_titers:
     output:
         titers = build_dir + "/{build_name}/titers.tsv"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/select_titers_{build_name}.txt"
+    log:
+        "logs/select_titers_{build_name}.txt"
     shell:
         """
         tsv-join \
             --key-fields 1 \
             --filter-file {input.strains} \
-            {input.titers} > {output.titers}
+            {input.titers} > {output.titers} 2> {log}
         """

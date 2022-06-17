@@ -46,6 +46,10 @@ rule download_sequences:
     params:
         fasta_fields = " ".join(fasta_fields)
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/download_sequences_{lineage}_{segment}.txt"
+    log:
+        "logs/download_sequences_{lineage}_{segment}.txt"
     shell:
         """
         python3 {path_to_fauna}/vdb/download.py \
@@ -55,7 +59,7 @@ rule download_sequences:
             --resolve_method split_passage \
             --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
             --path data \
-            --fstem {wildcards.lineage}/raw_{wildcards.segment}
+            --fstem {wildcards.lineage}/raw_{wildcards.segment} 2>&1 | tee {log}
         """
 
 rule download_titers:
@@ -66,6 +70,10 @@ rule download_titers:
         dbs = _get_tdb_databases,
         assays = _get_tdb_assays
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/download_titers_{lineage}_{center}_{passage}_{assay}.txt"
+    log:
+        "logs/download_titers_{lineage}_{center}_{passage}_{assay}.txt"
     shell:
         """
         python3 {path_to_fauna}/tdb/download.py \
@@ -74,7 +82,7 @@ rule download_titers:
             --subtype {wildcards.lineage} \
             --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
             --path data \
-            --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay}
+            --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
         """
 
 rule parse:
@@ -88,6 +96,10 @@ rule parse:
         fasta_fields =  " ".join(output_fasta_fields),
         prettify_fields = " ".join(prettify_fields)
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/parse_{lineage}_{segment}.txt"
+    log:
+        "logs/parse_{lineage}_{segment}.txt"
     shell:
         """
         augur parse \
@@ -95,7 +107,7 @@ rule parse:
             --output-sequences {output.sequences} \
             --output-metadata {output.metadata} \
             --fields {params.fasta_fields} \
-            --prettify-fields {params.prettify_fields}
+            --prettify-fields {params.prettify_fields} 2>&1 | tee {log}
         """
 
 rule join_metadata:
@@ -104,6 +116,10 @@ rule join_metadata:
     output:
         metadata="data/{lineage}/metadata.tsv",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/join_metadata_{lineage}.txt"
+    log:
+        "logs/join_metadata_{lineage}.txt"
     params:
         segments=lambda w: config['segments'],
         segment_columns=["accession"],
@@ -115,5 +131,5 @@ rule join_metadata:
             --segments {params.segments:q} \
             --segment-columns {params.segment_columns:q} \
             --how {params.how:q} \
-            --output {output.metadata:q}
+            --output {output.metadata:q} 2>&1 | tee {log}
         """

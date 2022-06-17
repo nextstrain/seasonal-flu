@@ -29,12 +29,16 @@ rule mask:
     output:
         sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/mask_{build_name}_{segment}.txt"
+    log:
+        "logs/mask_{build_name}_{segment}.txt"
     shell:
         """
         augur mask \
             --sequences {input.sequences} \
             --mask-invalid \
-            --output {output.sequences}
+            --output {output.sequences} 2>&1 | tee {log}
         """
 
 checkpoint align:
@@ -50,6 +54,10 @@ checkpoint align:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = directory(build_dir + "/{build_name}/{segment}/nextalign"),
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/align_{build_name}_{segment}.txt"
+    log:
+        "logs/align_{build_name}_{segment}.txt"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
         outdir =  build_dir + "/{build_name}/{segment}/nextalign",
@@ -64,7 +72,7 @@ checkpoint align:
                   --jobs {threads} \
                   -i {input.sequences} \
                   -o {output.alignment} \
-                  --output-dir {params.outdir}
+                  --output-dir {params.outdir} 2>&1 | tee {log}
         """
 
 def aggregate_translations(wildcards):
@@ -90,6 +98,10 @@ rule tree:
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/tree_{build_name}_{segment}.txt"
+    log:
+        "logs/tree_{build_name}_{segment}.txt"
     params:
         tree_builder_args = config["tree"]["tree-builder-args"],
         override_default_args = lambda wildcards: "--override-default-args" if config["tree"].get("override_default_args", False) else "",
@@ -103,7 +115,7 @@ rule tree:
             --tree-builder-args {params.tree_builder_args} \
             {params.override_default_args} \
             --output {output.tree} \
-            --nthreads {threads}
+            --nthreads {threads} 2>&1 | tee {log}
         """
 
 rule sanitize_trees:
@@ -112,11 +124,15 @@ rule sanitize_trees:
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/sanitize_trees_{build_name}.txt"
+    log:
+        "logs/sanitize_trees_{build_name}.txt"
     shell:
         """
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
-            --output {output.trees:q}
+            --output {output.trees:q} 2>&1 | tee {log}
         """
 
 def clock_rate(w):
@@ -174,6 +190,10 @@ rule refine:
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/refine_{build_name}_{segment}.txt"
+    log:
+        "logs/refine_{build_name}_{segment}.txt"
     resources:
         mem_mb=16000
     shell:
@@ -191,7 +211,7 @@ rule refine:
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
-            --clock-filter-iqd {params.clock_filter_iqd}
+            --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
         """
 
 rule ancestral:
@@ -204,6 +224,10 @@ rule ancestral:
     params:
         inference = "joint"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/ancestral_{build_name}_{segment}.txt"
+    log:
+        "logs/ancestral_{build_name}_{segment}.txt"
     resources:
         mem_mb=4000
     shell:
@@ -212,7 +236,7 @@ rule ancestral:
             --tree {input.tree} \
             --alignment {input.alignment} \
             --output-node-data {output.node_data} \
-            --inference {params.inference}
+            --inference {params.inference} 2>&1 | tee {log}
         """
 
 rule translate:
@@ -228,6 +252,10 @@ rule translate:
     params:
         genes = lambda w: GENES[w.segment]
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/translate_{build_name}_{segment}.txt"
+    log:
+        "logs/translate_{build_name}_{segment}.txt"
     shell:
         """
         python3 scripts/translations_aamuts.py \
@@ -252,6 +280,10 @@ rule traits:
     params:
         columns = "region"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/traits_{build_name}_{segment}.txt"
+    log:
+        "logs/traits_{build_name}_{segment}.txt"
     shell:
         """
         augur traits \
@@ -259,7 +291,7 @@ rule traits:
             --metadata {input.metadata} \
             --output {output.node_data} \
             --columns {params.columns} \
-            --confidence
+            --confidence 2>&1 | tee {log}
         """
 
 # Determine clades with HA mutations.
@@ -272,13 +304,17 @@ rule clades:
     output:
         node_data = build_dir + "/{build_name}/ha/clades.json",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/clades_{build_name}.txt"
+    log:
+        "logs/clades_{build_name}.txt"
     shell:
         """
         augur clades \
             --tree {input.tree} \
             --mutations {input.nt_muts} {input.aa_muts} \
             --clades {input.clades} \
-            --output {output.node_data}
+            --output {output.node_data} 2>&1 | tee {log}
         """
 
 # Assign clade annotations to non-HA segments from HA.
@@ -291,12 +327,16 @@ rule import_clades:
     output:
         node_data = build_dir + "/{build_name}/{segment}/clades.json",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/import_clades_{build_name}_{segment}.txt"
+    log:
+        "logs/import_clades_{build_name}_{segment}.txt"
     shell:
         """
         python3 scripts/import_tip_clades.py \
             --tree {input.tree} \
             --clades {input.clades} \
-            --output {output.node_data}
+            --output {output.node_data} 2>&1 | tee {log}
         """
 
 rule tip_frequencies:
@@ -315,6 +355,10 @@ rule tip_frequencies:
     output:
         tip_freq = "auspice/{build_name}_{segment}_tip-frequencies.json"
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/tip_frequencies_{build_name}_{segment}.txt"
+    log:
+        "logs/tip_frequencies_{build_name}_{segment}.txt"
     shell:
         """
         augur frequencies \
@@ -329,5 +373,5 @@ rule tip_frequencies:
             --pivot-interval {params.pivot_interval} \
             {params.min_date_arg} \
             --max-date {params.max_date} \
-            --output {output}
+            --output {output} 2>&1 | tee {log}
         """

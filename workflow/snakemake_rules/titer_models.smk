@@ -22,6 +22,10 @@ rule titers_sub:
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model.json",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/titers_sub_{build_name}_{segment}.txt",
+    log:
+        "logs/titers_sub_{build_name}_{segment}.txt",
     shell:
         """
         augur titers sub \
@@ -30,7 +34,7 @@ rule titers_sub:
             --gene-names {params.genes} \
             --tree {input.tree} \
             --allow-empty-model \
-            --output {output.titers_model}
+            --output {output.titers_model} 2>&1 | tee {log}
         """
 
 rule titers_tree:
@@ -40,11 +44,15 @@ rule titers_tree:
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-tree-model.json",
     conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/titers_tree_{build_name}_{segment}.txt",
+    log:
+        "logs/titers_tree_{build_name}_{segment}.txt",
     shell:
         """
         augur titers tree \
             --titers {input.titers} \
             --tree {input.tree} \
             --allow-empty-model \
-            --output {output.titers_model}
+            --output {output.titers_model} 2>&1 | tee {log}
         """
