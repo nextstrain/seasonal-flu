@@ -208,7 +208,7 @@ def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
                 age_str = tmp_meta[x]['age']
                 if age_str[-1]=='y':
                     tmp_meta[x]['age'] = int(age_str[:-1])
-                elif tmp_meta[x]['age']=='m':
+                elif age_str[-1]=='m':
                     tmp_meta[x]['age'] = float(age_str[:-1])/12.0
                 else:
                     tmp_meta[x]['age'] = 'unknown'
