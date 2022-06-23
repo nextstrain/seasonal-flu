@@ -1,12 +1,8 @@
-import argparse, sys, os, glob
-import numpy as np
-from datetime import datetime, timedelta, date
+import argparse
 from random import sample
-from collections import defaultdict
-from Bio import SeqIO, AlignIO, SeqRecord, Seq
+from Bio import SeqIO, SeqRecord, Seq
 from treetime.utils import numeric_date
-from augur.utils import read_metadata, get_numerical_dates, load_features
-from augur import align
+from augur.utils import load_features
 from augur.translate import safe_translate
 from select_strains import read_strain_list, determine_time_interval, parse_metadata
 from codon_align import codon_align, get_cds

@@ -2,12 +2,13 @@ import argparse
 import sys
 import os
 from collections import defaultdict
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 import Bio
 import Bio.SeqIO
 import numpy as np
 from treetime.utils import numeric_date
-from augur.utils import read_metadata, get_numerical_dates
+from augur.io import read_metadata
+from augur.dates import get_numerical_dates
 from flu_regions import region_names
 
 subcats = region_names
@@ -193,9 +194,12 @@ def determine_time_interval(time_interval, resolution):
 def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
     metadata = {}
     for segment, fname in zip(segments, metadata_files):
-        tmp_meta, columns = read_metadata(fname)
-
+        tmp_meta = read_metadata(fname)
         numerical_dates = get_numerical_dates(tmp_meta, fmt=date_format)
+
+        tmp_meta.insert(0, "strain", tmp_meta.index.values)
+        tmp_meta = tmp_meta.to_dict(orient="index")
+
         for x in list(tmp_meta.keys()):
             if numerical_dates[x] is None:
                 # Remove strain that does not have valid date
