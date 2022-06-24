@@ -1,0 +1,28 @@
+{
+    "name": "Nextstrain seasonal influenza forecasts",
+    "is_public": false,
+    "description": "Forecasts for seasonal influenza developed by the Nextstrain team.",
+    "home_url": "https://nextstrain.org/flu/seasonal/",
+    "logo_url": "https://nextstrain.org/static/nextstrain-logo-small-ea8c3e13e8c17436264760d638ab970e.png",
+    "core_data": "",
+    "time_interval_type": "Month",
+    "visualization_y_label": "Clade frequency",
+    "units": [
+        {"name": "global:3C.2a1b.2a.2", "abbreviation": "global:3C.2a1b.2a.2"},
+        {"name": "global:3C.2a1b.2a.2/53G", "abbreviation": "global:3C.2a1b.2a.2/53G"},
+        {"name": "global:3C.2a1b.2a.2/53N", "abbreviation": "global:3C.2a1b.2a.2/53N"},
+        {"name": "global:3C.2a1b.2a.2/50K", "abbreviation": "global:3C.2a1b.2a.2/50K"},
+        {"name": "global:3C.2a1b.1a", "abbreviation": "global:3C.2a1b.1a"}
+    ],
+    "targets": [
+        {
+            "type": "continuous",
+            "name": "frequency in one year",
+            "description": "clade frequency in 1 year",
+            "outcome_variable": "frequency in one year",
+            "is_step_ahead": false,
+            "range": [0.0, 1.0]
+        }
+    ],
+    "timezeros": []
+}
