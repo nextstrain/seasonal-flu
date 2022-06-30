@@ -58,6 +58,11 @@
       "type": "continuous"
     },
     {
+      "key": "glyc",
+      "title": "Glycosylation changes",
+      "type": "continuous"
+    },
+    {
       "key": "region",
       "title": "Region",
       "type": "categorical"
