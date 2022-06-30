@@ -11,6 +11,8 @@ def _get_node_data_by_wildcards(wildcards):
         rules.translate.output.node_data,
         rules.clades.output.node_data,
         rules.traits.output.node_data,
+        rules.annotate_epiweeks.output.node_data,
+        rules.annotate_recency_of_submissions.output.node_data,
     ]
 
     # Only request a distance file for builds that have distance map

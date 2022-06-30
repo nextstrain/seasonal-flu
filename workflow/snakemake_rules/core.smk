@@ -370,3 +370,46 @@ rule tip_frequencies:
             --max-date {params.max_date} \
             --output {output} 2>&1 | tee {log}
         """
+
+rule annotate_recency_of_submissions:
+    input:
+        metadata = "builds/{build_name}/metadata.tsv",
+    output:
+        node_data = "builds/{build_name}/recency.json",
+    params:
+        submission_date_field=config["submission_date_field"],
+        date_bins=config["recency"]["date_bins"],
+        date_bin_labels=config["recency"]["date_bin_labels"],
+        upper_bin_label=config["recency"]["upper_bin_label"],
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/recency_{build_name}.txt"
+    log:
+        "logs/recency_{build_name}.txt"
+    shell:
+        """
+        python3 scripts/construct-recency-from-submission-date.py \
+            --metadata {input.metadata} \
+            --submission-date-field {params.submission_date_field} \
+            --date-bins {params.date_bins} \
+            --date-bin-labels {params.date_bin_labels:q} \
+            --upper-bin-label {params.upper_bin_label} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
+rule annotate_epiweeks:
+    input:
+        metadata="builds/{build_name}/metadata.tsv",
+    output:
+        node_data="builds/{build_name}/epiweeks.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_epiweeks_{build_name}.txt"
+    log:
+        "logs/annotate_epiweeks_{build_name}.txt"
+    shell:
+        """
+        python3 scripts/calculate_epiweek.py \
+            --metadata {input.metadata} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """

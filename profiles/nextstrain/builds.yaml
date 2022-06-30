@@ -2,13 +2,18 @@ data_source: fauna
 
 lat-longs: "config/lat_longs.tsv"
 
-
 segments:
   - ha
   - na
 
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
 
 array-builds:
   nextstrain:

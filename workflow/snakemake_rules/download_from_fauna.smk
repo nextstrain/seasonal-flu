@@ -13,7 +13,7 @@ fasta_fields = ["strain", "virus", "locus", "accession", "collection_date", "vir
                 "region",  "country", "division", "location", "passage_category",
                 "originating_lab", "submitting_lab", "age", "gender"]
 
-output_fasta_fields = ["strain", "virus", "segment", "accession", "date", "virus_inclusion_date",
+output_fasta_fields = ["strain", "virus", "segment", "accession", "date", "date_submitted",
                 "region",  "country", "division", "location", "passage_category",
                 "originating_lab", "submitting_lab", "age", "gender"]
 
