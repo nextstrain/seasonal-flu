@@ -30,15 +30,15 @@ array-builds:
       include: "config/{lineage}/reference_strains.txt"
       exclude: "config/{lineage}/outliers.txt"
       vaccines: "config/{lineage}/vaccine.json"
-      enable_titer_models: true,
-      enable_glycosylation: true,
-      enable_lbi: true,
+      enable_titer_models: true
+      enable_glycosylation: true
+      enable_lbi: true
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 300 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 325 --min-date {min_date} --include {include} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 50 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 25 --min-date {min_date} --include {include} --exclude {exclude}
           priorities: "titers"
 
 builds:
@@ -51,12 +51,31 @@ builds:
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
-      auspice_config: "config/h3n2/auspice_config.json"
+      auspice_config: "config/h3n2/auspice_config_fitness.json"
       vaccines: "config/h3n2/vaccine.json"
-      enable_titer_models: true,
-      enable_glycosylation: true,
-      enable_lbi: true,
+      enable_titer_models: true
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_forecasts: true
       min_date: "2Y"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
       subsamples: *subsampling-scheme
+
+fitness_model:
+  models:
+    - cTiter_x-ne_star
+    - ne_star-lbi
+  best_model: cTiter_x-ne_star
+  delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  pivot_interval: 6
+  delta_pivots: 1
+  months_back_for_current_samples: 6
+  max_years_for_distances: 5
+  number_of_forecast_samples: 1
+  excluded_node_data_fields:
+    - aa_muts
+    - aa_sequences
+    - muts
+    - num_date_confidence
+    - sequence

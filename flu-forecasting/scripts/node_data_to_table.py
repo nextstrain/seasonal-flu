@@ -39,7 +39,8 @@ if __name__ == '__main__':
     df = df.merge(metadata, on="strain", suffixes=["", "_metadata"])
 
     # Remove excluded fields if they are in the data frame.
-    df = df.drop(columns=[field for field in args.excluded_fields if field in df.columns])
+    if args.excluded_fields:
+        df = df.drop(columns=[field for field in args.excluded_fields if field in df.columns])
 
     # Annotate the tip/internal status of each node using the tree.
     node_terminal_status_by_name = {node.name: node.is_terminal() for node in tree.find_clades()}

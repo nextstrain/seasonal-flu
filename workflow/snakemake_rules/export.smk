@@ -10,7 +10,7 @@ def _get_node_data_by_wildcards(wildcards):
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.clades.output.node_data,
-        rules.traits.output.node_data
+        rules.traits.output.node_data,
     ]
 
     # Only request a distance file for builds that have distance map
@@ -27,6 +27,13 @@ def _get_node_data_by_wildcards(wildcards):
 
     if config["builds"][wildcards.build_name].get('enable_lbi', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.lbi.output.lbi)
+
+    if config["builds"][wildcards.build_name].get('enable_forecasts', False) and config["builds"][wildcards.build_name].get("lineage") in ["h3n2"] and wildcards.segment in ["ha"]:
+        wildcards_dict["model"] = config["fitness_model"]["best_model"]
+        inputs.append(rules.titer_tree_cross_immunities.output.cross_immunities)
+        inputs.append(rules.forecast_tips.output.node_data)
+        inputs.append(rules.merge_weighted_distances_to_future.output.node_data)
+
     if config['builds'][wildcards.build_name].get('vaccines', False):
         inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
 
@@ -61,4 +68,22 @@ rule export:
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_json} 2>&1 | tee {log}
+        """
+
+def _get_final_tip_frequencies(wildcards):
+    if config["builds"][wildcards.build_name].get("enable_forecasts", False) and wildcards.segment == "ha":
+        model = config["fitness_model"]["best_model"]
+        return f"auspice/{wildcards.build_name}_{wildcards.segment}_{model}_forecast-tip-frequencies.json"
+    else:
+        return "builds/{build_name}/{segment}/tip-frequencies.json"
+
+rule final_tip_frequencies:
+    input:
+        frequencies=_get_final_tip_frequencies,
+    output:
+        frequencies="auspice/{build_name}_{segment}_tip-frequencies.json",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        cp -f {input.frequencies} {output.frequencies}
         """

@@ -350,7 +350,7 @@ rule tip_frequencies:
         max_date = lambda w: config['builds'][w.build_name]['max_date'] if "max_date" in config["builds"].get(w.build_name, {}) else "0D",
         pivot_interval = 2
     output:
-        tip_freq = "auspice/{build_name}_{segment}_tip-frequencies.json"
+        tip_freq = "builds/{build_name}/{segment}/tip-frequencies.json"
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/tip_frequencies_{build_name}_{segment}.txt"
