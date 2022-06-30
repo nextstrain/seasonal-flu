@@ -12,7 +12,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--metadata", required=True, help="metadata with a 'date' column")
-    parser.add_argument("--strains", required=True, help="a list of strains to annotate epiweeks for using the given metadata")
+    parser.add_argument("--strains", help="a list of strains to annotate epiweeks for using the given metadata")
     parser.add_argument("--attribute-name", default="epiweek", help="name to store annotations of epiweeks in JSON output")
     parser.add_argument("--output-node-data", required=True, help="node data JSON with epiweek annotations")
 
@@ -21,12 +21,15 @@ if __name__ == '__main__':
     # Read metadata.
     metadata = read_metadata(args.metadata)
 
-    # Read strains.
-    strains = read_strains(args.strains)
+    if args.strains:
+        # Read strains.
+        strains = read_strains(args.strains)
 
-    # Find metadata for requested strains.
-    # Use `metadata.index.isin` in case listed strain does not exist in metadata
-    metadata_for_strains = metadata.loc[metadata.index.isin(strains)].copy()
+        # Find metadata for requested strains.
+        # Use `metadata.index.isin` in case listed strain does not exist in metadata
+        metadata_for_strains = metadata.loc[metadata.index.isin(strains)].copy()
+    else:
+        metadata_for_strains = metadata
 
     # Find records with unambiguous dates.
     metadata_with_dates = metadata_for_strains.loc[~metadata["date"].str.contains("X"), ["date"]].copy()
