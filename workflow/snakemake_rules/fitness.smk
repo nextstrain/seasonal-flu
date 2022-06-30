@@ -174,7 +174,8 @@ def _get_distance_maps_by_lineage_and_segment(wildcards):
 rule distances:
     input:
         tree = rules.refine.output.tree,
-        alignments = aggregate_translations,
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done",
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         distance_maps = _get_distance_maps_by_lineage_and_segment,
     output:
         distances = "builds/{build_name}/{segment}/distances.json",
