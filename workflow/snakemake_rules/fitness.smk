@@ -58,10 +58,10 @@ rule convert_translations_to_json:
     input:
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
     output:
         translations = "builds/{build_name}/{segment}/aa-seq.json",
     params:
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         gene_names = lambda w: GENES[w.segment],
     conda: "../envs/nextstrain.yaml"
     benchmark:
@@ -72,7 +72,7 @@ rule convert_translations_to_json:
         """
         python3 flu-forecasting/scripts/convert_translations_to_json.py \
             --tree {input.tree} \
-            --alignment {input.translations} \
+            --alignment {params.translations} \
             --gene-names {params.gene_names} \
             --output {output.translations} 2>&1 | tee {log}
         """
@@ -175,11 +175,11 @@ rule distances:
     input:
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
-        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         distance_maps = _get_distance_maps_by_lineage_and_segment,
     output:
         distances = "builds/{build_name}/{segment}/distances.json",
     params:
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment],
         comparisons = _get_distance_comparisons_by_lineage_and_segment,
         attribute_names = _get_distance_attributes_by_lineage_and_segment,
@@ -194,7 +194,7 @@ rule distances:
         """
         augur distance \
             --tree {input.tree} \
-            --alignment {input.alignments} \
+            --alignment {params.alignments} \
             --gene-names {params.genes} \
             --compare-to {params.comparisons} \
             --attribute-name {params.attribute_names} \
