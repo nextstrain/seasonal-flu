@@ -34,7 +34,10 @@ for array_build in config["array-builds"].values():
 
         build_name = array_build["build_name"].format(**build_params)
         for k,v in array_build.get("build_params",{}).items():
-            build_params[k] = v.format(**build_params)
+            if isinstance(v, str):
+                build_params[k] = v.format(**build_params)
+            else:
+                build_params[k] = v
 
         tmp = {}
         for subsample in subsamples:

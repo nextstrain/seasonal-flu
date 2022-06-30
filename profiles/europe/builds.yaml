@@ -2,14 +2,9 @@ data_source: fauna
 
 lat-longs: "config/lat_longs.tsv"
 
-glycosylation: true
-lbi: true
-
 segments:
   - ha
   - na
-
-titer-models: True
 
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
@@ -35,6 +30,9 @@ array-builds:
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
@@ -70,6 +68,9 @@ array-builds:
       clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"

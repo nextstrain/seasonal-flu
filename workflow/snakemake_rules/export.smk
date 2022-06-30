@@ -13,12 +13,19 @@ def _get_node_data_by_wildcards(wildcards):
         rules.traits.output.node_data
     ]
 
-    if config.get('titer-models',False):
+    # Only request a distance file for builds that have distance map
+    # configurations defined.
+    if _get_build_distance_map_config(wildcards) is not None:
+        inputs.append(rules.distances.output.distances)
+
+    if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
         inputs.append(rules.titers_sub.output.titers_model)
         inputs.append(rules.titers_tree.output.titers_model)
-    if config.get('glycosylation', False) and wildcards.segment in ['ha', 'na']:
+
+    if config["builds"][wildcards.build_name].get('enable_glycosylation', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.glyc.output.glyc)
-    if config.get('lbi', False) and wildcards.segment in ['ha', 'na']:
+
+    if config["builds"][wildcards.build_name].get('enable_lbi', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.lbi.output.lbi)
     if config['builds'][wildcards.build_name].get('vaccines', False):
         inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
