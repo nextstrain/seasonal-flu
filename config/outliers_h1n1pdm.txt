@@ -62,6 +62,7 @@ A/Montpellier/F_004_091_MB/2020
 A/Montpellier/F_004_100_PD/2020
 A/Montpellier/F_004_122_JL/2020
 A/Netherlands/10407/2018
+A/Ningxia-Xixia/SWL137/2020
 A/Norway/1929/2014
 A/Novosibirsk/3/2019
 A/Novosibirsk/716/2009
