@@ -26,6 +26,10 @@ include:  "workflow/snakemake_rules/fitness.smk"
 
 include:  "workflow/snakemake_rules/report.smk"
 
+if "custom_rules" in config:
+    for rule_file in config["custom_rules"]:
+        include: rule_file
+
 def _get_build_outputs():
     outputs = []
     for build_name, build_params in config["builds"].items():
