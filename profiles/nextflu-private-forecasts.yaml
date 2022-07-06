@@ -1,0 +1,68 @@
+custom_rules:
+  - profiles/nextflu-private-forecasts/zoltar.smk
+
+data_source: fauna
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+  override_default_args: true
+
+submission_date_field: virus_inclusion_date
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  forecast_builds:
+    patterns:
+      replicate: [1, 2, 3]
+    build_name: "h3n2_2y_cell_fra_{replicate}"
+    build_params:
+      lineage: "h3n2"
+      center: "who"
+      assay: "fra"
+      passage: "cell"
+      reference: "config/h3n2/{{segment}}/reference.fasta"
+      annotation: "config/h3n2/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
+      clades: "config/h3n2/ha/emerging_clades.tsv"
+      auspice_config: "config/h3n2/auspice_config_fitness.json"
+      vaccines: "config/h3n2/vaccine.json"
+      enable_titer_models: true
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_forecasts: true
+      min_date: "2Y"
+      include: "config/h3n2/reference_strains.txt"
+      exclude: "config/h3n2/outliers.txt"
+    subsamples:
+      regions_except_europe:
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 186 --min-date {min_date} --include {include} --exclude {exclude}
+          priorities: "titers"
+      europe:
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 14 --min-date {min_date} --include {include} --exclude {exclude}
+          priorities: "titers"
+
+fitness_model:
+  models:
+    - cTiter_x-ne_star
+    - ne_star-lbi
+  best_model: cTiter_x-ne_star
+  delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  pivot_interval: 6
+  delta_pivots: 1
+  months_back_for_current_samples: 6
+  max_years_for_distances: 5
+  number_of_forecast_samples: 1
+  excluded_node_data_fields:
+    - aa_muts
+    - aa_sequences
+    - muts
+    - num_date_confidence
+    - sequence
