@@ -1,5 +1,47 @@
+# Define inputs.
 data_source: fauna
+fauna_fasta_fields:
+  - strain
+  - virus
+  - locus
+  - accession
+  - collection_date
+  - virus_inclusion_date
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+fasta_fields:
+  - strain
+  - virus
+  - segment
+  - accession
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+prettify_fields:
+  - region
+  - country
+  - division
+  - location
+  - originating_lab
+  - submitting_lab
+
 lat-longs: "config/lat_longs.tsv"
+
 segments:
   - ha
   - na

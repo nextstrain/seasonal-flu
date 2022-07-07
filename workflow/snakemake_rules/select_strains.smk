@@ -3,9 +3,12 @@ This file contains rules that select strains for a build, extracts the sequences
 and the meta data subset.
 
 input:
- - "data/lineage/metadata.tsv"
- - "data/lineage/{segment}.fasta"
- - "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
+ - "data/{lineage}/raw_{segment}.fasta" # e.g., from fauna or GISAID download with metadata in FASTA headers.
+ - "data/{lineage}/{center}_{passage}_{assay}_titers.tsv" # e.g., from fauna
+
+intermediate files:
+ - "data/{lineage}/metadata.tsv"
+ - "data/{lineage}/{segment}.fasta"
 
 output:
  - builds/{build_name}/strains.txt
@@ -18,6 +21,54 @@ localrules: titer_priorities, select_titers
 
 build_dir = config.get("build_dir", "builds")
 
+rule parse:
+    message: "Parsing fasta into sequences and metadata"
+    input:
+        sequences = "data/{lineage}/raw_{segment}.fasta",
+    output:
+        sequences = "data/{lineage}/{segment}.fasta",
+        metadata = "data/{lineage}/metadata_{segment}.tsv",
+    params:
+        fasta_fields=config["fasta_fields"],
+        prettify_fields_arg=lambda wildcards: f"--prettify-fields {' '.join(config['prettify_fields'])}" if "prettify_fields" in config else "",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/parse_{lineage}_{segment}.txt"
+    log:
+        "logs/parse_{lineage}_{segment}.txt"
+    shell:
+        """
+        augur parse \
+            --sequences {input.sequences} \
+            --output-sequences {output.sequences} \
+            --output-metadata {output.metadata} \
+            --fields {params.fasta_fields} \
+            {params.prettify_fields_arg} 2>&1 | tee {log}
+        """
+
+rule join_metadata:
+    input:
+        segment_metadata=lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']],
+    output:
+        metadata="data/{lineage}/metadata.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/join_metadata_{lineage}.txt"
+    log:
+        "logs/join_metadata_{lineage}.txt"
+    params:
+        segments=lambda w: config['segments'],
+        segment_columns=["accession"],
+        how="outer",
+    shell:
+        """
+        python3 scripts/join_metadata.py \
+            --metadata {input.segment_metadata:q} \
+            --segments {params.segments:q} \
+            --segment-columns {params.segment_columns:q} \
+            --how {params.how:q} \
+            --output {output.metadata:q} 2>&1 | tee {log}
+        """
 
 def get_titers_for_build(w):
     return "data/{lineage}/{center}_{passage}_{assay}_titers.tsv".format(**config['builds'][w.build_name])

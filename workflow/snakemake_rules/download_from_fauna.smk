@@ -9,16 +9,7 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
 
-fasta_fields = ["strain", "virus", "locus", "accession", "collection_date", "virus_inclusion_date",
-                "region",  "country", "division", "location", "passage_category",
-                "originating_lab", "submitting_lab", "age", "gender"]
-
-output_fasta_fields = ["strain", "virus", "segment", "accession", "date", "date_submitted",
-                "region",  "country", "division", "location", "passage_category",
-                "originating_lab", "submitting_lab", "age", "gender"]
-
 # fields that will be canonicized by augur parse (upper/lower casing etc)
-prettify_fields = ["region","country","division","location","originating_lab","submitting_lab"]
 
 path_to_fauna = '../fauna'
 localrules: download_sequences, download_titers, parse
@@ -44,7 +35,7 @@ rule download_sequences:
     output:
         sequences = "data/{lineage}/raw_{segment}.fasta"
     params:
-        fasta_fields = " ".join(fasta_fields)
+        fasta_fields = config["fauna_fasta_fields"],
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/download_sequences_{lineage}_{segment}.txt"
@@ -83,53 +74,4 @@ rule download_titers:
             --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
             --path data \
             --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
-        """
-
-rule parse:
-    message: "Parsing fasta into sequences and metadata"
-    input:
-        sequences = rules.download_sequences.output.sequences
-    output:
-        sequences = "data/{lineage}/{segment}.fasta",
-        metadata = "data/{lineage}/metadata_{segment}.tsv"
-    params:
-        fasta_fields =  " ".join(output_fasta_fields),
-        prettify_fields = " ".join(prettify_fields)
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/parse_{lineage}_{segment}.txt"
-    log:
-        "logs/parse_{lineage}_{segment}.txt"
-    shell:
-        """
-        augur parse \
-            --sequences {input.sequences} \
-            --output-sequences {output.sequences} \
-            --output-metadata {output.metadata} \
-            --fields {params.fasta_fields} \
-            --prettify-fields {params.prettify_fields} 2>&1 | tee {log}
-        """
-
-rule join_metadata:
-    input:
-        segment_metadata=lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']],
-    output:
-        metadata="data/{lineage}/metadata.tsv",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/join_metadata_{lineage}.txt"
-    log:
-        "logs/join_metadata_{lineage}.txt"
-    params:
-        segments=lambda w: config['segments'],
-        segment_columns=["accession"],
-        how="outer",
-    shell:
-        """
-        python3 scripts/join_metadata.py \
-            --metadata {input.segment_metadata:q} \
-            --segments {params.segments:q} \
-            --segment-columns {params.segment_columns:q} \
-            --how {params.how:q} \
-            --output {output.metadata:q} 2>&1 | tee {log}
         """
