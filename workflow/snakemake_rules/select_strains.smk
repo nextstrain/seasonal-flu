@@ -174,8 +174,9 @@ rule select_titers:
         "logs/select_titers_{build_name}.txt"
     shell:
         """
+        head -n 1 {input.titers} > {output.titers};
         tsv-join \
             --key-fields 1 \
             --filter-file {input.strains} \
-            {input.titers} > {output.titers} 2> {log}
+            {input.titers} >> {output.titers} 2> {log}
         """
