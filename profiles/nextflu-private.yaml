@@ -74,10 +74,10 @@ array-builds:
       enable_measurements: true
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 325 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1860 --min-date {min_date} --include {include} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 25 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 140 --min-date {min_date} --include {include} --exclude {exclude}
           priorities: "titers"
 
 builds:
