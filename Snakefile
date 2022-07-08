@@ -8,6 +8,13 @@ wildcard_constraints:
 # Load distance map configuration for lineages and segments.
 distance_map_config = pd.read_table("config/distance_maps.tsv")
 
+lineage_name_by_abbreviation = {
+    "h3n2": "H3N2",
+    "h1n1pdm": "H1N1pdm",
+    "vic": "Vic",
+    "yam": "Yam",
+}
+
 if "data_source" in config and config["data_source"]=='fauna':
     include: "workflow/snakemake_rules/download_from_fauna.smk"
 
@@ -39,6 +46,9 @@ def _get_build_outputs():
                 f"auspice/{build_name}_{segment}_root-sequence.json",
                 f"auspice/{build_name}_{segment}_tip-frequencies.json",
             ])
+
+            if segment == "ha" and build_params.get("enable_measurements", False):
+                outputs.append(f"auspice/{build_name}_{segment}_measurements.json")
 
         if build_params.get("enable_forecasts", False):
             for model in config["fitness_model"]["models"]:
