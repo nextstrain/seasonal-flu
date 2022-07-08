@@ -63,14 +63,15 @@ array-builds:
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
+      auspice_config: "profiles/nextflu-private/{lineage}/auspice_config.json"
       min_date: "2Y"
       include: "config/{lineage}/reference_strains.txt"
       exclude: "config/{lineage}/outliers.txt"
       vaccines: "config/{lineage}/vaccine.json"
-      enable_titer_models: true
       enable_glycosylation: true
       enable_lbi: true
+      enable_titer_models: true
+      enable_measurements: true
     subsamples: &subsampling-scheme
       regions_except_europe:
           filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 325 --min-date {min_date} --include {include} --exclude {exclude}
@@ -89,12 +90,13 @@ builds:
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/emerging_clades.tsv"
-      auspice_config: "config/h3n2/auspice_config_fitness.json"
+      auspice_config: "profiles/nextflu-private/h3n2/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
-      enable_titer_models: true
       enable_glycosylation: true
       enable_lbi: true
       enable_forecasts: true
+      enable_titer_models: true
+      enable_measurements: true
       min_date: "2Y"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
