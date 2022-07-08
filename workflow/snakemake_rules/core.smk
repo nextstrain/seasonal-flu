@@ -65,13 +65,14 @@ checkpoint align:
         mem_mb=16000
     shell:
         """
-        nextalign -r {input.reference} \
-                  -m {input.annotation} \
-                  --genes {params.genes} \
-                  --jobs {threads} \
-                  -i {input.sequences} \
-                  -o {output.alignment} \
-                  --output-dir {output.translations} 2>&1 | tee {log}
+        nextalign run\
+            -r {input.reference} \
+            -m {input.annotation} \
+            --genes {params.genes} \
+            --jobs {threads} \
+            {input.sequences} \
+            --output-fasta {output.alignment} \
+            --output-translations "{output.translations}/masked.gene.{{gene}}.fasta" 2>&1 | tee {log}
         """
 
 def aggregate_translations(wildcards):
