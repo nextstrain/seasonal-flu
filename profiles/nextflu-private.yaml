@@ -31,6 +31,13 @@ fasta_fields:
   - submitting_lab
   - age
   - gender
+prettify_fields:
+  - region
+  - country
+  - division
+  - location
+  - originating_lab
+  - submitting_lab
 
 lat-longs: "config/lat_longs.tsv"
 
@@ -79,6 +86,8 @@ array-builds:
       europe:
           filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 140 --min-date {min_date} --include {include} --exclude {exclude}
           priorities: "titers"
+      context:
+          filters: --group-by region year month --subsample-max-sequences 100 --max-date {min_date} --min-date 3Y
 
 builds:
     "h3n2_2y_cell_fra":
