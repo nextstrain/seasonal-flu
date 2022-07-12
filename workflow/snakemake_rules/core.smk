@@ -89,7 +89,7 @@ def aggregate_translations(wildcards):
     return expand(build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
                   build_name=wildcards.build_name,
                   segment=wildcards.segment,
-                  gene=glob_wildcards(os.path.join(checkpoint_output, "masked.gene.{gene}.fasta")).gene)
+                  gene=GENES[wildcards.segment])
 
 rule tree:
     message: "Building tree"
