@@ -50,7 +50,7 @@ rule join_metadata:
     input:
         segment_metadata=lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']],
     output:
-        metadata="data/{lineage}/metadata.tsv",
+        metadata="data/{lineage}/metadata_joined.tsv",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/join_metadata_{lineage}.txt"
@@ -68,6 +68,51 @@ rule join_metadata:
             --segment-columns {params.segment_columns:q} \
             --how {params.how:q} \
             --output {output.metadata:q} 2>&1 | tee {log}
+        """
+
+rule build_reference_strains_table:
+    input:
+        references="config/{lineage}/reference_strains.txt",
+    output:
+        references="data/{lineage}/reference_strains.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/build_reference_strains_table_{lineage}.txt"
+    log:
+        "logs/build_reference_strains_table_{lineage}.txt"
+    shell:
+        """
+        csvtk add-header \
+            --names strain \
+            {input.references} \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name is_reference \
+                --expression "'True'" > {output.references}
+        """
+
+# Annotate strains in the metadata based on whether they are reference strains
+# or not, so we can subsample these strains by attribute from augur filter
+# later.
+rule annotate_metadata_with_reference_strains:
+    input:
+        metadata="data/{lineage}/metadata_joined.tsv",
+        references="data/{lineage}/reference_strains.tsv",
+    output:
+        metadata="data/{lineage}/metadata.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_metadata_with_reference_strains_{lineage}.txt"
+    log:
+        "logs/annotate_metadata_with_reference_strains_{lineage}.txt"
+    shell:
+        """
+        csvtk --tabs join \
+            --left-join \
+            --na "False" \
+            -f "strain" \
+            {input.metadata} \
+            {input.references} > {output.metadata}
         """
 
 def get_titers_for_build(w):
