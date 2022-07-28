@@ -64,11 +64,13 @@ array-builds:
       lineage:
         - h1n1pdm
         - vic
-    build_name: "{lineage}_2y_cell_hi"
+      passage:
+        - cell
+        - egg
+    build_name: "{lineage}_2y_{passage}_hi"
     build_params:
       center: "who"
       assay: "hi"
-      passage: "cell"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -84,25 +86,30 @@ array-builds:
       enable_measurements: true
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1860 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1860 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 140 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 140 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       context:
-          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 100 --max-date {min_date} --min-date 3Y
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A'])" --group-by region year month --subsample-max-sequences 100 --max-date {min_date} --min-date 2018-06-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 7Y
-
-builds:
-    "h3n2_2y_cell_fra":
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_reference == True)" --min-date 2014-06-01
+  h3n2_builds:
+    patterns:
+      passage:
+        - cell
+        - egg
+      assay:
+        - fra
+        - hi
+    build_name: "h3n2_2y_{passage}_{assay}"
+    build_params:
       lineage: "h3n2"
       center: "who"
-      assay: "fra"
-      passage: "cell"
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
-      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      reference: "config/h3n2/{{segment}}/reference.fasta"
+      annotation: "config/h3n2/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
       clades: "config/h3n2/ha/emerging_clades.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
@@ -114,7 +121,7 @@ builds:
       min_date: "2Y"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
-      subsamples: *subsampling-scheme
+    subsamples: *subsampling-scheme
 
 fitness_model:
   models:
