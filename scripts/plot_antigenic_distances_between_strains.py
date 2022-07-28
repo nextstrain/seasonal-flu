@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
     parser.add_argument("--colors", required=True, help="table of Nextstrain colors with `clade_membership` in the first column, clade name in the second column, and hex color in the third column.")
-    parser.add_argument("--clades", nargs="+", help="a list of clades for which test strains should be plotted")
+    parser.add_argument("--clades", help="a list of clades for which test strains should be plotted")
     parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
     parser.add_argument("--references-to-include", help="a list of reference strains to force include in plots")
     parser.add_argument("--references-to-exclude", help="a list of reference strains to exclude from plots")
@@ -62,7 +62,10 @@ if __name__ == '__main__':
 
     # Filter by clades.
     if args.clades:
-        df = df[df["clade_test"].isin(args.clades)].copy()
+        with open(args.clades, "r", encoding="utf-8") as fh:
+            clades = [clade.strip() for clade in fh]
+
+        df = df[df["clade_test"].isin(clades)].copy()
 
     # Annotate reference names with clade.
     df["reference_name"] = df.apply(
@@ -129,7 +132,7 @@ if __name__ == '__main__':
     # Use the user-defined clade order, when possible. If clades haven't been
     # provided, order test clades by global frequency in descending order.
     if args.clades:
-        clade_order = args.clades
+        clade_order = clades
     else:
         clade_order = filtered_df.sort_values(
             "clade_frequency_test",
