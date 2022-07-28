@@ -181,7 +181,7 @@ if __name__ == '__main__':
             palette=color_by_clade,
             dodge=True,
             size=8,
-            alpha=0.5,
+            alpha=0.4,
             jitter=0.2,
             zorder=1
         )
@@ -204,12 +204,22 @@ if __name__ == '__main__':
         legend=False
     )
 
+    # Draw a line at the origin to show where we expect effectively inhibited
+    # viruses to appear.
+    ax.axvline(
+        x=0.0,
+        color="#000000",
+        alpha=0.75,
+        zorder=-10,
+    )
+
     # Draw a line at the traditional threshold used to denote antigenic drift.
     ax.axvline(
         x=2.0,
         color="#000000",
         alpha=0.25,
-        zorder=-10
+        zorder=-10,
+        linestyle="dashed",
     )
 
     ax.set_xlabel("$\log_{2}$ normalized titer")
@@ -225,6 +235,27 @@ if __name__ == '__main__':
         columnspacing=1,
         ncol=1,
         frameon=False
+    )
+
+    # Add zebra striping to rows to more clearly delineate which data belong to
+    # which reference. Implementation based on:
+    # https://stackoverflow.com/questions/2815455/matplotlib-zebra-stripe-a-figures-background-color
+    yticks,_ = plt.yticks()
+    xticks = plt.xticks()[0]
+    left = xticks[0]
+    right = xticks[-1]
+    width = right - left
+    height = yticks[1] - yticks[0]
+
+    # create bars at yticks that are the length of our greatest xtick and have a height equal to our tick spacing
+    ax.barh(
+        yticks,
+        [width] * len(yticks),
+        height=height,
+        left=left,
+        color=["#FFFFFF", "#CCCCCC"],
+        zorder=-20,
+        alpha=0.25,
     )
 
     plt.title(f"{lineage} {passage} {assay} titers ({sources})")
