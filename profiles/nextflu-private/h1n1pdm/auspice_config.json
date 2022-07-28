@@ -26,7 +26,12 @@
     {
       "key": "clade_membership",
       "title": "Clade",
-      "type": "categorical"
+      "type": "categorical",
+      "scale": [
+        ["6B.1A.5a", "#57a5d7"],
+        ["6B.1A.5a.1", "#3e59cf"],
+        ["6B.1A.5a.2", "#e39b39"]
+      ]
     },
     {
       "key": "cTiter",
