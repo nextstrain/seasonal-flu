@@ -1,8 +1,9 @@
 A/Darwin/6/2021
+A/Maryland/2/2021
+A/California/1/2022
+A/Alaska/1/2021
 A/Darwin/24/2021
-A/Delaware/1/2021
-A/Wisconsin/2/2021
-A/Michigan/173/2020
+A/Nepal/21FL2608/2021
 A/Stockholm/5/2021
 A/Cambodia/e0826360/2020
 A/Darwin/6/2021-egg

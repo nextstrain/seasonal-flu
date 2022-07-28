@@ -1,8 +1,9 @@
 A/Hawaii/70/2019
 A/NorthCarolina/1/2021
-A/Niger/8677/2021
 A/Togo/881/2020
 A/India/PUN-NIV323546/2021
+A/Connecticut/1/2021
+A/Sydney/178/2022
 A/Victoria/2570/2019
 A/Wisconsin/588/2019
 A/Hawaii/66/2019-egg
