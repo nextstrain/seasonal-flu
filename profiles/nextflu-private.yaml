@@ -1,3 +1,6 @@
+custom_rules:
+  - profiles/nextflu-private/antigenic_distances.smk
+
 data_source: fauna
 fauna_fasta_fields:
   - strain
