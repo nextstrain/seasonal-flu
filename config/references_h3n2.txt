@@ -2,12 +2,17 @@ A/AbuDhabi/240/2018
 A/AbuDhabi/240/2018-egg
 A/Afghanistan/616/2017
 A/Afghanistan/833/2017
+A/Alaska/1/2021
+A/Alaska/1/2021-egg
 A/Alaska/232/2015
 A/Alaska/232/2015-egg
 A/Alaska/240/2015
 A/Antananarivo/1067/2016
 A/Antananarivo/1067/2016-egg
 A/Arizona/67/2016
+A/Bangladesh/2004/2020-egg
+A/Bangladesh/3005/2020-egg
+A/Bangladesh/4005/2020
 A/Bangladesh/10006/2020
 A/Bangladesh/911009/2020
 A/Bangladesh/911009/2020-egg
@@ -20,7 +25,10 @@ A/Brisbane/117/2018
 A/Brisbane/318/2016
 A/Brisbane/321/2016
 A/Brisbane/45/2015
+A/California/55/2020
 A/California/179/2016
+A/Cambodia/925256/2020
+A/Cambodia/e0403374/2020
 A/Cambodia/e0826360/2020
 A/Cambodia/e0826360/2020-egg
 A/Canberra/7/2016
@@ -31,8 +39,14 @@ A/Darwin/6/2021-egg
 A/Darwin/726/2019
 A/Darwin/9/2021
 A/Darwin/9/2021-egg
+A/Darwin/11/2021
+A/Darwin/24/2021
+A/Darwin/24/2021-egg
+A/Darwin/36/2021
+A/Darwin/36/2021-egg
 A/Delaware/32/2016
 A/Delaware/39/2019
+A/England/214191723/2021
 A/Fiji/2/2015
 A/Florida/23/2017
 A/Greece/4/2017-egg
@@ -58,6 +72,7 @@ A/Kansas/14/2017
 A/Kansas/14/2017-egg
 A/Kobe/63/2014
 A/LaRioja/2202/2018
+A/Maryland/2/2021
 A/Maryland/23/2016
 A/Michigan/15/2014
 A/Michigan/173/2020
@@ -89,6 +104,8 @@ A/Ontario/RV2414/2015
 A/Pennsylvania/1026/2019
 A/Pennsylvania/1026/2019-egg
 A/Perth/16/2009
+A/Perth/20/2020
+A/Perth/20/2020-egg
 A/Peru/27/2015
 A/Peru/3817/2017
 A/Qatar/16-VI-19-0049409/2019
@@ -108,6 +125,7 @@ A/SouthAustralia/55/2014
 A/SouthCarolina/4/2017
 A/Southauckland/7/2012
 A/Southauckland/7/2012
+A/Stockholm/5/2021
 A/Stockholm/6/2014
 A/Switzerland/8060/2017
 A/Switzerland/8060/2017-egg
@@ -122,6 +140,7 @@ A/Texas/50/2012-egg
 A/Texas/68/2017
 A/Texas/71/2017
 A/Texas/88/2016
+A/Togo/771/2020
 A/Victoria/223/2019
 A/Victoria/361/2011
 A/Victoria/653/2017
@@ -133,4 +152,5 @@ A/Wisconsin/20/2015
 A/Wisconsin/327/2017
 A/Wisconsin/66/2015
 A/Wisconsin/67/2005
+A/Yokohama/68/2020
 A/Yokohama/145/2017

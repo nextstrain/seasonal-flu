@@ -70,6 +70,7 @@ A/Kanagawa/IC1920/2020
 A/Kanagawa/IC1920/2020-egg
 A/Kazakhstan/581/2018
 A/Louisiana/1/2020
+A/Lyon/820/2021-egg
 A/Maine/38/2018
 A/Michigan/272/2017
 A/Michigan/272/2017-egg
@@ -92,6 +93,7 @@ A/Niger/8677/2021
 A/Niger/8677/2021-egg
 A/NorthCarolina/1/2021
 A/NorthCarolina/1/2021-egg
+A/NorthCarolina/2/2021-egg
 A/Norway/3433/2018
 A/Okinawa/93/2019
 A/Okinawa/93/2019-egg
@@ -108,6 +110,7 @@ A/Singapore/GP1908/2015
 A/Singapore/GP1908/2015-egg
 A/Slovenia/2903/2015-egg
 A/SouthAfrica/3626/2013
+A/Stockholm/10/2021
 A/StPetersburg/61/2015
 A/StPetersburg/61/2015-egg
 A/Switzerland/2656/2017-egg
@@ -115,6 +118,7 @@ A/Switzerland/3330/2017-egg
 A/Switzerland/4217/2019-egg
 A/Sydney/5/2021-egg
 A/Sydney/31/2018
+A/Sydney/178/2022
 A/Taiwan/80693/2018
 A/Toamasina/806/2020
 A/Tasmania/24/2014
@@ -126,6 +130,7 @@ A/Togo/881/2020-egg
 A/Togo/837/2020-egg
 A/Tokyo/EH1608/2017
 A/Townsville/21/2018
+A/Victoria/1/2020
 A/Victoria/2454/2019-egg
 A/Victoria/2455/2019
 A/Victoria/2570/2019
