@@ -99,7 +99,8 @@
     "division",
     "submitting_lab",
     "recency",
-    "epiweek"
+      "epiweek",
+      "mcc"
   ],
   "panels": [
     "tree",

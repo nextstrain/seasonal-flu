@@ -21,7 +21,7 @@ localrules: clades, sanitize_trees
 build_dir = config.get("build_dir", "builds")
 
 def genes(segment):
-    return {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA']}[segment]
+    return {'ha':['SigPep', 'HA1', 'HA2'], 'na':['NA'], 'pb1':['PB1'], 'pb2':['PB2']}[segment]
 
 rule align:
     message:
@@ -102,7 +102,7 @@ rule sanitize_trees:
             tt = TreeTime(tree=tree, dates=dates, aln=alignments[ti])
             tt.infer_ancestral_sequences(infer_gtr=True)
             tt.prune_short_branches()
-
+	    tree.ladderize()
             Phylo.write(tree, output.trees[ti], 'newick')
 
 rule treeknit:
@@ -110,11 +110,11 @@ rule treeknit:
         trees = rules.sanitize_trees.output.trees,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.resolved.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.resolved.nwk",  segment=config['segments'][:2], build_dir=[build_dir]),
         mccs = build_dir + "/{build_name}/TreeKnit/MCCs.dat"
     params:
         treetime_tmpdir = build_dir + "/{build_name}/TreeTime_tmp",
-        tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",  segment=config['segments'][:2], build_dir=[build_dir]),
         treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit",
         clock_filter=4
     shell:
@@ -169,7 +169,7 @@ rule treetime_arg:
     input:
         trees = rules.treeknit.output.trees,
         mccs = rules.treeknit.output.mccs,
-        alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
+        alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'][:2], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         directory(build_dir + "/{build_name}/treetime_arg")
@@ -203,8 +203,8 @@ rule refine:
         mccs = rules.treeknit.output.mccs,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'], build_dir=[build_dir]),
-        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'][:2], build_dir=[build_dir]),
+        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'][:2], build_dir=[build_dir]),
     params:
         coalescent = "const",
         date_inference = "marginal"

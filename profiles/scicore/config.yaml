@@ -1,4 +1,5 @@
 configfile:
+#  - profiles/nextstrain/builds.yaml
   - profiles/europe/builds.yaml
 
 cluster-config: profiles/scicore/cluster.json

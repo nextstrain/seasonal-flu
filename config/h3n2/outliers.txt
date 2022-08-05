@@ -2,6 +2,7 @@ A/StPetersburg/RII-2415S/2021
 A/MatoGrosso/IAL/C8816/2021
 A/MatoGrosso/IAL/C8817/2021
 A/SaoPaulo/IAL/C8809/2022
+A/Habana/200/2007
 
 29cea8cb-fa93-4c46-8bbc-3d1a51f26391
 39ff161f-47a4-467d-86f6-eeefafd06ad9

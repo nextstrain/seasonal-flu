@@ -8,6 +8,8 @@ lbi: false
 segments:
   - ha
   - na
+  - pb1
+  - pb2
 
 titer-models: True
 
@@ -19,11 +21,9 @@ array-builds:
     patterns:
       lineage:
         - h3n2
-        - h1n1pdm
-        - vic
-        - yam
       resolution:
         - 1.5
+        - 6
     build_name: "{lineage}_europe_{resolution}y"
     build_params:
       center: who
@@ -41,18 +41,15 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       country:
-          filters: "--group-by country year month --subsample-max-sequences 2000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          filters: "--group-by country year month --subsample-max-sequences 1000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
           priorities: "titers"
   countries:
     patterns:
       lineage:
         - h3n2
-        - h1n1pdm
-        - vic
-        - yam
       country:
         - netherlands
         - switzerland
@@ -76,11 +73,11 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       europe:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
           priorities: "titers"
       country:
-          filters: "--group-by division year month --subsample-max-sequences 1500 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
+          filters: "--group-by division year month --subsample-max-sequences 1000 --min-date {min-date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
