@@ -120,9 +120,13 @@ rule tree:
 
 rule sanitize_trees:
     input:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_raw.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = lambda w: [f"{build_dir}/{w.build_name}/{segment}/tree_raw.nwk" for segment in config['segments']],
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{segment}/aligned.fasta" for segment in config['segments']],
+        metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir])
+    params:
+        clock_filter = 4
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/sanitize_trees_{build_name}.txt"
@@ -132,7 +136,28 @@ rule sanitize_trees:
         """
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
+            --alignments {input.alignments:q} \
+            --clock-filter {params.clock-filter} \
             --output {output.trees:q} 2>&1 | tee {log}
+        """
+
+rule treeknit:
+    input:
+        trees = rules.sanitize_trees.output.trees,
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.resolved.nwk",
+                       segment=config['segments'][:2], build_dir=[build_dir]),
+        mccs = build_dir + "/{build_name}/TreeKnit/MCCs.dat"
+    params:
+        treetime_tmpdir = build_dir + "/{build_name}/TreeTime_tmp",
+        tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",
+                            segment=config['segments'][:2], build_dir=[build_dir]),
+        treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit",
+        clock_filter=4
+    shell:
+        """
+        treeknit {input.trees[0]} {input.trees[1]} --outdir {params.treeknit_tmpdir}
         """
 
 def clock_rate(w):
@@ -167,6 +192,38 @@ def clock_rate(w):
 def clock_std_dev(w):
     return clock_rate(w)/5
 
+rule treetime_arg:
+    message:
+        """
+        Refining tree
+          - estimate timetree
+        """
+    input:
+        trees = rules.treeknit.output.trees,
+        mccs = rules.treeknit.output.mccs,
+        alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",
+                            segment=config['segments'][:2], build_dir=[build_dir]),
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        directory(build_dir + "/{build_name}/treetime_arg")
+    params:
+        coalescent = "const",
+        date_inference = "always"
+    conda: "environment.yaml"
+    resources:
+        mem_mb=16000
+    shell:
+        """
+        treetime arg --trees {input.trees} \
+                      --mccs {input.mccs} \
+                      --alignments {input.alignments} \
+                      --confidence --clock-std-dev 0.001 \
+                      --clock-filter 0 \
+                      --outdir  {output} \
+                      --time-marginal {params.date_inference} \
+                      --dates {input.metadata} --keep-root --keep-polytomies
+        """
+
 rule refine:
     message:
         """
@@ -177,12 +234,12 @@ rule refine:
           - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
-        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
+        treetime_arg = rules.treetime_arg.output,
+        mccs = rules.treeknit.output.mccs,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
-        node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'][:2], build_dir=[build_dir]),
+        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'][:2], build_dir=[build_dir]),
     params:
         coalescent = "const",
         date_inference = "marginal",
