@@ -6,7 +6,7 @@ glyc_gene = {'ha':'HA1', 'na':'NA'}
 
 rule glyc:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     output:
         glyc = build_dir + "/{build_name}/{segment}/glyc.json"
@@ -28,7 +28,7 @@ rule glyc:
 rule lbi:
     message: "Calculating LBI"
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         branch_lengths = rules.refine.output.node_data
     params:
         tau = 0.5,
@@ -56,7 +56,7 @@ rule lbi:
 
 rule convert_translations_to_json:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
     output:
         translations = "builds/{build_name}/{segment}/aa-seq.json",
@@ -79,7 +79,7 @@ rule convert_translations_to_json:
 
 rule pairwise_titer_tree_distances:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         frequencies = rules.tip_frequencies.output.tip_freq,
         model = rules.titers_tree.output.titers_model,
         date_annotations = rules.refine.output.node_data,
@@ -173,7 +173,7 @@ def _get_distance_maps_by_lineage_and_segment(wildcards):
 
 rule distances:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
         distance_maps = _get_distance_maps_by_lineage_and_segment,
     output:
@@ -263,7 +263,7 @@ def _get_excluded_fields_arg(wildcards):
 
 rule convert_node_data_to_table:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = "builds/{build_name}/metadata.tsv",
         node_data = _get_node_data_for_predictors,
     output:
@@ -289,7 +289,7 @@ rule convert_node_data_to_table:
 
 rule convert_frequencies_to_table:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         frequencies = rules.tip_frequencies.output.tip_freq,
     output:
         table = "builds/{build_name}/{segment}/frequencies.tsv",

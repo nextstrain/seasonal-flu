@@ -137,7 +137,7 @@ rule sanitize_trees:
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
             --alignments {input.alignments:q} \
-            --clock-filter {params.clock-filter} \
+            --clock-filter {params.clock_filter} \
             --output {output.trees:q} 2>&1 | tee {log}
         """
 
@@ -229,52 +229,41 @@ rule refine:
         """
         Refining tree
           - estimate timetree
-          - use {params.coalescent} coalescent timescale
-          - estimate {params.date_inference} node dates
-          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
         treetime_arg = rules.treetime_arg.output,
         mccs = rules.treeknit.output.mccs,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",  segment=config['segments'][:2], build_dir=[build_dir]),
-        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",  segment=config['segments'][:2], build_dir=[build_dir]),
-    params:
-        coalescent = "const",
-        date_inference = "marginal",
-        clock_filter_iqd = 4,
-        clock_rate = clock_rate,
-        clock_std_dev = clock_std_dev
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",
+                        segment=config['segments'][:2], build_dir=[build_dir]),
+        node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",
+                            segment=config['segments'][:2], build_dir=[build_dir]),
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/refine_{build_name}_{segment}.txt"
+        "benchmarks/refine_{build_name}.txt"
     log:
-        "logs/refine_{build_name}_{segment}.txt"
+        "logs/refine_{build_name}.txt"
     resources:
         mem_mb=16000
     shell:
         """
-        augur refine \
-            --tree {input.tree} \
-            --alignment {input.alignment} \
-            --metadata {input.metadata} \
-            --output-tree {output.tree} \
-            --output-node-data {output.node_data} \
-            --timetree \
-            --no-covariance \
-            --clock-rate {params.clock_rate} \
-            --clock-std-dev {params.clock_std_dev} \
-            --coalescent {params.coalescent} \
-            --date-confidence \
-            --date-inference {params.date_inference} \
-            --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_1.nexus \
+                --divtree {input.treetime_arg}/divergence_tree_1.nexus \
+                --dates {input.treetime_arg}/dates_1.tsv --mccs {input.mccs} \
+                --output-tree {output.trees[0]} --output-node-data {output.node_data[0]}
+
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_2.nexus \
+                --divtree {input.treetime_arg}/divergence_tree_2.nexus \
+                --dates {input.treetime_arg}/dates_2.tsv  --mccs {input.mccs}  \
+                --output-tree {output.trees[1]} --output-node-data {output.node_data[1]}
+
         """
 
 rule ancestral:
     message: "Reconstructing ancestral sequences and mutations"
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         alignment = rules.align.output.alignment,
     output:
         node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
@@ -300,7 +289,7 @@ rule translate:
     message: "Translating amino acid sequences"
     input:
         translations = aggregate_translations,
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
         annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
     output:
@@ -330,7 +319,7 @@ rule traits:
         Inferring ancestral traits for {params.columns!s}
         """
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
@@ -398,7 +387,7 @@ rule import_clades:
 
 rule tip_frequencies:
     input:
-        tree = rules.refine.output.tree,
+        tree = build_dir+"/{build_name}/{segment}/tree.nwk",
         metadata = build_dir + "/{build_name}/metadata.tsv",
     params:
         narrow_bandwidth = 2 / 12.0,
