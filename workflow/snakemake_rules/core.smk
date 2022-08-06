@@ -137,6 +137,7 @@ rule sanitize_trees:
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
             --alignments {input.alignments:q} \
+            --metadata {input.metadata} \
             --clock-filter {params.clock_filter} \
             --output {output.trees:q} 2>&1 | tee {log}
         """
