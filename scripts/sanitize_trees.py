@@ -24,8 +24,8 @@ if __name__ == '__main__':
         print(error, file=sys.stderr)
         sys.exit(1)
 
-    alignments = [AlignIO.read(fname, 'fasta') for fname in input.alignments]
-    dates = utils.parse_dates(input.metadata)
+    alignments = [AlignIO.read(fname, 'fasta') for fname in args.alignments]
+    dates = utils.parse_dates(args.metadata)
 
     common_leaves = set.intersection(*[set(x.name for x in tree.find_clades(terminal=True)) for tree in trees])
     for ti,tree in enumerate(trees):
