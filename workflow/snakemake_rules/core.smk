@@ -21,6 +21,8 @@ build_dir = config.get("build_dir", "builds")
 GENES = {
     'ha': ['SigPep', 'HA1', 'HA2'],
     'na': ['NA'],
+    'pb1': ['PB1'],
+    'pb2': ['PB2']
 }
 
 rule mask:
@@ -147,7 +149,7 @@ rule treeknit:
         trees = rules.sanitize_trees.output.trees,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.resolved.nwk",
+        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_common_{segment}.resolved.nwk",
                        segment=config['segments'][:2], build_dir=[build_dir]),
         mccs = build_dir + "/{build_name}/TreeKnit/MCCs.dat"
     params:
@@ -210,7 +212,6 @@ rule treetime_arg:
     params:
         coalescent = "const",
         date_inference = "always"
-    conda: "environment.yaml"
     resources:
         mem_mb=16000
     shell:
