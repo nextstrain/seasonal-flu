@@ -149,18 +149,18 @@ rule treeknit:
         trees = rules.sanitize_trees.output.trees,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_common_{segment}.resolved.nwk",
-                       segment=config['segments'][:2], build_dir=[build_dir]),
-        mccs = build_dir + "/{build_name}/TreeKnit/MCCs.dat"
+        trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_common_{segment}_resolved.nwk",
+                       segment=config['segments'], build_dir=[build_dir]),
+        mccs = build_dir + "/{build_name}/TreeKnit/MCCs.json"
     params:
         treetime_tmpdir = build_dir + "/{build_name}/TreeTime_tmp",
         tmp_trees = expand("{build_dir}/{{build_name}}/TreeKnit/tree_{segment}.nwk",
-                            segment=config['segments'][:2], build_dir=[build_dir]),
+                            segment=config['segments'], build_dir=[build_dir]),
         treeknit_tmpdir = build_dir + "/{build_name}/TreeKnit",
         clock_filter=4
     shell:
         """
-        treeknit {input.trees[0]} {input.trees[1]} --outdir {params.treeknit_tmpdir}
+        treeknit {input.trees} --outdir {params.treeknit_tmpdir}
         """
 
 def clock_rate(w):
@@ -205,7 +205,7 @@ rule treetime_arg:
         trees = rules.treeknit.output.trees,
         mccs = rules.treeknit.output.mccs,
         alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",
-                            segment=config['segments'][:2], build_dir=[build_dir]),
+                            segment=config['segments'], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         directory(build_dir + "/{build_name}/treetime_arg")
@@ -238,9 +238,9 @@ rule refine:
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree.nwk",
-                        segment=config['segments'][:2], build_dir=[build_dir]),
+                        segment=config['segments'], build_dir=[build_dir]),
         node_data = expand("{build_dir}/{{build_name}}/{segment}/branch-lengths.json",
-                            segment=config['segments'][:2], build_dir=[build_dir]),
+                            segment=config['segments'], build_dir=[build_dir]),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}.txt"
