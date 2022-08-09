@@ -27,6 +27,13 @@ if __name__ == '__main__':
     alignments = [AlignIO.read(fname, 'fasta') for fname in args.alignments]
     dates = utils.parse_dates(args.metadata)
 
+    for ti,tree in enumerate(trees):
+        tt = TreeTime(tree=tree, dates=dates, aln=alignments[ti])
+        tt.clock_filter(reroot='least-squares', n_iqd=args.clock_filter)
+
+        for leaf in [l.name for l in tt.tree.get_terminals() if l.bad_branch==True]:
+            tt.tree.prune(leaf)
+
     common_leaves = set.intersection(*[set(x.name for x in tree.find_clades(terminal=True)) for tree in trees])
     for ti,tree in enumerate(trees):
         for leaf in set([x.name for x in tree.get_terminals()]).difference(common_leaves):
