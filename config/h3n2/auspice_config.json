@@ -106,7 +106,12 @@
       "key": "epiweek",
       "title": "Epiweek (CDC)",
       "type": "ordinal"
-    }
+    },
+      {
+	  "key":"mcc",
+	  "title":"MCC",
+	  "type":"categorical"
+      }
   ],
   "geo_resolutions": [
     "division",

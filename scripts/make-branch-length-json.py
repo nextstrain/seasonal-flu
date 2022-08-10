@@ -37,21 +37,31 @@ if __name__=="__main__":
     divtree = Phylo.read(args.divtree, 'nexus')
 
     MCCs = []
+    n_large_mccs = 0
     with open(args.mccs) as fh:
         for line in fh:
             if line.strip():
                 MCCs.append(line.strip().split(','))
+                if len(MCCs[-1])>2:
+                    n_large_mccs += 1
 
 
-
+    MCCs.sort(key=lambda x:len(x), reverse=True)
     mcc_map = list(range(len(MCCs)))
+    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     random.seed(987)
-    random.shuffle(mcc_map)
+    #random.shuffle(mcc_map)
 
     leaf_to_MCC = {}
     for mi,mcc in enumerate(MCCs):
+        if mi<=n_large_mccs:
+            label = letters[mi%len(letters)]
+            if n_large_mccs>len(letters):
+                label = letters[mi//len(letters)] + label
+        else:
+            label = '--'
         for leaf in mcc:
-            leaf_to_MCC[leaf] = mcc_map[mi]
+            leaf_to_MCC[leaf] = label
 
     assign_mccs(timetree, leaf_to_MCC, 0)
 
