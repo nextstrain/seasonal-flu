@@ -208,10 +208,16 @@ rule treetime_arg:
                             segment=config['segments'], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        directory(build_dir + "/{build_name}/treetime_arg")
+        time_trees = expand("{build_dir}/{{build_name}}/treetime_arg/treetime_{segment}.nexus", 
+                        segment=config['segments'], build_dir=[build_dir]),
+        divergence_trees = expand("{build_dir}/{{build_name}}/treetime_arg/divergence_tree_{segment}.nexus", 
+                        segment=config['segments'], build_dir=[build_dir]),
+        dates = expand("{build_dir}/{{build_name}}/treetime_arg/dates_{segment}.tsv", 
+                        segment=config['segments'], build_dir=[build_dir]),
     params:
         coalescent = "const",
-        date_inference = "always"
+        date_inference = "always",
+        output_dir = build_dir + "/{build_name}/treetime_arg",
     resources:
         mem_mb=16000
     shell:
@@ -221,7 +227,7 @@ rule treetime_arg:
                       --alignments {input.alignments} \
                       --confidence --clock-std-dev 0.001 \
                       --clock-filter 0 \
-                      --outdir  {output} \
+                      --outdir  {params.output_dir} \
                       --time-marginal {params.date_inference} \
                       --dates {input.metadata} --keep-root --keep-polytomies
         """
@@ -233,7 +239,9 @@ rule refine:
           - estimate timetree
         """
     input:
-        treetime_arg = rules.treetime_arg.output,
+        treetime_arg_time_trees = rules.treetime_arg.output.time_trees,
+        treetime_arg_divergence_trees = rules.treetime_arg.output.divergence_trees,
+        treetime_arg_dates = rules.treetime_arg.output.dates,
         mccs = rules.treeknit.output.mccs,
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
@@ -250,14 +258,14 @@ rule refine:
         mem_mb=16000
     shell:
         """
-        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_1.nexus \
-                --divtree {input.treetime_arg}/divergence_tree_1.nexus \
-                --dates {input.treetime_arg}/dates_1.tsv --mccs {input.mccs} \
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg_time_trees[0]} \
+                --divtree {input.treetime_arg_divergence_trees[0]} \
+                --dates {input.treetime_arg_dates[0]} --mccs {input.mccs} \
                 --output-tree {output.trees[0]} --output-node-data {output.node_data[0]}
 
-        python scripts/make-branch-length-json.py --timetree {input.treetime_arg}/timetree_2.nexus \
-                --divtree {input.treetime_arg}/divergence_tree_2.nexus \
-                --dates {input.treetime_arg}/dates_2.tsv  --mccs {input.mccs}  \
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg_time_trees[1]} \
+                --divtree {input.treetime_arg_divergence_trees[1]} \
+                --dates {input.treetime_arg_dates[1]} --mccs {input.mccs}  \
                 --output-tree {output.trees[1]} --output-node-data {output.node_data[1]}
 
         """
