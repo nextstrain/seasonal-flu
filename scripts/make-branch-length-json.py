@@ -1,10 +1,11 @@
 import argparse
-from treetime.arg import assign_mccs
+from treetime.arg import assign_all_mccs, get_MCC_dict, get_mcc_map
 from Bio import Phylo
 import numpy as np
 import pandas as pd
 import json
 import random
+from os import path
 
 def to_float(x):
     try:
@@ -36,24 +37,19 @@ if __name__=="__main__":
 
     divtree = Phylo.read(args.divtree, 'nexus')
 
-    MCCs = []
-    with open(args.mccs) as fh:
-        for line in fh:
-            if line.strip():
-                MCCs.append(line.strip().split(','))
+    MCCs_dict = get_MCC_dict(args.mccs)
+    focal_tree_name = path.splitext(path.basename(args.timetree))[0].replace("treetime_", "")
 
+    other_tree_names = []
+    MCCs_list = [] ##list of all MCC pairs of focal tree with other trees
+    for key in MCCs_dict.keys():
+        if focal_tree_name in key:
+            other_tree_names.append(list(key.difference(frozenset([focal_tree_name])))[0])
+            MCCs_list.append(MCCs_dict[key])
 
+    leaf_to_MCCs = get_mcc_map(MCCs_list, shuffle=True)
 
-    mcc_map = list(range(len(MCCs)))
-    random.seed(987)
-    random.shuffle(mcc_map)
-
-    leaf_to_MCC = {}
-    for mi,mcc in enumerate(MCCs):
-        for leaf in mcc:
-            leaf_to_MCC[leaf] = mcc_map[mi]
-
-    assign_mccs(timetree, leaf_to_MCC, 0)
+    assign_all_mccs(timetree, leaf_to_MCCs, 0)
 
     node_data = {}
     for node in timetree.find_clades():
@@ -71,10 +67,11 @@ if __name__=="__main__":
                                 "numdate": numdate,
                                 "num_date_confidence":
                                     [to_float(dates.loc[node_name,"lower bound"]),
-                                     to_float(dates.loc[node_name,"upper bound"])],
-                                "mcc": node.mcc
+                                     to_float(dates.loc[node_name,"upper bound"])]
                                 }
-
+    for i in range(len(other_tree_names)):
+        other_tree = other_tree_names[i]
+        node_data[node_name]["mcc_"+other_tree] = node.mcc[i]
 
     for node in divtree.find_clades():
         node_name = node.name or node.confidence
