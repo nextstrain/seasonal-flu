@@ -208,11 +208,11 @@ rule treetime_arg:
                             segment=config['segments'], build_dir=[build_dir]),
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        time_trees = expand("{build_dir}/{{build_name}}/treetime_arg/treetime_{segment}.nexus", 
+        time_trees = expand("{build_dir}/{{build_name}}/treetime_arg/timetree_tree_common_{segment}.nexus", 
                         segment=config['segments'], build_dir=[build_dir]),
-        divergence_trees = expand("{build_dir}/{{build_name}}/treetime_arg/divergence_tree_{segment}.nexus", 
+        divergence_trees = expand("{build_dir}/{{build_name}}/treetime_arg/divergence_tree_tree_common_{segment}.nexus", 
                         segment=config['segments'], build_dir=[build_dir]),
-        dates = expand("{build_dir}/{{build_name}}/treetime_arg/dates_{segment}.tsv", 
+        dates = expand("{build_dir}/{{build_name}}/treetime_arg/dates_tree_common_{segment}.tsv", 
                         segment=config['segments'], build_dir=[build_dir]),
     params:
         coalescent = "const",
@@ -268,6 +268,15 @@ rule refine:
                 --dates {input.treetime_arg_dates[1]} --mccs {input.mccs}  \
                 --output-tree {output.trees[1]} --output-node-data {output.node_data[1]}
 
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg_time_trees[2]} \
+                --divtree {input.treetime_arg_divergence_trees[2]} \
+                --dates {input.treetime_arg_dates[2]} --mccs {input.mccs}  \
+                --output-tree {output.trees[2]} --output-node-data {output.node_data[2]}
+
+        python scripts/make-branch-length-json.py --timetree {input.treetime_arg_time_trees[3]} \
+                --divtree {input.treetime_arg_divergence_trees[3]} \
+                --dates {input.treetime_arg_dates[3]} --mccs {input.mccs}  \
+                --output-tree {output.trees[3]} --output-node-data {output.node_data[3]}
         """
 
 rule ancestral:

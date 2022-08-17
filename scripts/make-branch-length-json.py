@@ -38,7 +38,7 @@ if __name__=="__main__":
     divtree = Phylo.read(args.divtree, 'nexus')
 
     MCCs_dict = get_MCC_dict(args.mccs)
-    focal_tree_name = path.splitext(path.basename(args.timetree))[0].replace("treetime_", "")
+    focal_tree_name = path.splitext(path.basename(args.timetree))[0].replace("timetree_", "")
 
     other_tree_names = []
     MCCs_list = [] ##list of all MCC pairs of focal tree with other trees
@@ -49,7 +49,7 @@ if __name__=="__main__":
 
     leaf_to_MCCs = get_mcc_map(MCCs_list, shuffle=True)
 
-    assign_all_mccs(timetree, leaf_to_MCCs, 0)
+    assign_all_mccs(timetree, len(other_tree_names), leaf_to_MCCs, 0)
 
     node_data = {}
     for node in timetree.find_clades():
@@ -69,9 +69,9 @@ if __name__=="__main__":
                                     [to_float(dates.loc[node_name,"lower bound"]),
                                      to_float(dates.loc[node_name,"upper bound"])]
                                 }
-    for i in range(len(other_tree_names)):
-        other_tree = other_tree_names[i]
-        node_data[node_name]["mcc_"+other_tree] = node.mcc[i]
+        for i in range(len(other_tree_names)):
+            other_tree = other_tree_names[i]
+            node_data[node_name]["mcc_"+other_tree] = node.mcc[i]
 
     for node in divtree.find_clades():
         node_name = node.name or node.confidence
