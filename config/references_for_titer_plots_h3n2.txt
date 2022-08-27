@@ -9,7 +9,6 @@ A/Cambodia/e0826360/2020
 A/Darwin/6/2021-egg
 A/Darwin/24/2021-egg
 A/Darwin/9/2021-egg
-A/Michigan/173/2020-egg
 A/Bangladesh/3005/2020-egg
+A/Michigan/173/2020-egg
 A/Cambodia/e0826360/2020-egg
-A/Tasmania/503/2020-egg

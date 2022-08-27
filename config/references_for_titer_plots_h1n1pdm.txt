@@ -7,11 +7,8 @@ A/Sydney/178/2022
 A/Victoria/2570/2019
 A/Wisconsin/588/2019
 A/Hawaii/66/2019-egg
+A/NorthCarolina/1/2021-egg
+A/NorthCarolina/2/2021-egg
 A/Guangdong-Maonan/SWL1536/2019-egg
-A/Okinawa/93/2019-egg
 A/Victoria/2570/2019-egg
 A/Sydney/5/2021-egg
-A/Arkansas/8/2020-egg
-A/Indiana/2/2020-egg
-A/Mississippi/10/2020-egg
-A/Kanagawa/IC1920/2020-egg
