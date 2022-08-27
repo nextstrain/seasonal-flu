@@ -48,8 +48,10 @@ segments:
   - ha
 
 tree:
-  tree-builder-args: "'-ninit 10 -n 4 -czb'"
-  override_default_args: true
+  method: raxml
+  tree-builder-args: ""
+  #tree-builder-args: "'-ninit 10 -czb -bb 1000 -bnni'"
+  #override_default_args: true
 
 submission_date_field: date_submitted
 recency:
@@ -60,7 +62,7 @@ recency:
 array-builds:
   forecast_builds:
     patterns:
-      replicate: [1, 2, 3]
+      replicate: [1]
     build_name: "h3n2_2y_cell_fra_{replicate}"
     build_params:
       lineage: "h3n2"
@@ -82,11 +84,15 @@ array-builds:
       exclude: "config/h3n2/outliers.txt"
     subsamples:
       regions_except_europe:
-          filters: --query "(region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 186 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 279 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 14 --min-date {min_date} --include {include} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 21 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
+      context:
+          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 20 --max-date {min_date} --min-date 2018-06-01 --exclude {exclude}
+      references:
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 2014-06-01
 
 fitness_model:
   models:

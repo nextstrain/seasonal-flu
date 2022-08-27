@@ -33,3 +33,7 @@ rule prepare_zoltar_predictions:
             --forecasts {input.forecasts:q} \
             --output {output.forecasts} 2>&1 | tee {log}
         """
+
+rule all_forecasts:
+    input:
+        expand("builds/{build_name}/clade_forecast_{model}.tsv", build_name=list(config["builds"].keys()), model=config["fitness_model"]["models"])
