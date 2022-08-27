@@ -1,3 +1,7 @@
+rule all_antigenic_plots:
+    input:
+        expand("builds/{build_name}/{segment}/antigenic_distances_between_strains.pdf", build_name=list(config["builds"].keys()), segment=["ha"])
+
 rule plot_antigenic_distances_between_strains:
     input:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains.tsv",
