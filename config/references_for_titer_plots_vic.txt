@@ -2,6 +2,8 @@ B/Austria/1359417/2021
 B/Michigan/1/2021
 B/Henan-Xigong/1118/2021
 B/Maryland/1/2021
+B/Singapore/WUH4618/2021
+B/Paris/9878/2020
 B/Sichuan-Jingyang/12048/2019
 B/Victoria/2113/2019
 B/Washington/2/2019
