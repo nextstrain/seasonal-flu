@@ -94,7 +94,7 @@ array-builds:
           filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 140 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       context:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A'])" --group-by region year month --subsample-max-sequences 100 --max-date {min_date} --min-date 2018-06-01 --exclude {exclude}
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A'])" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
           filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_reference == True)" --min-date 2014-06-01
   h3n2_builds:
