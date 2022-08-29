@@ -429,6 +429,9 @@ A/WestVirginia/9/2012
 A/WestVirginia/10/2012
 A/WestVirginia/15/2012
 A/WestVirginia/16/2012
+A/WestVirginia/24/2022
+A/WestVirginia/25/2022
+A/WestVirginia/26/2022
 A/Wisconsin/1/2021
 A/Wisconsin/12/2010
 A/Wisconsin/22/2012
