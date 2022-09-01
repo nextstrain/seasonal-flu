@@ -119,6 +119,7 @@ A/HongKong/HKMA20E/2008
 A/HuNan/01/2014
 A/HuNan/1/2014
 A/Illinois/3/2013
+A/Illinois/9/2012
 A/Illinois/11/2012
 A/Illinois/14/2012
 A/India/3/2019
@@ -199,6 +200,7 @@ A/Indiana/133/2012
 A/Indiana/135/2012
 A/Indiana/138/2012
 A/Indiana/144/2012
+A/Indiana/145/2012
 A/Indiana/147/2012
 A/Indiana/149/2012
 A/Indiana/150/2012
@@ -355,6 +357,7 @@ A/Ohio/38/2012
 A/Ohio/41/2012
 A/Ohio/43/2012
 A/Ohio/44/2012
+A/Ohio/45/2012
 A/Ohio/47/2012
 A/Ohio/52/2012
 A/Ohio/56/2012
@@ -423,6 +426,7 @@ A/StPetersburg/5/2009-egg
 A/Sydney/53/2015
 A/Taiwan/937/2009
 A/Tokyo/1/1975
+A/Utah/10/2012
 A/WestVirginia/6/2011
 A/WestVirginia/9/2012
 A/WestVirginia/10/2012
