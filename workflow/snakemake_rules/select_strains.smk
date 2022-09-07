@@ -133,8 +133,63 @@ rule titer_priorities:
         tsv-summarize -H --group-by virus_strain --count {input.titers} | sed 1d > {output.priorities} 2> {log}
         """
 
+rule build_titer_strains_table:
+    input:
+        titers=get_titers_for_build,
+    output:
+        titer_strains=build_dir + "/{build_name}/titer_strains.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/build_titer_strains_table_{build_name}.txt"
+    log:
+        "logs/build_titer_strains_table_{build_name}.txt"
+    shell:
+        """
+        csvtk --tabs cut \
+            --fields virus_strain \
+            {input.titers} \
+            | csvtk rename \
+              --fields virus_strain \
+              --names strain \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name is_titer_strain \
+                --expression "'True'" > {output.titer_strains}
+        """
+
+# Annotate strains in the metadata based on whether they have titer data or not,
+# so we can include these strains by attribute from augur filter later.
+rule annotate_metadata_with_titer_strains:
+    input:
+        metadata=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv",
+        references=build_dir + "/{build_name}/titer_strains.tsv",
+    output:
+        metadata=build_dir + "/{build_name}/full_metadata_with_titer_annotations.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_metadata_with_titer_strains_{build_name}.txt"
+    log:
+        "logs/annotate_metadata_with_titer_strains_{build_name}.txt"
+    shell:
+        """
+        csvtk --tabs join \
+            --left-join \
+            --na "False" \
+            -f "strain" \
+            {input.metadata} \
+            {input.references} > {output.metadata}
+        """
+
+def get_metadata_for_subsampling(wildcards):
+    # Use metadata annotated with a given build's titer strains, if we are
+    # building the measurements panel.
+    if config['builds'][wildcards.build_name].get("enable_measurements"):
+        return f"{build_dir}/{wildcards.build_name}/full_metadata_with_titer_annotations.tsv"
+    else:
+        return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv"
+
 def get_subsample_input(w):
-    files = {"metadata": f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv"}
+    files = {"metadata": get_metadata_for_subsampling(w)}
     if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers':
         files['titers']=build_dir + f"/{w.build_name}/titer_priorities.tsv"
     return files
@@ -164,7 +219,7 @@ rule subsample:
 
 rule select_strains:
     input:
-        metadata = lambda w: f"data/{config['builds'][w.build_name]['lineage']}/metadata.tsv",
+        metadata = get_metadata_for_subsampling,
         subsamples = lambda w: [f"{build_dir}/{w.build_name}/strains_{s}.txt" for s in config['builds'][w.build_name]['subsamples']],
     output:
         metadata = build_dir + "/{build_name}/metadata.tsv",
