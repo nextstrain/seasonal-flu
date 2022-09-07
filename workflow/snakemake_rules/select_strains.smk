@@ -199,6 +199,7 @@ rule subsample:
         unpack(get_subsample_input)
     output:
         strains = build_dir + "/{build_name}/strains_{subsample}.txt",
+        filter_log = build_dir + "/{build_name}/strains_{subsample}_filter_log.tsv",
     params:
         filters =  lambda w: config["builds"][w.build_name]["subsamples"][w.subsample]["filters"],
         priorities = lambda w: f"--priority {build_dir}/{w.build_name}/titer_priorities.tsv" \
@@ -214,7 +215,8 @@ rule subsample:
             --metadata {input.metadata} \
             {params.filters} \
             {params.priorities} \
-            --output-strains {output.strains} 2>&1 | tee {log}
+            --output-strains {output.strains} \
+            --output-log {output.filter_log} 2>&1 | tee {log}
         """
 
 rule select_strains:
