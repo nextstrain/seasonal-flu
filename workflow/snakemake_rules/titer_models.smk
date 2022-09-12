@@ -98,12 +98,12 @@ rule export_measurements:
     params:
         strain_column="test_strain",
         value_column="log2_titer",
-        grouping_column=["reference_strain", "clade_reference", "source"],
+        grouping_column=["reference_strain", "clade_reference", "source", "serum"],
         key=lambda wildcards: f"{config['builds'][wildcards.build_name]['lineage']}_{wildcards.segment}_{config['builds'][wildcards.build_name]['passage']}_{config['builds'][wildcards.build_name]['assay']}",
         title=lambda wildcards: f"{lineage_name_by_abbreviation[config['builds'][wildcards.build_name]['lineage']]} {config['builds'][wildcards.build_name]['passage']}-passaged {config['builds'][wildcards.build_name]['assay'].upper()} measurements",
         x_axis_label="normalized log2 titer",
         threshold=2.0,
-        filters=["reference_strain", "clade_reference", "source"],
+        filters=["reference_strain", "clade_reference", "source", "serum"],
     shell:
         """
         augur measurements export \
