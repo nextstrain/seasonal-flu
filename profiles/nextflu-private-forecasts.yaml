@@ -62,7 +62,7 @@ recency:
 array-builds:
   forecast_builds:
     patterns:
-      replicate: [1]
+      replicate: [1, 2, 3, 4, 5]
     build_name: "h3n2_2y_cell_fra_{replicate}"
     build_params:
       lineage: "h3n2"
@@ -79,20 +79,22 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_forecasts: true
+      enable_measurements: true
       min_date: "2Y"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
     subsamples:
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 279 --min-date {min_date} --exclude {exclude}
-          priorities: "titers"
       europe:
           filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 21 --min-date {min_date} --exclude {exclude}
-          priorities: "titers"
       context:
-          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 20 --max-date {min_date} --min-date 2018-06-01 --exclude {exclude}
+          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 20 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
           filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 2014-06-01
+      titer_strains:
+          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --min-date {min_date} --subsample-max-sequences 100
+          priorities: "titers"
 
 fitness_model:
   models:
