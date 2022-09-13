@@ -9,6 +9,7 @@ conda activate nextstrain
 #Test
 export AUGUR_MINIFY_JSON=1
 export AUGUR_RECURSION_LIMIT=10000
+export PATH="$HOME/.julia/bin:$PATH"
 
 {exec_job}
 
