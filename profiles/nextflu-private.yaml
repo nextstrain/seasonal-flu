@@ -96,9 +96,9 @@ array-builds:
       context:
           filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A'])" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_reference == True)" --min-date 2014-06-01
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_reference == True)" --min-date 2014-06-01 --exclude {exclude}
       titer_strains:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_titer_strain == True)" --min-date {min_date}
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
   h3n2_builds:
     patterns:
       passage:
