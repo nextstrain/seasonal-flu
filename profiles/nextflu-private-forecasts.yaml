@@ -85,16 +85,15 @@ array-builds:
       exclude: "config/h3n2/outliers.txt"
     subsamples:
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 279 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 21 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
       context:
-          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 20 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
+          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 2014-06-01
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 2014-06-01 --exclude {exclude}
       titer_strains:
-          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --min-date {min_date} --subsample-max-sequences 100
-          priorities: "titers"
+          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
 
 fitness_model:
   models:
