@@ -36,9 +36,17 @@ old_epoch = '0000-12-31T00:00:00'
 mdates.set_epoch(old_epoch)
 
 # From axes.prop_cycle described at https://matplotlib.org/users/customizing.html
-line_colors = ['#ff7f0e', '#2ca02c', '#d62728',
-               '#9467bd', '#8c564b', '#e377c2',
-               '#7f7f7f', '#bcbd22', '#17becf']
+line_colors = [
+    '#ff7f0e',
+    '#2ca02c',
+    '#9467bd',
+    '#e377c2',
+    '#8c564b',
+    '#d62728',
+    '#7f7f7f',
+    '#bcbd22',
+    '#17becf'
+]
 
 
 if __name__ == "__main__":
