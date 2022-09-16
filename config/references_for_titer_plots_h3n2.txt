@@ -1,4 +1,5 @@
 A/Darwin/6/2021
+A/Slovenia/8720/2022
 A/Maryland/2/2021
 A/California/1/2022
 A/Alaska/1/2021
@@ -9,6 +10,7 @@ A/Darwin/11/2021
 A/Stockholm/5/2021
 A/Cambodia/e0826360/2020
 A/Darwin/6/2021-egg
+A/Slovenia/8720/2022-egg
 A/Darwin/24/2021-egg
 A/Darwin/9/2021-egg
 A/Bangladesh/3005/2020-egg
