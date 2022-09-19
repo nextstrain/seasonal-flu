@@ -146,7 +146,7 @@ rule global_mutation_frequencies:
 rule scores:
     input:
         metadata = rules.parse.output.metadata,
-        tree = rules.refine.output.tree
+        tree = rules.prune_reference.output.tree
     output:
         scores = "results/scores_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
     conda: "environment.yaml"
@@ -209,7 +209,7 @@ rule export_entropy:
 rule export_sequence_json:
     input:
         aln = rules.ancestral.output.node_data,
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         aa_seqs = translations
     params:
         genes = gene_names
@@ -260,7 +260,7 @@ def _get_node_data_for_report_export(wildcards):
 
 rule export_who:
     input:
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         metadata = rules.parse.output.metadata,
         auspice_config = "config/auspice_config_who_{lineage}.json",
         node_data = _get_node_data_for_report_export,

@@ -104,7 +104,7 @@ def _get_node_data_for_export(wildcards):
 
 rule export:
     input:
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export,
