@@ -91,7 +91,7 @@ def _get_node_data_for_predictors(wildcards):
 
 rule convert_node_data_to_table:
     input:
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         metadata = rules.parse.output.metadata,
         node_data = _get_node_data_for_predictors
     output:
@@ -114,7 +114,7 @@ rule convert_node_data_to_table:
 
 rule convert_frequencies_to_table:
     input:
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         frequencies = rules.tip_frequencies.output.tip_freq
     output:
         table = "results/frequencies_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.tsv"
@@ -230,7 +230,7 @@ rule merge_weighted_distances_to_future:
 
 rule export:
     input:
-        tree = rules.refine.output.tree,
+        tree = rules.prune_reference.output.tree,
         metadata = rules.parse.output.metadata,
         auspice_config = files.auspice_config,
         node_data = _get_node_data_for_export,
