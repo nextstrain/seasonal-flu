@@ -549,13 +549,13 @@ rule prune_reference:
         tree = "results/tree_pruned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk"
     params:
         reference = _get_lineage_reference
-    run:
-        from Bio import Phylo
-        T = Phylo.read(input.tree, "newick")
-        references = [ c for c in T.find_clades() if str(c.name) == params.reference]
-        if references:
-            T.prune(references[0])
-        Phylo.write(T, output.tree, "newick")
+    shell:
+        """
+        python3 scripts/prune_reference.py \
+            --tree {input.tree} \
+            --reference {params.reference} \
+            --output {output.tree}
+        """
 
 
 rule ancestral:
