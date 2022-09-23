@@ -546,7 +546,7 @@ rule prune_reference:
     input:
         tree = rules.refine.output.tree
     output:
-        tree = "results/tree_pruned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk"
+        tree = "results/tree-pruned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk"
     params:
         reference = _get_lineage_reference
     shell:
@@ -804,7 +804,7 @@ rule delta_frequency:
 rule clades:
     message: "Annotating clades"
     input:
-        tree = "results/tree_pruned_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.nwk",
+        tree = "results/tree-pruned_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.nwk",
         nt_muts = rules.ancestral.output,
         aa_muts = rules.translate.output,
         clades = _get_clades_file_for_wildcards
@@ -829,7 +829,7 @@ rule clades:
 
 rule antigenic_distances_between_strains:
     input:
-        tree="results/tree_pruned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk",
+        tree="results/tree-pruned_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.nwk",
         clades="results/clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         titer_model="results/titers-sub-model_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
         titers="data/{center}_{lineage}_{passage}_{assay}_titers.tsv",
