@@ -344,17 +344,41 @@ rule import_clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
+rule annotate_haplotypes:
+    input:
+        tree=build_dir + "/{build_name}/ha/tree.nwk",
+        alignment=build_dir + "/{build_name}/ha/nextalign/masked.gene.HA1_withInternalNodes.fasta",
+        clades=build_dir + "/{build_name}/ha/clades.json",
+    output:
+        haplotypes=build_dir + "/{build_name}/ha/haplotypes.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_haplotypes_{build_name}_ha.txt"
+    log:
+        "logs/annotate_haplotypes_{build_name}_ha.txt"
+    params:
+        min_tips=config.get("haplotypes", {}).get("min_tips", 5)
+    shell:
+        """
+        python3 scripts/annotate_haplotypes.py \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --clades {input.clades} \
+            --min-tips {params.min_tips} \
+            --output-node-data {output.haplotypes} 2>&1 | tee {log}
+        """
+
 rule tip_frequencies:
     input:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
     params:
-        narrow_bandwidth = 2 / 12.0,
+        narrow_bandwidth = 1 / 12.0,
         wide_bandwidth = 3 / 12.0,
         proportion_wide = 0.0,
         min_date_arg = lambda w: f"--min-date {config['builds'][w.build_name]['min_date']}" if "min_date" in config["builds"].get(w.build_name, {}) else "",
         max_date = lambda w: config['builds'][w.build_name]['max_date'] if "max_date" in config["builds"].get(w.build_name, {}) else "0D",
-        pivot_interval = 2
+        pivot_interval = 1
     output:
         tip_freq = "builds/{build_name}/{segment}/tip-frequencies.json"
     conda: "../envs/nextstrain.yaml"

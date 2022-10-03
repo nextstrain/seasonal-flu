@@ -38,6 +38,11 @@
       ]
     },
     {
+      "key": "haplotype",
+      "title": "Derived haplotype",
+      "type": "categorical"
+    },
+    {
       "key": "fitness",
       "title": "Fitness",
       "type": "continuous"
@@ -149,6 +154,7 @@
   },
   "filters": [
     "clade_membership",
+    "haplotype",
     "region",
     "country",
     "division",

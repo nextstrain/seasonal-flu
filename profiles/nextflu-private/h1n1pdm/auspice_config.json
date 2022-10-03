@@ -34,6 +34,11 @@
       ]
     },
     {
+      "key": "haplotype",
+      "title": "Derived haplotype",
+      "type": "categorical"
+    },
+    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -115,6 +120,7 @@
   },
   "filters": [
     "clade_membership",
+    "haplotype",
     "region",
     "country",
     "division",

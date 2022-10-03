@@ -39,6 +39,9 @@ def _get_node_data_by_wildcards(wildcards):
     if config['builds'][wildcards.build_name].get('vaccines', False):
         inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
 
+    if wildcards.segment == "ha":
+        inputs.append(rules.annotate_haplotypes.output.haplotypes)
+
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
     return inputs
