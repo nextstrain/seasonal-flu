@@ -49,10 +49,9 @@ segments:
   - na
 
 tree:
-  method: raxml
-  tree-builder-args: ""
-  #tree-builder-args: "'-ninit 10 -n 4 -czb -bb 1000 -bnni'"
-  #override_default_args: true
+  method: iqtree
+  tree-builder-args: "'-ninit 10 -n 4 -czb -nt AUTO'"
+  override_default_args: true
 
 submission_date_field: date_submitted
 recency:
