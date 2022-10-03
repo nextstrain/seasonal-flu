@@ -70,6 +70,7 @@ checkpoint align:
             -m {input.annotation} \
             --genes {params.genes} \
             --jobs {threads} \
+            --include-reference \
             {input.sequences} \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/masked.gene.{{gene}}.fasta" 2>&1 | tee {log}
@@ -206,7 +207,9 @@ rule refine:
             --metadata {input.metadata} \
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
+            --keep-root \
             --timetree \
+            --use-fft \
             --no-covariance \
             --clock-rate {params.clock_rate} \
             --clock-std-dev {params.clock_std_dev} \
