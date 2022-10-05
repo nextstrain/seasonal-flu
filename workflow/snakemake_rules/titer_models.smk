@@ -61,6 +61,7 @@ rule antigenic_distances_between_strains:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
         clades="builds/{build_name}/{segment}/clades.json",
+        haplotypes="builds/{build_name}/{segment}/haplotypes.json",
         titer_model="builds/{build_name}/{segment}/titers-sub-model.json",
         titers="builds/{build_name}/titers.tsv",
         branch_lengths="builds/{build_name}/{segment}/branch-lengths.json",
@@ -81,6 +82,7 @@ rule antigenic_distances_between_strains:
         python3 scripts/get_antigenic_distances_between_strains.py \
             --tree {input.tree} \
             --clades {input.clades} \
+            --haplotypes {input.haplotypes} \
             --titer-model {input.titer_model} \
             --titers {input.titers} \
             --branch-lengths {input.branch_lengths} \
@@ -98,12 +100,12 @@ rule export_measurements:
     params:
         strain_column="test_strain",
         value_column="log2_titer",
-        grouping_column=["reference_strain", "clade_reference", "source", "serum"],
+        grouping_column=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
         key=lambda wildcards: f"{config['builds'][wildcards.build_name]['lineage']}_{wildcards.segment}_{config['builds'][wildcards.build_name]['passage']}_{config['builds'][wildcards.build_name]['assay']}",
         title=lambda wildcards: f"{lineage_name_by_abbreviation[config['builds'][wildcards.build_name]['lineage']]} {config['builds'][wildcards.build_name]['passage']}-passaged {config['builds'][wildcards.build_name]['assay'].upper()} measurements",
         x_axis_label="normalized log2 titer",
         threshold=2.0,
-        filters=["reference_strain", "clade_reference", "source", "serum"],
+        filters=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
     shell:
         """
         augur measurements export \

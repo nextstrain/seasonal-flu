@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
     parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
+    parser.add_argument("--haplotypes", required=True, help="haplotype annotations in a node data JSON")
     parser.add_argument("--branch-lengths", required=True, help="branch length annotations including `numdate` calculated by TreeTime")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON from augur frequencies")
     parser.add_argument("--annotations", nargs="+", help="additional annotations to add to the output table in the format of 'key=value' pairs")
@@ -110,14 +111,17 @@ if __name__ == '__main__':
     tree = read_tree(args.tree)
     tree = annotate_parents_for_tree(tree)
 
-    # Load clade data.
-    clades = read_node_data(args.clades)
+    # Load node data (e.g., clade and haplotype).
+    node_data = read_node_data([
+        args.clades,
+        args.haplotypes,
+    ])
 
     # Track all clade memberships in a new attribute to properly handle nested
     # clades.
     clades_by_name = defaultdict(set)
     for node in tree.find_clades():
-        clades_by_name[node.name].add(clades["nodes"][node.name]["clade_membership"])
+        clades_by_name[node.name].add(node_data["nodes"][node.name]["clade_membership"])
         if node.parent is not None:
             clades_by_name[node.name].update(
                 clades_by_name[node.parent.name]
@@ -134,9 +138,10 @@ if __name__ == '__main__':
         {
             "strain": strain,
             "clade": strain_data["clade_membership"],
+            "haplotype": strain_data["haplotype"],
             "clade_frequency": frequency_by_clade[strain_data["clade_membership"]],
         }
-        for strain, strain_data in clades["nodes"].items()
+        for strain, strain_data in node_data["nodes"].items()
         if not strain.startswith("NODE")
     ])
 
