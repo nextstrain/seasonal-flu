@@ -76,7 +76,7 @@ array-builds:
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
-      auspice_config: "profiles/nextflu-private/{lineage}/auspice_config.json"
+      auspice_config: "profiles/nextflu-private/{lineage}/{{segment}}/auspice_config.json"
       min_date: "2Y"
       reference_min_date: "8Y"
       include: "config/{lineage}/reference_strains.txt"
@@ -115,7 +115,7 @@ array-builds:
       annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
       clades: "config/h3n2/ha/emerging_clades.tsv"
-      auspice_config: "profiles/nextflu-private/h3n2/auspice_config.json"
+      auspice_config: "profiles/nextflu-private/h3n2/{{segment}}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
