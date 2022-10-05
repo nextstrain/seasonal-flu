@@ -347,7 +347,7 @@ rule import_clades:
 rule annotate_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
-        alignment=build_dir + "/{build_name}/ha/nextalign/masked.gene.HA1_withInternalNodes.fasta",
+        translations=build_dir + "/{build_name}/ha/translations.done",
         clades=build_dir + "/{build_name}/ha/clades.json",
     output:
         haplotypes=build_dir + "/{build_name}/ha/haplotypes.json",
@@ -357,12 +357,13 @@ rule annotate_haplotypes:
     log:
         "logs/annotate_haplotypes_{build_name}_ha.txt"
     params:
-        min_tips=config.get("haplotypes", {}).get("min_tips", 5)
+        min_tips=config.get("haplotypes", {}).get("min_tips", 5),
+        alignment=build_dir + "/{build_name}/ha/nextalign/masked.gene.HA1_withInternalNodes.fasta",
     shell:
         """
         python3 scripts/annotate_haplotypes.py \
             --tree {input.tree} \
-            --alignment {input.alignment} \
+            --alignment {params.alignment} \
             --clades {input.clades} \
             --min-tips {params.min_tips} \
             --output-node-data {output.haplotypes} 2>&1 | tee {log}
