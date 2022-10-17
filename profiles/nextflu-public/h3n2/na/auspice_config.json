@@ -1,0 +1,120 @@
+{
+  "title": "Real-time tracking of influenza A/H3N2 evolution",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "John Huddleston", "url": "https://bedford.io/team/john-huddleston/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
+  "data_provenance": [
+    {
+      "name": "GISAID"
+    }
+  ],
+  "build_url": "https://github.com/nextstrain/seasonal-flu",
+  "colorings": [
+    {
+      "key": "gt",
+      "title": "Genotype",
+      "type": "categorical"
+    },
+    {
+      "key": "num_date",
+      "title": "Date",
+      "type": "continuous"
+    },
+    {
+      "key": "clade_membership",
+      "title": "Clade",
+      "type": "categorical",
+      "scale": [
+        ["3C.2a1b.1b", "#7fb975"],
+        ["3C.2a1b.2a.2", "#e39b39"],
+        ["3C.2a1b.2a.2/53G", "#4a3fdd"],
+        ["3C.2a1b.2a.2/53N", "#aad66c"],
+        ["3C.2a1b.2a.2/50K", "#705c94"],
+        ["3C.2a1b.1a", "#dfd24e"],
+        ["3C.2a1b.2a.1", "#3e9ccf"]
+      ]
+    },
+    {
+      "key": "lbi",
+      "title": "Local branching index",
+      "type": "continuous"
+    },
+    {
+      "key": "ep",
+      "title": "Epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "ne",
+      "title": "Non-epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "glyc",
+      "title": "Glycosylation changes",
+      "type": "continuous"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+     {
+      "key": "division",
+      "title": "Division",
+      "type": "categorical"
+    },
+    {
+      "key": "submitting_lab",
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    {
+      "key": "originating_lab",
+      "title": "Originating lab",
+      "type": "categorical"
+    },
+    {
+      "key": "recency",
+      "title": "Submission date",
+      "type": "ordinal"
+    },
+    {
+      "key": "epiweek",
+      "title": "Epiweek (CDC)",
+      "type": "ordinal"
+    }
+  ],
+  "geo_resolutions": [
+    "division",
+    "country",
+    "region"
+  ],
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
+  },
+  "filters": [
+    "clade_membership",
+    "region",
+    "country",
+    "division",
+    "submitting_lab",
+    "recency",
+    "epiweek"
+  ],
+  "panels": [
+    "tree",
+    "map",
+    "entropy",
+    "frequencies"
+  ]
+}
