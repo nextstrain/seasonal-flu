@@ -72,6 +72,7 @@ A/Ohio/2/2007
 A/Ohio/9/2015
 A/Ohio/9/2015-egg
 A/Ontario/N163578/2012
+A/Parana/20675/2022
 A/Paris/2603/2020
 A/Paris/2604/2020
 A/Philippines/8/2018
