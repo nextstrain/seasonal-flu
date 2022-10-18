@@ -182,8 +182,8 @@ rule annotate_metadata_with_titer_strains:
 
 def get_metadata_for_subsampling(wildcards):
     # Use metadata annotated with a given build's titer strains, if we are
-    # building the measurements panel.
-    if config['builds'][wildcards.build_name].get("enable_measurements"):
+    # building the measurements panel or running titer models.
+    if config['builds'][wildcards.build_name].get("enable_measurements") or config['builds'][wildcards.build_name].get("enable_titer_models"):
         return f"{build_dir}/{wildcards.build_name}/full_metadata_with_titer_annotations.tsv"
     else:
         return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv"
