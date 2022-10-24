@@ -79,3 +79,22 @@ nextstrain remote upload \
   https://nextstrain.org/groups/nextflu-private/ \
   narratives/nextstrain-cdc_2022-10-03.md
 ```
+
+## Update the group overview
+
+[The nextflu-private group's overview](https://nextstrain.org/groups/nextflu-private/) lists recent reports and trees by date with the most recent at the top of the page.
+Download the group overview markdown file.
+
+``` bash
+nextstrain remote download s3://nextstrain-groups/nextflu-private/group-overview.md
+```
+
+Edit this file to include links to the latest report and builds by date.
+Upload the updated overview to the group.
+
+``` bash
+nextstrain remote upload s3://nextstrain-groups/nextflu-private/ group-overview.md
+```
+
+Note that this upload will not work if you do not have admin permissions on AWS.
+In the future, this upload command will use the group customization endpoints through nextstrain.org.
