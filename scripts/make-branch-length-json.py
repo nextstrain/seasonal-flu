@@ -70,8 +70,10 @@ if __name__=="__main__":
                                      to_float(dates.loc[node_name,"upper bound"])]
                                 }
         for i in range(len(other_tree_names)):
-            other_tree = other_tree_names[i]
-            node_data[node_name]["mcc_"+other_tree] = node.mcc[i]
+            _other_tree = other_tree_names[i].split("_")[-1]
+            _focal_tree_name = focal_tree_name.split("_")[-1]
+            sorted_ = sorted([_other_tree, _focal_tree_name])
+            node_data[node_name]["mcc_"+sorted_[0] + "_"+ sorted_[1]] = node.mcc[i]
 
     for node in divtree.find_clades():
         node_name = node.name or node.confidence
