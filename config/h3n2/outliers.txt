@@ -282,6 +282,7 @@ A/Michigan/19/2012
 A/Michigan/20/2012
 A/Michigan/23/2012
 A/Michigan/39/2015
+A/Michigan/48/2022
 A/Michigan/82/2016
 A/Michigan/83/2016
 A/Michigan/84/2016
