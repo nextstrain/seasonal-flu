@@ -68,7 +68,9 @@ Start with an existing narrative Markdown file as a template for the new report.
 
 ``` bash
 mkdir -p narratives/
-nextstrain remote download narratives/ https://nextstrain.org/groups/nextflu-private/narratives/nextstrain-cdc/2022-10-03
+nextstrain remote download \
+  https://nextstrain.org/groups/nextflu-private/narratives/nextstrain-cdc/2022-10-03 \
+  narratives/
 ```
 
 Edit the narrative file in your favorite editor, using URLs for the builds you just uploaded to the group as the content.
