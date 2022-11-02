@@ -55,20 +55,18 @@ recency:
   upper_bin_label: older
 
 array-builds:
-  hi-builds:
+  6M-hi-builds:
     patterns:
       lineage:
         - h1n1pdm
         - yam
         - vic
-      resolution:
+      min_date:
         - 6M
-        - 2Y
-        - 3Y
-        - 6Y
-        - 12Y
-    build_name: "flu_seasonal_{lineage}_{resolution}"
-    build_params:
+      reference_min_date:
+        - 6Y6M
+    build_name: "flu_seasonal_{lineage}_6m"
+    build_params: &shared-hi-build-params
       assay: hi
       passage: cell
       center: cdc
@@ -85,22 +83,97 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {resolution} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {resolution} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       references:
-          filters: --query "(is_reference == True)" --min-date {resolution} --exclude {exclude} --exclude-where passage=egg
-  fra-builds:
+          filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude} --exclude-where passage=egg
+  2Y-hi-builds:
     patterns:
-      resolution:
-        - 6M
+      lineage:
+        - h1n1pdm
+        - yam
+        - vic
+      min_date:
         - 2Y
+      reference_min_date:
+        - 8Y
+    build_name: "flu_seasonal_{lineage}_2y"
+    build_params: *shared-hi-build-params
+    subsamples: *subsampling-scheme
+  3Y-hi-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - yam
+        - vic
+      min_date:
         - 3Y
+      reference_min_date:
+        - 9Y
+    build_name: "flu_seasonal_{lineage}_3y"
+    build_params: *shared-hi-build-params
+    subsamples: *subsampling-scheme
+  6Y-hi-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - yam
+        - vic
+      min_date:
         - 6Y
+      reference_min_date:
         - 12Y
-    build_name: "flu_seasonal_h3n2_{resolution}"
+    build_name: "flu_seasonal_{lineage}_6y"
+    build_params: *shared-hi-build-params
+    subsamples: *subsampling-scheme
+  12Y-hi-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - yam
+        - vic
+      min_date:
+        - 12Y
+      reference_min_date:
+        - 18Y
+    build_name: "flu_seasonal_{lineage}_12y"
+    build_params: *shared-hi-build-params
+    subsamples: *subsampling-scheme
+  6M-fra-builds:
+    patterns:
+      min_date:
+        - 6M
+      reference_min_date:
+        - 6Y6M
+    build_name: "flu_seasonal_h3n2_6m"
+    build_params: &shared-fra-build-params
+      lineage: h3n2
+      assay: fra
+      passage: cell
+      center: cdc
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples: *subsampling-scheme
+  # 2Y H3N2 builds are a special case where we enable forecasts.
+  2Y-fra-builds:
+    patterns:
+      min_date:
+        - 2Y
+      reference_min_date:
+        - 8Y
+    build_name: "flu_seasonal_h3n2_2y"
     build_params:
       lineage: h3n2
       assay: fra
@@ -118,6 +191,33 @@ array-builds:
       enable_forecasts: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
+    subsamples: *subsampling-scheme
+  3Y-fra-builds:
+    patterns:
+      min_date:
+        - 3Y
+      reference_min_date:
+        - 9Y
+    build_name: "flu_seasonal_h3n2_3y"
+    build_params: *shared-fra-build-params
+    subsamples: *subsampling-scheme
+  6Y-fra-builds:
+    patterns:
+      min_date:
+        - 6Y
+      reference_min_date:
+        - 12Y
+    build_name: "flu_seasonal_h3n2_6y"
+    build_params: *shared-fra-build-params
+    subsamples: *subsampling-scheme
+  12Y-fra-builds:
+    patterns:
+      min_date:
+        - 12Y
+      reference_min_date:
+        - 18Y
+    build_name: "flu_seasonal_h3n2_12y"
+    build_params: *shared-fra-build-params
     subsamples: *subsampling-scheme
 
 # H3N2-specific fitness model
