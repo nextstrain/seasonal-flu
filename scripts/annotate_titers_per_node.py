@@ -3,6 +3,7 @@
 import argparse
 from augur.titer_model import TiterCollection
 from augur.utils import read_tree, write_json
+from collections import defaultdict
 import pandas as pd
 
 
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--attribute-name", help="attribute name to use for number of titers per strain")
     parser.add_argument("--include-internal-nodes", action="store_true", help="calculate total measurements per internal node in addition to tips")
     parser.add_argument("--use-categorical-ranges", action="store_true", help="annotate nodes with categorical ranges of titer counts to enable better control over coloring in auspice")
+    parser.add_argument("--use-references", action="store_true", help="count titers per reference virus instead of counting titers per test virus")
     parser.add_argument("--output", help="JSON in node data format for use by augur export")
 
     args = parser.parse_args()
@@ -32,7 +34,13 @@ if __name__ == "__main__":
 
     # Count titer measurements per test strain.
     titers, strains, sources = TiterCollection.load_from_file(args.titers)
-    titer_count_by_strain = pd.Series([record[0] for record in titers.keys()]).value_counts().to_dict()
+
+    titer_count_by_strain = defaultdict(int)
+    for (test_strain, (reference_strain, reference_serum)), measurements in titers.items():
+        if args.use_references:
+            titer_count_by_strain[reference_strain] += 1
+        else:
+            titer_count_by_strain[test_strain] += 1
 
     # Annotate number of measurements per node such that internal nodes are
     # annotated with the sum of all measurements for their descendant tips.
@@ -43,6 +51,10 @@ if __name__ == "__main__":
                 node_data[node.name] = {
                     args.attribute_name: titer_count_by_strain[node.name]
                 }
+
+                if args.use_references:
+                    node_data[node.name]["is_titer_reference_virus"] = True
+
         elif args.include_internal_nodes:
             node_data[node.name] = {
                 args.attribute_name: sum([
