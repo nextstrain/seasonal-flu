@@ -87,10 +87,10 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       WIC:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab!="Crick Worldwide Influenza Centre"'"
+          filters: --group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab!="Crick Worldwide Influenza Centre"'
           priorities: "titers"
       other:
-          filters: "--group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab="Crick Worldwide Influenza Centre"'"
+          filters: --group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab="Crick Worldwide Influenza Centre"'
           priorities: "titers"
   europe:
     patterns:
