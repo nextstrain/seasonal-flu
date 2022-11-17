@@ -16,6 +16,11 @@
       "qos": "6hours",
       "time": "05:59:00"
     },
+    "treeknit": {
+      "n": 1,
+      "qos": "6hours",
+      "time": "05:59:00"
+    },
     "align": {
       "n": 4,
       "time": "00:29:00",

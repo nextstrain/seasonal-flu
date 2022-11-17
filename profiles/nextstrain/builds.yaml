@@ -60,7 +60,6 @@ array-builds:
       lineage:
         - h3n2
         - h1n1pdm
-        - yam
         - vic
       center:
         - who
@@ -73,8 +72,6 @@ array-builds:
         - egg
       resolution:
         - 2
-        - 6
-        - 12
     build_name: "{lineage}_{center}_{passage}_{assay}_{resolution}y"
     build_params:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
