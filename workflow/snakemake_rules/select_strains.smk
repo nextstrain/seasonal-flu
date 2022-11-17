@@ -191,6 +191,8 @@ rule select_sequences:
         strains = build_dir + "/{build_name}/strains.txt",
     output:
         sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
+    params:
+        hard_min_date = lambda w: config["builds"][w.build_name]["hard_min_date"]
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/select_sequences_{build_name}_{segment}.txt"
@@ -201,8 +203,7 @@ rule select_sequences:
         augur filter \
             --sequences {input.sequences} \
             --metadata {input.metadata} \
-            --exclude-all \
-            --include {input.strains} \
+            --min-date {params.hard_min_date} \
             --output-sequences {output.sequences} 2>&1 | tee {log}
         """
 
