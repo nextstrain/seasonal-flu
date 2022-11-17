@@ -56,6 +56,42 @@ recency:
   upper_bin_label: older
 
 array-builds:
+  WIC:
+    patterns:
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+      resolution:
+        - 1
+        - 2
+        - 6
+    build_name: "{lineage}_WIC_{resolution}y"
+    build_params:
+      center: crick
+      assay: hi
+      passage: cell
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+    subsampling_parameters:
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      hard_min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution+3}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      WIC:
+          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab!="Crick Worldwide Influenza Centre"'"
+          priorities: "titers"
+      other:
+          filters: "--group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab="Crick Worldwide Influenza Centre"'"
+          priorities: "titers"
   europe:
     patterns:
       lineage:
@@ -81,6 +117,7 @@ array-builds:
       enable_titer_models: true
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      hard_min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution+3}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
@@ -128,6 +165,7 @@ array-builds:
       enable_titer_models: true
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      hard_min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution+3}*365)).strftime("%Y-%m-%d")'
       recent_date: '(datetime.datetime.today() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
