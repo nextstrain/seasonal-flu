@@ -158,34 +158,30 @@ builds:
   #         assay: fra
   #         center: who
   #     subsamples: *subsampling-scheme
-  # vic_2y:
-  #   lineage: vic
-  #   reference: "config/vic/{segment}/reference.fasta"
-  #   annotation: "config/vic/{segment}/genemap.gff"
-  #   tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
-  #   clades: "config/vic/ha/clades.tsv"
-  #   auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
-  #   min_date: "2Y"
-  #   reference_min_date: "8Y"
-  #   include: "config/vic/reference_strains.txt"
-  #   exclude: "config/vic/outliers.txt"
-  #   vaccines: "config/vic/vaccine.json"
-  #   enable_glycosylation: true
-  #   enable_lbi: true
-  #   enable_titer_models: true
-  #   enable_measurements: true
-  #   titer_collections:
-  #     - name: cell_hi
-  #       host: ferret
-  #       passage: cell
-  #       assay: hi
-  #       center: who
-  #     - name: egg_hi
-  #       host: ferret
-  #       passage: egg
-  #       assay: hi
-  #       center: who
-  #   subsamples: *subsampling-scheme
+  vic_2y:
+    lineage: vic
+    reference: "config/vic/{segment}/reference.fasta"
+    annotation: "config/vic/{segment}/genemap.gff"
+    tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
+    clades: "config/vic/ha/clades.tsv"
+    auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
+    min_date: "2Y"
+    reference_min_date: "8Y"
+    include: "config/vic/reference_strains.txt"
+    exclude: "config/vic/outliers.txt"
+    vaccines: "config/vic/vaccine.json"
+    enable_glycosylation: true
+    enable_lbi: true
+    enable_titer_models: true
+    enable_measurements: true
+    titer_collections:
+      - name: cell_hi
+        data: "data/vic/who_ferret_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from ferret sera"
+      - name: egg_hi
+        data: "data/vic/who_ferret_egg_hi_titers.tsv"
+        title: "Egg-passaged HI titers from ferret sera"
+    subsamples: *subsampling-scheme
 
 fitness_model:
   models:

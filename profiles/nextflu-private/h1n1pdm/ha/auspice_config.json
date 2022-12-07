@@ -39,17 +39,6 @@
       "type": "categorical"
     },
     {
-      "key": "titers_for_test_viruses",
-      "title": "Titers for test viruses",
-      "type": "categorical",
-      "scale": [
-        ["0", "#cccccc"],
-        ["1-5", "#4e94bd"],
-        ["6-10", "#81ba72"],
-        [">10", "#c8b944"]
-      ]
-    },
-    {
       "key": "titers_for_reference_viruses",
       "title": "Titers for reference viruses",
       "type": "continuous"
