@@ -31,30 +31,6 @@ rule plot_antigenic_distances_between_strains:
             --output {output.plot} 2>&1 | tee {log}
         """
 
-rule annotate_titer_counts_for_test_viruses:
-    input:
-        tree="builds/{build_name}/{segment}/tree.nwk",
-        titers="builds/{build_name}/titers/{titer_collection}.tsv",
-    output:
-        titer_counts="builds/{build_name}/{segment}/titers_for_test_viruses/{titer_collection}.json",
-    benchmark:
-        "benchmarks/annotate_titer_counts_for_test_viruses_{build_name}_{segment}_{titer_collection}.txt"
-    log:
-        "logs/annotate_titer_counts_for_test_viruses_{build_name}_{segment}_{titer_collection}.txt"
-    params:
-        attribute_name=lambda wildcards: f"titers_for_test_viruses_{wildcards.titer_collection}",
-    conda: "../../workflow/envs/nextstrain.yaml"
-    shell:
-        """
-        python3 scripts/annotate_titers_per_node.py \
-            --tree {input.tree} \
-            --titers {input.titers} \
-            --attribute-name {params.attribute_name} \
-            --include-internal-nodes \
-            --use-categorical-ranges \
-            --output {output.titer_counts} 2>&1 | tee {log}
-        """
-
 rule annotate_titer_counts_for_reference_viruses:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
@@ -104,7 +80,6 @@ rule summarize_haplotype_titer_coverage:
 def get_private_node_data(wildcards):
     node_data = []
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
-        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_test_viruses/{collection['name']}.json")
         node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
         node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
 
