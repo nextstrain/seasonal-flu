@@ -3,7 +3,11 @@ import pandas as pd
 from treetime.utils import numeric_date
 
 wildcard_constraints:
-    segment = r'pb2|pb1|pa|ha|np|na|ma'
+    segment = r'pb2|pb1|pa|ha|np|na|ma',
+    center = r'who|cdc|crick|niid|crick',
+    passage = r'cell|egg',
+    assay = r'fra|hi',
+    host = r'ferret|human|mouse'
 
 # Load distance map configuration for lineages and segments.
 distance_map_config = pd.read_table("config/distance_maps.tsv")
@@ -18,8 +22,7 @@ lineage_name_by_abbreviation = {
 if "data_source" in config and config["data_source"]=='fauna':
     include: "workflow/snakemake_rules/download_from_fauna.smk"
 
-if "array-builds" in config:
-    include: "workflow/snakemake_rules/array_builds.smk"
+include: "workflow/snakemake_rules/array_builds.smk"
 
 include: "workflow/snakemake_rules/select_strains.smk"
 

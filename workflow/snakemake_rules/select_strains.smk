@@ -115,12 +115,24 @@ rule annotate_metadata_with_reference_strains:
             {input.references} > {output.metadata}
         """
 
-def get_titers_for_build(w):
-    return "data/{lineage}/{center}_{passage}_{assay}_titers.tsv".format(**config['builds'][w.build_name])
+rule concat_titers_for_build:
+    input:
+        titers=lambda wildcards: [collection["data"] for collection in config["builds"][wildcards.build_name]["titer_collections"]],
+    output:
+        titers="builds/{build_name}/all_titers.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/concat_titers_for_build_{build_name}.txt"
+    log:
+        "logs/concat_titers_for_build_{build_name}.txt"
+    shell:
+        """
+        tsv-append -H {input.titers} > {output.titers} 2> {log}
+        """
 
 rule titer_priorities:
     input:
-        titers = get_titers_for_build,
+        titers = "builds/{build_name}/all_titers.tsv",
     output:
         priorities = build_dir + "/{build_name}/titer_priorities.tsv",
     conda: "../envs/nextstrain.yaml"
@@ -135,7 +147,7 @@ rule titer_priorities:
 
 rule build_titer_strains_table:
     input:
-        titers=get_titers_for_build,
+        titers="builds/{build_name}/all_titers.tsv",
     output:
         titer_strains=build_dir + "/{build_name}/titer_strains.tsv",
     conda: "../envs/nextstrain.yaml"
@@ -263,17 +275,24 @@ rule select_sequences:
             --output-sequences {output.sequences} 2>&1 | tee {log}
         """
 
+def get_titer_collection_data(wildcards):
+    return [
+        collection["data"]
+        for collection in config["builds"][wildcards.build_name]["titer_collections"]
+        if collection["name"] == wildcards.titer_collection
+    ][0]
+
 rule select_titers:
     input:
         strains = build_dir + "/{build_name}/strains.txt",
-        titers = get_titers_for_build
+        titers = get_titer_collection_data,
     output:
-        titers = build_dir + "/{build_name}/titers.tsv"
+        titers = build_dir + "/{build_name}/titers/{titer_collection}.tsv",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/select_titers_{build_name}.txt"
+        "benchmarks/select_titers_{build_name}_{titer_collection}.txt"
     log:
-        "logs/select_titers_{build_name}.txt"
+        "logs/select_titers_{build_name}_{titer_collection}.txt"
     shell:
         """
         head -n 1 {input.titers} > {output.titers};

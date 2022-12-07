@@ -54,7 +54,6 @@ rule download_sequences:
         """
 
 rule download_titers:
-    message: "Downloading titers from fauna: {wildcards.lineage}, {wildcards.assay}, {wildcards.center}"
     output:
         titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
     params:
@@ -74,4 +73,29 @@ rule download_titers:
             --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
             --path data \
             --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
+        """
+
+def get_host_query(wildcards):
+    query_by_host = {
+        "ferret": "--istr-not-in-fld serum_id:mouse --istr-not-in-fld serum_id:human",
+        "human": "--istr-in-fld serum_id:human",
+        "mouse": "--istr-in-fld serum_id:mouse",
+    }
+    return query_by_host[wildcards.host]
+
+rule select_titers_by_host:
+    input:
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv",
+    output:
+        titers = "data/{lineage}/{center}_{host}_{passage}_{assay}_titers.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/select_titers_by_host_{lineage}_{center}_{host}_{passage}_{assay}.txt"
+    log:
+        "logs/select_titers_by_host_{lineage}_{center}_{host}_{passage}_{assay}.txt"
+    params:
+        host_query=get_host_query,
+    shell:
+        """
+        tsv-filter -H {params.host_query} {input.titers} > {output.titers} 2> {log}
         """

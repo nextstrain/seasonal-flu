@@ -34,15 +34,15 @@ rule plot_antigenic_distances_between_strains:
 rule annotate_titer_counts_for_test_viruses:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
-        titers="builds/{build_name}/titers.tsv",
+        titers="builds/{build_name}/titers/{titer_collection}.tsv",
     output:
-        titer_counts="builds/{build_name}/{segment}/titers_for_test_viruses.json",
+        titer_counts="builds/{build_name}/{segment}/titers_for_test_viruses/{titer_collection}.json",
     benchmark:
-        "benchmarks/annotate_titer_counts_for_test_viruses_{build_name}_{segment}.txt"
+        "benchmarks/annotate_titer_counts_for_test_viruses_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/annotate_titer_counts_for_test_viruses_{build_name}_{segment}.txt"
+        "logs/annotate_titer_counts_for_test_viruses_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        attribute_name="titers_for_test_viruses",
+        attribute_name=lambda wildcards: f"titers_for_test_viruses_{wildcards.titer_collection}",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -58,15 +58,15 @@ rule annotate_titer_counts_for_test_viruses:
 rule annotate_titer_counts_for_reference_viruses:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
-        titers="builds/{build_name}/titers.tsv",
+        titers="builds/{build_name}/titers/{titer_collection}.tsv",
     output:
-        titer_counts="builds/{build_name}/{segment}/titers_for_reference_viruses.json",
+        titer_counts="builds/{build_name}/{segment}/titers_for_reference_viruses/{titer_collection}.json",
     benchmark:
-        "benchmarks/annotate_titer_counts_for_reference_viruses_{build_name}_{segment}.txt"
+        "benchmarks/annotate_titer_counts_for_reference_viruses_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/annotate_titer_counts_for_reference_viruses_{build_name}_{segment}.txt"
+        "logs/annotate_titer_counts_for_reference_viruses_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        attribute_name="titers_for_reference_viruses",
+        attribute_name=lambda wildcards: f"titers_for_reference_viruses_{wildcards.titer_collection}",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -81,15 +81,15 @@ rule annotate_titer_counts_for_reference_viruses:
 rule summarize_haplotype_titer_coverage:
     input:
         haplotypes="builds/{build_name}/{segment}/haplotypes.json",
-        distances="builds/{build_name}/{segment}/antigenic_distances_between_strains.tsv",
+        distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         frequencies="builds/{build_name}/{segment}/tip-frequencies.json",
     output:
-        table="builds/{build_name}/{segment}/haplotype_summary.tsv",
-        node_data="builds/{build_name}/{segment}/haplotypes_without_references.json",
+        table="builds/{build_name}/{segment}/haplotype_summary/{titer_collection}.tsv",
+        node_data="builds/{build_name}/{segment}/haplotypes_without_references/{titer_collection}.json",
     benchmark:
-        "benchmarks/summarize_haplotype_titer_coverage_{build_name}_{segment}.txt"
+        "benchmarks/summarize_haplotype_titer_coverage_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/summarize_haplotype_titer_coverage_{build_name}_{segment}.txt"
+        "logs/summarize_haplotype_titer_coverage_{build_name}_{segment}_{titer_collection}.txt"
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -101,17 +101,21 @@ rule summarize_haplotype_titer_coverage:
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
 
+def get_private_node_data(wildcards):
+    node_data = []
+    for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_test_viruses/{collection['name']}.json")
+        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
+        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
+
+    return node_data
+
 rule export_private:
-    message: "Exporting data files for auspice"
     input:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
-        private_node_data = [
-            "builds/{build_name}/{segment}/titers_for_test_viruses.json",
-            "builds/{build_name}/{segment}/titers_for_reference_viruses.json",
-            "builds/{build_name}/{segment}/haplotypes_without_references.json",
-        ],
+        private_node_data = get_private_node_data,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         lat_longs = config['lat-longs']
     output:

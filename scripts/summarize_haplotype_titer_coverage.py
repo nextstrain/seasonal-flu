@@ -97,7 +97,7 @@ if __name__ == '__main__':
     for strain, node_data in haplotypes.items():
         if node_data["haplotype"] in nonzero_haplotypes:
             nonzero_haplotypes_per_node[strain] = {
-                "haplotype_missing_reference_virus": True
+                "haplotype_missing_reference_virus": "true"
             }
 
     write_json({"nodes": nonzero_haplotypes_per_node}, args.output_node_data)

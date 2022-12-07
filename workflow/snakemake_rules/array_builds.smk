@@ -22,7 +22,7 @@ for build_name, build_params in config["builds"].items():
         config['builds'][build_name].update(build_params)
 
 # Expand array builds.
-for array_build in config["array-builds"].values():
+for array_build in config.get("array-builds", {}).values():
     patterns = array_build["patterns"]
     subsamples = array_build["subsamples"]
 

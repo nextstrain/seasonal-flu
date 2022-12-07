@@ -53,7 +53,7 @@ if __name__ == "__main__":
                 }
 
                 if args.use_references:
-                    node_data[node.name]["is_titer_reference_virus"] = True
+                    node_data[node.name]["is_titer_reference_virus"] = "true"
 
         elif args.include_internal_nodes:
             node_data[node.name] = {

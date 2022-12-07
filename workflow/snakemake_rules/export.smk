@@ -21,8 +21,9 @@ def _get_node_data_by_wildcards(wildcards):
         inputs.append(rules.distances.output.distances)
 
     if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
-        inputs.append(rules.titers_sub.output.titers_model)
-        inputs.append(rules.titers_tree.output.titers_model)
+        for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+            inputs.append(rules.titers_sub.output.titers_model.format(titer_collection=collection["name"], **wildcards_dict))
+            inputs.append(rules.titers_tree.output.titers_model.format(titer_collection=collection["name"], **wildcards_dict))
 
     if config["builds"][wildcards.build_name].get('enable_glycosylation', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.glyc.output.glyc)
@@ -32,9 +33,11 @@ def _get_node_data_by_wildcards(wildcards):
 
     if config["builds"][wildcards.build_name].get('enable_forecasts', False) and config["builds"][wildcards.build_name].get("lineage") in ["h3n2"] and wildcards.segment in ["ha"]:
         wildcards_dict["model"] = config["fitness_model"]["best_model"]
-        inputs.append(rules.titer_tree_cross_immunities.output.cross_immunities)
-        inputs.append(rules.forecast_tips.output.node_data)
-        inputs.append(rules.merge_weighted_distances_to_future.output.node_data)
+
+        for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+            inputs.append(rules.titer_tree_cross_immunities.output.cross_immunities.format(titer_collection=collection["name"], **wildcards_dict))
+            inputs.append(rules.forecast_tips.output.node_data.format(titer_collection=collection["name"], **wildcards_dict))
+            inputs.append(rules.merge_weighted_distances_to_future.output.node_data.format(titer_collection=collection["name"], **wildcards_dict))
 
     if config['builds'][wildcards.build_name].get('vaccines', False):
         inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
