@@ -43,6 +43,7 @@ rule annotate_titer_counts_for_reference_viruses:
         "logs/annotate_titer_counts_for_reference_viruses_{build_name}_{segment}_{titer_collection}.txt"
     params:
         attribute_name=lambda wildcards: f"titers_for_reference_viruses_{wildcards.titer_collection}",
+        attribute_name_for_is_reference_virus=lambda wildcards: f"is_titer_reference_virus_in_{wildcards.titer_collection}",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -50,6 +51,7 @@ rule annotate_titer_counts_for_reference_viruses:
             --tree {input.tree} \
             --titers {input.titers} \
             --attribute-name {params.attribute_name} \
+            --attribute-name-for-is-reference-virus {params.attribute_name_for_is_reference_virus} \
             --use-references \
             --output {output.titer_counts} 2>&1 | tee {log}
         """
@@ -73,6 +75,7 @@ rule summarize_haplotype_titer_coverage:
             --haplotypes {input.haplotypes} \
             --antigenic-distances {input.distances} \
             --frequencies {input.frequencies} \
+            --attribute-name-for-haplotype-without-reference "haplotype_missing_reference_virus_in_{wildcards.titer_collection}" \
             --output-table {output.table} \
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """

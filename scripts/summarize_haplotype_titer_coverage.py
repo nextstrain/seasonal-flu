@@ -11,6 +11,7 @@ if __name__ == '__main__':
     parser.add_argument("--haplotypes", required=True, help="node data JSON of derived haplotypes per strain")
     parser.add_argument("--antigenic-distances", required=True, help="TSV of antigenic distances between reference and test viruses with haplotype annotations")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON")
+    parser.add_argument("--attribute-name-for-haplotype-without-reference", default="haplotype_missing_reference_virus", help="name for attribute indicating whether haplotypes are missing a reference virus in the node data JSON output.")
     parser.add_argument("--output-table", required=True, help="TSV of haplotypes along with number of reference viruses, distinct reference viruses, number of test viruses, current frequency, and delta frequency from the last month.")
     parser.add_argument("--output-node-data", required=True, help="node data JSON of non-zero haplotypes without reference viruses")
 
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     for strain, node_data in haplotypes.items():
         if node_data["haplotype"] in nonzero_haplotypes:
             nonzero_haplotypes_per_node[strain] = {
-                "haplotype_missing_reference_virus": "true"
+                args.attribute_name_for_haplotype_without_reference: "true"
             }
 
     write_json({"nodes": nonzero_haplotypes_per_node}, args.output_node_data)

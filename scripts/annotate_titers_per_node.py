@@ -23,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--tree", help="Newick tree with strains to annotate number of titers")
     parser.add_argument("--titers", help="tab-delimited file of raw titer measurements")
     parser.add_argument("--attribute-name", help="attribute name to use for number of titers per strain")
+    parser.add_argument("--attribute-name-for-is-reference-virus", default="is_titer_reference_virus", help="attribute name to use for boolean indicating whether a strain is a reference virus.")
     parser.add_argument("--include-internal-nodes", action="store_true", help="calculate total measurements per internal node in addition to tips")
     parser.add_argument("--use-categorical-ranges", action="store_true", help="annotate nodes with categorical ranges of titer counts to enable better control over coloring in auspice")
     parser.add_argument("--use-references", action="store_true", help="count titers per reference virus instead of counting titers per test virus")
@@ -53,7 +54,7 @@ if __name__ == "__main__":
                 }
 
                 if args.use_references:
-                    node_data[node.name]["is_titer_reference_virus"] = "true"
+                    node_data[node.name][args.attribute_name_for_is_reference_virus] = "true"
 
         elif args.include_internal_nodes:
             node_data[node.name] = {
