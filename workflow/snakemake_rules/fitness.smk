@@ -84,16 +84,17 @@ rule pairwise_titer_tree_distances:
         model = rules.titers_tree.output.titers_model,
         date_annotations = rules.refine.output.node_data,
     output:
-        distances = "builds/{build_name}/{segment}/pairwise-titer-tree-distances.json",
+        distances = "builds/{build_name}/{segment}/pairwise-titer-tree-distances/{titer_collection}.json",
     params:
-        attribute_names = "cTiter_pairwise",
+        model_attribute_name = lambda wildcards: f"{wildcards.titer_collection}_dTiter",
+        attribute_name = lambda wildcards: f"cTiter_pairwise_{wildcards.titer_collection}",
         months_back_for_current_samples = config.get("fitness_model", {}).get("months_back_for_current_samples"),
         years_back_to_compare = config.get("fitness_model", {}).get("max_years_for_distances"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/pairwise_titer_tree_distances_{build_name}_{segment}.txt"
+        "benchmarks/pairwise_titer_tree_distances_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/pairwise_titer_tree_distances_{build_name}_{segment}.txt"
+        "logs/pairwise_titer_tree_distances_{build_name}_{segment}_{titer_collection}.txt"
     resources:
         mem_mb=4000
     shell:
@@ -102,7 +103,8 @@ rule pairwise_titer_tree_distances:
             --tree {input.tree} \
             --frequencies {input.frequencies} \
             --model {input.model} \
-            --attribute-name {params.attribute_names} \
+            --model-attribute-name {params.model_attribute_name} \
+            --attribute-name {params.attribute_name} \
             --date-annotations {input.date_annotations} \
             --months-back-for-current-samples {params.months_back_for_current_samples} \
             --years-back-to-compare {params.years_back_to_compare} \
@@ -115,17 +117,17 @@ rule titer_tree_cross_immunities:
         distances = rules.pairwise_titer_tree_distances.output.distances,
         date_annotations = rules.refine.output.node_data,
     output:
-        cross_immunities = "builds/{build_name}/{segment}/titer-tree-cross-immunity.json",
+        cross_immunities = "builds/{build_name}/{segment}/titer-tree-cross-immunity/{titer_collection}.json",
     params:
-        distance_attributes = "cTiter_pairwise",
-        immunity_attributes = "cTiter_x",
+        distance_attributes = lambda wildcards: f"cTiter_pairwise_{wildcards.titer_collection}",
+        immunity_attributes = lambda wildcards: f"cTiter_x_{wildcards.titer_collection}",
         decay_factors = "14.0",
         years_to_wane = config.get("fitness_model", {}).get("max_years_for_distances"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/titer_tree_cross_immunities_{build_name}_{segment}.txt"
+        "benchmarks/titer_tree_cross_immunities_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/titer_tree_cross_immunities_{build_name}_{segment}.txt"
+        "logs/titer_tree_cross_immunities_{build_name}_{segment}_{titer_collection}.txt"
     resources:
         mem_mb=8000
     shell:
@@ -207,12 +209,14 @@ def _get_node_data_for_predictors(wildcards):
     """
     # Define inputs shared by all builds.
     inputs = [
-        rules.titers_tree.output.titers_model,
-        rules.titers_sub.output.titers_model,
         rules.lbi.output.lbi,
         rules.convert_translations_to_json.output.translations,
-        rules.titer_tree_cross_immunities.output.cross_immunities
     ]
+
+    for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+        inputs.append(rules.titers_sub.output.titers_model.format(titer_collection=collection["name"], **wildcards))
+        inputs.append(rules.titers_tree.output.titers_model.format(titer_collection=collection["name"], **wildcards))
+        inputs.append(rules.titer_tree_cross_immunities.output.cross_immunities.format(titer_collection=collection["name"], **wildcards))
 
     # Only request a distance file for builds that have distance map
     # configurations defined.
