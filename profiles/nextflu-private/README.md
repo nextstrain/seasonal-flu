@@ -85,20 +85,12 @@ nextstrain remote upload \
 ## Update the group overview
 
 [The nextflu-private group's overview](https://nextstrain.org/groups/nextflu-private/) lists recent reports and trees by date with the most recent at the top of the page.
-Setup your Nextstrain Group token in your current environment; this will grant you permission to access the group overview file through the REST API with curl.
-
-
-``` bash
-nextstrain login
-id_token_line=$(grep id_token ~/.nextstrain/secrets)
-token=${id_token_line#"id_token = "}
-```
-
 Download the group overview markdown file.
+Your Nextstrain Group authorization will grant you permission to access the group overview file through the REST API with curl.
 
 ``` bash
 curl https://nextstrain.org/groups/nextflu-private/settings/overview \
-    --header "Authorization: Bearer $token" \
+    --header "`nextstrain authorization`" \
     --header 'Content-Type: text/markdown' \
     -o group-overview.md
 ```
@@ -108,7 +100,7 @@ Upload the updated overview to the group.
 
 ``` bash
 curl https://nextstrain.org/groups/nextflu-private/settings/overview \
-    --header "Authorization: Bearer $token" \
+    --header "`nextstrain authorization`" \
     --header 'Content-Type: text/markdown' \
     --upload-file group-overview.md
 ```
