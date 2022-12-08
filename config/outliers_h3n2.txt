@@ -297,6 +297,7 @@ A/Michigan/93/2016
 A/Michigan/94/2016
 A/Michigan/95/2016
 A/Michigan/96/2016
+A/Michigan/UOM10047284024/2022
 A/Minnesota/9/2010
 A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
