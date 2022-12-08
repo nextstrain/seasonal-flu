@@ -176,9 +176,10 @@
   "filters": [
     "clade_membership",
     "haplotype",
-    "titers_for_test_viruses",
-    "is_titer_reference_virus",
-    "haplotype_missing_reference_virus",
+    "is_titer_reference_virus_in_cell_hi",
+    "is_titer_reference_virus_in_egg_hi",
+    "haplotype_missing_reference_virus_in_cell_hi",
+    "haplotype_missing_reference_virus_in_egg_hi",
     "region",
     "country",
     "division",
