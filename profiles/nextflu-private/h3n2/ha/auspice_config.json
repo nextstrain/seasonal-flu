@@ -48,8 +48,13 @@
       "type": "continuous"
     },
     {
-      "key": "weighted_distance_to_future_by_cTiter_x-ne_star",
-      "title": "Distance to future population (by HI antigenic novelty and mutational load)",
+      "key": "weighted_distance_to_future_by_cTiter_x_cell_fra-ne_star",
+      "title": "Distance to future population (by ferret FRA antigenic novelty and mutational load)",
+      "type": "continuous"
+    },
+    {
+      "key": "weighted_distance_to_future_by_cTiter_x_human_cell_fra-ne_star",
+      "title": "Distance to future population (by human FRA antigenic novelty and mutational load)",
       "type": "continuous"
     },
     {
@@ -68,39 +73,18 @@
       "type": "continuous"
     },
     {
-      "key": "titers_for_test_viruses",
-      "title": "Titers for test viruses",
-      "type": "categorical",
-      "scale": [
-        ["0", "#cccccc"],
-        ["1-5", "#4e94bd"],
-        ["6-10", "#81ba72"],
-        [">10", "#c8b944"]
-      ]
-    },
-    {
-      "key": "titers_for_reference_viruses",
-      "title": "Titers for reference viruses",
+      "key": "cell_fra_cTiter",
+      "title": "Antigenic advance (tree, ferret cell FRA)",
       "type": "continuous"
     },
     {
-      "key": "haplotype_missing_reference_virus",
-      "title": "Haplotype missing reference virus",
-      "type": "categorical"
-    },
-    {
-      "key": "cTiter",
-      "title": "Antigenic advance (tree model)",
+      "key": "cell_fra_cTiterSub",
+      "title": "Antigenic advance (sub, ferret cell FRA)",
       "type": "continuous"
     },
     {
-      "key": "cTiterSub",
-      "title": "Antigenic advance (sub model)",
-      "type": "continuous"
-    },
-    {
-      "key": "cTiter_x",
-      "title": "HI antigenic novelty",
+      "key": "cTiter_x_cell_fra",
+      "title": "Antigenic novelty (ferret cell FRA)",
       "type": "continuous"
     },
     {
@@ -162,6 +146,231 @@
       "key": "epiweek",
       "title": "Epiweek (CDC)",
       "type": "ordinal"
+    },
+    {
+      "key": "cell_fra_dTiter",
+      "title": "Antigenic weight (tree, ferret cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_fra_dTiterSub",
+      "title": "Antigenic weight (sub, ferret cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_fra_cTiter",
+      "title": "Antigenic advance (tree, ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_fra_cTiterSub",
+      "title": "Antigenic advance (sub, ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x_egg_fra",
+      "title": "Antigenic novelty (ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_fra_dTiter",
+      "title": "Antigenic weight (tree, ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_fra_dTiterSub",
+      "title": "Antigenic weight (sub, ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_cTiter",
+      "title": "Antigenic advance (tree, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x_cell_hi",
+      "title": "Antigenic novelty (ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_dTiter",
+      "title": "Antigenic weight (tree, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_dTiterSub",
+      "title": "Antigenic weight (sub, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_cTiter",
+      "title": "Antigenic advance (tree, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_cTiterSub",
+      "title": "Antigenic advance (sub, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x_egg_hi",
+      "title": "Antigenic novelty (ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_dTiter",
+      "title": "Antigenic weight (tree, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_dTiterSub",
+      "title": "Antigenic weight (sub, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_fra_cTiter",
+      "title": "Antigenic advance (tree, human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_fra_cTiterSub",
+      "title": "Antigenic advance (sub, human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x_human_cell_fra",
+      "title": "Antigenic novelty (human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_fra_dTiter",
+      "title": "Antigenic weight (tree, human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_fra_dTiterSub",
+      "title": "Antigenic weight (sub, human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_cTiter",
+      "title": "Antigenic advance (tree, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x_human_cell_hi",
+      "title": "Antigenic novelty (human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_dTiter",
+      "title": "Antigenic weight (tree, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_dTiterSub",
+      "title": "Antigenic weight (sub, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "is_titer_reference_virus_in_cell_fra",
+      "title": "Is titer reference virus (ferret cell FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_egg_fra",
+      "title": "Is titer reference virus (ferret egg FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_cell_hi",
+      "title": "Is titer reference virus (ferret cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_egg_hi",
+      "title": "Is titer reference virus (ferret egg HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_human_cell_fra",
+      "title": "Is titer reference virus (human cell FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_human_cell_hi",
+      "title": "Is titer reference virus (human cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_cell_fra",
+      "title": "Haplotype missing reference virus (ferret cell FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_egg_fra",
+      "title": "Haplotype missing reference virus (ferret egg FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_cell_hi",
+      "title": "Haplotype missing reference virus (ferret cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_egg_hi",
+      "title": "Haplotype missing reference virus (ferret egg HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_human_cell_fra",
+      "title": "Haplotype missing reference virus (human cell FRA)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_human_cell_hi",
+      "title": "Haplotype missing reference virus (human cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "titers_for_reference_viruses_cell_fra",
+      "title": "Titers for reference virus (ferret cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_egg_fra",
+      "title": "Titers for reference virus (ferret egg FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_cell_hi",
+      "title": "Titers for reference virus (ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_egg_hi",
+      "title": "Titers for reference virus (ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_human_cell_fra",
+      "title": "Titers for reference virus (human cell FRA)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_human_cell_hi",
+      "title": "Titers for reference virus (human cell HI)",
+      "type": "continuous"
     }
   ],
   "geo_resolutions": [
@@ -176,9 +385,14 @@
   "filters": [
     "clade_membership",
     "haplotype",
-    "titers_for_test_viruses",
-    "is_titer_reference_virus",
-    "haplotype_missing_reference_virus",
+    "is_titer_reference_virus_in_cell_fra",
+    "is_titer_reference_virus_in_egg_fra",
+    "is_titer_reference_virus_in_cell_hi",
+    "is_titer_reference_virus_in_egg_hi",
+    "haplotype_missing_reference_virus_in_cell_fra",
+    "haplotype_missing_reference_virus_in_egg_fra",
+    "haplotype_missing_reference_virus_in_cell_hi",
+    "haplotype_missing_reference_virus_in_egg_hi",
     "region",
     "country",
     "division",
