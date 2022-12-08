@@ -137,6 +137,7 @@ A/India/D0512577/2005
 A/India/Pun-NIV326980/2021
 A/India/Pun-NIV327049/2021
 A/India/Pun-NIV328238/2021
+A/India/Pune-NIVSARI5334/2021
 A/Indiana/4/2013
 A/Indiana/5/2013
 A/Indiana/5/2013-egg
@@ -385,6 +386,7 @@ A/Ohio/4319/2014
 A/Ontario/1252/2007
 A/Ontario/RV1273/2005
 A/OSAKA/31/2005
+A/Para/181916-IEC/2021
 A/Paris/89/2015
 A/Pennsylvania/09/2011
 A/Pennsylvania/9/2011
@@ -423,6 +425,7 @@ A/SouthCarolina/NHRC0001/2011
 A/SriLanka/35/2018
 A/StPetersburg/5/2009
 A/StPetersburg/5/2009-egg
+A/StPetersburg/RII-2415S/2021
 A/Sydney/53/2015
 A/Taiwan/937/2009
 A/Tokyo/1/1975
