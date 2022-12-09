@@ -19,7 +19,7 @@ def calc_SNV_frequencies(aln, alphabet='ACGT-'):
 def calc_entropy(af, aa=False, start=0):
     res = {}
     res['val'] = [round(x,4) for x in np.sum(-af*np.log(af+1e-15), axis=0)]
-    res['pos'] = [int(x) for x in start + (3 if aa else 1)*np.arange(af.shape[1])]
+    res['pos'] = [int(x) for x in int(start) + (3 if aa else 1)*np.arange(af.shape[1])]
     if aa:
         res['codon'] = [int(x) for x in np.arange(af.shape[1])]
     else:
