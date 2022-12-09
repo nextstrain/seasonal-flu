@@ -59,80 +59,119 @@ recency:
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
-array-builds:
-  hi_builds:
-    patterns:
-      lineage:
-        - h1n1pdm
-        - vic
-      passage:
-        - cell
-        - egg
-    build_name: "{lineage}_2y_{passage}_hi"
-    build_params:
-      center: "who"
-      assay: "hi"
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      auspice_config: "profiles/nextflu-private/{lineage}/{{segment}}/auspice_config.json"
-      min_date: "2Y"
-      reference_min_date: "8Y"
-      include: "config/{lineage}/reference_strains.txt"
-      exclude: "config/{lineage}/outliers.txt"
-      vaccines: "config/{lineage}/vaccine.json"
-      enable_glycosylation: true
-      enable_lbi: true
-      enable_titer_models: true
-      enable_measurements: true
+builds:
+  h1n1pdm_2y:
+    lineage: h1n1pdm
+    reference: "config/h1n1pdm/{segment}/reference.fasta"
+    annotation: "config/h1n1pdm/{segment}/genemap.gff"
+    tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
+    clades: "config/h1n1pdm/ha/clades.tsv"
+    auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
+    min_date: "2Y"
+    reference_min_date: "8Y"
+    include: "config/h1n1pdm/reference_strains.txt"
+    exclude: "config/h1n1pdm/outliers.txt"
+    vaccines: "config/h1n1pdm/vaccine.json"
+    enable_glycosylation: true
+    enable_lbi: true
+    enable_titer_models: true
+    enable_measurements: true
+    titer_collections:
+      - name: cell_hi
+        data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from ferret sera"
+      - name: egg_hi
+        data: "data/h1n1pdm/who_ferret_egg_hi_titers.tsv"
+        title: "Egg-passaged HI titers from ferret sera"
+      - name: human_cell_hi
+        data: "data/h1n1pdm/who_human_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from pooled human sera"
+      - name: mouse_cell_hi
+        data: "data/h1n1pdm/who_mouse_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from pooled mouse sera"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       context:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A'])" --group-by region year --subsample-max-sequences 300 --max-date 2020-03-01 --min-date 2016-01-01 --exclude {exclude}
+          filters: --query "(passage_category != 'egg')" --group-by region year --subsample-max-sequences 300 --max-date 2020-03-01 --min-date 2016-01-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
       titer_strains:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
-  h3n2_builds:
-    patterns:
-      passage:
-        - cell
-        - egg
-      assay:
-        - fra
-        - hi
-    build_name: "h3n2_2y_{passage}_{assay}"
-    build_params:
-      lineage: "h3n2"
-      center: "who"
-      reference: "config/h3n2/{{segment}}/reference.fasta"
-      annotation: "config/h3n2/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
-      clades: "config/h3n2/ha/emerging_clades.tsv"
-      auspice_config: "profiles/nextflu-private/h3n2/{{segment}}/auspice_config.json"
-      vaccines: "config/h3n2/vaccine.json"
-      enable_glycosylation: true
-      enable_lbi: true
-      enable_forecasts: true
-      enable_titer_models: true
-      enable_measurements: true
-      min_date: "2Y"
-      reference_min_date: "8Y"
-      include: "config/h3n2/reference_strains.txt"
-      exclude: "config/h3n2/outliers.txt"
+          # We allow egg-passage strains when they have titer measurements,
+          # enabling titer models to be fit to egg-passaged data.
+          filters: --query "(is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
+  h3n2_2y:
+    lineage: "h3n2"
+    reference: "config/h3n2/{segment}/reference.fasta"
+    annotation: "config/h3n2/{segment}/genemap.gff"
+    tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+    clades: "config/h3n2/ha/emerging_clades.tsv"
+    auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
+    vaccines: "config/h3n2/vaccine.json"
+    enable_glycosylation: true
+    enable_lbi: true
+    enable_forecasts: true
+    enable_titer_models: true
+    enable_measurements: true
+    min_date: "2Y"
+    reference_min_date: "8Y"
+    include: "config/h3n2/reference_strains.txt"
+    exclude: "config/h3n2/outliers.txt"
+    titer_collections:
+      - name: cell_fra
+        data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+        title: "Cell-passaged FRA titers from ferret sera"
+      - name: egg_fra
+        data: "data/h3n2/who_ferret_egg_fra_titers.tsv"
+        title: "Egg-passaged FRA titers from ferret sera"
+      - name: cell_hi
+        data: "data/h3n2/who_ferret_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from ferret sera"
+      - name: egg_hi
+        data: "data/h3n2/who_ferret_egg_hi_titers.tsv"
+        title: "Egg-passaged HI titers from ferret sera"
+      - name: human_cell_fra
+        data: "data/h3n2/who_human_cell_fra_titers.tsv"
+        title: "Cell-passaged FRA titers from pooled human sera"
+      - name: human_cell_hi
+        data: "data/h3n2/who_human_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from pooled human sera"
+    subsamples: *subsampling-scheme
+  vic_2y:
+    lineage: vic
+    reference: "config/vic/{segment}/reference.fasta"
+    annotation: "config/vic/{segment}/genemap.gff"
+    tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
+    clades: "config/vic/ha/clades.tsv"
+    auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
+    min_date: "2Y"
+    reference_min_date: "8Y"
+    include: "config/vic/reference_strains.txt"
+    exclude: "config/vic/outliers.txt"
+    vaccines: "config/vic/vaccine.json"
+    enable_glycosylation: true
+    enable_lbi: true
+    enable_titer_models: true
+    enable_measurements: true
+    titer_collections:
+      - name: cell_hi
+        data: "data/vic/who_ferret_cell_hi_titers.tsv"
+        title: "Cell-passaged HI titers from ferret sera"
+      - name: egg_hi
+        data: "data/vic/who_ferret_egg_hi_titers.tsv"
+        title: "Egg-passaged HI titers from ferret sera"
     subsamples: *subsampling-scheme
 
 fitness_model:
   models:
-    - cTiter_x-ne_star
+    - cTiter_x_cell_fra-ne_star
+    - cTiter_x_human_cell_fra-ne_star
     - ne_star-lbi
-  best_model: cTiter_x-ne_star
+  best_model: cTiter_x_cell_fra-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   pivot_interval: 6
   delta_pivots: 1
