@@ -48,10 +48,9 @@ segments:
   - ha
 
 tree:
-  method: raxml
-  tree-builder-args: ""
-  #tree-builder-args: "'-ninit 10 -czb -bb 1000 -bnni'"
-  #override_default_args: true
+  method: iqtree
+  tree-builder-args: "'-ninit 10 -n 4 -czb -nt AUTO'"
+  override_default_args: true
 
 submission_date_field: date_submitted
 recency:
@@ -63,12 +62,9 @@ array-builds:
   forecast_builds:
     patterns:
       replicate: [1, 2, 3, 4, 5]
-    build_name: "h3n2_2y_cell_fra_{replicate}"
+    build_name: "forecasts_h3n2_2y_{replicate}"
     build_params:
       lineage: "h3n2"
-      center: "who"
-      assay: "fra"
-      passage: "cell"
       reference: "config/h3n2/{{segment}}/reference.fasta"
       annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
@@ -81,8 +77,16 @@ array-builds:
       enable_forecasts: true
       enable_measurements: true
       min_date: "2Y"
+      reference_min_date: "8Y"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
+      titer_collections:
+        - name: cell_fra
+          data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+          title: "Cell-passaged FRA titers from ferret sera"
+        - name: human_cell_fra
+          data: "data/h3n2/who_human_cell_fra_titers.tsv"
+          title: "Cell-passaged FRA titers from pooled human sera"
     subsamples:
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
@@ -91,15 +95,16 @@ array-builds:
       context:
           filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date 2014-06-01 --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
       titer_strains:
           filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
 
 fitness_model:
   models:
-    - cTiter_x-ne_star
+    - cTiter_x_cell_fra-ne_star
+    - cTiter_x_human_cell_fra-ne_star
     - ne_star-lbi
-  best_model: cTiter_x-ne_star
+  best_model: cTiter_x_cell_fra-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   pivot_interval: 6
   delta_pivots: 1
