@@ -97,7 +97,8 @@ array-builds:
       references:
           filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
       titer_strains:
-          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --group-by region year month --subsample-max-sequences 350 --min-date 1Y --exclude {exclude}
+          priorities: "titers"
 
 fitness_model:
   models:
