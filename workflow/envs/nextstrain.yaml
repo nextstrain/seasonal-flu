@@ -4,11 +4,11 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - augur=18.2.0
+  - augur=19.2.0
   - epiweeks=2.1.2
   - iqtree=2.2.0_beta
   - mafft=7.475
-  - nextalign=2.8.0
+  - nextalign=2.9.1
   - python=3.9*
   - seaborn>=0.11*
   - seqkit=2.2.0
