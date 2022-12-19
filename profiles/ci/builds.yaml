@@ -42,9 +42,6 @@ recency:
 builds:
     "ci_build":
       lineage: h3n2
-      center: cdc
-      passage: cell
-      assay: fra
       reference: "config/h3n2/{segment}/reference.fasta"
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
@@ -54,6 +51,9 @@ builds:
       enable_titer_models: true
       enable_lbi: true
       enable_glycosylation: true
+      titer_collections:
+        - name: cdc_cell_fra
+          data: "example_data/cdc_h3n2_cell_fra_titers.tsv"
       subsamples:
         global:
             filters: "--exclude-where 'ha!=True' 'na!=True'"

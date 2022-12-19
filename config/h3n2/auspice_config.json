@@ -28,22 +28,27 @@
       "type": "categorical"
     },
     {
+      "key": "haplotype",
+      "title": "Derived haplotype",
+      "type": "categorical"
+    },
+    {
       "key": "ne_star",
       "title": "Mutational load",
       "type": "continuous"
     },
     {
-      "key": "cTiter",
+      "key": "cdc_cell_fra_cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
     },
     {
-      "key": "cTiterSub",
+      "key": "cdc_cell_fra_cTiterSub",
       "title": "Antigenic advance (sub model)",
       "type": "continuous"
     },
     {
-      "key": "cTiter_x",
+      "key": "cdc_cell_fra_cTiter_x",
       "title": "HI antigenic novelty",
       "type": "continuous"
     },
@@ -106,6 +111,16 @@
       "key": "epiweek",
       "title": "Epiweek (CDC)",
       "type": "ordinal"
+    },
+   {
+      "key": "cdc_cell_fra_dTiter",
+      "title": "Antigenic branch weight (tree model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cdc_cell_fra_dTiterSub",
+      "title": "Antigenic substitution weight (sub model)",
+      "type": "continuous"
     }
   ],
   "geo_resolutions": [
