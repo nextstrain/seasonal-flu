@@ -36,6 +36,18 @@ for array_build in config.get("array-builds", {}).values():
         for k,v in array_build.get("build_params",{}).items():
             if isinstance(v, str):
                 build_params[k] = v.format(**build_params)
+            elif k == "titer_collections":
+                # Allow expansion of build parameters in titer collection
+                # attributes like data path and title.
+                titer_collections = []
+                for original_titer_collection in v:
+                    titer_collection = original_titer_collection.copy()
+                    for titer_collection_key, titer_collection_value in titer_collection.items():
+                        titer_collection[titer_collection_key] = titer_collection_value.format(**build_params)
+
+                    titer_collections.append(titer_collection)
+
+                build_params[k] = titer_collections
             else:
                 build_params[k] = v
 
