@@ -66,9 +66,6 @@ array-builds:
         - 1.5
     build_name: "{lineage}_europe_{resolution}y"
     build_params:
-      center: who
-      assay: hi
-      passage: cell
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -78,6 +75,9 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
+      titer_collections:
+        - name: who_cell_hi
+          data: "data/{lineage}/who_cell_hi_titers.tsv"
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
@@ -104,9 +104,6 @@ array-builds:
         - 1.5
     build_name: "{lineage}_{country}_{resolution}y"
     build_params:
-      center: who
-      assay: hi
-      passage: cell
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -116,6 +113,9 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
+      titer_collections:
+        - name: who_cell_hi
+          data: "data/{lineage}/who_cell_hi_titers.tsv"
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"

@@ -79,15 +79,19 @@ builds:
     titer_collections:
       - name: cell_hi
         data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
+        prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
       - name: egg_hi
         data: "data/h1n1pdm/who_ferret_egg_hi_titers.tsv"
+        prefix: egg_hi_
         title: "Egg-passaged HI titers from ferret sera"
       - name: human_cell_hi
         data: "data/h1n1pdm/who_human_cell_hi_titers.tsv"
+        prefix: human_cell_hi_
         title: "Cell-passaged HI titers from pooled human sera"
       - name: mouse_cell_hi
         data: "data/h1n1pdm/who_mouse_cell_hi_titers.tsv"
+        prefix: mouse_cell_hi_
         title: "Cell-passaged HI titers from pooled mouse sera"
     subsamples: &titers-subsampling-scheme
       regions_except_europe:
@@ -123,6 +127,7 @@ builds:
     titer_collections:
       - name: cell_hi
         data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
+        prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
     subsamples: &representative-subsampling-scheme
       regions_except_europe:
@@ -155,21 +160,27 @@ builds:
     titer_collections:
       - name: cell_fra
         data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+        prefix: cell_fra_
         title: "Cell-passaged FRA titers from ferret sera"
       - name: egg_fra
         data: "data/h3n2/who_ferret_egg_fra_titers.tsv"
+        prefix: egg_fra_
         title: "Egg-passaged FRA titers from ferret sera"
       - name: cell_hi
         data: "data/h3n2/who_ferret_cell_hi_titers.tsv"
+        prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
       - name: egg_hi
         data: "data/h3n2/who_ferret_egg_hi_titers.tsv"
+        prefix: egg_hi_
         title: "Egg-passaged HI titers from ferret sera"
       - name: human_cell_fra
         data: "data/h3n2/who_human_cell_fra_titers.tsv"
+        prefix: human_cell_fra_
         title: "Cell-passaged FRA titers from pooled human sera"
       - name: human_cell_hi
         data: "data/h3n2/who_human_cell_hi_titers.tsv"
+        prefix: human_cell_hi_
         title: "Cell-passaged HI titers from pooled human sera"
     subsamples: *titers-subsampling-scheme
   h3n2_2y:
@@ -192,6 +203,7 @@ builds:
     titer_collections:
       - name: cell_fra
         data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+        prefix: cell_fra_
         title: "Cell-passaged FRA titers from ferret sera"
     subsamples: *representative-subsampling-scheme
   vic_2y_titers:
@@ -213,9 +225,11 @@ builds:
     titer_collections:
       - name: cell_hi
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
+        prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
       - name: egg_hi
         data: "data/vic/who_ferret_egg_hi_titers.tsv"
+        prefix: egg_hi_
         title: "Egg-passaged HI titers from ferret sera"
     subsamples: *titers-subsampling-scheme
   vic_2y:
@@ -237,6 +251,7 @@ builds:
     titer_collections:
       - name: cell_hi
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
+        prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
     subsamples: *representative-subsampling-scheme
 

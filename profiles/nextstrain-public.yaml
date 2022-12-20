@@ -67,9 +67,6 @@ array-builds:
         - 6Y6M
     build_name: "flu_seasonal_{lineage}_6m"
     build_params: &shared-hi-build-params
-      assay: hi
-      passage: cell
-      center: cdc
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -81,12 +78,15 @@ array-builds:
       enable_titer_models: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
+      titer_collections:
+        - name: cdc_cell_hi
+          data: "data/{lineage}/cdc_cell_hi_titers.tsv"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       europe:
-          filters: --query "(passage_category in ['{passage}', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude} --exclude-where passage=egg
@@ -151,9 +151,6 @@ array-builds:
     build_name: "flu_seasonal_h3n2_6m"
     build_params: &shared-fra-build-params
       lineage: h3n2
-      assay: fra
-      passage: cell
-      center: cdc
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -165,6 +162,9 @@ array-builds:
       enable_titer_models: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
+      titer_collections:
+        - name: cdc_cell_fra
+          data: "data/h3n2/cdc_cell_fra_titers.tsv"
     subsamples: *subsampling-scheme
   # 2Y H3N2 builds are a special case where we enable forecasts.
   2Y-fra-builds:
@@ -176,9 +176,6 @@ array-builds:
     build_name: "flu_seasonal_h3n2_2y"
     build_params:
       lineage: h3n2
-      assay: fra
-      passage: cell
-      center: cdc
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -191,6 +188,9 @@ array-builds:
       enable_forecasts: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
+      titer_collections:
+        - name: cdc_cell_fra
+          data: "data/h3n2/cdc_cell_fra_titers.tsv"
     subsamples: *subsampling-scheme
   3Y-fra-builds:
     patterns:

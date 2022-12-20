@@ -86,6 +86,9 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
+      titer_collections:
+        - name: "{center}_{passage}_{assay}"
+          data: "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt'"
