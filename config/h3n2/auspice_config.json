@@ -38,17 +38,17 @@
       "type": "continuous"
     },
     {
-      "key": "cdc_cell_fra_cTiter",
+      "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
     },
     {
-      "key": "cdc_cell_fra_cTiterSub",
+      "key": "cTiterSub",
       "title": "Antigenic advance (sub model)",
       "type": "continuous"
     },
     {
-      "key": "cdc_cell_fra_cTiter_x",
+      "key": "cTiter_x",
       "title": "HI antigenic novelty",
       "type": "continuous"
     },
@@ -111,16 +111,6 @@
       "key": "epiweek",
       "title": "Epiweek (CDC)",
       "type": "ordinal"
-    },
-   {
-      "key": "cdc_cell_fra_dTiter",
-      "title": "Antigenic branch weight (tree model)",
-      "type": "continuous"
-    },
-    {
-      "key": "cdc_cell_fra_dTiterSub",
-      "title": "Antigenic substitution weight (sub model)",
-      "type": "continuous"
     }
   ],
   "geo_resolutions": [

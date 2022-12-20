@@ -11,6 +11,14 @@ output:
 '''
 build_dir = config.get("build_dir", "builds")
 
+def get_titer_collection_attribute_prefix_argument(wildcards):
+    for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+        if collection["name"] == wildcards.titer_collection:
+            if collection.get("prefix"):
+                return f"--attribute-prefix {collection['prefix']}"
+            else:
+                return ""
+
 rule titers_sub:
     input:
         titers = build_dir +"/{build_name}/titers/{titer_collection}.tsv",
@@ -18,7 +26,8 @@ rule titers_sub:
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
         translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
-        genes = lambda w: GENES[w.segment]
+        genes = lambda w: GENES[w.segment],
+        attribute_prefix_argument = get_titer_collection_attribute_prefix_argument,
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
@@ -34,7 +43,7 @@ rule titers_sub:
             --gene-names {params.genes} \
             --tree {input.tree} \
             --allow-empty-model \
-            --attribute-prefix {wildcards.titer_collection}_ \
+            {params.attribute_prefix_argument} \
             --output {output.titers_model} 2>&1 | tee {log}
         """
 
@@ -42,6 +51,8 @@ rule titers_tree:
     input:
         titers = "builds/{build_name}/titers/{titer_collection}.tsv",
         tree = rules.refine.output.tree,
+    params:
+        attribute_prefix_argument = get_titer_collection_attribute_prefix_argument,
     output:
         titers_model = "builds/{build_name}/{segment}/titers-tree-model/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
@@ -55,7 +66,7 @@ rule titers_tree:
             --titers {input.titers} \
             --tree {input.tree} \
             --allow-empty-model \
-            --attribute-prefix {wildcards.titer_collection}_ \
+            {params.attribute_prefix_argument} \
             --output {output.titers_model} 2>&1 | tee {log}
         """
 
