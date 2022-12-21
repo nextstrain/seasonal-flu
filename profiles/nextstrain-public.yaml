@@ -80,7 +80,7 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
         - name: cdc_cell_hi
-          data: "data/{lineage}/cdc_cell_hi_titers.tsv"
+          data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
     subsamples: &subsampling-scheme
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
@@ -164,7 +164,7 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
         - name: cdc_cell_fra
-          data: "data/h3n2/cdc_cell_fra_titers.tsv"
+          data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
     subsamples: *subsampling-scheme
   # 2Y H3N2 builds are a special case where we enable forecasts.
   2Y-fra-builds:
@@ -190,7 +190,7 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
         - name: cdc_cell_fra
-          data: "data/h3n2/cdc_cell_fra_titers.tsv"
+          data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
     subsamples: *subsampling-scheme
   3Y-fra-builds:
     patterns:
