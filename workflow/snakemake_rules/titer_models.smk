@@ -11,13 +11,17 @@ output:
 '''
 build_dir = config.get("build_dir", "builds")
 
-def get_titer_collection_attribute_prefix_argument(wildcards):
+def get_titer_collection_attribute_prefix(wildcards):
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
         if collection["name"] == wildcards.titer_collection:
-            if collection.get("prefix"):
-                return f"--attribute-prefix {collection['prefix']}"
-            else:
-                return ""
+            return collection.get("prefix", "")
+
+def get_titer_collection_attribute_prefix_argument(wildcards):
+    collection_prefix = get_titer_collection_attribute_prefix(wildcards)
+    if collection_prefix:
+        return f"--attribute-prefix {collection_prefix}"
+    else:
+        return ""
 
 rule titers_sub:
     input:
@@ -106,7 +110,6 @@ def get_titer_collection_title(wildcards):
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
         if collection["name"] == wildcards.titer_collection:
             return collection.get("title", collection["name"])
-    # f"{lineage_name} {host}-based {passage}-passaged {assay} measurements"
 
 rule export_measurements:
     input:

@@ -86,8 +86,8 @@ rule pairwise_titer_tree_distances:
     output:
         distances = "builds/{build_name}/{segment}/pairwise-titer-tree-distances/{titer_collection}.json",
     params:
-        model_attribute_name = lambda wildcards: f"{wildcards.titer_collection}_dTiter",
-        attribute_name = lambda wildcards: f"cTiter_pairwise_{wildcards.titer_collection}",
+        model_attribute_name = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}dTiter",
+        attribute_name = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}cTiter_pairwise",
         months_back_for_current_samples = config.get("fitness_model", {}).get("months_back_for_current_samples"),
         years_back_to_compare = config.get("fitness_model", {}).get("max_years_for_distances"),
     conda: "../envs/nextstrain.yaml"
@@ -119,8 +119,8 @@ rule titer_tree_cross_immunities:
     output:
         cross_immunities = "builds/{build_name}/{segment}/titer-tree-cross-immunity/{titer_collection}.json",
     params:
-        distance_attributes = lambda wildcards: f"cTiter_pairwise_{wildcards.titer_collection}",
-        immunity_attributes = lambda wildcards: f"cTiter_x_{wildcards.titer_collection}",
+        distance_attributes = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}cTiter_pairwise",
+        immunity_attributes = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}cTiter_x",
         decay_factors = "14.0",
         years_to_wane = config.get("fitness_model", {}).get("max_years_for_distances"),
     conda: "../envs/nextstrain.yaml"

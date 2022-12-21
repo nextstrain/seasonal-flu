@@ -83,9 +83,11 @@ array-builds:
       titer_collections:
         - name: cell_fra
           data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+          prefix: cell_fra_
           title: "Cell-passaged FRA titers from ferret sera"
         - name: human_cell_fra
           data: "data/h3n2/who_human_cell_fra_titers.tsv"
+          prefix: human_cell_fra_
           title: "Cell-passaged FRA titers from pooled human sera"
     subsamples:
       regions_except_europe:
@@ -102,10 +104,10 @@ array-builds:
 
 fitness_model:
   models:
-    - cTiter_x_cell_fra-ne_star
-    - cTiter_x_human_cell_fra-ne_star
+    - cell_fra_cTiter_x-ne_star
+    - human_cell_fra_cTiter_x-ne_star
     - ne_star-lbi
-  best_model: cTiter_x_cell_fra-ne_star
+  best_model: cell_fra_cTiter_x-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   pivot_interval: 6
   delta_pivots: 1

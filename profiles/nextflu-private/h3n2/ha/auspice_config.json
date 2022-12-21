@@ -48,12 +48,12 @@
       "type": "continuous"
     },
     {
-      "key": "weighted_distance_to_future_by_cTiter_x_cell_fra-ne_star",
+      "key": "weighted_distance_to_future_by_cell_fra_cTiter_x-ne_star",
       "title": "Distance to future population (by ferret FRA antigenic novelty and mutational load)",
       "type": "continuous"
     },
     {
-      "key": "weighted_distance_to_future_by_cTiter_x_human_cell_fra-ne_star",
+      "key": "weighted_distance_to_future_by_human_cell_fra_cTiter_x-ne_star",
       "title": "Distance to future population (by human FRA antigenic novelty and mutational load)",
       "type": "continuous"
     },
@@ -83,7 +83,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_cell_fra",
+      "key": "cell_fra_cTiter_x",
       "title": "Antigenic novelty (ferret cell FRA)",
       "type": "continuous"
     },
@@ -168,7 +168,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_egg_fra",
+      "key": "egg_fra_cTiter_x",
       "title": "Antigenic novelty (ferret egg FRA)",
       "type": "continuous"
     },
@@ -193,7 +193,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_cell_hi",
+      "key": "cell_hi_cTiter_x",
       "title": "Antigenic novelty (ferret cell HI)",
       "type": "continuous"
     },
@@ -218,7 +218,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_egg_hi",
+      "key": "egg_hi_cTiter_x",
       "title": "Antigenic novelty (ferret egg HI)",
       "type": "continuous"
     },
@@ -243,7 +243,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_human_cell_fra",
+      "key": "human_cell_fra_cTiter_x",
       "title": "Antigenic novelty (human cell FRA)",
       "type": "continuous"
     },
@@ -268,7 +268,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x_human_cell_hi",
+      "key": "human_cell_hi_cTiter_x",
       "title": "Antigenic novelty (human cell HI)",
       "type": "continuous"
     },
