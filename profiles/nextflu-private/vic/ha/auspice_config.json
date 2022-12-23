@@ -34,16 +34,6 @@
       "type": "categorical"
     },
     {
-      "key": "titers_for_reference_viruses",
-      "title": "Titers for reference viruses",
-      "type": "continuous"
-    },
-    {
-      "key": "haplotype_missing_reference_virus",
-      "title": "Haplotype missing reference virus",
-      "type": "categorical"
-    },
-    {
       "key": "cell_hi_cTiter",
       "title": "Antigenic advance (tree, ferret cell HI)",
       "type": "continuous"
@@ -54,7 +44,7 @@
       "type": "continuous"
     },
     {
-      "key": "cTiter_x",
+      "key": "cell_hi_cTiter_x",
       "title": "HI antigenic novelty",
       "type": "continuous"
     },
