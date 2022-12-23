@@ -116,5 +116,6 @@ rule export_private:
             --include-root-sequence \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
+            --minify-json \
             --output {output.auspice_json} 2>&1 | tee {log}
         """
