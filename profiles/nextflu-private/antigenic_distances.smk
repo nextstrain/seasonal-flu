@@ -82,9 +82,12 @@ rule summarize_haplotype_titer_coverage:
 
 def get_private_node_data(wildcards):
     node_data = []
-    for collection in config["builds"][wildcards.build_name]["titer_collections"]:
-        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
-        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
+
+    # Only try to annotate titer collections for HA.
+    if wildcards.segment == "ha":
+        for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+            node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
+            node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
 
     return node_data
 
