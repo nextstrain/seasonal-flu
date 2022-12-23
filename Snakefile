@@ -2,6 +2,11 @@ import datetime
 import pandas as pd
 from treetime.utils import numeric_date
 
+# Set the maximum recursion limit globally for all shell commands, to avoid
+# issues with large trees crashing the workflow. Preserve Snakemake's default
+# use of Bash's "strict mode", as we rely on that behaviour.
+shell.prefix("set -euo pipefail; export AUGUR_RECURSION_LIMIT=10000; ")
+
 wildcard_constraints:
     segment = r'pb2|pb1|pa|ha|np|na|ma',
     center = r'who|cdc|crick|niid|crick',

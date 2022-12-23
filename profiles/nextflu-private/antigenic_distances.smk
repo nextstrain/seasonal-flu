@@ -106,7 +106,6 @@ rule export_private:
         "logs/export_{build_name}_{segment}.txt"
     shell:
         """
-        export AUGUR_RECURSION_LIMIT=10000;
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
