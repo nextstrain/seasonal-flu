@@ -26,16 +26,7 @@
     {
       "key": "clade_membership",
       "title": "Clade",
-      "type": "categorical",
-      "scale": [
-        ["3C.2a1b.1b", "#7fb975"],
-        ["3C.2a1b.2a.2", "#e39b39"],
-        ["3C.2a1b.2a.2a", "#705c94"],
-        ["3C.2a1b.2a.2b", "#aad66c"],
-        ["3C.2a1b.2a.2c", "#4a3fdd"],
-        ["3C.2a1b.1a", "#dfd24e"],
-        ["3C.2a1b.2a.1", "#3e9ccf"]
-      ]
+      "type": "categorical"
     },
     {
       "key": "haplotype",
