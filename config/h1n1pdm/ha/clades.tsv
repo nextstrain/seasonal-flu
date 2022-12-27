@@ -71,3 +71,13 @@ clade	gene	site	alt
 6B.1A.5a.1	HA1	189	E
 6B.1A.5a.2	HA1	156	K
 6B.1A.5a.2	HA1	161	I
+
+6B.1A.5a.2a	clade	6B.1A.5a.2
+6B.1A.5a.2a	HA1	54	Q
+6B.1A.5a.2a	HA1	186	T
+6B.1A.5a.2a	HA1	189	E
+6B.1A.5a.2a	HA1	308	R
+
+6B.1A.5a.2a.1	clade	6B.1A.5a.2a
+6B.1A.5a.2a.1	HA1	142	R
+6B.1A.5a.2a.1	HA1	137	S
