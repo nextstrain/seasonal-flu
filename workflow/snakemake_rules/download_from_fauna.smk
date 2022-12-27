@@ -30,6 +30,17 @@ def _get_tdb_assays(wildcards):
         return 'hi,hi_oseltamivir'
     return wildcards.assay
 
+def _get_virus_passage_category(wildcards):
+    # Exclude titer measurements for egg-passaged test viruses from
+    # cell-passaged titer data. This filter prevents mutations associated with
+    # egg-passaging from appearing in the titer substitition model for
+    # cell-passaged titers. For egg-passaged titer models, we accept all other
+    # passage types, too.
+    if wildcards.passage == "cell":
+        return "virus_passage_category:unpassaged,cell,undetermined,N/A"
+    else:
+        return ""
+
 rule download_sequences:
     message: "Downloading sequences from fauna"
     output:
@@ -58,7 +69,8 @@ rule download_titers:
         titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
     params:
         dbs = _get_tdb_databases,
-        assays = _get_tdb_assays
+        assays = _get_tdb_assays,
+        virus_passage_category=_get_virus_passage_category,
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/download_titers_{lineage}_{center}_{passage}_{assay}.txt"
@@ -70,7 +82,7 @@ rule download_titers:
             --database {params.dbs} \
             --virus flu \
             --subtype {wildcards.lineage} \
-            --select assay_type:{params.assays} serum_passage_category:{wildcards.passage} \
+            --select assay_type:{params.assays} {params.virus_passage_category} serum_passage_category:{wildcards.passage} \
             --path data \
             --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
         """
