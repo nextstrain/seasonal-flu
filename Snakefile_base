@@ -58,7 +58,9 @@ def max_date(w):
         date_offset = pd.DateOffset(months=config["frequency_max_date_month_offset"])
         return numeric_date(pd.to_datetime(date.today()) - date_offset)
     else:
-        return numeric_date(date.today())
+        # Adding an extra month as a short-term fix for a bug in augur frequencies
+        # caused by pandas.data_range not working as expected.
+        return numeric_date(date.today()) + (1/12)
 
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
