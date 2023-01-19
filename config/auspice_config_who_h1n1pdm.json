@@ -31,6 +31,12 @@
       "menuItem": "clade",
       "type": "discrete"
     },
+    "full_clade_membership": {
+      "key": "full_clade_membership",
+      "legendTitle": "Clade (long)",
+      "menuItem": "clade (long)",
+      "type": "discrete"
+    },
     "avgage": {
       "menuItem": "average age",
       "legendTitle": "average age",

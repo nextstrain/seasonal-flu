@@ -244,6 +244,9 @@ def _get_node_data_for_report_export(wildcards):
         rules.scores.output.scores,
     ]
 
+    if wildcards.lineage in ["h3n2", "h1n1pdm"]:
+        inputs.append(rules.rename_full_clade_attributes.output.clades)
+
     # glycosilation only makes sense for surface proteins
     if wildcards.segment in ['ha', 'na']:
         inputs.append(rules.glyc.output.glyc)
