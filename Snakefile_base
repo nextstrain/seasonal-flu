@@ -105,6 +105,12 @@ def _get_clades_file_for_wildcards(wildcards):
         return "results/clades_%s_%s_ha_%s_%s_%s.json"%(wildcards.center, wildcards.lineage,
                                                         wildcards.resolution, wildcards.passage, wildcards.assay)
 
+def _get_full_clades_file_for_wildcards(wildcards):
+    if wildcards.segment == "ha":
+        return "config/clades-long_%s_ha.tsv"%(wildcards.lineage)
+    else:
+        return "results/raw_full_clades_%s_%s_ha_%s_%s_%s.json"%(wildcards.center, wildcards.lineage,
+                                                        wildcards.resolution, wildcards.passage, wildcards.assay)
 
 #
 # Define titer data sets to be used.
@@ -828,6 +834,47 @@ rule clades:
                     --clades {input.clades} \
                     --output {output.clades}
             """)
+
+rule full_clades:
+    input:
+        tree = "results/tree-pruned_{center}_{lineage}_ha_{resolution}_{passage}_{assay}.nwk",
+        nt_muts = rules.ancestral.output,
+        aa_muts = rules.translate.output,
+        clades = _get_full_clades_file_for_wildcards
+    output:
+        clades = "results/raw_full_clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json"
+    run:
+        if wildcards.segment == 'ha':
+            shell("""
+                augur clades \
+                    --tree {input.tree} \
+                    --mutations {input.nt_muts} {input.aa_muts} \
+                    --clades {input.clades} \
+                    --output {output.clades}
+            """)
+        else:
+            shell("""
+                python3 scripts/import_tip_clades.py \
+                    --tree {input.tree} \
+                    --clades {input.clades} \
+                    --output {output.clades}
+            """)
+
+rule rename_full_clade_attributes:
+    input:
+        clades = "results/raw_full_clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    output:
+        clades = "results/full_clades_{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}.json",
+    conda: "environment.yaml"
+    params:
+        new_attribute = "full_clade_membership",
+    shell:
+        """
+        python3 scripts/rename_full_clade_attributes.py \
+            --clades {input.clades} \
+            --new-attribute {params.new_attribute} \
+            --output {output.clades}
+        """
 
 rule antigenic_distances_between_strains:
     input:

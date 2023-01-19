@@ -43,6 +43,12 @@
       "menuItem": "clade",
       "type": "discrete"
     },
+    "full_clade_membership": {
+      "key": "full_clade_membership",
+      "legendTitle": "Clade (long)",
+      "menuItem": "clade (long)",
+      "type": "discrete"
+    },
     "cTiter": {
       "key": "cTiter",
       "legendTitle": "Antigenic advance (tree model)",

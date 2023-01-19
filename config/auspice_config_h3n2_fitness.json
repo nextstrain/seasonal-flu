@@ -28,6 +28,11 @@
       "type": "categorical"
     },
     {
+      "key": "full_clade_membership",
+      "title": "Clade (long)",
+      "type": "categorical"
+    },
+    {
       "key": "fitness",
       "title": "Fitness",
       "type": "continuous"

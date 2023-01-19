@@ -28,6 +28,11 @@
       "type": "categorical"
     },
     {
+      "key": "full_clade_membership",
+      "title": "Clade (long)",
+      "type": "categorical"
+    },
+    {
       "key": "ne_star",
       "title": "Mutational load",
       "type": "continuous"

@@ -54,6 +54,9 @@ def _get_node_data_for_export(wildcards):
         files.vaccine_json
     ]
 
+    if wildcards.lineage in ["h3n2", "h1n1pdm"]:
+        inputs.append(rules.rename_full_clade_attributes.output.clades)
+
     if wildcards.lineage == "h3n2" and wildcards.segment == "ha" and wildcards.resolution == "2y":
         wildcards_dict["model"] = config["fitness_model"]["best_model"]
         inputs.append(rules.forecast_tips.output.node_data)
