@@ -85,8 +85,8 @@ clade	gene	site	alt
 2a	clade	2
 2a	HA1	156	S
 
-1	clade	2a
-1	HA1	53	G
+2a.1	clade	2a
+2a.1	HA1	53	G
 2a.1	HA1	104	G
 2a.1	HA1	276	R
 
