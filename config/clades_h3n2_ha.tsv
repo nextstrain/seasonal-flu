@@ -63,67 +63,67 @@ clade	gene	site	alt
 3C.2a1b.2a	HA1	83	E
 3C.2a1b.2a	HA1	94	N
 3C.2a1b.2a	HA2	193	M
-2a.1	HA1	186	S
-2a.1	HA1	193	S
-2a.1	HA1	195	F
-2a.1	HA1	198	P
+1	HA1	186	S
+1	HA1	193	S
+1	HA1	195	F
+1	HA1	198	P
+
+1a	clade	1
+1a	HA1	171	N
+
+1a.1	clade	1a
+1a.1	HA1	48	T
+
+2	HA1	159	N
+2	HA1	160	I
+2	HA1	164	Q
+2	HA1	186	D
+2	HA1	190	N
+2	HA1	193	S
+2	HA1	195	F
+
+2a	clade	2
+2a	HA1	156	S
+
+2a.1	clade	2a
+2a.1	HA1	53	G
+2a.1	HA1	104	G
+2a.1	HA1	276	R
 
 2a.1a	clade	2a.1
-2a.1a	HA1	171	N
+2a.1a	HA1	157	I
+2a.1a	HA1	262	N
 
-2a.1a.1	clade	2a.1a
-2a.1a.1	HA1	48	T
+2a.2	clade	2a
+2a.2	HA1	53	G
+2a.2	HA1	201	K
+2a.2	HA1	219	Y
 
-2a.2	HA1	159	N
-2a.2	HA1	160	I
-2a.2	HA1	164	Q
-2a.2	HA1	186	D
-2a.2	HA1	190	N
-2a.2	HA1	193	S
-2a.2	HA1	195	F
+2a.3	clade	2a
+2a.3	HA1	53	N
+2a.3	HA1	96	S
+2a.3	HA1	192	F
 
-2a.2a	clade	2a.2
-2a.2a	HA1	156	S
+2a.3a	clade	2a.3
+2a.3a	HA1	50	K
+2a.3a	HA1	96	S
 
-2a.2a.1	clade	2a.2a
-2a.2a.1	HA1	53	G
-2a.2a.1	HA1	104	G
-2a.2a.1	HA1	276	R
+2a.3a.1	clade	2a.3a
+2a.3a.1	HA1	140	K
 
-2a.2a.1a	clade	2a.2a.1
-2a.2a.1a	HA1	157	I
-2a.2a.1a	HA1	262	N
+2b	clade	2
+2b	HA1	50	K
+2b	HA1	79	V
+2b	HA1	140	K
 
-2a.2a.2	clade	2a.2a
-2a.2a.2	HA1	53	G
-2a.2a.2	HA1	201	K
-2a.2a.2	HA1	219	Y
+2c	clade	2
+2c	HA1	205	F
+2c	HA1	212	T
 
-2a.2a.3	clade	2a.2a
-2a.2a.3	HA1	53	N
-2a.2a.3	HA1	96	S
-2a.2a.3	HA1	192	F
-
-2a.2a.3a	clade	2a.2a.3
-2a.2a.3a	HA1	50	K
-2a.2a.3a	HA1	96	S
-
-2a.2a.3a.1	clade	2a.2a.3a
-2a.2a.3a.1	HA1	140	K
-
-2a.2b	clade	2a.2
-2a.2b	HA1	50	K
-2a.2b	HA1	79	V
-2a.2b	HA1	140	K
-
-2a.2c	clade	2a.2
-2a.2c	HA1	205	F
-2a.2c	HA1	212	T
-
-2a.2d	clade	2a.2
-2a.2d	HA1	62	R
-2a.2d	HA1	156	Q
-2a.2d	HA1	199	P
+2d	clade	2
+2d	HA1	62	R
+2d	HA1	156	Q
+2d	HA1	199	P
 
 
 
