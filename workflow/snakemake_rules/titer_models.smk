@@ -168,5 +168,6 @@ rule concat_measurements:
         """
         augur measurements concat \
             --jsons {input.measurements} \
+            --minify-json \
             --output-json {output.measurements} 2>&1 | tee {log}
         """
