@@ -26,7 +26,23 @@
     {
       "key": "clade_membership",
       "title": "Clade",
-      "type": "categorical"
+      "type": "categorical",
+      "scale": [
+        ["1", "#492AB5"],
+        ["1a", "#3F4CCB"],
+        ["1a.1", "#4271CE"],
+        ["2", "#4C8FC0"],
+        ["2a", "#5AA5A8"],
+        ["2a.1", "#6DB38A"],
+        ["2a.1a", "#85BA6F"],
+        ["2a.2", "#A0BE59"],
+        ["2a.3", "#BBBC49"],
+        ["2a.3a", "#D2B340"],
+        ["2a.3a.1", "#E19F3A"],
+        ["2b", "#E68033"],
+        ["2c", "#E2562B"],
+        ["2d", "#DB2823"]
+      ]
     },
     {
       "key": "haplotype",

@@ -97,7 +97,7 @@ builds:
     reference: "config/h3n2/{segment}/reference.fasta"
     annotation: "config/h3n2/{segment}/genemap.gff"
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-    clades: "config/h3n2/ha/emerging_clades.tsv"
+    clades: "config/h3n2/ha/clades.tsv"
     auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
     vaccines: "config/h3n2/vaccine.json"
     enable_glycosylation: true
@@ -140,7 +140,7 @@ builds:
     reference: "config/h3n2/{segment}/reference.fasta"
     annotation: "config/h3n2/{segment}/genemap.gff"
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-    clades: "config/h3n2/ha/emerging_clades.tsv"
+    clades: "config/h3n2/ha/clades.tsv"
     auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
     vaccines: "config/h3n2/vaccine.json"
     enable_glycosylation: true
