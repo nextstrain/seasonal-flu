@@ -2,6 +2,8 @@ B/AbuDhabi/27/2019
 B/Aichi/62/2013
 B/Argentina/2802/2019
 B/Arkansas/6/2016
+B/Austria/1359417/2021
+B/Austria/1359417/2021-egg
 B/Ayutthaya/118/2019
 B/Bahrain/232/2019
 B/Bahrain/652/2018
