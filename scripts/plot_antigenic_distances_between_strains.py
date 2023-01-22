@@ -12,19 +12,6 @@ import pandas as pd
 import seaborn as sns
 import sys
 
-NAME_BY_LINEAGE = {
-    "h3n2": "A/H3N2",
-    "h1n1pdm": "A/H1N1pdm",
-    "vic": "B/Victoria",
-}
-
-NAME_BY_SOURCE = {
-    "cdc": "CDC",
-    "crick": "Crick",
-    "niid": "NIID",
-    "vidrl": "VIDRL",
-}
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -36,6 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("--references-to-exclude", help="a list of reference strains to exclude from plots")
     parser.add_argument("--top-references-to-keep", type=int, default=10, help="top N number of references to keep by number of titer measurements")
     parser.add_argument("--min-test-date", type=float, help="minimum numeric date for test strains to include in plots")
+    parser.add_argument("--title", help="title to use for the figure")
     parser.add_argument("--plot-raw-data", action="store_true", help="plot raw data as points in the scatterplot in addition to the summary statistics of mean and confidence intervals")
     parser.add_argument("--output", required=True, help="plot of distances between strains")
 
@@ -159,14 +147,8 @@ if __name__ == '__main__':
         for clade in clade_order
     }
 
-    # Get features of current dataset for display in the title.
-    lineage = NAME_BY_LINEAGE[filtered_df["lineage"].values[0]]
-    passage = filtered_df["passage"].values[0]
-    assay = filtered_df["assay"].values[0].upper()
-    sources = ", ".join([NAME_BY_SOURCE[source] for source in filtered_df["source"].drop_duplicates().sort_values().values])
-
     # Initialize the figure
-    fig, ax = plt.subplots(1, 1, figsize=(14, 10))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 12))
     sns.despine()
 
     if args.plot_raw_data:
@@ -196,12 +178,10 @@ if __name__ == '__main__':
         data=filtered_df,
         dodge=0.55,
         join=False,
-        alpha=0.5,
         palette=color_by_clade,
         markers="d",
         scale=0.75,
-        ci=89,
-        legend=False
+        errorbar=("ci", 89),
     )
 
     # Draw a line at the origin to show where we expect effectively inhibited
@@ -258,7 +238,8 @@ if __name__ == '__main__':
         alpha=0.25,
     )
 
-    plt.title(f"{lineage} {passage} {assay} titers ({sources})")
+    if args.title:
+        plt.title(args.title)
 
     plt.tight_layout()
     plt.savefig(args.output)

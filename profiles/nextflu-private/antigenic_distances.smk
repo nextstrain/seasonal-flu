@@ -1,23 +1,32 @@
 ruleorder: export_private > export
 
+def get_antigenic_plot_paths(wildcards):
+    paths = []
+    for build_name in config["builds"].keys():
+        for collection in config["builds"][build_name]["titer_collections"]:
+            paths.append(f"builds/{build_name}/ha/plotted_antigenic_distances_between_strains/{collection['name']}.pdf")
+
+    return paths
+
 rule all_antigenic_plots:
     input:
-        expand("builds/{build_name}/{segment}/antigenic_distances_between_strains.pdf", build_name=list(config["builds"].keys()), segment=["ha"])
+        get_antigenic_plot_paths,
 
 rule plot_antigenic_distances_between_strains:
     input:
-        distances="builds/{build_name}/{segment}/antigenic_distances_between_strains.tsv",
+        distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         clades=lambda wildcards: f"config/clades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         colors="config/colors_for_titer_plots.tsv",
     output:
-        plot="builds/{build_name}/{segment}/antigenic_distances_between_strains.pdf",
+        plot="builds/{build_name}/{segment}/plotted_antigenic_distances_between_strains/{titer_collection}.pdf",
     benchmark:
-        "benchmarks/plot_antigenic_distances_between_strains_{build_name}_{segment}.txt"
+        "benchmarks/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     log:
-        "logs/plot_antigenic_distances_between_strains_{build_name}_{segment}.txt"
+        "logs/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        min_test_date=2021.0,
+        min_test_date=2022.0,
+        title=get_titer_collection_title,
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -27,7 +36,7 @@ rule plot_antigenic_distances_between_strains:
             --clades {input.clades} \
             --references {input.references} \
             --colors {input.colors} \
-            --plot-raw-data \
+            --title {params.title:q} \
             --output {output.plot} 2>&1 | tee {log}
         """
 
