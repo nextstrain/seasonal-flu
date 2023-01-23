@@ -14,8 +14,8 @@ A/Thuringen/10/2022
 A/SouthAfrica/R08120/2022
 A/Darwin/9/2021-egg
 A/Darwin/6/2021-egg
-A/Darwin/24/2021-egg
 A/Victoria/39/2022-egg
 A/Victoria/6/2022-egg
+A/Darwin/24/2021-egg
 A/Norway/24873/2021-egg
 A/Alaska/1/2021-egg

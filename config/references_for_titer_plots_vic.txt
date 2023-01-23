@@ -1,11 +1,10 @@
 B/Austria/1359417/2021
-B/Henan-Xigong/1118/2021
 B/Michigan/1/2021
-B/Maryland/1/2021
-B/Singapore/WUH4618/2021
+B/Henan-Xigong/1118/2021
 B/Massachusetts/1/2021
+B/Maryland/1/2021
 B/Stockholm/3/2022
-B/Gansu-Baiyin/1281/2021
+B/Singapore/WUH4618/2021
 B/NorthCarolina/1/2021
 B/Netherlands/11267/2022
 B/Austria/1359417/2021-egg
