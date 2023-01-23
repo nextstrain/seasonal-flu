@@ -1,23 +1,7 @@
 custom_rules:
+  - profiles/nextflu-private/download.smk
   - profiles/nextflu-private-forecasts/zoltar.smk
 
-data_source: fauna
-fauna_fasta_fields:
-  - strain
-  - virus
-  - locus
-  - accession
-  - collection_date
-  - virus_inclusion_date
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
 fasta_fields:
   - strain
   - virus
@@ -68,7 +52,7 @@ array-builds:
       reference: "config/h3n2/{{segment}}/reference.fasta"
       annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
-      clades: "config/h3n2/ha/emerging_clades.tsv"
+      clades: "config/h3n2/ha/clades.tsv"
       auspice_config: "config/h3n2/auspice_config_fitness.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_titer_models: true
