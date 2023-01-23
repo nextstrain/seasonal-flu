@@ -94,6 +94,10 @@ clade	gene	site	alt
 3C.2a1b.2a.2a.1a	HA1	157	I
 3C.2a1b.2a.2a.1a	HA1	262	N
 
+3C.2a1b.2a.2a.1b	clade	3C.2a1b.2a.2a.1
+3C.2a1b.2a.2a.1b	HA1	299	K
+3C.2a1b.2a.2a.1b	HA1	140	K
+
 3C.2a1b.2a.2a.2	clade	3C.2a1b.2a.2a
 3C.2a1b.2a.2a.2	HA1	53	G
 3C.2a1b.2a.2a.2	HA1	201	K
@@ -110,6 +114,10 @@ clade	gene	site	alt
 
 3C.2a1b.2a.2a.3a.1	clade	3C.2a1b.2a.2a.3a
 3C.2a1b.2a.2a.3a.1	HA1	140	K
+
+3C.2a1b.2a.2a.3b	clade	3C.2a1b.2a.2a.3
+3C.2a1b.2a.2a.3b	HA1	140	M
+3C.2a1b.2a.2a.3b	nuc	126	A
 
 3C.2a1b.2a.2b	clade	3C.2a1b.2a.2
 3C.2a1b.2a.2b	HA1	50	K

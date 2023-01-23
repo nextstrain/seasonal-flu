@@ -94,6 +94,10 @@ clade	gene	site	alt
 2a.1a	HA1	157	I
 2a.1a	HA1	262	N
 
+2a.1b	clade	2a.1
+2a.1b	HA1	299	K
+2a.1b	HA1	140	K
+
 2a.2	clade	2a
 2a.2	HA1	53	G
 2a.2	HA1	201	K
@@ -110,6 +114,11 @@ clade	gene	site	alt
 
 2a.3a.1	clade	2a.3a
 2a.3a.1	HA1	140	K
+
+2a.3b	clade	2a.3
+2a.3b	HA1	140	M
+2a.3b	nuc	126	A
+
 
 2b	clade	2
 2b	HA1	50	K
