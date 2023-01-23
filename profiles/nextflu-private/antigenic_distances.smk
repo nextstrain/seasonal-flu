@@ -4,7 +4,8 @@ def get_antigenic_plot_paths(wildcards):
     paths = []
     for build_name in config["builds"].keys():
         for collection in config["builds"][build_name]["titer_collections"]:
-            paths.append(f"builds/{build_name}/ha/plotted_antigenic_distances_between_strains/{collection['name']}.pdf")
+            if "ferret" in collection["data"]:
+                paths.append(f"builds/{build_name}/ha/plots/antigenic_distances_between_strains_{build_name}_{collection['name']}.png")
 
     return paths
 
@@ -19,7 +20,7 @@ rule plot_antigenic_distances_between_strains:
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         colors="config/colors_for_titer_plots.tsv",
     output:
-        plot="builds/{build_name}/{segment}/plotted_antigenic_distances_between_strains/{titer_collection}.pdf",
+        plot="builds/{build_name}/{segment}/plots/antigenic_distances_between_strains_{build_name}_{titer_collection}.png",
     benchmark:
         "benchmarks/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     log:
