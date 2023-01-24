@@ -82,7 +82,7 @@ if __name__ == "__main__":
     df = df[df["clade"].isin(args.clades)].copy()
 
     # Get pivots.
-    numeric_pivots = df["pivot"].drop_duplicates().values
+    numeric_pivots = df["pivot"].drop_duplicates().sort_values().values
     timepoint = df[df["observed"]]["pivot"].max()
     timepoint_index = list(numeric_pivots).index(timepoint) + 1
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     today = datetime.today().toordinal()
 
     # Plot frequencies.
-    fig, axes = plt.subplots(int(np.ceil(len(args.clades) / 2.0)), 2, figsize=(16, 1.5 * len(args.clades)), squeeze=False,
+    fig, axes = plt.subplots(int(np.ceil(len(args.clades) / 2.0)), 2, figsize=(16, 1.25 * len(args.clades)), squeeze=False,
                              sharex=True, sharey=True)
 
     delta_frequency_records = []
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     proportion_by_status = (delta_frequency_df.groupby([
         "clade",
         "status"
-    ])["sample"].count().reset_index().pivot("clade", ["status"], ["sample"]).fillna(0) / delta_frequency_df["sample"].drop_duplicates().shape[0]) * 100
+    ])["sample"].count().reset_index().pivot(index="clade", columns=["status"], values=["sample"]).fillna(0) / delta_frequency_df["sample"].drop_duplicates().shape[0]) * 100
 
     for ci, clade_name in enumerate(args.clades):
         ax = axes.flatten()[ci]
