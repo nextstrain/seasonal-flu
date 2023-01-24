@@ -1,22 +1,21 @@
-from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
-S3 = S3RemoteProvider()
-
 rule download_sequences:
-    input:
-        sequences=S3.remote("nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/raw_sequences.fasta.xz")
     output:
         sequences="data/{lineage}/raw_{segment}.fasta"
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/raw_sequences.fasta.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        xz -c -d {input.sequences} > {output.sequences}
+        aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
         """
 
 rule download_titers:
-    input:
-        titers=S3.remote("nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{titer_collection}_titers.tsv.gz")
     output:
         titers="data/{lineage}/{titer_collection}_titers.tsv"
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{titer_collection}_titers.tsv.gz"
+    conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        gzip -c -d {input.titers} > {output.titers}
+        aws s3 cp {params.s3_path} - | gzip -c -d > {output.titers}
         """
