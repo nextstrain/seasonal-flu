@@ -26,6 +26,7 @@ B/Novosibirsk/RII-26903S/2020
 B/RheinlandPfalz/43/2016
 B/SouthAustralia/81/2012
 B/Stockholm/7/2011
+B/SuratThani/P4519/2022
 B/Sydney/6/2016
 B/Thailand/CU-B11637/2015
 B/Togo/LNG/419/2013
