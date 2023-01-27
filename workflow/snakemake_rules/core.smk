@@ -138,6 +138,21 @@ rule sanitize_trees:
             --output {output.trees:q} 2>&1 | tee {log}
         """
 
+rule prune_reference:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
+        reference = lambda wildcards: config['builds'][wildcards.build_name]['reference'],
+    output:
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/prune_reference.py \
+            --tree {input.tree} \
+            --reference {input.reference} \
+            --output {output.tree}
+        """
+
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
     rate = {
@@ -180,7 +195,7 @@ rule refine:
           - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
