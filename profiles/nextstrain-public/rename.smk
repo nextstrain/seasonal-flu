@@ -23,7 +23,7 @@ rule rename_auspice_main:
         "auspice_renamed/{auspice_name}.json",
     shell:
         """
-        cp {input} {output}
+        ln {input} {output}
         """
 
 rule rename_auspice_root_sequence:
@@ -33,7 +33,7 @@ rule rename_auspice_root_sequence:
         "auspice_renamed/{auspice_name}_root-sequence.json",
     shell:
         """
-        cp {input} {output}
+        ln {input} {output}
         """
 
 rule rename_auspice_tip_frequencies:
@@ -43,5 +43,5 @@ rule rename_auspice_tip_frequencies:
         "auspice_renamed/{auspice_name}_tip-frequencies.json",
     shell:
         """
-        cp {input} {output}
+        ln {input} {output}
         """
