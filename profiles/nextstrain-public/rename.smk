@@ -28,7 +28,7 @@ rule rename_auspice_main:
 
 rule rename_auspice_root_sequence:
     input:
-
+        lambda wildcards: _get_file_by_auspice_name(wildcards).replace(".json", "_root-sequence.json"),
     output:
         "auspice_renamed/{auspice_name}_root-sequence.json",
     shell:
