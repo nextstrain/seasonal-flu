@@ -195,7 +195,7 @@ array-builds:
     build_name: "flu_seasonal_h3n2_2y"
     build_params:
       lineage: h3n2
-      auspice_name: "flu_seasonal_{lineage}_{{segment}}_2y"
+      auspice_name: "flu_seasonal_{lineage}_{{segment}}_{resolution}"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
