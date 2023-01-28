@@ -26,6 +26,5 @@ if __name__ == '__main__':
         for leaf in set(x.name for x in tree.find_clades(terminal=True)).difference(common_leaves):
             tree.prune(leaf)
 
-        tree.root_at_midpoint()
         tree.ladderize()
         Bio.Phylo.write(tree, output_tree_file, 'newick')
