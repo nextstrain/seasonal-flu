@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # Collapse rare haplotypes into their parents, if requested.
     if args.min_tips > 1:
         for node in tree.find_clades():
-            if count_by_haplotype[haplotypes[node.name][args.attribute_name]] < args.min_tips:
+            if (count_by_haplotype[haplotypes[node.name][args.attribute_name]] < args.min_tips) and node.parent is not None:
                 haplotypes[node.name][args.attribute_name] = haplotypes[node.parent.name][args.attribute_name]
 
     # Write out the node annotations.
