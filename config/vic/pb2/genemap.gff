@@ -1,0 +1,3 @@
+##gff-version 3
+##sequence-region KC866604.1 1 2396
+KC866604.1	feature	gene	24	2336	.	+	.	gene_name=PB2

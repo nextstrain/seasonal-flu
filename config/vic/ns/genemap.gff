@@ -1,0 +1,6 @@
+##gff-version 3
+##sequence-region KC866606.1 1 1101
+KC866606.1	feature	gene	45	893	.	+	.	gene_name=NS1
+KC866606.1	feature	gene	45	1071	.	+	.	ID=NS2;gene_name=NS2
+KC866606.1	feature	exon	45	80	.	+	.	ID=NS2_1;Parent=NS2
+KC866606.1	feature	exon	736	1071	.	+	.	ID=NS2_2;Parent=NS2

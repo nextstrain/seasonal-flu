@@ -1,0 +1,3 @@
+##gff-version 3
+##sequence-region KC866602.1 1 2305
+KC866602.1	feature	gene	30	2210	.	+	.	gene_name=PA
