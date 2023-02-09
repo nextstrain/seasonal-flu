@@ -1,0 +1,3 @@
+##gff-version 3
+##sequence-region GQ338390.1 1 1497
+GQ338390.1	feature	gene	1	1497	.	+	.	gene_name=NP

@@ -1,0 +1,6 @@
+##gff-version 3
+##sequence-region FJ969528.1 1 863
+FJ969528.1	feature	gene	1	660	.	+	.	gene_name=NS1
+FJ969528.1	feature	gene	1	838	.	+	.	ID=NS2;gene_name=NS2
+FJ969528.1	feature	exon	1	30	.	+	.	ID=NS2_1;Parent=NS2
+FJ969528.1	feature	exon	503	838	.	+	.	ID=NS2_2;Parent=NS2
