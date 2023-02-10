@@ -1,0 +1,3 @@
+##gff-version 3
+##sequence-region CY115189.1 1 2330
+CY115189.1	feature	gene	3	2261	.	+	.	gene_name=PB1

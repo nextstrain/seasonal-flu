@@ -1,0 +1,4 @@
+##gff-version 3
+##sequence-region CY115184.1 1 1151
+CY115184.1	feature	gene	6	752	.	+	.	gene_name=M1
+CY115184.1	feature	gene	752	1081	.	+	.	gene_name=BM2

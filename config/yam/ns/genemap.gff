@@ -1,0 +1,6 @@
+##gff-version 3
+##sequence-region JN993032.1 1 1051
+JN993032.1	feature	gene	1	846	.	+	.	gene_name=NS1
+JN993032.1	feature	gene	1	1024	.	+	.	ID=NS2;gene_name=NS2
+JN993032.1	feature	exon	1	33	.	+	.	ID=NS2_1;Parent=NS2
+JN993032.1	feature	exon	689	1024	.	+	.	ID=NS2_2;Parent=NS2

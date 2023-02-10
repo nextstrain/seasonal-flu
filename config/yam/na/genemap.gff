@@ -1,3 +1,4 @@
 ##gff-version 3
-##sequence-region CY019709.1 1 1516
-CY019709.1	feature	gene	31	1431	.	+	.	gene_name="NA"
+##sequence-region CY115185.1 1 1512
+CY115185.1	feature	gene	34	1434	.	+	.	gene_name=NA
+CY115185.1	feature	gene	27	329	.	+	.	gene_name=NB
