@@ -8,7 +8,7 @@ from treetime.utils import numeric_date
 shell.prefix("set -euo pipefail; export AUGUR_RECURSION_LIMIT=10000; ")
 
 wildcard_constraints:
-    segment = r'pb2|pb1|pa|ha|np|na|ma',
+    segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     center = r'who|cdc|crick|niid|crick',
     passage = r'cell|egg',
     assay = r'fra|hi',
