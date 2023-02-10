@@ -106,6 +106,24 @@ rule antigenic_distances_between_strains:
             --output {output.distances} &> {log}
         """
 
+rule generate_collection_config_json:
+    input:
+        distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
+    output:
+        config_json="builds/{build_name}/{segment}/measurements_collection_config/{titer_collection}.json",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        groupings=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
+    log:
+        "logs/generate_collection_config_json_{build_name}_{segment}_{titer_collection}.txt"
+    shell:
+        """
+        python3 scripts/generate_collection_config_json.py \
+            --collection {input.distances} \
+            --groupings {params.groupings:q} \
+            --output {output.config_json} &> {log}
+        """
+
 def get_titer_collection_title(wildcards):
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
         if collection["name"] == wildcards.titer_collection:
@@ -114,6 +132,7 @@ def get_titer_collection_title(wildcards):
 rule export_measurements:
     input:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
+        configuration="builds/{build_name}/{segment}/measurements_collection_config/{titer_collection}.json",
     output:
         measurements="builds/{build_name}/{segment}/measurements/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
@@ -124,22 +143,21 @@ rule export_measurements:
     params:
         strain_column="test_strain",
         value_column="log2_titer",
-        grouping_column=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
         title=get_titer_collection_title,
         x_axis_label="normalized log2 titer",
-        threshold=2.0,
+        thresholds=[0.0, 2.0],
         filters=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
     shell:
         """
         augur measurements export \
             --collection {input.distances} \
+            --collection-config {input.configuration} \
             --strain-column {params.strain_column} \
             --value-column {params.value_column} \
-            --grouping-column {params.grouping_column} \
             --key {wildcards.titer_collection} \
             --title {params.title:q} \
             --x-axis-label {params.x_axis_label:q} \
-            --threshold {params.threshold} \
+            --thresholds {params.thresholds} \
             --filters {params.filters} \
             --show-threshold \
             --hide-overall-mean \
