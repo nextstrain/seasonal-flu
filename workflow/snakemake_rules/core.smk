@@ -21,6 +21,12 @@ build_dir = config.get("build_dir", "builds")
 GENES = {
     'ha': ['SigPep', 'HA1', 'HA2'],
     'na': ['NA'],
+    'mp': ['M1'], # TODO: Add support for M2 for flu A one Nextclade supports spliced genes and BM2 for flu B
+    'np': ['NP'],
+    'ns': ['NS1'], # TODO: Add support for NS2 once Nextclade supports spliced genes
+    'pa': ['PA'],
+    'pb1': ['PB1'],
+    'pb2': ['PB2'],
 }
 
 rule mask:
