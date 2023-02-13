@@ -52,3 +52,7 @@ nohup.out
 
 # cluster logs
 slurm-*
+
+# Jupyter/Altair droppings
+.ipynb_checkpoints
+geckodriver.log

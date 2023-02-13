@@ -106,3 +106,18 @@ curl https://nextstrain.org/groups/nextflu-private/settings/overview \
 ```
 
 In the future, we will replace these curl commands with `nextstrain remote` commands that use the group customization endpoints through nextstrain.org.
+
+## Plot counts per lineage for reports
+
+Plot the number of genomes available in GISAID for all lineages in a single plot and then plot number per region within each lineage.
+Plots use Altair which is not part of the Nextstrain Docker or Conda base environments, so we use a custom Conda environment with Snakemake.
+
+``` bash
+snakemake \
+  --use-conda \
+  --conda-frontend mamba \
+  -j 1 \
+  -p \
+  --configfile profiles/nextflu-private.yaml \
+  figures/total-sample-count-by-lineage.png
+```

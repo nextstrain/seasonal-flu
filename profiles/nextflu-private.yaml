@@ -1,6 +1,7 @@
 custom_rules:
   - profiles/nextflu-private/download.smk
   - profiles/nextflu-private/antigenic_distances.smk
+  - profiles/nextflu-private/report.smk
 
 fasta_fields:
   - strain
