@@ -57,6 +57,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-names", nargs="+", help="human-readable model names for each provided model (e.g., mutational load and LBI)")
     parser.add_argument("--groupby", default="date", help="column from the input table to group forecasts for plotting as separate lines (e.g., by date, sample, etc.)")
     parser.add_argument("--drop-samples", nargs="+", help="samples to drop from plots (e.g., due to incorrect phylogenetic nesting of clades, etc.)")
+    parser.add_argument("--height-per-row", type=float, default=1.25, help="height per row in inches")
     parser.add_argument("--output", help="forecast plot")
 
     args = parser.parse_args()
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     today = datetime.today().toordinal()
 
     # Plot frequencies.
-    fig, axes = plt.subplots(int(np.ceil(len(args.clades) / 2.0)), 2, figsize=(16, 1.25 * len(args.clades)), squeeze=False,
+    fig, axes = plt.subplots(int(np.ceil(len(args.clades) / 2.0)), 2, figsize=(16, args.height_per_row * len(args.clades)), squeeze=False,
                              sharex=True, sharey=True)
 
     delta_frequency_records = []
