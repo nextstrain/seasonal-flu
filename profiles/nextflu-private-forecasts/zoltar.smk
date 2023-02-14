@@ -10,14 +10,15 @@ rule calculate_clade_frequency_forecasts:
     log:
         "logs/calculate_clade_frequency_forecasts_{build_name}_{model}.txt"
     params:
-        root_clade="2",
+        #root_clade_arg="",
+        root_clade_arg="--root-clade 2",
     shell:
         """
         python3 scripts/forecast_frequencies_to_table.py \
             --tree {input.tree} \
             --frequencies {input.forecast_frequencies} \
             --annotations sample={wildcards.build_name} model={wildcards.model} \
-            --root-clade {params.root_clade} \
+            {params.root_clade_arg} \
             --output {output.forecast} 2>&1 | tee {log}
         """
 
