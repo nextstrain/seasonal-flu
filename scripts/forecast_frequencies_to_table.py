@@ -27,6 +27,7 @@ if __name__ == '__main__':
     parser.add_argument("--tree", required=True, help="auspice JSON file for the tree used to estimate the given frequencies")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON")
     parser.add_argument("--annotations", nargs="+", help="additional annotations to add to the output table in the format of 'key=value' pairs")
+    parser.add_argument("--root-clade", required=True, help="name of the clade to select as the root of the given tree such that frequencies are all relative to that root and normalized to sum to 1")
     parser.add_argument("--output", required=True, help="tab-delimited file with frequency per node per timepoint")
     parser.add_argument("--include-internal-nodes", action="store_true", help="include data associated with internal nodes in the output table")
     args = parser.parse_args()
@@ -50,8 +51,14 @@ if __name__ == '__main__':
         if node_name not in ["counts", "generated_by"]
     }
 
-    # Collect the last frequency for each node keeping only terminal nodes
-    # (tips) unless internal nodes are also requested.
+    # Zoom into the root clade of the tree.
+    for node in tree.find_clades(terminal=False):
+        if node.node_attrs["clade_membership"]["value"] == args.root_clade:
+            tree = node
+            print(f"Zoom into {args.root_clade} at node {node.name}")
+            break
+
+    # Extract frequencies per node for the selected root clade.
     records = []
     for node in tree.find_clades():
         if args.include_internal_nodes or node.is_terminal():
@@ -68,6 +75,12 @@ if __name__ == '__main__':
 
     # Convert frequencies data into a data frame.
     df = pd.DataFrame(records)
+
+    # Normalize frequencies to sum to 1 per timepoint.
+    strains_and_pivots = df.loc[:, ["pivot", "strain", "frequency"]].drop_duplicates()
+    pivot_sum = strains_and_pivots.groupby("pivot")["frequency"].sum().reset_index()
+    df = df.merge(pivot_sum, on="pivot", how="left", suffixes=["", "_sum"])
+    df["frequency"] = df["frequency"] / df["frequency_sum"]
 
     # Add any additional annotations requested by the user in the format of
     # "key=value" pairs where each key becomes a new column with the given
