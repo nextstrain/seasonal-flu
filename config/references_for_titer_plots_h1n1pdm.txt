@@ -9,6 +9,7 @@ A/India/PUN-NIV323546/2021
 A/Wisconsin/588/2019
 A/Brisbane/50/2022
 A/NorthCarolina/1/2021
+A/Norway/31694/2022-egg
 A/SouthAfrica/R05722/2022-egg
 A/Sydney/173/2022-egg
 A/Sydney/5/2021-egg
