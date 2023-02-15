@@ -74,6 +74,11 @@
             "vaccine": {
                 "selection_date": "2021-09-24"
             }
+        },
+        "A/Sydney/5/2021": {
+            "vaccine": {
+                "selection_date": "2022-09-23"
+            }
         }
     }
 }
