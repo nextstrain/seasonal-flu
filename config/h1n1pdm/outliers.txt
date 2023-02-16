@@ -78,6 +78,7 @@ A/Parana/20675/2022
 A/Paris/2603/2020
 A/Paris/2604/2020
 A/Philippines/8/2018
+A/Petrozavodsk/CRIE/489/2023
 A/Poland/16/2013
 A/Rennes/F_006_029_CT/2020
 A/Rennes/F_006_031_MA/2020
