@@ -1,6 +1,7 @@
 custom_rules:
   - profiles/nextflu-private/download.smk
   - profiles/nextflu-private-forecasts/zoltar.smk
+  - profiles/nextflu-private-forecasts/rename.smk
 
 fasta_fields:
   - strain
@@ -49,11 +50,12 @@ array-builds:
     build_name: "forecasts_h3n2_2y_{replicate}"
     build_params:
       lineage: "h3n2"
+      auspice_name: "who-2023-02_2023-02-16_forecasts_h3n2_2y_ha_{replicate}"
       reference: "config/h3n2/{{segment}}/reference.fasta"
       annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
-      auspice_config: "config/h3n2/auspice_config_fitness.json"
+      auspice_config: "profiles/nextflu-private/h3n2/ha/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_titer_models: true
       enable_glycosylation: true
