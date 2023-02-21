@@ -162,11 +162,26 @@ rule export_measurements:
         x_axis_label="normalized log2 titer",
         thresholds=[0.0, 2.0],
         filters=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
+        include_columns=[
+            "test_strain",
+            "reference_strain",
+            "serum",
+            "log2_titer",
+            "raw_titer",
+            "source",
+            "test_date",
+            "reference_date",
+            "clade_test",
+            "clade_reference",
+            "haplotype_test",
+            "haplotype_reference",
+        ],
     shell:
         """
         augur measurements export \
             --collection {input.distances} \
             --collection-config {input.configuration} \
+            --include-columns {params.include_columns:q} \
             --strain-column {params.strain_column} \
             --value-column {params.value_column} \
             --key {wildcards.titer_collection} \
