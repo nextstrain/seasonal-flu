@@ -9,6 +9,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--collection", required=True, help="collection TSV that will be passed to augur measurements export")
     parser.add_argument("--groupings", nargs="+", required=True, help="grouping columns in the given TSV for which an order will be generated")
+    parser.add_argument("--fields", nargs="+", help="fields from the TSV file to display in the tooltip in the order given to this argument")
     parser.add_argument("--output", required=True, help="configuration JSON for measurements export with ordering specified for the requested grouping")
 
     args = parser.parse_args()
@@ -55,6 +56,13 @@ if __name__ == '__main__':
     config = {
         "groupings": groupings_config,
     }
+
+    # Specify fields and their order, if given.
+    if args.fields:
+       config["fields"] = [
+           {"key": field}
+           for field in args.fields
+       ]
 
     # Save configuration JSON.
     with open(args.output, "w", encoding="utf-8") as oh:

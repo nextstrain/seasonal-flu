@@ -114,6 +114,20 @@ rule generate_collection_config_json:
     conda: "../envs/nextstrain.yaml"
     params:
         groupings=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
+        fields=[
+            "strain",
+            "reference_strain",
+            "serum",
+            "value",
+            "raw_titer",
+            "source",
+            "test_date",
+            "reference_date",
+            "clade_test",
+            "clade_reference",
+            "haplotype_test",
+            "haplotype_reference",
+        ],
     log:
         "logs/generate_collection_config_json_{build_name}_{segment}_{titer_collection}.txt"
     shell:
@@ -121,6 +135,7 @@ rule generate_collection_config_json:
         python3 scripts/generate_collection_config_json.py \
             --collection {input.distances} \
             --groupings {params.groupings:q} \
+            --fields {params.fields:q} \
             --output {output.config_json} &> {log}
         """
 
