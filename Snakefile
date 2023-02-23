@@ -9,7 +9,7 @@ shell.prefix("set -euo pipefail; export AUGUR_RECURSION_LIMIT=10000; ")
 
 wildcard_constraints:
     segment = r'pb2|pb1|pa|ha|np|na|ma',
-    center = r'who|cdc|crick|niid|crick',
+    center = r'who|cdc|crick|niid|crick|vidrl',
     passage = r'cell|egg',
     assay = r'fra|hi',
     host = r'ferret|human|mouse'
