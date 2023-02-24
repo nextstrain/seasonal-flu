@@ -92,8 +92,8 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
-      include: "'config/{lineage}/reference_strains.txt'"
-      exclude: "'config/{lineage}/outliers.txt'"
+      include: "config/{lineage}/reference_strains.txt"
+      exclude: "config/{lineage}/outliers.txt"
       titer_collections:
         - name: titers
           data: "data/{lineage}/{center}_ferret_{passage}_{assay}_titers.tsv"
