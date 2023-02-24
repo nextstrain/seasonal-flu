@@ -188,12 +188,12 @@ rule export_entropy:
         "auspice/{build_name}_{segment}_entropy.json",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
-        '''
+        """
         python3 scripts/entropy.py --alignment {input.aln} \
                 --genes {params.genes} \
                 --gene_map {input.gene_map} \
                 --output {output}
-        '''
+        """
 
 rule export_sequence_json:
     input:
@@ -206,13 +206,13 @@ rule export_sequence_json:
         "auspice/{build_name}_{segment}_sequences.json",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
-        '''
+        """
         python3 scripts/sequence_export.py --alignment {input.aln} \
                 --genes {params.genes} \
                 --tree {input.tree} \
                 --translations {input.aa_seqs} \
                 --output {output}
-        '''
+        """
 
 def _get_node_data_for_report_export(wildcards):
     """Return a list of node data files to include for a given build's wildcards.
