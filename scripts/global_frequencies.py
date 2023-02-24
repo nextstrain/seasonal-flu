@@ -63,8 +63,9 @@ if __name__ == '__main__':
             np.sum(np.array(freqs)*np.array(weights), axis=0) / total_weights[gene]
         )
 
-    with open(args.output_augur, 'wt') as fh:
-        json.dump(frequencies, fh, indent=1)
+    if args.output_augur:
+        with open(args.output_augur, 'wt') as fh:
+            json.dump(frequencies, fh, indent=1)
 
     json_for_export = {'pivots':format_frequencies(pivots)}
     for region in frequencies:
