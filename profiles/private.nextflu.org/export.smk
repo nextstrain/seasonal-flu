@@ -49,7 +49,7 @@ rule tree_frequencies:
         min_clade = 20,
     output:
         frequencies = build_dir + "/{build_name}/{segment}/tree_frequencies.json",
-    conda: "environment.yaml"
+    conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
         augur frequencies \
