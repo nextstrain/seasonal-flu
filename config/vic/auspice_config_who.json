@@ -1,0 +1,105 @@
+{
+  "title": "Real-time tracking of influenza B/Vic evolution using data from GISAID",
+  "color_options": {
+    "gt": {
+      "menuItem": "genotype",
+      "legendTitle": "Genotype",
+      "type": "discrete",
+      "key": "genotype"
+    },
+    "num_date": {
+      "menuItem": "date",
+      "legendTitle": "Sampling date",
+      "type": "continuous",
+      "key": "num_date"
+    },
+    "region": {
+      "key":"region",
+      "legendTitle":"Region",
+      "menuItem":"region",
+      "type":"discrete"
+    },
+    "country": {
+      "key":"country",
+      "legendTitle":"Country",
+      "menuItem":"country",
+      "type":"discrete"
+    },
+    "clade_membership": {
+      "key": "clade_membership",
+      "legendTitle": "Clade",
+      "menuItem": "clade",
+      "type": "discrete"
+    },
+    "avgage": {
+      "menuItem": "average age",
+      "legendTitle": "average age",
+      "type": "continuous",
+      "key": "avg_age"
+    },
+    "vaccov": {
+      "key":"vac_cov",
+      "legendTitle":"Host vaccine coverage",
+      "menuItem":"Host  vac. cov.",
+      "type":"continuous"
+    },
+    "cTiter": {
+      "key": "cTiter",
+      "legendTitle": "Antigenic advance (tree model)",
+      "menuItem": "antigenic advance (tree model)",
+      "type": "continuous"
+    },
+    "cTiterSub": {
+      "key": "cTiterSub",
+      "legendTitle": "Antigenic advance (sub model)",
+      "menuItem": "antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    "lbi": {
+      "vmin": 0,
+      "vmax": 0.7,
+      "legendTitle": "local branching index",
+      "key": "lbi",
+      "menuItem": "local branching index",
+      "type": "continuous"
+    },
+    "recency": {
+      "menuItem": "submission date",
+      "legendTitle": "Submission date",
+      "type": "discrete",
+      "key": "recency"
+    },
+    "epiweek": {
+      "menuItem": "epiweek (CDC)",
+      "legendTitle": "Epiweek (CDC)",
+      "type": "discrete",
+      "key": "epiweek"
+    }
+  },
+  "geo": [
+    "country",
+    "region"
+  ],
+  "defaults": {
+    "mapTriplicate": true,
+    "colorBy": "clade_membership"
+  },
+  "maintainer": [
+    "Jover Lee, Richard Neher, and Trevor Bedford",
+    "http://bedford.io/"
+  ],
+  "filters": [
+    "clade_membership",
+    "region",
+    "country",
+    "authors",
+    "recency",
+    "epiweek"
+  ],
+  "panels": [
+    "tree",
+    "map",
+    "entropy",
+    "frequencies"
+  ]
+}
