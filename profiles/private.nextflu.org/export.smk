@@ -167,28 +167,16 @@ rule export_titers:
         raw = "auspice/{build_name}_{segment}_titers.json",
         tree = "auspice/{build_name}_{segment}_titer-tree-model.json",
         sub = "auspice/{build_name}_{segment}_titer-sub-model.json",
-    run:
-        import json
-        with open(input.sub) as fh:
-            sub = json.load(fh)
-
-        with open(output.sub, 'wt') as sub_file:
-            json.dump({'avidity': sub['avidity'],
-                       'potency': sub['potency'],
-                       'substitution': sub['substitution']},
-                      sub_file, indent=1)
-
-        with open(output.raw, 'wt') as raw_file:
-            json.dump(sub['titers'], raw_file, indent=1)
-
-        with open(input.tree) as fh:
-            tree = json.load(fh)
-
-        with open(output.tree, 'wt') as tree_file:
-            json.dump({'avidity': tree['avidity'],
-                       'potency': tree['potency'],
-                       'dTiter': {k:v['dTiter'] for k,v in tree['nodes'].items()}},
-                      tree_file, indent=1)
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/export_titers_for_auspice_v1.py \
+            --titers-sub {input.sub} \
+            --titers-tree {input.tree} \
+            --output-titers {output.raw} \
+            --output-titers-sub {output.sub} \
+            --output-titers-tree {output.tree}
+        """
 
 rule export_entropy:
     input:
