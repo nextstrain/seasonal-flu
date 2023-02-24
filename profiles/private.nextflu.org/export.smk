@@ -1,10 +1,23 @@
+FREQUENCY_REGIONS = [
+    'Africa',
+    'Europe',
+    'North America',
+    'China',
+    'South Asia',
+    'Japan Korea',
+    'Oceania',
+    'South America',
+    'Southeast Asia',
+    'West Asia',
+]
+
 rule all_who:
     input:
         [
             "auspice-who/" + build.get("auspice_name", f"{build_name}_{{segment}}").format(segment=segment) + "_" + suffix + ".json"
             for build_name, build in config["builds"].items()
             for segment in config["segments"]
-            for suffix in ['tree', 'meta', 'titers', 'titer-tree-model', 'titer-sub-model', 'entropy', 'sequences']
+            for suffix in ['tree', 'meta', 'frequencies', 'titers', 'titer-tree-model', 'titer-sub-model', 'entropy', 'sequences']
         ],
 
 def _get_file_by_auspice_name(wildcards):
@@ -25,109 +38,112 @@ rule rename_auspice_file:
         ln {input} {output}
         """
 
-# def region_translations(w):
-#     genes = gene_names(w)
-#     return ["results/full-aaseq-%s_%s_%s_%s_%s.fasta"%(g, w.region, w.lineage, w.segment, w.resolution)
-#             for g in genes]
+rule tree_frequencies:
+    input:
+        tree = rules.refine.output.tree,
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    params:
+        min_date = lambda wildcards: config["builds"][wildcards.build_name].get("min_date"),
+        pivot_interval = 1,
+        regions = ['global'] + FREQUENCY_REGIONS,
+        min_clade = 20,
+    output:
+        frequencies = build_dir + "/{build_name}/{segment}/tree_frequencies.json",
+    conda: "environment.yaml"
+    shell:
+        """
+        augur frequencies \
+            --method diffusion \
+            --include-internal-nodes \
+            --tree {input.tree} \
+            --regions {params.regions:q} \
+            --metadata {input.metadata} \
+            --pivot-interval {params.pivot_interval} \
+            --minimal-clade-size {params.min_clade} \
+            --min-date {params.min_date} \
+            --output {output}
+        """
 
-# for seg, genes in genes_to_translate.items():
-#     rule:
-#         input:
-#             metadata = rules.parse.output.metadata,
-#             sequences = rules.parse.output.sequences,
-#             exclude = files.outliers,
-#             reference = files.reference
-#         params:
-#             genes=genes,
-#             region="{region}"
-#         output:
-#             alignments = expand("results/full-aaseq-{gene}_{{region}}_{{lineage}}_{{segment}}_{{resolution}}.fasta",
-#                                 gene=genes)
-#         conda: "../../workflow/envs/nextstrain.yaml"
-#         shell:
-#             """
-#             python3 scripts/full_region_alignments.py  --sequences {input.sequences}\
-#                                                  --metadata {input.metadata} \
-#                                                  --exclude {input.exclude} \
-#                                                  --genes {params.genes} \
-#                                                  --region {params.region:q} \
-#                                                  --resolution {wildcards.resolution} \
-#                                                  --reference {input.reference} \
-#                                                  --output {output.alignments:q}
-#             """
+rule filter_translations_by_region:
+    input:
+        translations=build_dir + "/{build_name}/{segment}/translations.done",
+        metadata = build_dir + "/{build_name}/metadata.tsv",
+        exclude = lambda wildcards: config["builds"][wildcards.build_name]["exclude"],
+    output:
+        translations = build_dir + "/{build_name}/{segment}/translations_by_region/{region}/{gene}.fasta",
+    params:
+        translations = build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
+        min_date = lambda wildcards: config["builds"][wildcards.build_name].get("min_date"),
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        augur filter \
+            --sequences {params.translations} \
+            --metadata {input.metadata} \
+            --exclude {input.exclude} \
+            --query "region == '{wildcards.region}'" \
+            --min-date {params.min_date} \
+            --output-sequences {output.translations:q}
+        """
 
-# rule complete_mutation_frequencies_by_region:
-#     input:
-#         metadata = rules.parse.output.metadata,
-#         alignment = region_translations
-#     params:
-#         genes = gene_names,
-#         min_date = min_date,
-#         max_date = max_date,
-#         min_freq = 0.003,
-#         pivot_interval = pivot_interval,
-#         stiffness = 20,
-#         inertia = 0.2
-#     output:
-#         mut_freq = "results/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.json"
-#     conda: "../../workflow/envs/nextstrain.yaml"
-#     benchmark:
-#         "benchmarks/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.txt"
-#     log:
-#         "logs/mutation_frequencies_{region}_{lineage}_{segment}_{resolution}.txt"
-#     resources:
-#         mem_mb=4000,
-#     run:
-#         import os
-#         alignments = [alignment
-#             for alignment in input.alignment
-#             if os.path.getsize(alignment) > 0]
+def region_translations(wildcards):
+    return [
+        f"{build_dir}/{wildcards.build_name}/{wildcards.segment}/translations_by_region/{wildcards.region}/{gene}.fasta"
+        for gene in GENES[wildcards.segment]
+    ]
 
-#         genes = [filename.split('results/full-aaseq-',1)[1].split('_', 1)[0]
-#             for filename in alignments]
+rule complete_mutation_frequencies_by_region:
+    input:
+        metadata = build_dir + "/{build_name}/metadata.tsv",
+        alignment = region_translations,
+    params:
+        genes = lambda w: ','.join(GENES[w.segment]),
+        min_date = lambda wildcards: config["builds"][wildcards.build_name].get("min_date"),
+        min_freq = 0.003,
+        pivot_interval = 1,
+        stiffness = 20,
+        inertia = 0.2,
+    output:
+        mut_freq = build_dir + "/{build_name}/{segment}/mutation_frequencies/{region}.json"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/mutation_frequencies_{build_name}_{segment}_{region}.txt"
+    log:
+        "logs/mutation_frequencies_{build_name}_{segment}_{region}.txt"
+    resources:
+        mem_mb=4000,
+    shell:
+        """
+        augur frequencies \
+            --method diffusion \
+            --alignments {input.alignment} \
+            --metadata {input.metadata} \
+            --gene-names {params.genes:q} \
+            --pivot-interval {params.pivot_interval} \
+            --stiffness {params.stiffness} \
+            --inertia {params.inertia} \
+            --ignore-char X \
+            --min-date {params.min_date} \
+            --minimal-frequency {params.min_freq} \
+            --output {output.mut_freq:q} &> {log:q}
+        """
 
-#         # Make sure our filename splitting worked as expected and we got expected gene names
-#         assert all(gene in params.genes for gene in genes), \
-#             "Gene parsed from file path did not match any expected gene names."
-
-#         if alignments:
-#             shell("""
-#                 augur frequencies --method diffusion \
-#                                   --alignments {alignments:q} \
-#                                   --metadata {input.metadata} \
-#                                   --gene-names {genes:q} \
-#                                   --pivot-interval {params.pivot_interval} \
-#                                   --stiffness {params.stiffness} \
-#                                   --inertia {params.inertia} \
-#                                   --ignore-char X \
-#                                   --min-date {params.min_date} \
-#                                   --max-date {params.max_date} \
-#                                   --minimal-frequency {params.min_freq} \
-#                                   --output {output.mut_freq:q} &> {log:q}
-#             """)
-#         else:
-#             # Create an empty JSON file if there are no alignments
-#             shell("""
-#                 echo {{}} > {output.mut_freq:q}
-#             """)
-
-# rule global_mutation_frequencies:
-#     input:
-#         frequencies = expand(build_dir + "/{{build_name}}/{{segment}}/mutation_frequencies/{region}.json", region = frequency_regions),
-#         tree_freq = rules.tree_frequencies.output,
-#     params:
-#         regions = frequency_regions
-#     output:
-#         auspice="auspice/{build_name}_{segment}_frequencies.json",
-#     conda: "../../workflow/envs/nextstrain.yaml"
-#     shell:
-#         '''
-#         python3 scripts/global_frequencies.py --region-frequencies {input.frequencies:q} \
-#                                               --tree-frequencies {input.tree_freq} \
-#                                               --regions {params.regions:q} \
-#                                               --output-auspice {output.auspice} \
-#                                               --output-augur {output.augur}
-#         '''
+rule global_mutation_frequencies:
+    input:
+        frequencies = expand(build_dir + "/{{build_name}}/{{segment}}/mutation_frequencies/{region}.json", region = FREQUENCY_REGIONS),
+        tree_freq = rules.tree_frequencies.output,
+    params:
+        regions = FREQUENCY_REGIONS
+    output:
+        auspice="auspice/{build_name}_{segment}_frequencies.json",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/global_frequencies.py --region-frequencies {input.frequencies:q} \
+                                              --tree-frequencies {input.tree_freq} \
+                                              --regions {params.regions:q} \
+                                              --output-auspice {output.auspice}
+        """
 
 rule scores:
     input:
