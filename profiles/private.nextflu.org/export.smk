@@ -97,8 +97,9 @@ rule complete_mutation_frequencies_by_region:
         metadata = build_dir + "/{build_name}/metadata.tsv",
         alignment = region_translations,
     params:
-        genes = lambda w: ','.join(GENES[w.segment]),
+        genes = lambda w: GENES[w.segment],
         min_date = lambda wildcards: config["builds"][wildcards.build_name].get("min_date"),
+        max_date = "0D",
         min_freq = 0.003,
         pivot_interval = 1,
         stiffness = 20,
@@ -116,7 +117,7 @@ rule complete_mutation_frequencies_by_region:
         """
         augur frequencies \
             --method diffusion \
-            --alignments {input.alignment} \
+            --alignments {input.alignment:q} \
             --metadata {input.metadata} \
             --gene-names {params.genes:q} \
             --pivot-interval {params.pivot_interval} \
@@ -124,6 +125,7 @@ rule complete_mutation_frequencies_by_region:
             --inertia {params.inertia} \
             --ignore-char X \
             --min-date {params.min_date} \
+            --max-date {params.max_date} \
             --minimal-frequency {params.min_freq} \
             --output {output.mut_freq:q} &> {log:q}
         """
