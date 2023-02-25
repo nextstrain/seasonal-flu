@@ -193,7 +193,7 @@ rule export_entropy:
         """
         python3 scripts/entropy.py --alignment {input.aln} \
                 --genes {params.genes} \
-                --gene_map {input.gene_map} \
+                --gene-map {input.gene_map} \
                 --output {output}
         """
 
@@ -201,8 +201,9 @@ rule export_sequence_json:
     input:
         aln = rules.ancestral.output.node_data,
         tree = rules.refine.output.tree,
-        aa_seqs = aggregate_translations,
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment]
     output:
         "auspice/{build_name}_{segment}_sequences.json",
@@ -212,7 +213,7 @@ rule export_sequence_json:
         python3 scripts/sequence_export.py --alignment {input.aln} \
                 --genes {params.genes} \
                 --tree {input.tree} \
-                --translations {input.aa_seqs} \
+                --translations {params.translations} \
                 --output {output}
         """
 
