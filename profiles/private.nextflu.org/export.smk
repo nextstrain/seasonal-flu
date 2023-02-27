@@ -185,7 +185,7 @@ rule export_entropy:
         aln = rules.align.output.alignment,
         gene_map = lambda w: config['builds'][w.build_name]['annotation'],
     params:
-        genes = lambda w: ','.join(GENES[w.segment]),
+        genes = lambda w: GENES[w.segment],
     output:
         "auspice/{build_name}_{segment}_entropy.json",
     conda: "../../workflow/envs/nextstrain.yaml"
