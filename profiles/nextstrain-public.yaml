@@ -127,7 +127,6 @@ array-builds:
     patterns:
       lineage:
         - h1n1pdm
-        - yam
         - vic
       min_date:
         - 6Y
@@ -142,7 +141,6 @@ array-builds:
     patterns:
       lineage:
         - h1n1pdm
-        - yam
         - vic
       min_date:
         - 12Y
