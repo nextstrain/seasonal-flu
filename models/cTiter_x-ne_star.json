@@ -1,6 +1,6 @@
 {
  "predictors": [
-  "cTiter_x_cell_fra",
+  "cTiter_x",
   "ne_star"
  ],
  "cv_error_mean": 5.823634831801705,
