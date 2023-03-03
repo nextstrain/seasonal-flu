@@ -178,7 +178,7 @@ builds:
     reference: "config/vic/{segment}/reference.fasta"
     annotation: "config/vic/{segment}/genemap.gff"
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
-    clades: "config/vic/ha/clades.tsv"
+    clades: "profiles/nextflu-private/vic/ha/clades.tsv"
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"
