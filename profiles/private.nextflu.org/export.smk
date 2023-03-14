@@ -64,7 +64,7 @@ rule tree_frequencies:
             --output {output}
         """
 
-rule filter_translations_by_region:
+checkpoint filter_translations_by_region:
     input:
         translations=build_dir + "/{build_name}/{segment}/translations.done",
         metadata = build_dir + "/{build_name}/metadata.tsv",
@@ -83,6 +83,7 @@ rule filter_translations_by_region:
             --exclude {input.exclude} \
             --query "region == '{wildcards.region}'" \
             --min-date {params.min_date} \
+            --empty-output-reporting warn \
             --output-sequences {output.translations:q}
         """
 
@@ -130,9 +131,35 @@ rule complete_mutation_frequencies_by_region:
             --output {output.mut_freq:q} &> {log:q}
         """
 
+def _get_region_mutation_frequencies(wildcards):
+    """Find all non-empty gene translations per region and return the
+    corresponding list of regional mutation frequencies JSON that should be
+    estimated from the remaining translations. This logic avoids trying to
+    estimate frequencies for regions with empty alignments.
+    """
+    region_mutation_frequencies = []
+    for region in FREQUENCY_REGIONS:
+        any_empty_translations = False
+        for gene in GENES[wildcards.segment]:
+            checkpoint_wildcards = {
+                "build_name": wildcards.build_name,
+                "segment": wildcards.segment,
+                "region": region,
+                "gene": gene,
+            }
+            with checkpoints.filter_translations_by_region.get(**checkpoint_wildcards).output[0].open() as fh:
+                any_empty_translations |= len(fh.read(1).strip()) == 0
+                if any_empty_translations:
+                    break
+
+        if not any_empty_translations:
+            region_mutation_frequencies.append(f"{build_dir}/{wildcards.build_name}/{wildcards.segment}/mutation_frequencies/{region}.json")
+
+    return region_mutation_frequencies
+
 rule global_mutation_frequencies:
     input:
-        frequencies = expand(build_dir + "/{{build_name}}/{{segment}}/mutation_frequencies/{region}.json", region = FREQUENCY_REGIONS),
+        frequencies = _get_region_mutation_frequencies,
         tree_freq = rules.tree_frequencies.output,
     params:
         regions = FREQUENCY_REGIONS
