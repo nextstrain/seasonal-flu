@@ -11,8 +11,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument('--region-frequencies', nargs='+', type=str, help="regions with frequency estimates")
-    parser.add_argument('--regions', nargs='+', type=str, help="region names corresponding to estimated frequencies")
+    parser.add_argument('--region-frequencies', nargs='+', type=str, help="all available regional frequency estimates")
+    parser.add_argument('--regions', nargs='+', type=str, help="all possible region names corresponding to estimated frequencies")
     parser.add_argument('--tree-frequencies', type=str, help="json file with tree frequencies")
     parser.add_argument('--output-augur', type=str,  help="name of file to frequencies too ")
     parser.add_argument('--output-auspice', type=str,  help="name of file to frequencies too ")
@@ -20,13 +20,24 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     frequencies = {'global':{}}
-    for region, freq_file in zip(args.regions, args.region_frequencies):
+
+    # Map list of possible regions to available frequencies files.
+    available_regions = []
+    for region in args.regions:
+        for frequencies_file in args.region_frequencies:
+            if region in frequencies_file:
+                available_regions.append(region)
+                break
+
+    assert len(available_regions) == len(args.region_frequencies)
+
+    for region, freq_file in zip(available_regions, args.region_frequencies):
         with open(freq_file) as fh:
             frequencies[region] = json.load(fh)
 
     all_mutations = sorted(filter(lambda x:('counts' not in x) and ('pivots' not in x) and (x != 'generated_by'),
                            set.union(*[set(frequencies[region].keys()) for region in frequencies])))
-    pivots = frequencies[args.regions[0]]['pivots']
+    pivots = frequencies[available_regions[0]]['pivots']
     frequencies['global']['pivots'] = format_frequencies(pivots)
 
     # determine the seasonal profiles and weights of different regions for later equitable global frequency calculation below
