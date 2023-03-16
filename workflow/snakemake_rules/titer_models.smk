@@ -109,6 +109,7 @@ rule antigenic_distances_between_strains:
 rule generate_collection_config_json:
     input:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
+        tree="builds/{build_name}/{segment}/tree.nwk",
     output:
         config_json="builds/{build_name}/{segment}/measurements_collection_config/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
@@ -133,6 +134,7 @@ rule generate_collection_config_json:
     shell:
         """
         python3 scripts/generate_collection_config_json.py \
+            --tree {input.tree} \
             --collection {input.distances} \
             --groupings {params.groupings:q} \
             --fields {params.fields:q} \
