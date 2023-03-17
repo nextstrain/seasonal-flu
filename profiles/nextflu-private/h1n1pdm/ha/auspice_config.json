@@ -239,6 +239,11 @@
       "key": "titers_for_reference_viruses_mouse_cell_hi",
       "title": "Titers for reference virus (mouse cell HI)",
       "type": "continuous"
+    },
+    {
+      "key": "year_month",
+      "title": "Year/month",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
@@ -262,7 +267,8 @@
     "division",
     "submitting_lab",
     "recency",
-    "epiweek"
+    "epiweek",
+    "year_month"
   ],
   "panels": [
     "tree",

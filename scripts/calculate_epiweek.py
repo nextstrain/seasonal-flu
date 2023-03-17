@@ -40,11 +40,15 @@ if __name__ == '__main__':
     # Calculate epiweeks from date objects as a new annotation.
     metadata_with_dates["epiweek"] = metadata_with_dates["date"].apply(lambda date: epiweeks.Week.fromdate(date).cdcformat())
 
+    # Create a year-month annotation (e.g., "2023-03"), for coarser filtering in Auspice.
+    metadata_with_dates["year_month"] = metadata_with_dates["date"].apply(lambda date: f"{date.year}-{date.month:02}")
+
     # Create a node data object with epiweeks.
     node_data = {}
     for strain, record in metadata_with_dates.to_dict(orient="index").items():
         node_data[strain] = {
             args.attribute_name: record["epiweek"],
+            "year_month": record["year_month"],
         }
 
     # Save node data.

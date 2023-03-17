@@ -79,6 +79,11 @@
       "key": "epiweek",
       "title": "Epiweek (CDC)",
       "type": "ordinal"
+    },
+    {
+      "key": "year_month",
+      "title": "Year/month",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
@@ -97,7 +102,8 @@
     "division",
     "submitting_lab",
     "recency",
-    "epiweek"
+    "epiweek",
+    "year_month"
   ],
   "panels": [
     "tree",

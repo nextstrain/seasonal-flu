@@ -380,6 +380,11 @@
       "key": "titers_for_reference_viruses_human_cell_hi",
       "title": "Titers for reference virus (human cell HI)",
       "type": "continuous"
+    },
+    {
+      "key": "year_month",
+      "title": "Year/month",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
@@ -407,7 +412,8 @@
     "division",
     "submitting_lab",
     "recency",
-    "epiweek"
+    "epiweek",
+    "year_month"
   ],
   "panels": [
     "tree",
