@@ -42,12 +42,12 @@ B/Guangdong-Nanshan/36/2018
 B/Hebei-Cixian/149/2018-egg
 B/Henan-Hualong/131/2019
 B/Hiroshima-C/7/2018
+B/HongKong/1404/2018
 B/HongKong/269/2017-egg
 B/HongKong/286/2017
 B/HongKong/286/2017-egg
 B/HongKong/330/2001
 B/HongKong/574/2019-egg
-B/HongKong/1404/2018
 B/Iceland/56/2015
 B/Indiana/25/2015
 B/Iowa/6/2017
