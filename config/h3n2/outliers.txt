@@ -123,6 +123,7 @@ A/HuNan/1/2014
 A/Illinois/11/2012
 A/Illinois/14/2012
 A/Illinois/3/2013
+A/Illinois/9/2012
 A/India/1132/2021
 A/India/1718/2021
 A/India/1759/2021
@@ -164,6 +165,7 @@ A/Indiana/138/2012
 A/Indiana/14/2012
 A/Indiana/14/2013
 A/Indiana/144/2012
+A/Indiana/145/2012
 A/Indiana/147/2012
 A/Indiana/149/2012
 A/Indiana/15/2012
@@ -376,6 +378,7 @@ A/Ohio/41/2012
 A/Ohio/43/2012
 A/Ohio/4319/2014
 A/Ohio/44/2012
+A/Ohio/45/2012
 A/Ohio/47/2012
 A/Ohio/5/2013
 A/Ohio/52/2012
@@ -448,6 +451,7 @@ A/StPetersburg/RII-2415S/2021
 A/Sydney/53/2015
 A/Taiwan/937/2009
 A/Tokyo/1/1975
+A/Utah/10/2012
 A/WestVirginia/10/2012
 A/WestVirginia/15/2012
 A/WestVirginia/16/2012

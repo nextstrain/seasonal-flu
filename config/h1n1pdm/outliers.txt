@@ -100,6 +100,7 @@ A/Shanghai-Xuhui/SWL1809/2019
 A/Shanghai/Mix1/2014
 A/Singapore/SM15/2009
 A/Somalia/4/2021
+A/SouthAfrica/16112/2021
 A/SouthAfrica/16325/2021
 A/SouthAfrica/1857/2013
 A/SouthDakota/3/2008
