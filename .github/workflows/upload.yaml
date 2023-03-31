@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: refactor-workflow
       # Install Nextstrain CLI, so we can run the flu workflow.
       - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
       # Run the flu workflow that downloads titers and sequences from fauna and
