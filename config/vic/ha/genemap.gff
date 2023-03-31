@@ -1,5 +1,7 @@
 ##gff-version 3
 ##sequence-region KX058884.1 1 1885
+## Coordinates based on PDB entry 4FQM (https://www.rcsb.org/structure/4FQM)
+## from Dreyfus et al. 2012 (https://www.science.org/doi/full/10.1126/science.1222908).
 KX058884.1	feature	gene	34	78	.	+	.	gene_name="SigPep"
-KX058884.1	feature	gene	79	1116	.	+	.	gene_name="HA1"
-KX058884.1	feature	gene	1117	1791	.	+	.	gene_name="HA2"
+KX058884.1	feature	gene	79	1119	.	+	.	gene_name="HA1"
+KX058884.1	feature	gene	1120	1788	.	+	.	gene_name="HA2"
