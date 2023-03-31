@@ -41,6 +41,8 @@ B/Fujian-Yanping/11766/2018
 B/Guangdong-Nanshan/36/2018
 B/Hebei-Cixian/149/2018-egg
 B/Henan-Hualong/131/2019
+B/Henan-Xigong/1118/2021
+B/Henan-Xigong/1118/2021-egg
 B/Hiroshima-C/7/2018
 B/HongKong/1404/2018
 B/HongKong/269/2017-egg
@@ -99,6 +101,7 @@ B/Ohio/1/2005
 B/Oita/3/2018
 B/Oman/5030/2018
 B/Parana/1316/2018
+B/Paris/9878/2020
 B/Paris/9878/2020-egg
 B/Pennsylvania/8/2020
 B/Philippines/28/2019
@@ -111,6 +114,8 @@ B/Sichuan-Jingyang/12048/2019
 B/Sichuan-Jingyang/12048/2019-egg
 B/Singapore/KK1035/2018
 B/Singapore/TT1243/2015
+B/Singapore/WUH4618/2021
+B/Singapore/WUH4618/2021-egg
 B/Slovenia/1604/2016
 B/SouthAfrica/1921/2020
 B/SouthAfrica/1921/2020-egg
