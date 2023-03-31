@@ -1,0 +1,182 @@
+custom_rules:
+  - profiles/private.nextflu.org/export.smk
+
+data_source: fauna
+fauna_fasta_fields:
+  - strain
+  - virus
+  - locus
+  - accession
+  - collection_date
+  - virus_inclusion_date
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+fasta_fields:
+  - strain
+  - virus
+  - segment
+  - accession
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+prettify_fields:
+  - region
+  - country
+  - division
+  - location
+  - originating_lab
+  - submitting_lab
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  2Y-hi-builds:
+    patterns:
+      center:
+        - who
+        - cdc
+        - crick
+        - niid
+        - vidrl
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+      passage:
+        - cell
+        - egg
+      assay:
+        - hi
+      min_date:
+        - 2Y
+      reference_min_date:
+        - 8Y
+      resolution:
+        - 2y
+    build_name: "flu_{center}_{lineage}_{resolution}_{passage}_{assay}"
+    build_params: &shared-build-params
+      auspice_name: "flu_{center}_{lineage}_{{segment}}_{resolution}_{passage}_{assay}"
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config_who.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+      include: "config/{lineage}/reference_strains.txt"
+      exclude: "config/{lineage}/outliers.txt"
+      titer_collections:
+        - name: titers
+          data: "data/{lineage}/{center}_ferret_{passage}_{assay}_titers.tsv"
+    subsamples: &subsampling-scheme
+      regions_except_europe:
+          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
+          priorities: "titers"
+      europe:
+          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe')" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
+          priorities: "titers"
+      references:
+          filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
+  6Y-hi-builds:
+    patterns:
+      center:
+        - who
+        - cdc
+        - crick
+        - niid
+        - vidrl
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+      passage:
+        - cell
+        - egg
+      assay:
+        - hi
+      min_date:
+        - 6Y
+      reference_min_date:
+        - 12Y
+      resolution:
+        - 6y
+    build_name: "flu_{center}_{lineage}_{resolution}_{passage}_{assay}"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
+  2Y-fra-builds:
+    patterns:
+      center:
+        - who
+        - cdc
+        - crick
+        - niid
+        - vidrl
+      lineage:
+        - h3n2
+      passage:
+        - cell
+        - egg
+      assay:
+        - fra
+      min_date:
+        - 2Y
+      reference_min_date:
+        - 8Y
+      resolution:
+        - 2y
+    build_name: "flu_{center}_{lineage}_{resolution}_{passage}_{assay}"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
+  6Y-fra-builds:
+    patterns:
+      center:
+        - who
+        - cdc
+        - crick
+        - niid
+        - vidrl
+      lineage:
+        - h3n2
+      passage:
+        - cell
+        - egg
+      assay:
+        - fra
+      min_date:
+        - 6Y
+      reference_min_date:
+        - 12Y
+      resolution:
+        - 6y
+    build_name: "flu_{center}_{lineage}_{resolution}_{passage}_{assay}"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme

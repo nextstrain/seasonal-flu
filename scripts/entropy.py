@@ -36,14 +36,14 @@ if __name__ == '__main__':
     parser.add_argument('--alignment', type=str, required=True,
                         help="FASTA file of virus sequences from fauna (e.g., zika.fasta)")
     parser.add_argument('--output', type=str, help="names of files to write selected strains to, one for each gene")
-    parser.add_argument('--reference-sequence', required=True,
-                        help='GenBank file containing the annotation')
+    parser.add_argument('--gene-map', required=True,
+                        help='GFF file containing gene coordinate annotations')
     parser.add_argument('--genes', nargs='+', help="genes to be translated")
 
 
     args = parser.parse_args()
     alignment = AlignIO.read(args.alignment, 'fasta')
-    features_to_translate = load_features(args.reference_sequence, args.genes)
+    features_to_translate = load_features(args.gene_map, args.genes)
 
     entropy = {}
     entropy['nuc'] = calc_entropy(calc_SNV_frequencies(alignment, alphabets['nuc']))
@@ -65,4 +65,3 @@ if __name__ == '__main__':
 
     with open(args.output, 'wt') as fh:
         json.dump(entropy, fh)
-

@@ -1,0 +1,108 @@
+custom_rules:
+  - profiles/nextflu-private/download.smk
+  - profiles/nextflu-private-forecasts/zoltar.smk
+  - profiles/nextflu-private-forecasts/rename.smk
+
+fasta_fields:
+  - strain
+  - virus
+  - segment
+  - accession
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+prettify_fields:
+  - region
+  - country
+  - division
+  - location
+  - originating_lab
+  - submitting_lab
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+tree:
+  method: iqtree
+  tree-builder-args: "'-ninit 10 -n 4 -czb -nt AUTO'"
+  override_default_args: true
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  forecast_builds:
+    patterns:
+      replicate: [1, 2, 3, 4, 5]
+    build_name: "forecasts_h3n2_2y_{replicate}"
+    build_params:
+      lineage: "h3n2"
+      auspice_name: "who-2023-02_2023-02-16_forecasts_h3n2_2y_ha_{replicate}"
+      reference: "config/h3n2/{{segment}}/reference.fasta"
+      annotation: "config/h3n2/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      auspice_config: "profiles/nextflu-private/h3n2/ha/auspice_config.json"
+      vaccines: "config/h3n2/vaccine.json"
+      enable_titer_models: true
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_forecasts: true
+      enable_measurements: true
+      min_date: "2Y"
+      reference_min_date: "8Y"
+      include: "config/h3n2/reference_strains.txt"
+      exclude: "config/h3n2/outliers.txt"
+      titer_collections:
+        - name: cell_fra
+          data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
+          prefix: cell_fra_
+          title: "Cell-passaged FRA titers from ferret sera"
+        - name: human_cell_fra
+          data: "data/h3n2/who_human_cell_fra_titers.tsv"
+          prefix: human_cell_fra_
+          title: "Cell-passaged FRA titers from pooled human sera"
+    subsamples:
+      regions_except_europe:
+          filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
+      europe:
+          filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
+      context:
+          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
+      references:
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
+      titer_strains:
+          filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --group-by region year month --subsample-max-sequences 350 --min-date 1Y --exclude {exclude}
+          priorities: "titers"
+
+fitness_model:
+  models:
+    - cell_fra_cTiter_x-ne_star
+    - human_cell_fra_cTiter_x-ne_star
+    - ne_star-lbi
+  best_model: cell_fra_cTiter_x-ne_star
+  delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  pivot_interval: 6
+  delta_pivots: 1
+  months_back_for_current_samples: 6
+  max_years_for_distances: 5
+  number_of_forecast_samples: 1
+  excluded_node_data_fields:
+    - aa_muts
+    - aa_sequences
+    - muts
+    - num_date_confidence
+    - sequence

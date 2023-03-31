@@ -1,0 +1,136 @@
+{
+  "title": "Real-time tracking of influenza A/H1N1pdm evolution",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
+  "data_provenance": [
+    {
+      "name": "GISAID"
+    }
+  ],
+  "build_url": "https://github.com/nextstrain/seasonal-flu",
+  "colorings": [
+    {
+      "key": "gt",
+      "title": "Genotype",
+      "type": "categorical"
+    },
+    {
+      "key": "num_date",
+      "title": "Date",
+      "type": "continuous"
+    },
+    {
+      "key": "clade_membership",
+      "title": "Clade",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype",
+      "title": "Derived haplotype",
+      "type": "categorical"
+    },
+    {
+      "key": "cTiter",
+      "title": "Antigenic advance (tree model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiterSub",
+      "title": "Antigenic advance (sub model)",
+      "type": "continuous"
+    },
+    {
+      "key": "cTiter_x",
+      "title": "HI antigenic novelty",
+      "type": "continuous"
+    },
+    {
+      "key": "lbi",
+      "title": "Local branching index",
+      "type": "continuous"
+    },
+    {
+      "key": "ep",
+      "title": "Epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "ne",
+      "title": "Non-epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "glyc",
+      "title": "Glycosylation changes",
+      "type": "continuous"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "division",
+      "title": "Division",
+      "type": "categorical"
+    },
+    {
+      "key": "submitting_lab",
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    {
+      "key": "originating_lab",
+      "title": "Originating lab",
+      "type": "categorical"
+    },
+    {
+      "key": "recency",
+      "title": "Submission date",
+      "type": "ordinal"
+    },
+    {
+      "key": "epiweek",
+      "title": "Epiweek (CDC)",
+      "type": "ordinal"
+    },
+    {
+      "key": "year_month",
+      "title": "Year/month",
+      "type": "categorical"
+    }
+  ],
+  "geo_resolutions": [
+    "division",
+    "country",
+    "region"
+  ],
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
+  },
+  "filters": [
+    "clade_membership",
+    "region",
+    "country",
+    "division",
+    "submitting_lab",
+    "recency",
+    "epiweek",
+    "year_month"
+  ],
+  "panels": [
+    "tree",
+    "map",
+    "entropy",
+    "frequencies"
+  ]
+}

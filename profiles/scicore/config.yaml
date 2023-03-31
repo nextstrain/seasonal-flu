@@ -1,0 +1,22 @@
+configfile:
+  - profiles/europe/builds.yaml
+
+cluster-config: profiles/scicore/cluster.json
+cluster: "sbatch --time={cluster.time} --mem={cluster.mem} --cpus-per-task={cluster.n} --qos={cluster.qos}"
+
+jobs: 128
+
+jobscript: profiles/scicore/submit.sh
+
+# Set the name for the job as display in the cluster queue.
+jobname: "{rulename}.{jobid}.sh"
+
+
+cores: 4
+keep-going: True
+printshellcmds: True
+show-failed-logs: True
+reason: True
+stats: stats.json
+# Print log files of failed jobs
+show-failed-logs: True

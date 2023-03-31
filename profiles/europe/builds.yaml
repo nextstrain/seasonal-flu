@@ -1,0 +1,132 @@
+data_source: fauna
+fauna_fasta_fields:
+  - strain
+  - virus
+  - locus
+  - accession
+  - collection_date
+  - virus_inclusion_date
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+fasta_fields:
+  - strain
+  - virus
+  - segment
+  - accession
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+prettify_fields:
+  - region
+  - country
+  - division
+  - location
+  - originating_lab
+  - submitting_lab
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  europe:
+    patterns:
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+        - yam
+      resolution:
+        - 1.5
+    build_name: "{lineage}_europe_{resolution}y"
+    build_params:
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+      titer_collections:
+        - name: who_cell_hi
+          data: "data/{lineage}/who_ferret_cell_hi_titers.tsv"
+    subsampling_parameters:
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      global:
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          priorities: "titers"
+      country:
+          filters: "--group-by country year month --subsample-max-sequences 1500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          priorities: "titers"
+  countries:
+    patterns:
+      lineage:
+        - h3n2
+        - h1n1pdm
+        - vic
+        - yam
+      country:
+        - netherlands
+        - switzerland
+        - sweden
+      resolution:
+        - 1.5
+    build_name: "{lineage}_{country}_{resolution}y"
+    build_params:
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+      titer_collections:
+        - name: who_cell_hi
+          data: "data/{lineage}/who_ferret_cell_hi_titers.tsv"
+    subsampling_parameters:
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      global:
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          priorities: "titers"
+      europe:
+          filters: "--group-by region year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          priorities: "titers"
+      country:
+          filters: "--group-by division year month --subsample-max-sequences 1500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
+          priorities: "titers"

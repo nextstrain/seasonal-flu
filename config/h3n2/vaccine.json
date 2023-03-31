@@ -1,0 +1,84 @@
+{
+    "nodes": {
+        "A/Wisconsin/67/2005": {
+            "vaccine": {
+                "selection_date": "2006-02-21"
+            }
+        },
+        "A/Brisbane/10/2007": {
+            "vaccine": {
+                "selection_date": "2007-09-25"
+            }
+        },
+        "A/Perth/16/2009": {
+            "vaccine": {
+                "selection_date": "2009-09-25"
+            }
+        },
+        "A/Victoria/361/2011": {
+            "vaccine": {
+                "selection_date": "2012-02-21"
+            }
+        },
+        "A/Texas/50/2012": {
+            "vaccine": {
+                "selection_date": "2013-09-25"
+            }
+        },
+        "A/Switzerland/9715293/2013": {
+            "vaccine": {
+                "selection_date": "2014-09-25"
+            }
+        },
+        "A/HongKong/4801/2014": {
+            "vaccine": {
+                "selection_date": "2015-09-24"
+            }
+        },
+        "A/Singapore/Infimh-16-0019/2016": {
+            "vaccine": {
+                "selection_date": "2017-09-28"
+            }
+        },
+        "A/Switzerland/8060/2017": {
+            "vaccine": {
+                "selection_date": "2018-09-27"
+            }
+        },
+        "A/Kansas/14/2017": {
+            "vaccine": {
+                "selection_date": "2019-03-21"
+            }
+        },
+        "A/SouthAustralia/34/2019": {
+            "vaccine": {
+                "selection_date": "2019-09-27"
+            }
+        },
+        "A/HongKong/2671/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
+        },
+        "A/HongKong/45/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
+        },
+        "A/Cambodia/e0826360/2020": {
+            "vaccine": {
+                "selection_date": "2021-02-26"
+            }
+        },
+        "A/Darwin/6/2021": {
+            "vaccine": {
+                "selection_date": "2021-09-24"
+            }
+        },
+        "A/Darwin/9/2021-egg": {
+            "vaccine": {
+                "selection_date": "2022-09-23"
+            }
+        }
+    }
+}

@@ -43,12 +43,6 @@
       "menuItem": "clade",
       "type": "discrete"
     },
-    "full_clade_membership": {
-      "key": "full_clade_membership",
-      "legendTitle": "Clade (long)",
-      "menuItem": "clade (long)",
-      "type": "discrete"
-    },
     "cTiter": {
       "key": "cTiter",
       "legendTitle": "Antigenic advance (tree model)",
@@ -70,8 +64,8 @@
       "type": "continuous"
     },
     "glyc": {
-      "menuItem": "Glycosilation changes",
-      "legendTitle": "Glycosilation gain/loss relative to root",
+      "menuItem": "Glycosylation changes",
+      "legendTitle": "Glycosylation gain/loss relative to root",
       "type": "continuous",
       "key": "glyc"
     },

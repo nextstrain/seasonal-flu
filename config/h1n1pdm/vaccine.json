@@ -1,0 +1,59 @@
+{
+    "nodes": {
+        "A/California/7/2009": {
+            "vaccine": {
+                "selection_date": "2009-09-25"
+            }
+        },
+        "A/Michigan/45/2015": {
+            "vaccine": {
+                "selection_date": "2016-09-29"
+            }
+        },
+        "A/Brisbane/2/2018": {
+            "vaccine": {
+                "selection_date": "2019-02-20"
+            }
+        },
+        "A/Guangdong-Maonan/SWL1536/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
+        },
+        "A/Hawaii/70/2019": {
+            "vaccine": {
+                "selection_date": "2020-02-28"
+            }
+        },
+        "A/Victoria/2570/2019": {
+            "vaccine": {
+                "selection_date": "2020-09-25"
+            }
+        },
+        "A/Wisconsin/588/2019": {
+            "vaccine": {
+                "selection_date": "2020-09-25"
+            }
+        },
+        "A/Sydney/5/2021": {
+            "vaccine": {
+                "selection_date": "2022-09-23"
+            }
+        },
+        "A/Sydney/5/2021-egg": {
+            "vaccine": {
+                "selection_date": "2022-09-23"
+            }
+        },
+        "A/Wisconsin/67/2022": {
+            "vaccine": {
+                "selection_date": "2023-02-24"
+            }
+        },
+        "A/Victoria/4897/2022-egg": {
+            "vaccine": {
+                "selection_date": "2023-02-24"
+            }
+        }
+    }
+}

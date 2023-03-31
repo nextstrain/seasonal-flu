@@ -1,4 +1,3 @@
-# this code export the sequence json needed for the old deprecated auspice
 import argparse, json
 from random import sample
 import numpy as np
@@ -39,5 +38,5 @@ if __name__ == '__main__':
         glyc_json[n.name] = {'glyc':glycosylation_count(aln[n.name]) - root_glyc}
 
     with open(args.output, 'wt') as fh:
-        json.dump({'nodes':glyc_json, 'comment':"glycosylation motif count in HA1 relative to root sequence."}, fh)
+        json.dump({'nodes':glyc_json, 'comment':"glycosylation motif count in HA1/NA relative to root sequence."}, fh)
 

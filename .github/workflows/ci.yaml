@@ -8,4 +8,4 @@ jobs:
   ci:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-ci.yaml@master
     with:
-      build-args: auspice/flu_seasonal_h3n2_ha_12y.json auspice/flu_seasonal_h3n2_ha_12y_tip-frequencies.json
+      build-args: --configfile profiles/ci/builds.yaml -p

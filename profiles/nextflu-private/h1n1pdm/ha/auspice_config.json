@@ -1,0 +1,280 @@
+{
+  "title": "Real-time tracking of influenza A/H1N1pdm evolution",
+  "maintainers": [
+    {"name": "Jover Lee", "url": "https://bedford.io/team/jover-lee/"},
+    {"name": "John Huddleston", "url": "https://bedford.io/team/john-huddleston/"},
+    {"name": "Richard Neher", "url": "https://neherlab.org/richard-neher.html"},
+    {"name": "Trevor Bedford", "url": "https://bedford.io/team/trevor-bedford/"}
+  ],
+  "data_provenance": [
+    {
+      "name": "GISAID"
+    }
+  ],
+  "build_url": "https://github.com/nextstrain/seasonal-flu",
+  "colorings": [
+    {
+      "key": "gt",
+      "title": "Genotype",
+      "type": "categorical"
+    },
+    {
+      "key": "num_date",
+      "title": "Date",
+      "type": "continuous"
+    },
+    {
+      "key": "clade_membership",
+      "title": "Clade",
+      "type": "categorical",
+      "scale": [
+        ["6B.1A.5a", "#57a5d7"],
+        ["5a.1", "#3e59cf"],
+        ["5a.2", "#705c94"],
+        ["5a.2a", "#e39b39"],
+        ["5a.2a.1", "#dfd24e"]
+      ]
+    },
+    {
+      "key": "haplotype",
+      "title": "Derived haplotype",
+      "type": "categorical"
+    },
+    {
+      "key": "cell_hi_cTiter",
+      "title": "Antigenic advance (tree, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_cTiter_x",
+      "title": "HI antigenic novelty",
+      "type": "continuous"
+    },
+    {
+      "key": "lbi",
+      "title": "Local branching index",
+      "type": "continuous"
+    },
+    {
+      "key": "ep",
+      "title": "Epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "ne",
+      "title": "Non-epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "glyc",
+      "title": "Glycosylation changes",
+      "type": "continuous"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "division",
+      "title": "Division",
+      "type": "categorical"
+    },
+    {
+      "key": "submitting_lab",
+      "title": "Submitting lab",
+      "type": "categorical"
+    },
+    {
+      "key": "originating_lab",
+      "title": "Originating lab",
+      "type": "categorical"
+    },
+    {
+      "key": "recency",
+      "title": "Submission date",
+      "type": "ordinal"
+    },
+    {
+      "key": "epiweek",
+      "title": "Epiweek (CDC)",
+      "type": "ordinal"
+    },
+    {
+      "key": "egg_hi_cTiter",
+      "title": "Antigenic advance (tree, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_cTiterSub",
+      "title": "Antigenic advance (sub, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_cTiter",
+      "title": "Antigenic advance (tree, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "mouse_cell_hi_cTiter",
+      "title": "Antigenic advance (tree, mouse cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "mouse_cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, mouse cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_dTiter",
+      "title": "Antigenic weight (tree, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "cell_hi_dTiterSub",
+      "title": "Antigenic weight (sub, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_dTiter",
+      "title": "Antigenic weight (tree, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "egg_hi_dTiterSub",
+      "title": "Antigenic weight (sub, ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_dTiter",
+      "title": "Antigenic weight (tree, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "human_cell_hi_dTiterSub",
+      "title": "Antigenic weight (sub, human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "mouse_cell_hi_dTiter",
+      "title": "Antigenic weight (tree, mouse cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "mouse_cell_hi_dTiterSub",
+      "title": "Antigenic weight (sub, mouse cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "is_titer_reference_virus_in_cell_hi",
+      "title": "Is titer reference virus (ferret cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_egg_hi",
+      "title": "Is titer reference virus (ferret egg HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_human_cell_hi",
+      "title": "Is titer reference virus (human cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "is_titer_reference_virus_in_mouse_cell_hi",
+      "title": "Is titer reference virus (mouse cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_cell_hi",
+      "title": "Haplotype missing reference virus (ferret cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_egg_hi",
+      "title": "Haplotype missing reference virus (ferret egg HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_human_cell_hi",
+      "title": "Haplotype missing reference virus (human cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "haplotype_missing_reference_virus_in_mouse_cell_hi",
+      "title": "Haplotype missing reference virus (mouse cell HI)",
+      "type": "categorical"
+    },
+    {
+      "key": "titers_for_reference_viruses_cell_hi",
+      "title": "Titers for reference virus (ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_egg_hi",
+      "title": "Titers for reference virus (ferret egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_human_cell_hi",
+      "title": "Titers for reference virus (human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "titers_for_reference_viruses_mouse_cell_hi",
+      "title": "Titers for reference virus (mouse cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "year_month",
+      "title": "Year/month",
+      "type": "categorical"
+    }
+  ],
+  "geo_resolutions": [
+    "division",
+    "country",
+    "region"
+  ],
+  "display_defaults": {
+    "map_triplicate": true,
+    "color_by": "clade_membership"
+  },
+  "filters": [
+    "clade_membership",
+    "haplotype",
+    "is_titer_reference_virus_in_cell_hi",
+    "is_titer_reference_virus_in_egg_hi",
+    "haplotype_missing_reference_virus_in_cell_hi",
+    "haplotype_missing_reference_virus_in_egg_hi",
+    "region",
+    "country",
+    "division",
+    "submitting_lab",
+    "recency",
+    "epiweek",
+    "year_month"
+  ],
+  "panels": [
+    "tree",
+    "measurements",
+    "map",
+    "entropy",
+    "frequencies"
+  ]
+}

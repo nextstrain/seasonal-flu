@@ -1,0 +1,34 @@
+{
+    "nodes": {
+        "B/Malaysia/2506/2004": {
+            "vaccine": {
+                "selection_date": "2006-09-25"
+            }
+        },
+        "B/Brisbane/60/2008": {
+            "vaccine": {
+                "selection_date": "2009-09-25"
+            }
+        },
+        "B/Colorado/6/2017": {
+            "vaccine": {
+                "selection_date": "2018-02-22"
+            }
+        },
+        "B/Washington/2/2019": {
+            "vaccine": {
+                "selection_date": "2019-09-27"
+            }
+        },
+        "B/Austria/1359417/2021": {
+            "vaccine": {
+                "selection_date": "2021-09-24"
+            }
+        },
+        "B/Austria/1359417/2021-egg": {
+            "vaccine": {
+                "selection_date": "2021-09-24"
+            }
+        }
+    }
+}

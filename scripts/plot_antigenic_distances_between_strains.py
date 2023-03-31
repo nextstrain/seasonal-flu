@@ -12,30 +12,18 @@ import pandas as pd
 import seaborn as sns
 import sys
 
-NAME_BY_LINEAGE = {
-    "h3n2": "A/H3N2",
-    "h1n1pdm": "A/H1N1pdm",
-    "vic": "B/Victoria",
-}
-
-NAME_BY_SOURCE = {
-    "cdc": "CDC",
-    "crick": "Crick",
-    "niid": "NIID",
-    "vidrl": "VIDRL",
-}
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
     parser.add_argument("--colors", required=True, help="table of Nextstrain colors with `clade_membership` in the first column, clade name in the second column, and hex color in the third column.")
-    parser.add_argument("--clades", nargs="+", help="a list of clades for which test strains should be plotted")
+    parser.add_argument("--clades", help="a list of clades for which test strains should be plotted")
     parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
     parser.add_argument("--references-to-include", help="a list of reference strains to force include in plots")
     parser.add_argument("--references-to-exclude", help="a list of reference strains to exclude from plots")
     parser.add_argument("--top-references-to-keep", type=int, default=10, help="top N number of references to keep by number of titer measurements")
     parser.add_argument("--min-test-date", type=float, help="minimum numeric date for test strains to include in plots")
+    parser.add_argument("--title", help="title to use for the figure")
     parser.add_argument("--plot-raw-data", action="store_true", help="plot raw data as points in the scatterplot in addition to the summary statistics of mean and confidence intervals")
     parser.add_argument("--output", required=True, help="plot of distances between strains")
 
@@ -62,11 +50,14 @@ if __name__ == '__main__':
 
     # Filter by clades.
     if args.clades:
-        df = df[df["clade_test"].isin(args.clades)].copy()
+        with open(args.clades, "r", encoding="utf-8") as fh:
+            clades = [clade.strip() for clade in fh]
+
+        df = df[df["clade_test"].isin(clades)].copy()
 
     # Annotate reference names with clade.
     df["reference_name"] = df.apply(
-        lambda row: f"{row['reference_strain']}\n({row['clade_reference']})",
+        lambda row: f"{row['reference_strain']}\n({row['haplotype_reference']})",
         axis=1
     )
 
@@ -129,7 +120,7 @@ if __name__ == '__main__':
     # Use the user-defined clade order, when possible. If clades haven't been
     # provided, order test clades by global frequency in descending order.
     if args.clades:
-        clade_order = args.clades
+        clade_order = clades
     else:
         clade_order = filtered_df.sort_values(
             "clade_frequency_test",
@@ -156,14 +147,8 @@ if __name__ == '__main__':
         for clade in clade_order
     }
 
-    # Get features of current dataset for display in the title.
-    lineage = NAME_BY_LINEAGE[filtered_df["lineage"].values[0]]
-    passage = filtered_df["passage"].values[0]
-    assay = filtered_df["assay"].values[0].upper()
-    sources = ", ".join([NAME_BY_SOURCE[source] for source in filtered_df["source"].drop_duplicates().sort_values().values])
-
     # Initialize the figure
-    fig, ax = plt.subplots(1, 1, figsize=(14, 10))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 12))
     sns.despine()
 
     if args.plot_raw_data:
@@ -178,7 +163,7 @@ if __name__ == '__main__':
             palette=color_by_clade,
             dodge=True,
             size=8,
-            alpha=0.5,
+            alpha=0.4,
             jitter=0.2,
             zorder=1
         )
@@ -193,12 +178,19 @@ if __name__ == '__main__':
         data=filtered_df,
         dodge=0.55,
         join=False,
-        alpha=0.5,
         palette=color_by_clade,
         markers="d",
         scale=0.75,
-        ci=89,
-        legend=False
+        errorbar=("ci", 89),
+    )
+
+    # Draw a line at the origin to show where we expect effectively inhibited
+    # viruses to appear.
+    ax.axvline(
+        x=0.0,
+        color="#000000",
+        alpha=0.75,
+        zorder=-10,
     )
 
     # Draw a line at the traditional threshold used to denote antigenic drift.
@@ -206,7 +198,8 @@ if __name__ == '__main__':
         x=2.0,
         color="#000000",
         alpha=0.25,
-        zorder=-10
+        zorder=-10,
+        linestyle="dashed",
     )
 
     ax.set_xlabel("$\log_{2}$ normalized titer")
@@ -224,7 +217,29 @@ if __name__ == '__main__':
         frameon=False
     )
 
-    plt.title(f"{lineage} {passage} {assay} titers ({sources})")
+    # Add zebra striping to rows to more clearly delineate which data belong to
+    # which reference. Implementation based on:
+    # https://stackoverflow.com/questions/2815455/matplotlib-zebra-stripe-a-figures-background-color
+    yticks,_ = plt.yticks()
+    xticks = plt.xticks()[0]
+    left = xticks[0]
+    right = xticks[-1]
+    width = right - left
+    height = yticks[1] - yticks[0]
+
+    # create bars at yticks that are the length of our greatest xtick and have a height equal to our tick spacing
+    ax.barh(
+        yticks,
+        [width] * len(yticks),
+        height=height,
+        left=left,
+        color=["#FFFFFF", "#CCCCCC"],
+        zorder=-20,
+        alpha=0.25,
+    )
+
+    if args.title:
+        plt.title(args.title)
 
     plt.tight_layout()
     plt.savefig(args.output)

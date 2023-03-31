@@ -1,20 +1,20 @@
 # H3N2 clade colors
-clade_membership	3C.2a	#f5c546
-clade_membership	3C.3a	#4a3fdd
-clade_membership	3C.2a1	#aad66c
-clade_membership	3C.2a1b	#4c89e8
-clade_membership	3C.2a1b.2	#57a5d7
-clade_membership	3C.2a1b.1	#66bbbe
-clade_membership	3C.2a1b.1b	#7fb975
-clade_membership	3C.2a1b.2a.2	#e39b39
-clade_membership	3C.2a1b.2a.2/53G	#4a3fdd
-clade_membership	3C.2a1b.2a.2/53N	#aad66c
-clade_membership	3C.2a1b.1a	#dfd24e
-clade_membership	3C.2a1b.2a.1	#3e9ccf
-clade_membership	3C.2a1b.2b	#5c22be
-clade_membership	3C.2a1b.2a	#e2572b
-clade_membership	3C.2a2	#ff8e3a
-clade_membership	3C.2a3	#f93529
+clade_membership	1	#571EA2
+clade_membership	1a	#4334BF
+clade_membership	1a.1	#3F55CE
+clade_membership	2	#4376CD
+clade_membership	2a	#4C91C0
+clade_membership	2a.1	#59A4A9
+clade_membership	2a.1a	#6AB18F
+clade_membership	2a.1b	#7FB975
+clade_membership	2a.2	#97BD5F
+clade_membership	2a.3	#AFBD4F
+clade_membership	2a.3a	#C7B944
+clade_membership	2a.3a.1	#D9AD3D
+clade_membership	2a.3b	#E49838
+clade_membership	2b	#E67932
+clade_membership	2c	#E1512A
+clade_membership	2d	#DB2823
 
 # H1N1pdm clade colors
 clade_membership	1	#5c22be
@@ -22,8 +22,10 @@ clade_membership	2	#4a3fdd
 clade_membership	3	#66bbbe
 clade_membership	5	#4c89e8
 clade_membership	6B.1A.5a	#57a5d7
-clade_membership	6B.1A.5a.1	#3e59cf
-clade_membership	6B.1A.5a.2	#e39b39
+clade_membership	5a.1	#3e59cf
+clade_membership	5a.2	#705c94
+clade_membership	5a.2a	#e39b39
+clade_membership	5a.2a.1	#dfd24e
 clade_membership	5B	#7fb975
 clade_membership	6	#ff8e3a
 clade_membership	6b	#ff8e3a
@@ -33,5 +35,7 @@ clade_membership	7	#f93529
 
 # Vic clade colors
 clade_membership	V1A.3	#b8bc4a
+clade_membership	V1A.3/133R	#8cbb69
+clade_membership	V1A.3/155A	#b8bc4a
 clade_membership	V1A.3a.1	#e67932
 clade_membership	V1A.3a.2	#dc2f24

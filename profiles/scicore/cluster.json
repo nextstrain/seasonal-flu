@@ -1,0 +1,25 @@
+{
+    "__default__": {
+      "time": "00:29:00",
+      "qos": "30min",
+      "n": 1,
+      "mem": "8G",
+      "conda_env": "nextstrain"
+    },
+    "refine": {
+      "time": "05:59:00",
+      "qos": "6hours",
+      "n": 1
+    },
+    "tree": {
+      "n": 4,
+      "qos": "6hours",
+      "time": "05:59:00"
+    },
+    "align": {
+      "n": 4,
+      "time": "00:29:00",
+      "mem": "16G",
+      "qos": "30min"
+    }
+  }

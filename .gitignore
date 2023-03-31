@@ -1,9 +1,11 @@
 # Files created by the pipeline, which we want to keep out of git
 # (or at least out of _this_ git repo).
 data/
+builds/
 results/
 auspice/
 auspice-who/
+auspice_renamed/
 build/
 logs/
 figures/
@@ -51,3 +53,7 @@ nohup.out
 
 # cluster logs
 slurm-*
+
+# Jupyter/Altair droppings
+.ipynb_checkpoints
+geckodriver.log
