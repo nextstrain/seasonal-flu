@@ -51,7 +51,7 @@ to the WHO
 The latter Snakefiles import the rules specified in `Snakefile_base`, define additional
 rules, and specify the build targets.
 
-### fauna / RethinkDB credentials
+## fauna / RethinkDB credentials
 
 This build starts by pulling sequences from our live [fauna][] database (a RethinkDB
 instance). This requires environment variables `RETHINK_HOST` and `RETHINK_AUTH_KEY` to be
@@ -71,6 +71,10 @@ Then run the the build via:
 ```
 nextstrain build . targets/flu_seasonal_h3n2_ha_12y
 ```
+
+## History
+
+ - Prior to March 31, 2023, we selected strains for each build using a custom Python script called [select_strains.py](https://github.com/nextstrain/seasonal-flu/blob/64b5204d23c0b95e4b06f943e4efb8db005759c0/scripts/select_strains.py). With the merge of [the refactored workflow](https://github.com/nextstrain/seasonal-flu/pull/76), we have since used a configuration file to define the `augur filter` query logic we want for strain selection per build.
 
 [Nextstrain]: https://nextstrain.org
 [fauna]: https://github.com/nextstrain/fauna
