@@ -83,6 +83,22 @@ builds:
         data: "data/h1n1pdm/who_human_cell_hi_titers.tsv"
       - name: who_mouse_cell_hi
         data: "data/h1n1pdm/who_mouse_cell_hi_titers.tsv"
+      - name: cdc_ferret_cell_hi
+        data: "data/h1n1pdm/cdc_ferret_cell_hi_titers.tsv"
+      - name: cdc_ferret_egg_hi
+        data: "data/h1n1pdm/cdc_ferret_egg_hi_titers.tsv"
+      - name: crick_ferret_cell_hi
+        data: "data/h1n1pdm/crick_ferret_cell_hi_titers.tsv"
+      - name: crick_ferret_egg_hi
+        data: "data/h1n1pdm/crick_ferret_egg_hi_titers.tsv"
+      - name: niid_ferret_cell_hi
+        data: "data/h1n1pdm/niid_ferret_cell_hi_titers.tsv"
+      - name: niid_ferret_egg_hi
+        data: "data/h1n1pdm/niid_ferret_egg_hi_titers.tsv"
+      - name: vidrl_ferret_cell_hi
+        data: "data/h1n1pdm/vidrl_ferret_cell_hi_titers.tsv"
+      - name: vidrl_ferret_egg_hi
+        data: "data/h1n1pdm/vidrl_ferret_egg_hi_titers.tsv"
     subsamples: &representative-subsampling-scheme
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude}
@@ -119,6 +135,38 @@ builds:
         data: "data/h3n2/who_human_cell_fra_titers.tsv"
       - name: who_human_cell_hi
         data: "data/h3n2/who_human_cell_hi_titers.tsv"
+      - name: cdc_ferret_cell_hi
+        data: "data/h3n2/cdc_ferret_cell_hi_titers.tsv"
+      - name: cdc_ferret_egg_hi
+        data: "data/h3n2/cdc_ferret_egg_hi_titers.tsv"
+      - name: crick_ferret_cell_hi
+        data: "data/h3n2/crick_ferret_cell_hi_titers.tsv"
+      - name: crick_ferret_egg_hi
+        data: "data/h3n2/crick_ferret_egg_hi_titers.tsv"
+      - name: niid_ferret_cell_hi
+        data: "data/h3n2/niid_ferret_cell_hi_titers.tsv"
+      - name: niid_ferret_egg_hi
+        data: "data/h3n2/niid_ferret_egg_hi_titers.tsv"
+      - name: vidrl_ferret_cell_hi
+        data: "data/h3n2/vidrl_ferret_cell_hi_titers.tsv"
+      - name: vidrl_ferret_egg_hi
+        data: "data/h3n2/vidrl_ferret_egg_hi_titers.tsv"
+      - name: cdc_ferret_cell_fra
+        data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
+      - name: cdc_ferret_egg_fra
+        data: "data/h3n2/cdc_ferret_egg_fra_titers.tsv"
+      - name: crick_ferret_cell_fra
+        data: "data/h3n2/crick_ferret_cell_fra_titers.tsv"
+      - name: crick_ferret_egg_fra
+        data: "data/h3n2/crick_ferret_egg_fra_titers.tsv"
+      - name: niid_ferret_cell_fra
+        data: "data/h3n2/niid_ferret_cell_fra_titers.tsv"
+      - name: niid_ferret_egg_fra
+        data: "data/h3n2/niid_ferret_egg_fra_titers.tsv"
+      - name: vidrl_ferret_cell_fra
+        data: "data/h3n2/vidrl_ferret_cell_fra_titers.tsv"
+      - name: vidrl_ferret_egg_fra
+        data: "data/h3n2/vidrl_ferret_egg_fra_titers.tsv"
     subsamples: *representative-subsampling-scheme
   vic_2y:
     lineage: vic
@@ -137,6 +185,22 @@ builds:
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
       - name: who_ferret_egg_hi
         data: "data/vic/who_ferret_egg_hi_titers.tsv"
+      - name: cdc_ferret_cell_hi
+        data: "data/vic/cdc_ferret_cell_hi_titers.tsv"
+      - name: cdc_ferret_egg_hi
+        data: "data/vic/cdc_ferret_egg_hi_titers.tsv"
+      - name: crick_ferret_cell_hi
+        data: "data/vic/crick_ferret_cell_hi_titers.tsv"
+      - name: crick_ferret_egg_hi
+        data: "data/vic/crick_ferret_egg_hi_titers.tsv"
+      - name: niid_ferret_cell_hi
+        data: "data/vic/niid_ferret_cell_hi_titers.tsv"
+      - name: niid_ferret_egg_hi
+        data: "data/vic/niid_ferret_egg_hi_titers.tsv"
+      - name: vidrl_ferret_cell_hi
+        data: "data/vic/vidrl_ferret_cell_hi_titers.tsv"
+      - name: vidrl_ferret_egg_hi
+        data: "data/vic/vidrl_ferret_egg_hi_titers.tsv"
     subsamples: *representative-subsampling-scheme
   yam_2y:
     lineage: yam
@@ -155,4 +219,20 @@ builds:
         data: "data/yam/who_ferret_cell_hi_titers.tsv"
       - name: who_ferret_egg_hi
         data: "data/yam/who_ferret_egg_hi_titers.tsv"
+      - name: cdc_ferret_cell_hi
+        data: "data/yam/cdc_ferret_cell_hi_titers.tsv"
+      - name: cdc_ferret_egg_hi
+        data: "data/yam/cdc_ferret_egg_hi_titers.tsv"
+      - name: crick_ferret_cell_hi
+        data: "data/yam/crick_ferret_cell_hi_titers.tsv"
+      - name: crick_ferret_egg_hi
+        data: "data/yam/crick_ferret_egg_hi_titers.tsv"
+      - name: niid_ferret_cell_hi
+        data: "data/yam/niid_ferret_cell_hi_titers.tsv"
+      - name: niid_ferret_egg_hi
+        data: "data/yam/niid_ferret_egg_hi_titers.tsv"
+      - name: vidrl_ferret_cell_hi
+        data: "data/yam/vidrl_ferret_cell_hi_titers.tsv"
+      - name: vidrl_ferret_egg_hi
+        data: "data/yam/vidrl_ferret_egg_hi_titers.tsv"
     subsamples: *representative-subsampling-scheme
