@@ -1,8 +1,40 @@
 import argparse, json
 import numpy as np
 from Bio import Phylo
-from select_strains import parse_metadata
+from augur.io import read_metadata
+from augur.dates import get_numerical_dates
 from vaccination_coverage import read_all_vaccination_data
+
+
+def parse_metadata(segments, metadata_files, date_format = "%Y-%m-%d"):
+    metadata = {}
+    for segment, fname in zip(segments, metadata_files):
+        tmp_meta = read_metadata(fname)
+        numerical_dates = get_numerical_dates(tmp_meta, fmt=date_format)
+
+        tmp_meta.insert(0, "strain", tmp_meta.index.values)
+        tmp_meta = tmp_meta.to_dict(orient="index")
+
+        for x in list(tmp_meta.keys()):
+            if numerical_dates[x] is None:
+                # Remove strain that does not have valid date
+                del tmp_meta[x]
+                continue
+            tmp_meta[x]['num_date'] = np.mean(numerical_dates[x])
+            tmp_meta[x]['year'] = int(tmp_meta[x]['num_date'])
+            tmp_meta[x]['month'] = int((tmp_meta[x]['num_date']%1)*12)
+            if 'age' in tmp_meta[x]:
+                age_str = tmp_meta[x]['age']
+                if age_str[-1]=='y':
+                    tmp_meta[x]['age'] = int(age_str[:-1])
+                elif age_str[-1]=='m':
+                    tmp_meta[x]['age'] = float(age_str[:-1])/12.0
+                else:
+                    tmp_meta[x]['age'] = 'unknown'
+
+        metadata[segment] = tmp_meta
+    return metadata
+
 
 def calculate_average_on_tree(tree, func, min_clade_size=20):
     """Generic function that calculates clade averages on a tree

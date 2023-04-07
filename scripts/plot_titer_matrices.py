@@ -9,7 +9,6 @@ matplotlib.use('agg')
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from select_strains import read_strain_list, determine_time_interval, parse_metadata
 
 
 h3n2_clades = ['A1', 'A1a', 'A1b', 'A1b/135K', 'A1b/137F','A1b/135N', 'A1b/131K', 'A1b/197R', 'A1b/94N', 'A1b/186D', 'A2', 'A2/re', '3c3.A']
@@ -104,7 +103,6 @@ if __name__ == '__main__':
 
 
     args=parser.parse_args()
-    # metadata = {k:val for k,val in parse_metadata(['segment'], [args.metadata]).items()}['segment']
 
     date_cutoff = 2019
 
@@ -123,7 +121,6 @@ if __name__ == '__main__':
     for antigen in titers:
         titers[antigen] = {k:v for k,v in titers[antigen].items()
                             if any([x in k for x in ['/2018', '/2019', '/2020']])}
-#                           if metadata[k]["num_date"]>date_cutoff}
         if len(titers[antigen]) < 1 or any([x in antigen for x in ["/2014", "/2015"]]):
             to_pop.append(antigen)
 
