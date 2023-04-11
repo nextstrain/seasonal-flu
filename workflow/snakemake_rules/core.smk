@@ -139,9 +139,9 @@ rule prune_reference:
 rule sanitize_trees:
     input:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outgroup.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
-        alignments = lambda w: [f"{build_dir}/{w.build_name}/{segment}/aligned.fasta" for segment in config['segments']],
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/sanitize_trees_{build_name}.txt"
