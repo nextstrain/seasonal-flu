@@ -7,9 +7,6 @@ Clone this repository and change into its directory.
 ``` bash
 git clone https://github.com/nextstrain/seasonal-flu.git seasonal-flu-aws
 cd seasonal-flu-aws
-
-# Check out this development branch.
-git checkout refactor-workflow
 ```
 
 Setup your environment variables for fauna.
