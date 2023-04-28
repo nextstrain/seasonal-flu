@@ -1,0 +1,26 @@
+name: Run the private Nextflu builds
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
+      - name: Launch build on AWS Batch
+        run: |
+          set -x
+
+          nextstrain build \
+            --aws-batch \
+            --detach \
+            --cpus 36 \
+            --memory 72gib \
+            . \
+            all_who \
+            -p \
+            --configfile profiles/private.nextflu.org.yaml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
