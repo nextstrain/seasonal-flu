@@ -1,7 +1,17 @@
 name: Upload data from fauna to S3
 
 # Only support manual trigger of this workflow.
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      triggerPublic:
+        description: "Trigger Nextstrain public builds"
+        required: true
+        type: boolean
+      triggerPrivateNextflu:
+        description: "Trigger private Nextflu builds"
+        required: true
+        type: boolean
 
 jobs:
   upload:
@@ -28,3 +38,23 @@ jobs:
           RETHINK_AUTH_KEY: ${{ secrets.RETHINK_AUTH_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  trigger-public-builds:
+    needs: [upload]
+    if: ${{ inputs.triggerPublic }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Nextstrain public builds
+        run: gh workflow run run-public-builds.yaml --repo nextstrain/seasonal-flu
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  trigger-private-nextflu-builds:
+    needs: [upload]
+    if: ${{ inputs.triggerPrivateNextflu }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger private Nextflu builds
+        run: gh workflow run run-private-nextflu-builds.yaml --repo nextstrain/seasonal-flu
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
