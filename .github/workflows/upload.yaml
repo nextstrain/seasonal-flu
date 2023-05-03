@@ -8,10 +8,18 @@ on:
         description: "Trigger Nextstrain public builds"
         required: true
         type: boolean
+      publicDockerImage:
+        description: "Specific container image to use for Nextstrain public builds"
+        required: false
+        type: string
       triggerPrivateNextflu:
         description: "Trigger private Nextflu builds"
         required: true
         type: boolean
+      privateNextfluDockerImage:
+        description: "Specific container image to use for private Nextflu builds"
+        required: false
+        type: string
 
 jobs:
   upload:
@@ -45,7 +53,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Nextstrain public builds
-        run: gh workflow run run-public-builds.yaml --repo nextstrain/seasonal-flu
+        run: |
+          gh workflow run \
+            run-public-builds.yaml \
+            --repo nextstrain/seasonal-flu \
+            -f dockerImage=${{ github.event.inputs.publicDockerImage }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -55,6 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger private Nextflu builds
-        run: gh workflow run run-private-nextflu-builds.yaml --repo nextstrain/seasonal-flu
+        run: |
+          gh workflow run \
+            run-private-nextflu-builds.yaml \
+            --repo nextstrain/seasonal-flu \
+            -f dockerImage=${{ github.event.inputs.privateNextfluDockerImage }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
