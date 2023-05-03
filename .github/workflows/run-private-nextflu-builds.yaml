@@ -1,6 +1,12 @@
 name: Run the private Nextflu builds
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      dockerImage:
+        description: "Specific container image to use for build (will override the default of `nextstrain build`)"
+        required: false
+        type: string
 
 jobs:
   build:
@@ -24,3 +30,4 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          NEXTSTRAIN_DOCKER_IMAGE: ${{ github.event.inputs.dockerImage }}
