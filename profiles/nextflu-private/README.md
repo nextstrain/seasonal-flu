@@ -9,12 +9,6 @@ git clone https://github.com/nextstrain/seasonal-flu.git seasonal-flu-aws
 cd seasonal-flu-aws
 ```
 
-Setup your environment variables for fauna.
-
-``` bash
-. ~/environment_rethink.sh
-```
-
 Run the build in dry-run mode, to make sure you see all of the rules you expect to see.
 
 ``` bash
