@@ -34,7 +34,7 @@ conda-frontend: mamba
 # resources. This is analogous to the spot resources on AWS.
 default-resources:
   - mem_mb=256
-  - runtime="0:05:00"
+  - time="0:05:00"
   - partition="campus-new"
   - qos="campus-new"
 
@@ -51,7 +51,7 @@ cluster:
     --ntasks=1
     --mem={resources.mem_mb}
     --cpus-per-task={threads}
-    --time={resources.runtime}
+    --time={resources.time}
     --output=slurm_logs/{rule}/{rule}-{wildcards}.out
     --error=slurm_logs/{rule}/{rule}-{wildcards}.err
     --job-name={rule}-{wildcards}

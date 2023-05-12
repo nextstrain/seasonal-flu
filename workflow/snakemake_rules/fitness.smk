@@ -97,7 +97,7 @@ rule pairwise_titer_tree_distances:
         "logs/pairwise_titer_tree_distances_{build_name}_{segment}_{titer_collection}.txt"
     resources:
         mem_mb=4000,
-        runtime="00:10:00",
+        time="00:10:00",
     shell:
         """
         python3 flu-forecasting/scripts/pairwise_titer_tree_distances.py \
@@ -193,7 +193,7 @@ rule distances:
         "logs/distances_{build_name}_{segment}.txt"
     resources:
         mem_mb=8000,
-        runtime="00:30:00",
+        time="00:30:00",
     shell:
         """
         augur distance \
