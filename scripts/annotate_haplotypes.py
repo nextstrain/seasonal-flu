@@ -47,7 +47,6 @@ if __name__ == '__main__':
             node_data["labels"]["clade"]: sequence_by_node[node]
             for node, node_data in clades["branches"].items()
         }
-        print(sequence_by_clade)
     else:
         # Index amino acid sequence by clade annotation.
         sequence_by_clade = {
