@@ -39,12 +39,22 @@ if __name__ == '__main__':
     # Load clades.
     clades = read_node_data(args.clades)
 
-    # Index amino acid sequence by clade annotation.
-    sequence_by_clade = {
-        node_data["clade_annotation"]: sequence_by_node[node]
-        for node, node_data in clades["nodes"].items()
-        if "clade_annotation" in node_data
-    }
+    # Check clades for "branches" annotations from Augur 22.0.0 and onward.
+    # Otherwise, look for "clade_annotation" keys in "nodes" annotations.
+    if "branches" in clades:
+        # Index amino acid sequence by clade label.
+        sequence_by_clade = {
+            node_data["labels"]["clade"]: sequence_by_node[node]
+            for node, node_data in clades["branches"].items()
+        }
+        print(sequence_by_clade)
+    else:
+        # Index amino acid sequence by clade annotation.
+        sequence_by_clade = {
+            node_data["clade_annotation"]: sequence_by_node[node]
+            for node, node_data in clades["nodes"].items()
+            if "clade_annotation" in node_data
+        }
 
     # Index clade membership by node name.
     clade_by_node = {
