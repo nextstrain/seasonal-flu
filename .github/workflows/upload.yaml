@@ -39,7 +39,9 @@ jobs:
             . \
             -j 4 \
             upload_all_titers \
+            upload_all_raw_sequences \
             upload_all_sequences \
+            upload_all_metadata \
             --configfile profiles/upload.yaml
         env:
           RETHINK_HOST: ${{ secrets.RETHINK_HOST }}
