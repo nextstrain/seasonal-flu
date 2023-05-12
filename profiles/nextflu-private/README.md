@@ -86,27 +86,7 @@ nextstrain remote upload \
 ## Update the group overview
 
 [The nextflu-private group's overview](https://nextstrain.org/groups/nextflu-private/) lists recent reports and trees by date with the most recent at the top of the page.
-Download the group overview markdown file.
-Your Nextstrain Group authorization will grant you permission to access the group overview file through the REST API with curl.
-
-``` bash
-curl https://nextstrain.org/groups/nextflu-private/settings/overview \
-    --header "`nextstrain authorization`" \
-    --header 'Content-Type: text/markdown' \
-    -o group-overview.md
-```
-
-Edit this file to include links to the latest report and builds by date.
-Upload the updated overview to the group.
-
-``` bash
-curl https://nextstrain.org/groups/nextflu-private/settings/overview \
-    --header "`nextstrain authorization`" \
-    --header 'Content-Type: text/markdown' \
-    --upload-file group-overview.md
-```
-
-In the future, we will replace these curl commands with `nextstrain remote` commands that use the group customization endpoints through nextstrain.org.
+[Open the group's settings page](https://nextstrain.org/groups/nextflu-private/settings) and update the list of builds to include the builds you just uploaded.
 
 ## Plot counts per lineage for reports
 
