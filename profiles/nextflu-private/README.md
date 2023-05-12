@@ -33,6 +33,16 @@ nextstrain build \
 
 Detach the job from the current terminal with Ctrl-Z and save the AWS Batch job id to reattach later.
 After reattaching, wait for files to download, and then explore the trees locally with auspice.us or Auspice.
+
+Alternately, run the jobs on the Hutch's SLURM cluster with the following command.
+
+```bash
+snakemake \
+  -j 10 \
+  --configfile profiles/nextflu-private.yaml \
+  --profile profiles/hutch
+```
+
 If trees look reasonable, rename them to match the current date (or the date corresponding to when the data were updated).
 
 ``` bash

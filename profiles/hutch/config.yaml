@@ -1,8 +1,8 @@
-# Custom settings for running builds on a SLURM cluster with DRMAA bindings.
+# Custom settings for running builds on a SLURM cluster.
 
 # Submit a reasonable number of simultaneous jobs, accounting for the number of
 # CPUs alloted to our lab's SLURM account.
-jobs: 20
+cores: 20
 
 # Always let the user know which commands are being executed for each rule and
 # why each rule is being run.
@@ -27,23 +27,50 @@ latency-wait: 60
 use-conda: True
 conda-frontend: mamba
 
-# Cluster-specific settings for resources required by any rule. This file
-# provides default resources for all rules and allows users to specify resources
-# per rule by name. An important resource for the Hutch cluster is the requested
-# "partition". Jobs submitted to the "restart" partition will start running
-# almost immediately, but they may also be killed at any moment when someone
-# else needs those resources. This is analogous to the spot resources on AWS.
-default-resources: mem_mb=256
-cluster-config: profiles/hutch/cluster.json
+# Define cluster-specific settings for resources required by any rule. An
+# important resource for the Hutch cluster is the requested "partition". Jobs
+# submitted to the "restart" partition will start running almost immediately,
+# but they may also be killed at any moment when someone else needs those
+# resources. This is analogous to the spot resources on AWS.
+default-resources:
+  - mem_mb=256
+  - runtime="0:05:00"
+  - partition="campus-new"
+  - qos="campus-new"
 
-# Submit jobs to the cluster with Python's DRMAA bindings instead of the SLURM
-# sbatch command. The string associated with this key tells DRMAA how to connect
-# cluster resources with those defined in the cluster config above. Jobs
-# submitted with DRMAA will submit, finish, or die much faster than jobs
-# submitted with sbatch because DRMAA does not use files on disk to track job
-# status. This speed can be noticeable when running workflows with hundreds of
-# jobs. More about DRMAA bindings here: https://pypi.org/project/drmaa/
-cluster: "sbatch -p {cluster.partition} --nodes=1 --ntasks=1 --mem={resources.mem_mb} --cpus-per-task={threads} --time={cluster.time}"
+# Submit jobs to the cluster with the SLURM sbatch command. The string
+# associated with this key tells Snakemake how to connect cluster resources with
+# those defined in the default resources below.
+cluster:
+  mkdir -p slurm_logs/{rule} &&
+  sbatch
+    --parsable
+    -p {resources.partition}
+    --qos={resources.qos}
+    --nodes=1
+    --ntasks=1
+    --mem={resources.mem_mb}
+    --cpus-per-task={threads}
+    --time={resources.runtime}
+    --output=slurm_logs/{rule}/{rule}-{wildcards}.out
+    --error=slurm_logs/{rule}/{rule}-{wildcards}.err
+    --job-name={rule}-{wildcards}
 
-# Set the name for the job as display in the cluster queue.
-jobname: "{rulename}.{jobid}.sh"
+# Tell Snakemake how to cancel jobs on the cluster when user uses Ctrl-C.
+cluster-cancel: scancel
+
+# Don't check for cluster status too frequently.
+max-status-checks-per-second: 1
+
+# Don't swamp the cluster's scheduler.
+max-jobs-per-second: 10
+
+# Limit local cores to avoid slamming the head node.
+local-cores: 1
+
+# Don't try to optimize scheduling based on available resources; the cluster can
+# handle that for us.
+scheduler: greedy
+
+# Print logs for failed jobs to stdout/stderr for easier debugging.
+show-failed-logs: true

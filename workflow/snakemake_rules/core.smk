@@ -62,7 +62,8 @@ checkpoint align:
         genes = lambda w: ','.join(GENES[w.segment]),
     threads: 8
     resources:
-        mem_mb=16000
+        mem_mb=16000,
+        runtime="0:30:00",
     shell:
         """
         nextalign run\
@@ -109,7 +110,8 @@ rule tree:
         override_default_args = lambda wildcards: "--override-default-args" if config["tree"].get("override_default_args", False) else "",
     threads: 8
     resources:
-        mem_mb=16000
+        mem_mb=16000,
+        runtime="2:00:00",
     shell:
         """
         augur tree \
@@ -213,7 +215,8 @@ rule refine:
     log:
         "logs/refine_{build_name}_{segment}.txt"
     resources:
-        mem_mb=16000
+        mem_mb=16000,
+        runtime="2:00:00",
     shell:
         """
         augur refine \
