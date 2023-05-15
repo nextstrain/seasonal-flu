@@ -76,6 +76,7 @@ rule summarize_haplotype_titer_coverage:
     output:
         table="builds/{build_name}/{segment}/haplotype_summary/{titer_collection}.tsv",
         node_data="builds/{build_name}/{segment}/haplotypes_without_references/{titer_collection}.json",
+        markdown_table="builds/{build_name}/{segment}/haplotype_summary/{titer_collection}.md",
     benchmark:
         "benchmarks/summarize_haplotype_titer_coverage_{build_name}_{segment}_{titer_collection}.txt"
     log:
@@ -89,6 +90,7 @@ rule summarize_haplotype_titer_coverage:
             --frequencies {input.frequencies} \
             --attribute-name-for-haplotype-without-reference "haplotype_missing_reference_virus_in_{wildcards.titer_collection}" \
             --output-table {output.table} \
+            --output-markdown-table {output.markdown_table} \
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
 

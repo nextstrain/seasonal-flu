@@ -16,6 +16,8 @@ dependencies:
   - seqkit=2.2.0
   - csvtk=0.23.0
   - tsv-utils=2.2.0
+  - tabulate=0.8.10
   - xlrd=1.*
+  - pip=23.0.1
   - pip:
     - rethinkdb==2.3.0.post6

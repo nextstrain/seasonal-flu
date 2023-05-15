@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON")
     parser.add_argument("--attribute-name-for-haplotype-without-reference", default="haplotype_missing_reference_virus", help="name for attribute indicating whether haplotypes are missing a reference virus in the node data JSON output.")
     parser.add_argument("--output-table", required=True, help="TSV of haplotypes along with number of reference viruses, distinct reference viruses, number of test viruses, current frequency, and delta frequency from the last month.")
+    parser.add_argument("--output-markdown-table", required=True, help="Markdown table of the TSV table above for use in narratives.")
     parser.add_argument("--output-node-data", required=True, help="node data JSON of non-zero haplotypes without reference viruses")
 
     args = parser.parse_args()
@@ -102,3 +103,26 @@ if __name__ == '__main__':
             }
 
     write_json({"nodes": nonzero_haplotypes_per_node}, args.output_node_data)
+
+    # Create the Markdown version for display in narratives.
+    annotated_haplotypes = annotated_haplotypes.reset_index()
+
+    # Use spaces instead of commas, allowing Markdown to wrap
+    # lines.
+    annotated_haplotypes["haplotype"] = annotated_haplotypes["haplotype"].str.replace(",", " ")
+
+    # Fill missing distinct references with empty string.
+    annotated_haplotypes["distinct_references"] = annotated_haplotypes["distinct_references"].fillna("")
+
+    # Round deminal values of frequencies.
+    annotated_haplotypes["current_frequency"] = annotated_haplotypes["current_frequency"].round(2)
+
+    # Keep non-zero frequencies.
+    annotated_haplotypes = annotated_haplotypes.query("current_frequency > 0").copy()
+
+    # Round change in frequency.
+    annotated_haplotypes["delta_frequency"] = annotated_haplotypes["delta_frequency"].round(2)
+
+    # Save Markdown table.
+    with open(args.output_markdown_table, "w", encoding="utf-8") as oh:
+        print(annotated_haplotypes.to_markdown(index=False), file=oh)
