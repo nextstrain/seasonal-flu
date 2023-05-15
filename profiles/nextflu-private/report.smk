@@ -12,3 +12,22 @@ rule plot_lineage_counts:
     log:
         "logs/plot-counts-per-lineage.ipynb"
     notebook: "../../notebooks/plot-counts-per-lineage.py.ipynb"
+
+rule all_counts_of_recent_tips_by_clade:
+    input:
+        counts=expand("builds/{build_name}/counts_of_recent_tips_by_clade.md", build_name=list(config["builds"].keys()))
+
+rule count_recent_tips_by_clade:
+    input:
+        recency="builds/{build_name}/recency.json",
+        clades="builds/{build_name}/ha/clades.json",
+    output:
+        counts="builds/{build_name}/counts_of_recent_tips_by_clade.md",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/count_recent_tips_by_clade.py \
+            --recency {input.recency} \
+            --clades {input.clades} \
+            --output {output.counts}
+        """
