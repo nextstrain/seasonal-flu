@@ -27,6 +27,8 @@ nextstrain build \
   --memory 48Gib \
   . \
     -p \
+    all \
+    all_counts_of_recent_tips_by_clade \
     --configfile profiles/nextflu-private.yaml \
     --set-threads tree=7
 ```
@@ -39,6 +41,8 @@ Alternately, run the jobs on the Hutch's SLURM cluster with the following comman
 ```bash
 snakemake \
   -j 10 \
+  all \
+  all_counts_of_recent_tips_by_clade \
   --configfile profiles/nextflu-private.yaml \
   --profile profiles/hutch
 ```
