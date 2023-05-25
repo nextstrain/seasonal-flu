@@ -1,5 +1,6 @@
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
+  - workflow/snakemake_rules/treeknit.smk
 
 fauna_fasta_fields:
   - strain
