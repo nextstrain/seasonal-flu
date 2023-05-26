@@ -15,6 +15,7 @@ A/Brest/1161/2014
 A/California/07/2009NYMC-X18113/198
 A/Cherkessk/2/2016
 A/Christchurch/16/2010NIB-74xp13/202
+A/Colorado/84/2022
 A/Dakar/3/2014
 A/Dakar/3124/2021
 A/Denmark/1/2021
@@ -65,6 +66,7 @@ A/Montpellier/F_004_091_MB/2020
 A/Montpellier/F_004_100_PD/2020
 A/Montpellier/F_004_122_JL/2020
 A/Netherlands/10407/2018
+A/NewYork/IVYG43Q01E4/2022
 A/Ningxia-Xixia/SWL137/2020
 A/Norway/1929/2014
 A/Novosibirsk/3/2019
@@ -101,12 +103,16 @@ A/Shanghai-Xuhui/SWL1809/2019
 A/Shanghai/Mix1/2014
 A/Singapore/SM15/2009
 A/Somalia/4/2021
+A/Somalia/6/2021
+A/Somalia/7/2021
 A/SouthAfrica/16112/2021
 A/SouthAfrica/16325/2021
 A/SouthAfrica/1857/2013
 A/SouthAfrica/NHLS-UCT-GS-0017/2021
 A/SouthDakota/3/2008
 A/SriLanka/11/2012
+A/StPetersburg/RII-23/2023
+A/StPetersburg/RII-22/2023
 A/Tasmania/8/2017
 A/Texas/14/2008
 A/Tomsk/273-MA1/2010
