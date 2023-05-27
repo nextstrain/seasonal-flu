@@ -61,14 +61,14 @@ def prepare_tree(T):
                 if len(c.mutations)==0:
                     c.keep=False
                     if c.raw_date_constraint is not None:
-                        n.dates.append(c.raw_date_constraint)
-                        n.tips[c.name]={'date':c.raw_date_constraint}
+                        n.dates.append(np.mean(c.raw_date_constraint))
+                        n.tips[c.name]={'date':np.mean(c.raw_date_constraint)}
                 else:
                     c.keep=True
-                    c.dates = [c.raw_date_constraint]
+                    c.dates = [np.mean(c.raw_date_constraint)]
                     c.observations = 1
-                    c.avg_date = c.raw_date_constraint
-                    c.tips = {c.name:{'date':c.raw_date_constraint}}
+                    c.avg_date = np.mean(c.raw_date_constraint)
+                    c.tips = {c.name:{'date':np.mean(c.raw_date_constraint)}}
                     c.nmuts = len([m for m in c.mutations if m[-1] in 'ACGT'])
 
         n.keep=any([c.keep for c in n])
