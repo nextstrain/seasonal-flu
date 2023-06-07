@@ -156,5 +156,6 @@ if __name__=="__main__":
         from Bio import Phylo
         T = tt.tree
         for r, row in df.iterrows():
-            T.prune(row['sequence'])
+            if row['diagnosis']!='bad_date':
+                T.prune(row['sequence'])
         Phylo.write(T, args.output_tree, 'newick')
