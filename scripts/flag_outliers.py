@@ -49,26 +49,31 @@ def calc_scores(T, sigma=None, mu=None):
                 cost += (mu*(c.tau-n.tau) - c.nmuts)**2/(c.nmuts+1)
         n_tips += n.observations
 
-    res = 0.5*cost + np.log(2*np.pi*(sigma_sq+0.1))*n_tips*0.5
+    res = 0.5*cost + np.log(2*np.pi*sigma_sq)*n_tips*0.5
     return {'cost':res, 'z_stddev':np.std(z_distribution)}
 
 def prepare_tree(T):
     for n in T.get_nonterminals(order='postorder'):
         n.dates = []
         n.tips = {}
+        n.bad_tip=False
         for c in n:
             if c.is_terminal():
+                c.bad_tip = False
+                if type(c.raw_date_constraint)!=float:
+                    c.keep=False
+                    c.bad_tip = True
+                    continue
                 if len(c.mutations)==0:
                     c.keep=False
-                    if c.raw_date_constraint is not None:
-                        n.dates.append(np.mean(c.raw_date_constraint))
-                        n.tips[c.name]={'date':np.mean(c.raw_date_constraint)}
+                    n.dates.append(c.raw_date_constraint)
+                    n.tips[c.name]={'date':c.raw_date_constraint}
                 else:
                     c.keep=True
-                    c.dates = [np.mean(c.raw_date_constraint)]
+                    c.dates = [c.raw_date_constraint]
                     c.observations = 1
-                    c.avg_date = np.mean(c.raw_date_constraint)
-                    c.tips = {c.name:{'date':np.mean(c.raw_date_constraint)}}
+                    c.avg_date = c.raw_date_constraint
+                    c.tips = {c.name:{'date':c.raw_date_constraint}}
                     c.nmuts = len([m for m in c.mutations if m[-1] in 'ACGT'])
 
         n.keep=any([c.keep for c in n])
@@ -82,6 +87,7 @@ if __name__=="__main__":
     parser.add_argument('--tree', type=str, help='tree file in newick format')
     parser.add_argument('--aln', type=str, help='alignment file in fasta format')
     parser.add_argument('--cutoff', type=float, default=4.0, help="z-score used to flag outliers")
+    parser.add_argument('--reroot', action="store_true", help="reroot the tree")
     parser.add_argument('--optimize', action="store_true", help="optimize sigma and mu")
     parser.add_argument('--dates', type=str, help='csv/tsv file with dates for each sequence')
     parser.add_argument('--output-outliers', type=str, help='file for outliers')
@@ -90,7 +96,7 @@ if __name__=="__main__":
     args = parser.parse_args()
     dates = parse_dates(args.dates)
     tt = TreeTime(gtr='JC69', tree=args.tree, aln=args.aln, verbose=1, dates=dates)
-    tt.clock_filter(n_iqd=4, reroot='least-squares')
+    tt.clock_filter(n_iqd=4, reroot='least-squares' if args.reroot else None)
     if args.aln:
         tt.infer_ancestral_sequences(prune_short=True, marginal=True)
 
@@ -113,13 +119,32 @@ if __name__=="__main__":
 
     outliers = []
     for n in tt.tree.find_clades():
-        if not n.keep: continue
+        if not n.keep:
+            if n.bad_tip:
+                outliers.append({"sequence":n.name, "z_score":np.nan,
+                             "expected_date":np.nan, "given_date":np.nan,
+                             "date_input":str(dates.get(n.name,None)),
+                             "diagnosis": "bad_date"})
+            continue
         for tip, s in n.tips.items():
+            diagnosis=''
             if np.abs(s['z'])>args.cutoff*res['z_stddev']:
+                muts = n.nmuts if n.is_terminal() else 0.0
+                parent_tau = n.up.tau if n.is_terminal() else n.tau
+                if s['z']<0:
+                    if np.abs(s['date']-parent_tau) > muts/mu:
+                        diagnosis='date_too_early'
+                    else:
+                        diagnosis = 'excess_mutations'
+                else:
+                    diagnosis = 'date_too_late'
+
                 outliers.append({"sequence": tip,
                                  "z_score": s['z']/res['z_stddev'],
                                  "expected_date": n.tau,
-                                 "given_date": s['date']})
+                                 "given_date": s['date'],
+                                 "date_input":str(dates.get(tip, None)),
+                                 "diagnosis": diagnosis})
 
     import pandas as pd
     df = pd.DataFrame(outliers)
