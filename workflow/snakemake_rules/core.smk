@@ -228,6 +228,7 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
+            --stochastic-resolve \
             --timetree \
             --use-fft \
             --no-covariance \
