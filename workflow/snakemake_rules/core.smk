@@ -138,9 +138,27 @@ rule prune_reference:
             --output {output.tree}
         """
 
+rule prune_outliers:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
+        aln = build_dir+"/{build_name}/{segment}/aligned.fasta",
+        metadata = build_dir + "/{build_name}/metadata.tsv"
+    output:
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup_clean.nwk",
+        outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
+    shell:
+        """
+        python3 scripts/flag_outliers.py \
+            --tree {input.tree:q} \
+            --aln {input.aln} \
+            --dates {input.metadata} \
+            --cutoff 4.0 \
+            --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
+        """
+
 rule sanitize_trees:
     input:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outgroup.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outgroup_clean.nwk",  segment=config['segments'], build_dir=[build_dir]),
         alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
@@ -156,6 +174,8 @@ rule sanitize_trees:
             --alignments {input.alignments:q} \
             --output {output.trees:q} 2>&1 | tee {log}
         """
+
+
 
 def clock_rate(w):
     # these rates are from 12y runs on 2019-10-18
