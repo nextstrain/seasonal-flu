@@ -54,6 +54,7 @@ builds:
     auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"
+    max_date: "4W"
     include: "config/h1n1pdm/reference_strains.txt"
     exclude: "config/h1n1pdm/outliers.txt"
     vaccines: "config/h1n1pdm/vaccine.json"
@@ -108,6 +109,7 @@ builds:
     enable_measurements: true
     min_date: "2Y"
     reference_min_date: "8Y"
+    max_date: "4W"
     include: "config/h3n2/reference_strains.txt"
     exclude: "config/h3n2/outliers.txt"
     titer_collections:
@@ -151,6 +153,7 @@ builds:
     enable_measurements: true
     min_date: "2Y"
     reference_min_date: "8Y"
+    max_date: "4W"
     include: "config/h3n2/reference_strains.txt"
     exclude: "config/h3n2/outliers.txt"
     titer_collections:
@@ -182,6 +185,7 @@ builds:
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"
+    max_date: "4W"
     include: "config/vic/reference_strains.txt"
     exclude: "config/vic/outliers.txt"
     vaccines: "config/vic/vaccine.json"
