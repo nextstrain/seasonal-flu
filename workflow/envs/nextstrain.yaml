@@ -4,7 +4,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - augur=21.1.0
+  - augur=22.0.2
   - biopython=1.80
   - awscli=1.27.9
   - epiweeks=2.1.2
