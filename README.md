@@ -17,59 +17,32 @@ This build is more complicated than other standard nextstrain build because all 
 currently circulating seasonal influenza lineages (A/H3N2, A/H1N1pdm, B/Vic and B/Yam)
 are analyzed using the same Snakefile with appropriate wildcards. In addition, we run
 analyses of both the HA and NA segments of the influenza virus genome and analyze datasets
-that span different time intervals (eg 2, 3, 6 years).
+that span different time intervals (eg 2, 3, 6 years). Furthermore, the Nextstrain analysis
+of influenza virus evolution also uses antigenic and serological data from different
+WHO collaborating centers.
 
-Furthermore, the Nextstrain analysis of influenza virus evolution also uses antigenic and
-serological data from different WHO collaborating centers. These antigenic data come in
-four flavors depending on the assay that passage history of the antigens. The influenza
-virus output files have the wildcard set
+The different builds for the general public and the different WHO collaborating centers
+are configured via separate config files. The Nextstrain build configs
+([upload](profiles/upload.yaml), [nextstrain-public](profiles/nextstrain-public.yaml), [private.nextflu.org](profiles/private.nextflu.org.yaml))
+are used for our semi-automated builds through our [GitHub Action workflows](.github/workflows/).
 
-`{center}_{lineage}_{segment}_{resolution}_{passage}_{assay}`
+## Example build
 
-that currently use the following values:
+You can run an example build using the example data provided in this repository.
 
-* center: [`who`, `cdc`, `crick`, `niid`, `vidrl`]
-* lineage: [`h3n2`, `h1n1pdm`, `vic`, `yam`]
-* segment: [`ha`, `na`]
-* resolution: [`6m`, `2y`, `3y`, `6y`, `12y`]
-* assay: [`hi`, `fra`]
-* passage: [`cell`, `egg`]
+First follow the [standard installation instructions](https://docs.nextstrain.org/en/latest/install.html)
+for Nextstrain's suite of software tools.
 
-Intermediate files follow this wildcard ordering, but may omit irrelevant wildcards, eg
-`filtered_h3n2_ha.fasta`.
-
-To manage both builds for the general public and the different WHO collaborating centers,
-the Snakefiles are split into a `Snakefile_base` that contains the rules for the core
-analysis and the files, alongside:
-
-* `Snakefile` for the standard "live" build housed at
-  [nextstrain.org/flu](https://nextstrain.org/flu)
-* `Snakefile_WHO` for the WHO CC builds
-* `Snakefile_report` to generate figures and additional analysis for the biannual reports
-to the WHO
-
-The latter Snakefiles import the rules specified in `Snakefile_base`, define additional
-rules, and specify the build targets.
-
-## fauna / RethinkDB credentials
-
-This build starts by pulling sequences from our live [fauna][] database (a RethinkDB
-instance). This requires environment variables `RETHINK_HOST` and `RETHINK_AUTH_KEY` to be
-set.
-
-If you don't have access to our database, you can run the build using the example data
-provided in this repository. Before running the build, copy the example sequences into the
-`data/` directory like so:
+Then run the example build via:
 
 ```
-mkdir data/
-cp example_data/* data/
+nextstrain build .  --configfile profiles/ci/builds.yaml
 ```
 
-Then run the the build via:
+When the build has finished running, view the output Auspice trees via:
 
 ```
-nextstrain build . targets/flu_seasonal_h3n2_ha_12y
+nextstrain view auspice/
 ```
 
 ## History
