@@ -23,6 +23,8 @@ on:
 
 jobs:
   upload:
+    permissions:
+      id-token: write
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
