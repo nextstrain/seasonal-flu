@@ -53,7 +53,7 @@ builds:
     clades: "config/h1n1pdm/ha/clades.tsv"
     auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
     min_date: "2Y"
-    reference_min_date: "8Y"
+    reference_min_date: "6Y"
     max_date: "4W"
     include: "config/h1n1pdm/reference_strains.txt"
     exclude: "config/h1n1pdm/outliers.txt"
@@ -86,8 +86,6 @@ builds:
       europe:
           filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
-      context:
-          filters: --query "(passage_category != 'egg')" --group-by region year --subsample-max-sequences 300 --max-date 2020-03-01 --min-date 2016-01-01 --exclude {exclude}
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
       titer_strains:
@@ -108,7 +106,7 @@ builds:
     enable_titer_models: true
     enable_measurements: true
     min_date: "2Y"
-    reference_min_date: "8Y"
+    reference_min_date: "6Y"
     max_date: "4W"
     include: "config/h3n2/reference_strains.txt"
     exclude: "config/h3n2/outliers.txt"
@@ -152,7 +150,7 @@ builds:
     enable_titer_models: true
     enable_measurements: true
     min_date: "2Y"
-    reference_min_date: "8Y"
+    reference_min_date: "6Y"
     max_date: "4W"
     include: "config/h3n2/reference_strains.txt"
     exclude: "config/h3n2/outliers.txt"
@@ -172,8 +170,6 @@ builds:
       europe:
           filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
-      context:
-          filters: --query "(passage_category != 'egg')" --group-by region year --subsample-max-sequences 300 --max-date 2020-03-01 --min-date 2016-01-01 --exclude {exclude}
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
   vic_2y_titers:
@@ -184,7 +180,7 @@ builds:
     clades: "profiles/nextflu-private/vic/ha/clades.tsv"
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
-    reference_min_date: "8Y"
+    reference_min_date: "6Y"
     max_date: "4W"
     include: "config/vic/reference_strains.txt"
     exclude: "config/vic/outliers.txt"
