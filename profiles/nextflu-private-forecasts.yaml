@@ -50,7 +50,7 @@ array-builds:
     build_name: "forecasts_h3n2_2y_{replicate}"
     build_params:
       lineage: "h3n2"
-      auspice_name: "who-2023-02_2023-02-16_forecasts_h3n2_2y_ha_{replicate}"
+      auspice_name: "who-2023-09_2023-07-27_forecasts_h3n2_2y_ha_{replicate}"
       reference: "config/h3n2/{{segment}}/reference.fasta"
       annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
@@ -63,7 +63,7 @@ array-builds:
       enable_forecasts: true
       enable_measurements: true
       min_date: "2Y"
-      reference_min_date: "8Y"
+      reference_min_date: "6Y"
       max_date: "4W"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
@@ -81,8 +81,6 @@ array-builds:
           filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
       europe:
           filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
-      context:
-          filters: --query "(passage_category != 'egg')" --group-by region year month --subsample-max-sequences 200 --max-date {min_date} --min-date 2017-06-01 --exclude {exclude}
       references:
           filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
       titer_strains:
