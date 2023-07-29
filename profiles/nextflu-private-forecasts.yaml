@@ -1,5 +1,5 @@
 custom_rules:
-  - profiles/nextflu-private/download.smk
+  - workflow/snakemake_rules/download_from_s3.smk
   - profiles/nextflu-private-forecasts/zoltar.smk
   - profiles/nextflu-private-forecasts/rename.smk
 
@@ -64,6 +64,7 @@ array-builds:
       enable_measurements: true
       min_date: "2Y"
       reference_min_date: "8Y"
+      max_date: "4W"
       include: "config/h3n2/reference_strains.txt"
       exclude: "config/h3n2/outliers.txt"
       titer_collections:
