@@ -95,10 +95,10 @@ Plots use Altair which is not part of the Nextstrain Docker or Conda base enviro
 
 ``` bash
 snakemake \
+  figures/total-sample-count-by-lineage.png \
   --use-conda \
   --conda-frontend mamba \
   -j 1 \
   -p \
-  --configfile profiles/nextflu-private.yaml \
-  figures/total-sample-count-by-lineage.png
+  --configfile profiles/nextflu-private.yaml
 ```
