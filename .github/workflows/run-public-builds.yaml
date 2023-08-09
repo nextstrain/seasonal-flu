@@ -24,6 +24,6 @@ jobs:
           --cpus 36 \
           --memory 72gib \
           . \
-          all_deploy \
+          deploy_all \
           -p \
           --configfile profiles/nextstrain-public.yaml

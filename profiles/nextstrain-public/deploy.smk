@@ -3,7 +3,7 @@ This part of the workflow handles automatic deployments of public builds.
 Depends on the `all_public` rule from rename.smk
 """
 
-rule all_deploy:
+rule deploy_all:
     input: rules.all_public.input
     params:
         s3_dst = config["deploy_url"]
