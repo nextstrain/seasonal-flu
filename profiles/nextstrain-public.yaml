@@ -1,6 +1,10 @@
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
   - profiles/nextstrain-public/rename.smk
+  - profiles/nextstrain-public/deploy.smk
+
+# URL for auto-deploying builds
+deploy_url: s3://nextstrain-data
 
 fasta_fields:
   - strain
