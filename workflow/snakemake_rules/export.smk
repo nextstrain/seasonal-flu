@@ -10,7 +10,6 @@ def _get_node_data_by_wildcards(wildcards):
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.clades.output.node_data,
-        rules.subclades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
         rules.annotate_recency_of_submissions.output.node_data,
@@ -20,6 +19,10 @@ def _get_node_data_by_wildcards(wildcards):
     # configurations defined.
     if _get_build_distance_map_config(wildcards) is not None:
         inputs.append(rules.distances.output.distances)
+
+
+    if config["builds"][wildcards.build_name].get('subclades', False):
+        inputs.append(rules.subclades.output.node_data)
 
     if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:

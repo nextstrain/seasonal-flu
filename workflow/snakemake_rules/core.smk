@@ -364,7 +364,7 @@ rule clades:
         """
 
 # Determine subclades for na and ha.
-rule subclade:
+rule subclades:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
@@ -377,9 +377,9 @@ rule subclade:
         label_name = "Subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/clades_{build_name}.txt"
+        "benchmarks/clades_{build_name}_{segment}.txt"
     log:
-        "logs/clades_{build_name}.txt"
+        "logs/clades_{build_name}_{segment}.txt"
     shell:
         """
         augur clades \
