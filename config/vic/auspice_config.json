@@ -30,7 +30,7 @@
     {
       "key": "subclade",
       "legendTitle": "Subclade",
-      "type": "discrete"
+      "type": "categorical"
     },
     {
       "key": "cTiter",
