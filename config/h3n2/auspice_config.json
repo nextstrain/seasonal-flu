@@ -29,7 +29,7 @@
     },
     {
       "key": "subclade",
-      "legendTitle": "Subclade",
+      "title": "Subclade",
       "type": "categorical"
     },
     {
