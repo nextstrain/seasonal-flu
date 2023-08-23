@@ -1,0 +1,86 @@
+clade	gene	site	alt
+A	nuc	228	G
+A	nuc	666	C
+A	nuc	1362	T
+A	nuc	1843	T
+B	nuc	1056	G
+B	nuc	1194	G
+A.1	HA1	129	G
+A.1	HA1	162	-
+A.1	HA1	163	-
+A.1	HA1	180	V
+A.1	HA2	151	K
+A.2	HA1	163	-
+A.2	HA1	164	-
+A.2	HA1	180	T
+A.2	HA1	209	N
+A.3	HA1	136	E
+A.3	HA1	163	-
+A.3	HA1	164	-
+A.3	nuc	484	G
+A.3.1	HA1	150	K
+A.3.1	HA1	184	E
+A.3.1	HA1	197	D
+A.3.1	HA1	279	K
+A.3.1.1	HA1	150	K
+A.3.1.1	HA1	220	M
+A.3.1.1	HA1	241	Q
+
+A.3.2	clade	A.3
+A.3.2	HA1	133	R
+A.3.2	nuc	153	C
+
+A.3.3	clade	A.3
+A.3.3	HA1	75	E
+A.3.3	HA1	128	K
+A.3.3	HA1	230	N
+A.3.3	nuc	153	C
+
+
+C	HA1	127	T
+C	HA1	144	L
+C	HA1	203	R
+
+C.1	clade	C
+C.1	HA1	122	Q
+C.1	nuc	1218	A
+
+C.2	clade	C
+C.2	HA1	182	A
+C.2	HA1	221	A
+C.2	nuc	739	G
+
+C.3	clade	C
+C.3	HA1	128	K
+C.3	HA1	154	E
+C.3	nuc	882	G
+
+C.4	clade	C
+C.4	HA1	198	G
+C.4	nuc	48	C
+
+C.5	clade	C
+C.5	HA1	197	E
+C.5	nuc	351	G
+
+C.5.1	clade	C.5
+C.5.1	HA1	183	K
+C.5.1	nuc	1377	C
+
+C.5.2	clade	C.5
+C.5.2	HA1	200	P
+C.5.2	nuc	555	T
+
+C.5.3	clade	C.5
+C.5.3	HA1	183	K
+C.5.3	HA1	87	A
+C.5.3	nuc	525	G
+
+
+
+
+
+
+
+
+

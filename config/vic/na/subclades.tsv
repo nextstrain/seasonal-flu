@@ -1,0 +1,69 @@
+clade	gene	site	alt
+A	nuc	424	C
+
+A.1	clade	A
+A.1	nuc	424	T
+A.1	NA	120	V
+A.1	NA	220	N
+
+A.1.1	clade	A.1
+A.1.1	nuc	438	T
+A.1.1	NA	395	T
+
+A.1.1.1	clade	A.1.1
+A.1.1.1	NA	346	E
+A.1.1.1	NA	378	E
+A.1.1.1	nuc	483	T
+
+A.1.2	clade	A.1
+A.1.2	NA	53	N
+A.1.2	NA	59	S
+A.1.2	NA	233	E
+
+A.1.1.2	clade	A.1.1
+A.1.1.2	nuc	390	A
+A.1.1.2	NA	416	R
+
+A.1.1.3	clade	A.1.1
+A.1.1.3	nuc	390	A
+A.1.1.3	NA	283	G
+
+B	clade	A.1
+B	nuc	155	A
+B	NA	42	Q
+B	NA	71	A
+B	NA	395	V
+
+B.1	clade	B
+B.1	NA	49	A
+B.1	NA	233	R
+
+B.2	clade	B
+B.2	nuc	684	C
+B.2	NA	359	P
+
+B.3	clade	B
+B.3	nuc	429	T
+B.3	NA	15	L
+
+B.4	clade	B
+B.4	nuc	1380	A
+B.4	NA	233	R
+
+B.5	clade	B
+B.5	NA	315	K
+
+B.6	clade	B
+B.6	NA	295	K
+B.6	NA	463	N
+
+
+B.7	clade	B
+B.7	NA	378	E
+
+B.7.1	clade	B.7
+B.7.1	NA	52	S
+B.7.1	NA	395	i
+
+
+
