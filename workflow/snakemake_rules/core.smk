@@ -363,6 +363,34 @@ rule clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
+# Determine subclades for na and ha.
+rule subclade:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
+        aa_muts = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        clades = lambda wildcards: config[build_dir + ""][wildcards.build_name]["subclades"],
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+    params:
+        membership_name = "subclade",
+        label_name = "Subclade",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/clades_{build_name}.txt"
+    log:
+        "logs/clades_{build_name}.txt"
+    shell:
+        """
+        augur clades \
+            --tree {input.tree} \
+            --mutations {input.nt_muts} {input.aa_muts} \
+            --clades {input.clades} \
+            --membership-name {params.membership_name} \
+            --label-name {params.label_name} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
 # Assign clade annotations to non-HA segments from HA.
 rule import_clades:
     input:

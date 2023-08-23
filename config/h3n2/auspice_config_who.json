@@ -49,6 +49,12 @@
       "menuItem": "clade (long)",
       "type": "discrete"
     },
+    "subclade": {
+      "key": "subclade",
+      "legendTitle": "Subclade",
+      "menuItem": "subclade",
+      "type": "discrete"
+    },
     "cTiter": {
       "key": "cTiter",
       "legendTitle": "Antigenic advance (tree model)",
@@ -120,6 +126,7 @@
   ],
   "filters": [
     "clade_membership",
+    "subclade",
     "region",
     "country",
     "authors",

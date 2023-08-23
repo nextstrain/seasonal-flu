@@ -10,6 +10,7 @@ def _get_node_data_by_wildcards(wildcards):
         rules.ancestral.output.node_data,
         rules.translate.output.node_data,
         rules.clades.output.node_data,
+        rules.subclades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
         rules.annotate_recency_of_submissions.output.node_data,

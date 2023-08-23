@@ -31,6 +31,12 @@
       "menuItem": "clade",
       "type": "discrete"
     },
+    "subclade": {
+      "key": "subclade",
+      "legendTitle": "Subclade",
+      "menuItem": "subclade",
+      "type": "discrete"
+    },
     "avgage": {
       "menuItem": "average age",
       "legendTitle": "average age",
@@ -90,6 +96,7 @@
   ],
   "filters": [
     "clade_membership",
+    "subclade",
     "region",
     "country",
     "authors",
