@@ -377,9 +377,9 @@ rule subclades:
         label_name = "Subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/clades_{build_name}_{segment}.txt"
+        "benchmarks/subclades_{build_name}_{segment}.txt"
     log:
-        "logs/clades_{build_name}_{segment}.txt"
+        "logs/subclades_{build_name}_{segment}.txt"
     shell:
         """
         augur clades \
