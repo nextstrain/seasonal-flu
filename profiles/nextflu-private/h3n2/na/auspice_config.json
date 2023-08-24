@@ -47,6 +47,11 @@
       ]
     },
     {
+      "key": "subclade",
+      "title": "Subclade",
+      "type": "categorical"
+    },
+    {
       "key": "lbi",
       "title": "Local branching index",
       "type": "continuous"
@@ -118,6 +123,7 @@
   },
   "filters": [
     "clade_membership",
+    "subclade",
     "region",
     "country",
     "division",
