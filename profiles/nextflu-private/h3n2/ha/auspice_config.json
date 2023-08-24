@@ -47,6 +47,11 @@
       ]
     },
     {
+      "key": "subclade",
+      "title": "Subclade",
+      "type": "categorical"
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"
@@ -398,6 +403,7 @@
   },
   "filters": [
     "clade_membership",
+    "subclade",
     "haplotype",
     "is_titer_reference_virus_in_cell_fra",
     "is_titer_reference_virus_in_egg_fra",

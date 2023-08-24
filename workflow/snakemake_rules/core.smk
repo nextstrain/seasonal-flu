@@ -346,7 +346,7 @@ rule clades:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
         nt_muts = build_dir + "/{build_name}/ha/nt-muts.json",
         aa_muts = build_dir + "/{build_name}/ha/aa_muts.json",
-        clades = lambda wildcards: config[build_dir + ""][wildcards.build_name]["clades"],
+        clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
     output:
         node_data = build_dir + "/{build_name}/ha/clades.json",
     conda: "../envs/nextstrain.yaml"
@@ -360,6 +360,34 @@ rule clades:
             --tree {input.tree} \
             --mutations {input.nt_muts} {input.aa_muts} \
             --clades {input.clades} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
+# Determine subclades for na and ha.
+rule subclades:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
+        aa_muts = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        clades = lambda wildcards: config["builds"][wildcards.build_name]["subclades"],
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+    params:
+        membership_name = "subclade",
+        label_name = "Subclade",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/subclades_{build_name}_{segment}.txt"
+    log:
+        "logs/subclades_{build_name}_{segment}.txt"
+    shell:
+        """
+        augur clades \
+            --tree {input.tree} \
+            --mutations {input.nt_muts} {input.aa_muts} \
+            --clades {input.clades} \
+            --membership-name {params.membership_name} \
+            --label-name {params.label_name} \
             --output {output.node_data} 2>&1 | tee {log}
         """
 

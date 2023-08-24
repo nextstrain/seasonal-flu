@@ -31,6 +31,12 @@
       "menuItem": "clade",
       "type": "discrete"
     },
+    "subclade": {
+      "key": "subclade",
+      "legendTitle": "Subclade",
+      "menuItem": "subclade",
+      "type": "discrete"
+    },
     "full_clade_membership": {
       "key": "full_clade_membership",
       "legendTitle": "Clade (long)",
@@ -108,6 +114,7 @@
   ],
   "filters": [
     "clade_membership",
+    "subclade",
     "region",
     "country",
     "authors",

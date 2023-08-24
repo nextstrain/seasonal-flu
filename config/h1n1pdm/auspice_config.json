@@ -28,6 +28,11 @@
       "type": "categorical"
     },
     {
+      "key": "subclade",
+      "title": "Subclade",
+      "type": "categorical"
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"
@@ -119,6 +124,7 @@
   },
   "filters": [
     "clade_membership",
+    "subclade",
     "region",
     "country",
     "division",

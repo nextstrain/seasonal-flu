@@ -29,6 +29,11 @@
       "type": "categorical"
     },
     {
+      "key": "subclade",
+      "title": "Subclade",
+      "type": "categorical"
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"
@@ -170,6 +175,7 @@
   },
   "filters": [
     "clade_membership",
+    "subclade",
     "haplotype",
     "is_titer_reference_virus_in_cell_hi",
     "is_titer_reference_virus_in_egg_hi",
