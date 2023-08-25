@@ -31,6 +31,10 @@ jobs:
       runtime: docker
       run: |
         nextstrain build \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          --env RETHINK_AUTH_KEY \
+          --env RETHINK_HOST \
           . \
           -j 4 \
           upload_all_titers \

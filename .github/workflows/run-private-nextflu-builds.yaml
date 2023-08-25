@@ -23,6 +23,8 @@ jobs:
           --detach \
           --cpus 36 \
           --memory 72gib \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
           . \
           all_who \
           -p \
