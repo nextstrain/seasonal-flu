@@ -78,6 +78,7 @@ rule antigenic_distances_between_strains:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
         clades="builds/{build_name}/{segment}/clades.json",
+        subclades="builds/{build_name}/{segment}/subclades.json",
         haplotypes="builds/{build_name}/{segment}/haplotypes.json",
         titer_model="builds/{build_name}/{segment}/titers-sub-model/{titer_collection}.json",
         titers="builds/{build_name}/titers/{titer_collection}.tsv",
@@ -97,6 +98,7 @@ rule antigenic_distances_between_strains:
         python3 scripts/get_antigenic_distances_between_strains.py \
             --tree {input.tree} \
             --clades {input.clades} \
+            --subclades {input.subclades} \
             --haplotypes {input.haplotypes} \
             --titer-model {input.titer_model} \
             --titers {input.titers} \
@@ -114,7 +116,15 @@ rule generate_collection_config_json:
         config_json="builds/{build_name}/{segment}/measurements_collection_config/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
     params:
-        groupings=["reference_strain", "reference_strain_source", "clade_reference", "haplotype_reference", "source", "serum"],
+        groupings=[
+            "reference_strain",
+            "reference_strain_source",
+            "clade_reference",
+            "subclade_reference",
+            "haplotype_reference",
+            "source",
+            "serum"
+        ],
         fields=[
             "strain",
             "reference_strain",
@@ -127,6 +137,8 @@ rule generate_collection_config_json:
             "reference_date",
             "clade_test",
             "clade_reference",
+            "subclade_test",
+            "subclade_reference",
             "haplotype_test",
             "haplotype_reference",
         ],
@@ -164,7 +176,15 @@ rule export_measurements:
         title=get_titer_collection_title,
         x_axis_label="normalized log2 titer",
         thresholds=[0.0, 2.0],
-        filters=["reference_strain", "reference_strain_source", "clade_reference", "haplotype_reference", "source", "serum"],
+        filters=[
+            "reference_strain",
+            "reference_strain_source",
+            "clade_reference",
+            "subclade_reference",
+            "haplotype_reference",
+            "source",
+            "serum"
+        ],
         include_columns=[
             "test_strain",
             "reference_strain",
@@ -177,6 +197,8 @@ rule export_measurements:
             "reference_date",
             "clade_test",
             "clade_reference",
+            "subclade_test",
+            "subclade_reference",
             "haplotype_test",
             "haplotype_reference",
         ],

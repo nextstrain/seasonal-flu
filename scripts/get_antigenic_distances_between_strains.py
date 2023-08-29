@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
     parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
+    parser.add_argument("--subclades", required=True, help="subclade annotations in a node data JSON")
     parser.add_argument("--haplotypes", required=True, help="haplotype annotations in a node data JSON")
     parser.add_argument("--branch-lengths", required=True, help="branch length annotations including `numdate` calculated by TreeTime")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON from augur frequencies")
@@ -114,6 +115,7 @@ if __name__ == '__main__':
     # Load node data (e.g., clade and haplotype).
     node_data = read_node_data([
         args.clades,
+        args.subclades,
         args.haplotypes,
     ])
 
@@ -138,6 +140,7 @@ if __name__ == '__main__':
         {
             "strain": strain,
             "clade": strain_data["clade_membership"],
+            "subclade": strain_data["subclade"],
             "haplotype": strain_data["haplotype"],
             "clade_frequency": frequency_by_clade[strain_data["clade_membership"]],
         }
