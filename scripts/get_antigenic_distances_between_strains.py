@@ -165,6 +165,14 @@ if __name__ == '__main__':
         columns=["strain"]
     )
 
+    # Annotate reference strains with source (i.e., Collaborating Center) and
+    # haplotype, so users can group on this column and visualize how data differ
+    # between sources for the same strains.
+    titer_table["reference_strain_source"] = titer_table.apply(
+        lambda row: f"{row['reference_strain']} ({row['source']}, {row['haplotype_reference']})",
+        axis=1
+    )
+
     # Add any additional annotations requested by the user in the format of
     # "key=value" pairs where each key becomes a new column with the given
     # value.

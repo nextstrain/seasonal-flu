@@ -114,10 +114,11 @@ rule generate_collection_config_json:
         config_json="builds/{build_name}/{segment}/measurements_collection_config/{titer_collection}.json",
     conda: "../envs/nextstrain.yaml"
     params:
-        groupings=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
+        groupings=["reference_strain", "reference_strain_source", "clade_reference", "haplotype_reference", "source", "serum"],
         fields=[
             "strain",
             "reference_strain",
+            "reference_strain_source",
             "serum",
             "value",
             "raw_titer",
@@ -163,10 +164,11 @@ rule export_measurements:
         title=get_titer_collection_title,
         x_axis_label="normalized log2 titer",
         thresholds=[0.0, 2.0],
-        filters=["reference_strain", "clade_reference", "haplotype_reference", "source", "serum"],
+        filters=["reference_strain", "reference_strain_source", "clade_reference", "haplotype_reference", "source", "serum"],
         include_columns=[
             "test_strain",
             "reference_strain",
+            "reference_strain_source",
             "serum",
             "log2_titer",
             "raw_titer",
