@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # Filter samples.
     if args.drop_samples is not None and len(args.drop_samples) > 0:
-        frequencies = frequencies[~frequencies[args.groupby].isin(args.drop_samples)]
+        frequencies = frequencies[~frequencies["sample"].isin(args.drop_samples)]
 
     # Group frequencies by clade, model, and date.
     group_columns = ["clade", "pivot", "model", "observed"] + args.groupby
