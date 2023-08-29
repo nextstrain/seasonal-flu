@@ -146,6 +146,8 @@ rule prune_outliers:
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup_clean.nwk",
         outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
+    params:
+        keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
     shell:
         """
         python3 scripts/flag_outliers.py \
@@ -153,6 +155,7 @@ rule prune_outliers:
             --aln {input.aln} \
             --dates {input.metadata} \
             --cutoff 4.0 \
+            {params.keep_strains_argument} \
             --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
         """
 

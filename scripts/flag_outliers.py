@@ -90,6 +90,7 @@ if __name__=="__main__":
     parser.add_argument('--reroot', action="store_true", help="reroot the tree")
     parser.add_argument('--optimize', action="store_true", help="optimize sigma and mu")
     parser.add_argument('--dates', type=str, help='csv/tsv file with dates for each sequence')
+    parser.add_argument('--keep-strains', type=str, help='a list of strains to keep in the output tree regardless of outlier status (i.e., reference strains that need to be retained in the build)')
     parser.add_argument('--output-outliers', type=str, help='file for outliers')
     parser.add_argument('--output-tree', type=str, help='file for pruned tree')
 
@@ -153,9 +154,14 @@ if __name__=="__main__":
         df.to_csv(args.output_outliers, index=False, sep='\t')
 
     if args.output_tree:
+        keep_strains = set()
+        if args.keep_strains:
+            with open(args.keep_strains, "r", encoding="utf-8") as fh:
+                keep_strains = {line.strip() for line in fh}
+
         from Bio import Phylo
         T = tt.tree
         for r, row in df.iterrows():
-            if row['diagnosis']!='bad_date':
+            if row['diagnosis']!='bad_date' and row["sequence"] not in keep_strains:
                 T.prune(row['sequence'])
         Phylo.write(T, args.output_tree, 'newick')
