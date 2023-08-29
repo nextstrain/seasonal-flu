@@ -266,12 +266,19 @@ rule refine:
 rule ancestral:
     message: "Reconstructing ancestral sequences and mutations"
     input:
-        tree = rules.refine.output.tree,
-        alignment = rules.align.output.alignment,
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
+        translations = aggregate_translations,
+        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
+        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
     output:
-        node_data = build_dir + "/{build_name}/{segment}/nt-muts.json"
+        node_data = build_dir + "/{build_name}/{segment}/muts.json",
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done",
     params:
-        inference = "joint"
+        inference = "joint",
+        genes = lambda w: GENES[w.segment],
+        input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.%GENE.fasta",
+        output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.%GENE_withInternalNodes.fasta",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/ancestral_{build_name}_{segment}.txt"
@@ -284,36 +291,13 @@ rule ancestral:
         augur ancestral \
             --tree {input.tree} \
             --alignment {input.alignment} \
-            --output-node-data {output.node_data} \
-            --inference {params.inference} 2>&1 | tee {log}
-        """
-
-rule translate:
-    message: "Translating amino acid sequences"
-    input:
-        translations = aggregate_translations,
-        tree = rules.refine.output.tree,
-        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
-    output:
-        node_data = build_dir + "/{build_name}/{segment}/aa_muts.json",
-        translations_done = build_dir + "/{build_name}/{segment}/translations.done"
-    params:
-        genes = lambda w: GENES[w.segment]
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/translate_{build_name}_{segment}.txt"
-    log:
-        "logs/translate_{build_name}_{segment}.txt"
-    shell:
-        """
-        python3 scripts/translations_aamuts.py \
-            --tree {input.tree} \
+            --root-sequence {input.reference} \
             --annotation {input.annotation} \
-            --reference {input.reference} \
-            --translations {input.translations:q} \
             --genes {params.genes} \
-            --output {output.node_data} 2>&1 | tee {log} && touch {output.translations_done}
+            --translations "{params.input_translations}" \
+            --output-node-data {output.node_data} \
+            --output-translations "{params.output_translations}" \
+            --inference {params.inference} 2>&1 | tee {log} && touch {output.translations_done}
         """
 
 rule traits:
@@ -347,8 +331,7 @@ rule traits:
 rule clades:
     input:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
-        nt_muts = build_dir + "/{build_name}/ha/nt-muts.json",
-        aa_muts = build_dir + "/{build_name}/ha/aa_muts.json",
+        muts = build_dir + "/{build_name}/ha/muts.json",
         clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
     output:
         node_data = build_dir + "/{build_name}/ha/clades.json",
@@ -361,7 +344,7 @@ rule clades:
         """
         augur clades \
             --tree {input.tree} \
-            --mutations {input.nt_muts} {input.aa_muts} \
+            --mutations {input.muts} \
             --clades {input.clades} \
             --output {output.node_data} 2>&1 | tee {log}
         """
@@ -370,8 +353,7 @@ rule clades:
 rule subclades:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
-        nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
-        aa_muts = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        muts = build_dir + "/{build_name}/{segment}/muts.json",
         clades = lambda wildcards: config["builds"][wildcards.build_name]["subclades"],
     output:
         node_data = build_dir + "/{build_name}/{segment}/subclades.json",
@@ -387,7 +369,7 @@ rule subclades:
         """
         augur clades \
             --tree {input.tree} \
-            --mutations {input.nt_muts} {input.aa_muts} \
+            --mutations {input.muts} \
             --clades {input.clades} \
             --membership-name {params.membership_name} \
             --label-name {params.label_name} \
@@ -398,8 +380,7 @@ rule subclades:
 rule import_clades:
     input:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
-        nt_muts = build_dir + "/{build_name}/{segment}/nt-muts.json",
-        aa_muts = build_dir + "/{build_name}/{segment}/aa_muts.json",
+        muts = build_dir + "/{build_name}/{segment}/muts.json",
         clades = build_dir + "/{build_name}/ha/clades.json",
     output:
         node_data = build_dir + "/{build_name}/{segment}/clades.json",

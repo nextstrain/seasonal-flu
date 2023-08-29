@@ -8,7 +8,6 @@ def _get_node_data_by_wildcards(wildcards):
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.translate.output.node_data,
         rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
