@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--clades", nargs="+", help="names of clades to plot")
     parser.add_argument("--models", nargs="+", help="names of models as hyphenated lists of fitness metrics (e.g., ne_star-lbi)")
     parser.add_argument("--model-names", nargs="+", help="human-readable model names for each provided model (e.g., mutational load and LBI)")
-    parser.add_argument("--groupby", default="date", help="column from the input table to group forecasts for plotting as separate lines (e.g., by date, sample, etc.)")
+    parser.add_argument("--groupby", nargs="+", default=["sample"], help="columns from the input table to group forecasts for plotting as separate lines (e.g., by date, sample, etc.)")
     parser.add_argument("--drop-samples", nargs="+", help="samples to drop from plots (e.g., due to incorrect phylogenetic nesting of clades, etc.)")
     parser.add_argument("--height-per-row", type=float, default=1.25, help="height per row in inches")
     parser.add_argument("--output", help="forecast plot")
@@ -77,25 +77,18 @@ if __name__ == "__main__":
         frequencies = frequencies[~frequencies[args.groupby].isin(args.drop_samples)]
 
     # Group frequencies by clade, model, and date.
-    df = frequencies.groupby(["clade", "pivot", "model", args.groupby, "observed"])["frequency"].sum().reset_index()
+    group_columns = ["clade", "pivot", "model", "observed"] + args.groupby
+    df = frequencies.groupby(group_columns)["frequency"].sum().reset_index()
 
     # Filter clades.
     df = df[df["clade"].isin(args.clades)].copy()
 
-    # Get pivots.
-    numeric_pivots = df["pivot"].drop_duplicates().sort_values().values
-    timepoint = df[df["observed"]]["pivot"].max()
-    timepoint_index = list(numeric_pivots).index(timepoint) + 1
-
+    # Setup date plotting.
     years = YearLocator()
     yearsFmt = DateFormatter('%Y')
     months = MonthLocator(range(1, 13), bymonthday=1, interval=3)
     monthsFmt = DateFormatter("%b")
-
     offset = datetime(2000,1,1).toordinal()
-    pivots = [offset + (x - 2000) * 365.25 for x in numeric_pivots[:timepoint_index]]
-    projected_pivots = numeric_pivots[timepoint_index:]
-    ordinal_projected_pivots = [offset + (x - 2000) * 365.25 for x in projected_pivots]
 
     today = datetime.today().toordinal()
 
@@ -110,10 +103,20 @@ if __name__ == "__main__":
         clade_df = df[df["clade"] == clade_name].copy()
 
         # Plot per model per groupby column per type
-        for (model, group), clade_model_df in clade_df.groupby(["model", args.groupby]):
+        for group_columns, clade_model_df in clade_df.groupby(["model"] + args.groupby):
+            model = group_columns[0]
             if model not in args.models:
                 continue
 
+            # Get pivots.
+            numeric_pivots = clade_model_df["pivot"].drop_duplicates().sort_values().values
+            timepoint = clade_model_df[clade_model_df["observed"]]["pivot"].max()
+            timepoint_index = list(numeric_pivots).index(timepoint) + 1
+            pivots = [offset + (x - 2000) * 365.25 for x in numeric_pivots[:timepoint_index]]
+            projected_pivots = numeric_pivots[timepoint_index:]
+            ordinal_projected_pivots = [offset + (x - 2000) * 365.25 for x in projected_pivots]
+
+            group = group_columns[1:]
             observed_clade_model_df = clade_model_df[clade_model_df["observed"]]
             predicted_clade_model_df = clade_model_df[~clade_model_df["observed"]]
             delta_frequency = predicted_clade_model_df["frequency"].values[-1] - observed_clade_model_df["frequency"].values[-1]
@@ -126,13 +129,16 @@ if __name__ == "__main__":
             else:
                 status = "grow"
 
-            delta_frequency_records.append({
+            delta_frequency_record = {
                 "clade": clade_name,
-                args.groupby: group,
                 "model": model,
                 "delta_frequency": delta_frequency,
                 "status": status
-            })
+            }
+            for group_column, group_value in zip(args.groupby, group):
+                delta_frequency_record[group_column] = group_value
+
+            delta_frequency_records.append(delta_frequency_record)
 
             # Plot observed clade frequencies up to the present.
             markersize = 6
