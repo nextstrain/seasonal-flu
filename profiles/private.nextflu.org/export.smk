@@ -253,7 +253,6 @@ def _get_node_data_for_report_export(wildcards):
         rules.annotate_recency_of_submissions.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.translate.output.node_data,
         rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.scores.output.node_data,
