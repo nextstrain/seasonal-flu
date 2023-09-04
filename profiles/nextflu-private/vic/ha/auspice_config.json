@@ -31,7 +31,19 @@
     {
       "key": "subclade",
       "title": "Subclade",
-      "type": "categorical"
+      "type": "categorical",
+      "scale": [
+        ["A.3.2", "#3F52CD"],
+        ["C", "#4681CA"],
+        ["C.1", "#57A1AD"],
+        ["C.2", "#70B487"],
+        ["C.3", "#90BC65"],
+        ["C.4", "#B4BD4C"],
+        ["C.5", "#D3B240"],
+        ["C.5.1", "#E59638"],
+        ["C.5.2", "#E4642E"],
+        ["C.5.3", "#DB2823"]
+      ]
     },
     {
       "key": "haplotype",
