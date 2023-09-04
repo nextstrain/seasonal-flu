@@ -16,8 +16,9 @@ import sys
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
-    parser.add_argument("--colors", required=True, help="table of Nextstrain colors with `clade_membership` in the first column, clade name in the second column, and hex color in the third column.")
+    parser.add_argument("--colors", required=True, help="table of Nextstrain colors with the clade color field the first column (e.g., 'clade_test'), clade name in the second column, and hex color in the third column.")
     parser.add_argument("--clades", help="a list of clades for which test strains should be plotted")
+    parser.add_argument("--clade-color-field", default="clade_test", help="field in antigenic distance table to color measurements by")
     parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
     parser.add_argument("--references-to-include", help="a list of reference strains to force include in plots")
     parser.add_argument("--references-to-exclude", help="a list of reference strains to exclude from plots")
@@ -53,7 +54,7 @@ if __name__ == '__main__':
         with open(args.clades, "r", encoding="utf-8") as fh:
             clades = [clade.strip() for clade in fh]
 
-        df = df[df["clade_test"].isin(clades)].copy()
+        df = df[df[args.clade_color_field].isin(clades)].copy()
 
     # Annotate reference names with clade.
     df["reference_name"] = df.apply(
@@ -63,15 +64,15 @@ if __name__ == '__main__':
 
     # Load colors.
     colors = read_colors(args.colors)
-    if not "clade_test" in colors:
+    if not args.clade_color_field in colors:
         print(
-            f"No colors for `clade_test` are defined in the given colors file, '{args.colors}'.",
+            f"No colors for `{args.clade_color_field}` are defined in the given colors file, '{args.colors}'.",
             file=sys.stderr
         )
         sys.exit(1)
 
     # Colors indexed by lower-cased clade name.
-    clade_colors = dict(colors["clade_test"])
+    clade_colors = dict(colors[args.clade_color_field])
 
     reference_order = None
     if args.references:
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         clade_order = filtered_df.sort_values(
             "clade_frequency_test",
             ascending=False
-        )["clade_test"].drop_duplicates().values
+        )[args.clade_color_field].drop_duplicates().values
 
     if reference_order is None:
         # Order reference strains by clade (in descending order of global
@@ -156,7 +157,7 @@ if __name__ == '__main__':
         sns.stripplot(
             x="log2_titer",
             y="reference_name",
-            hue="clade_test",
+            hue=args.clade_color_field,
             order=reference_order,
             hue_order=clade_order,
             data=filtered_df,
@@ -172,7 +173,7 @@ if __name__ == '__main__':
     sns.pointplot(
         x="log2_titer",
         y="reference_name",
-        hue="clade_test",
+        hue=args.clade_color_field,
         order=reference_order,
         hue_order=clade_order,
         data=filtered_df,

@@ -28,6 +28,7 @@ rule plot_antigenic_distances_between_strains:
     params:
         min_test_date=2022.5,
         title=get_titer_collection_title,
+        clade_color_field="clade_test",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -35,6 +36,7 @@ rule plot_antigenic_distances_between_strains:
             --antigenic-distances {input.distances} \
             --min-test-date {params.min_test_date} \
             --clades {input.clades} \
+            --clade-color-field {params.clade_color_field} \
             --references {input.references} \
             --colors {input.colors} \
             --title {params.title:q} \
