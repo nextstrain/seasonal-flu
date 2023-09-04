@@ -18,7 +18,7 @@ rule plot_antigenic_distances_between_strains:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         clades=lambda wildcards: f"config/clades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
-        colors="config/colors_for_titer_plots.tsv",
+        colors=lambda wildcards: f"config/colors_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.tsv",
     output:
         plot="builds/{build_name}/{segment}/plots/antigenic_distances_between_strains_{build_name}_{titer_collection}.png",
     benchmark:
