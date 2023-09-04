@@ -63,15 +63,15 @@ if __name__ == '__main__':
 
     # Load colors.
     colors = read_colors(args.colors)
-    if not "clade_membership" in colors:
+    if not "clade_test" in colors:
         print(
-            f"No colors for `clade_membership` are defined in the given colors file, '{args.colors}'.",
+            f"No colors for `clade_test` are defined in the given colors file, '{args.colors}'.",
             file=sys.stderr
         )
         sys.exit(1)
 
     # Colors indexed by lower-cased clade name.
-    clade_colors = dict(colors["clade_membership"])
+    clade_colors = dict(colors["clade_test"])
 
     reference_order = None
     if args.references:
