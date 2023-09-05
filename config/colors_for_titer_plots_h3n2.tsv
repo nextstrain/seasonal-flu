@@ -14,3 +14,13 @@ clade_test	2a.3b	#E49838
 clade_test	2b	#E67932
 clade_test	2c	#E1512A
 clade_test	2d	#DB2823
+subclade_test	F.1.1	#3F52CD
+subclade_test	G.1.1	#4681CA
+subclade_test	G.1.1.2	#57A1AD
+subclade_test	G.1.3	#70B487
+subclade_test	G.1.3.1	#90BC65
+subclade_test	G.1.3.1.1	#B4BD4C
+subclade_test	G.1.3.2	#D3B240
+subclade_test	G.2	#E59638
+subclade_test	G.2.1	#E4642E
+subclade_test	G.2.2	#DB2823

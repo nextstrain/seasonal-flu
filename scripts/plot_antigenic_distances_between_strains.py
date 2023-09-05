@@ -56,6 +56,10 @@ if __name__ == '__main__':
 
         df = df[df[args.clade_color_field].isin(clades)].copy()
 
+    if df.shape[0] == 0:
+        print("Could not find any measurements after filtering by clades and min date", file=sys.stderr)
+        sys.exit(1)
+
     # Annotate reference names with clade.
     df["reference_name"] = df.apply(
         lambda row: f"{row['reference_strain']}\n({row['haplotype_reference']})",

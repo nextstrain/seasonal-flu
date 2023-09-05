@@ -16,7 +16,7 @@ rule all_antigenic_plots:
 rule plot_antigenic_distances_between_strains:
     input:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
-        clades=lambda wildcards: f"config/clades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
+        clades=lambda wildcards: f"config/subclades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         colors=lambda wildcards: f"config/colors_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.tsv",
     output:
@@ -28,7 +28,7 @@ rule plot_antigenic_distances_between_strains:
     params:
         min_test_date=2022.5,
         title=get_titer_collection_title,
-        clade_color_field="clade_test",
+        clade_color_field="subclade_test",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
