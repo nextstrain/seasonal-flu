@@ -1,7 +1,3 @@
-A/Brisbane/50/2022
-A/Guangdong-Maonan/SWL1536/2019
-A/Hawaii/70/2019
-A/Okinawa/93/2019
 A/Denmark/3280/2019
 A/Victoria/2570/2019
 A/Wisconsin/588/2019
@@ -17,11 +13,6 @@ A/SouthAfrica/R05722/2022
 A/Wisconsin/67/2022
 A/Victoria/4897/2022
 A/Wisconsin/47/2022
-A/Guangdong-Maonan/SWL1536/2019-egg
-A/Hawaii/66/2019-egg
-A/NorthCarolina/1/2021-egg
-A/Togo/44/2021-egg
-A/Lyon/820/2021-egg
 A/Victoria/2570/2019-egg
 A/Sydney/5/2021-egg
 A/Victoria/4897/2022-egg
