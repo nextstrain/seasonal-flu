@@ -2,11 +2,17 @@ name: Deploy private.nextflu.org
 
 on:
   workflow_dispatch:
+    inputs:
+      aws_batch_job_id:
+        description: The AWS Batch Job ID for the private nextflu seasonal flu builds.
+        type: string
+        required: true
 
 env:
   # Everything should run from within the nextflu/auspice directory
   # https://github.com/blab/nextflu/tree/e672eba6d2e0ad5e10b0775f94fc87ffc75d6005/auspice
   WORKING_DIR: auspice
+  AUSPICE_DIR: auspice-who
 
 defaults:
   run:
@@ -36,6 +42,30 @@ jobs:
           # Must be set to access the Gemfile.lock file in the auspice directory
           # https://github.com/blab/nextflu/blob/12c5645d990f53c553d6f04e293e2f12b4ad3575/auspice/Gemfile.lock
           working-directory: ${{ env.WORKING_DIR }}
+
+      - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
+
+      - name: Download builds from AWS Batch
+        run: |
+          nextstrain build \
+          --aws-batch \
+          --attach "$AWS_BATCH_JOB_ID" \
+          --download "$AUSPICE_DIR/*.json" \
+          --no-logs \
+          .
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_BATCH_JOB_ID: ${{ inputs.aws_batch_job_id }}
+
+      - name: Move Auspice JSONs
+        run: |
+          mkdir data
+          mv "$AUSPICE_DIR"/*.json data/
+          rm -r "$AUSPICE_DIR"
+
+      - name: Create index files
+        run: python provision_directories.py
 
       - name: Build site
         run: bundle exec jekyll build
