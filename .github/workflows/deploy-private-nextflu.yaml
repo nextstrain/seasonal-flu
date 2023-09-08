@@ -7,6 +7,10 @@ on:
         description: The AWS Batch Job ID for the private nextflu seasonal flu builds.
         type: string
         required: true
+      deploy_to_staging:
+        description: Deploy to the staging website at https://staging-private-nextflu.netlify.app
+        type: boolean
+        required: true
 
 env:
   # Everything should run from within the nextflu/auspice directory
@@ -82,5 +86,5 @@ jobs:
       - name: Deploy to Netlify
         run: netlify deploy --build --prod
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_STAGING }}
+          NETLIFY_SITE_ID: ${{ inputs.deploy_to_staging && secrets.NETLIFY_SITE_ID_STAGING || secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
