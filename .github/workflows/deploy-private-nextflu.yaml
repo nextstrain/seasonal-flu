@@ -1,0 +1,56 @@
+name: Deploy private.nextflu.org
+
+on:
+  workflow_dispatch:
+
+env:
+  # Everything should run from within the nextflu/auspice directory
+  # https://github.com/blab/nextflu/tree/e672eba6d2e0ad5e10b0775f94fc87ffc75d6005/auspice
+  WORKING_DIR: auspice
+
+defaults:
+  run:
+    # Cannot use contexts or expressions for this top level defaults, so must
+    # hard-code the path instead of using env.WORKING_DIR
+    # https://docs.github.com/en/actions/using-jobs/setting-default-values-for-jobs#setting-default-shell-and-working-directory
+    working-directory: auspice
+
+jobs:
+  deploy_to_netlify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: blab/nextflu
+          sparse-checkout: |
+            ${{ env.WORKING_DIR }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.3.7'
+          bundler-cache: true
+          # `uses` does not respect the default working-directory
+          # Luckily, the setup-ruby action has a `working-directory` input
+          # https://github.com/ruby/setup-ruby#working-directory
+          #
+          # Must be set to access the Gemfile.lock file in the auspice directory
+          # https://github.com/blab/nextflu/blob/12c5645d990f53c553d6f04e293e2f12b4ad3575/auspice/Gemfile.lock
+          working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Build site
+        run: bundle exec jekyll build
+
+      - uses: actions/setup-node@v3
+        with:
+          # Minimum node version to install Netlify CLI
+          # https://docs.netlify.com/cli/get-started/#installation
+          node-version: 16
+
+      - name: Install Netlify CLI
+        run: npm install netlify-cli -g
+
+      - name: Deploy to Netlify
+        run: netlify deploy --build --prod
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_STAGING }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
