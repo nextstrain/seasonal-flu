@@ -76,7 +76,7 @@ array-builds:
       enable_lbi: true
     subsampling_parameters:
       min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
-      include: "'config/{lineage}/reference_strains.txt'"
+      include: "'config/{lineage}/reference_strains.txt' 'profiles/allflu/{lineage}_include.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:

@@ -1,0 +1,12 @@
+A/Albany/6/1968
+A/HongKong/33/1973
+A/Memphis/105/1976
+A/Netherlands/233/1982
+A/Singapore/35/1989
+A/Stockholm/20/1993
+A/NewYork/631/1996
+A/Wisconsin/67/2005
+A/Perth/16/2009
+A/HongKong/4801/2014
+A/Cambodia/e0826360/2020
+A/Darwin/9/2021
