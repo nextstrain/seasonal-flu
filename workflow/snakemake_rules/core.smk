@@ -354,7 +354,7 @@ rule subclades:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name]["subclades"],
+        clades = lambda wildcards: config["builds"][wildcards.build_name].get("subclades"),
     output:
         node_data = build_dir + "/{build_name}/{segment}/subclades.json",
     params:
