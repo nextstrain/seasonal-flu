@@ -49,7 +49,37 @@
     {
       "key": "subclade",
       "title": "Subclade",
-      "type": "categorical"
+      "type": "categorical",
+      "scale": [
+        [
+          "A.2.2.2",
+          "#4272CE"
+        ],
+        [
+          "B",
+          "#58A2AC"
+        ],
+        [
+          "B.1.1",
+          "#7DB877"
+        ],
+        [
+          "B.2",
+          "#AEBD50"
+        ],
+        [
+          "B.2.2",
+          "#D8AE3E"
+        ],
+        [
+          "B.3",
+          "#E67A32"
+        ],
+        [
+          "B.4",
+          "#DB2823"
+        ]
+      ]
     },
     {
       "key": "lbi",
