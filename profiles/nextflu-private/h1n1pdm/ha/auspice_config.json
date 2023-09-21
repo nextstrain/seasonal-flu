@@ -137,6 +137,26 @@
       "type": "continuous"
     },
     {
+      "key": "individual_human_cell_hi_cTiter",
+      "title": "Antigenic advance (tree, individual human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "individual_human_cell_hi_cTiterSub",
+      "title": "Antigenic advance (sub, individual human cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "individual_human_egg_hi_cTiter",
+      "title": "Antigenic advance (tree, individual human egg HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "individual_human_egg_hi_cTiterSub",
+      "title": "Antigenic advance (sub, individual human egg HI)",
+      "type": "continuous"
+    },
+    {
       "key": "human_cell_hi_cTiter",
       "title": "Antigenic advance (tree, human cell HI)",
       "type": "continuous"
