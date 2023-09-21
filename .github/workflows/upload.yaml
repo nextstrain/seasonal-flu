@@ -36,7 +36,7 @@ jobs:
           --env RETHINK_AUTH_KEY \
           --env RETHINK_HOST \
           . \
-          -j 4 \
+          -j 2 \
           upload_all_titers \
           upload_all_raw_sequences \
           upload_all_sequences \
