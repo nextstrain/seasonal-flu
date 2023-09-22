@@ -15,10 +15,10 @@ A/SouthAfrica/R08120/2022
 A/Thuringen/10/2022
 A/Darwin/2475/2022
 A/Victoria/164/2023
-A/Kanagawa/ZC2201/2022
 A/Montana/8/2023
 A/SouthAustralia/389/2022
 A/SouthAustralia/380/2022
+A/Kanagawa/ZC2201/2022
 A/Darwin/9/2021-egg
 A/Darwin/6/2021-egg
 A/Victoria/39/2022-egg
