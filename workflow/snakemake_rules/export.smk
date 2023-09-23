@@ -27,7 +27,6 @@ def _get_node_data_by_wildcards(wildcards):
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:
             inputs.append(rules.titers_sub.output.titers_model.format(titer_collection=collection["name"], **wildcards_dict))
             inputs.append(rules.titers_tree.output.titers_model.format(titer_collection=collection["name"], **wildcards_dict))
-            inputs.append(rules.titer_tree_cross_immunities.output.cross_immunities.format(titer_collection=collection["name"], **wildcards_dict))
 
     if config["builds"][wildcards.build_name].get('enable_glycosylation', False) and wildcards.segment in ['ha', 'na']:
         inputs.append(rules.glyc.output.glyc)
