@@ -8,7 +8,17 @@ wildcard_constraints:
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     reference="[^_/]+",
 
+def all_builds(w):
+    builds = []
+    for lineage in config["builds"]:
+        for segment in config["builds"][lineage]:
+            for ref in config["builds"][lineage][segment]["refs"]:
+                builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
+    return builds
 
+rule all:
+    input:
+        all_builds
 
 
 rule download_sequences:
@@ -84,13 +94,13 @@ rule subsample:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
         sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
     params:
-        filter_arguments=lambda w: config["builds"][w.lineage][w.segment][
+        filter_arguments=lambda w: config["builds"][w.lineage][w.segment]["refs"][
             w.reference
         ]["filter"],
-        reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment][
+        reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment]["refs"][
             w.reference
         ]["reference_EPI_ISL"],
-        other_include = lambda w:config["builds"][w.lineage][w.segment][w.reference].get("include_file","")
+        other_include = lambda w:config["builds"][w.lineage][w.segment]["refs"][w.reference].get("include_file","")
     shell:
         """
         augur filter \
@@ -106,8 +116,8 @@ rule subsample:
 rule align:
     input:
         sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
-        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
+        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
         alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta",
         insertions="build/{lineage}/{segment}/{reference}/align.insertions.csv",
@@ -201,8 +211,8 @@ rule ancestral:
     input:
         tree=rules.refine.output.tree,
         alignment=rules.align.output.alignment,
-        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
+        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
         node_data="build/{lineage}/{segment}/{reference}/muts.json",
     params:
@@ -210,7 +220,7 @@ rule ancestral:
         genes=genes,
         translations=lambda w: expand(
             "build/{lineage}/{segment}/{reference}/aligned.gene.{genes}.fasta",
-            strain=w.lineage,
+            lineage=w.lineage,
             segment=w.segment,
             genes=genes(w),
             reference=w.reference,
@@ -234,14 +244,14 @@ rule clades:
         "Adding internal clade labels"
     input:
         tree=rules.refine.output.tree,
-        nucs=rules.ancestral.output.node_data,
+        muts=rules.ancestral.output.node_data,
         clades=rules.offset_clades.output,
     output:
-        node_data="build/{lineage}/{segment}/{reference}/{clade}.json",
+        node_data="build/{lineage}/{segment}/{reference}/clade_{clade}.json",
     shell:
         """
         augur clades --tree {input.tree} \
-            --mutations {input.nuc_muts} {input.aa_muts} \
+            --mutations {input.muts} \
             --clades {input.clades} \
             --output-node-data {output.node_data} \
             > /dev/null
@@ -250,15 +260,12 @@ rule clades:
 def get_node_data(w):
     node_data = [
         rules.refine.output.node_data,
-        "build/{lineage}/{segment}/{reference}/aa_muts_adapted.json".format(**w),
-        "build/{lineage}/{segment}/{reference}/nuc_muts_adapted.json".format(**w),
+        "build/{lineage}/{segment}/{reference}/muts.json".format(**w),
     ]
 
-    for clade in config["builds"][w.lineage][w.segment][w.reference]["clades"]:
-        node_data.append("build/{lineage}/{segment}/{reference}/".format(**w) + f'/{clade}.json')
-
-    if "clade_contractions" in config["builds"][w.lineage][w.segment][w.reference]:
-        node_data.append("build/{lineage}/{segment}/{reference}/clades-short.json".format(**w))
+    for clade in config["builds"][w.lineage][w.segment]["clade_systems"]:
+        print(clade)
+        node_data.append("build/{lineage}/{segment}/{reference}/".format(**w) + f'clade_{clade}.json')
 
     return node_data
 
@@ -270,9 +277,9 @@ rule export:
         tree=rules.refine.output.tree,
         metadata=rules.parse.output.metadata,
         node_data = get_node_data,
-        auspice_config=lambda w: config["files"]["auspice_config_shortclade"] if "clade_contractions" in config["builds"][w.lineage][w.segment][w.reference] else config["files"]["auspice_config"],
+        auspice_config= "config/auspice_config.json",
     output:
-        auspice_json="auspice/{lineage}/{segment}/{reference}/auspice_raw.json",
+        auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
         fields="region strainName country date EPI_ISL",
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
@@ -311,11 +318,11 @@ rule generate_sample_sequences:
 rule make_dataset:
     input:
         sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
-        auspice_json="auspice/{lineage}/{segment}/{reference}/auspice.json",
-        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
-        pathogen_json="references/{lineage}/{segment}/{reference}/pathogen.json",
-        additional_config="references/{lineage}/{segment}/{reference}/virus_properties.json",
+        auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
+        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
+        pathogen_json="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
+        additional_config="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/example_sequences.fasta",
         tree="datasets/{lineage}/{segment}/{reference}/tree.json",
