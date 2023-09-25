@@ -258,7 +258,7 @@ rule virus_specific_jsons:
         pathogen = "build/{lineage}/{segment}/{reference}/pathogen.json",
         auspice = "build/{lineage}/{segment}/{reference}/auspice_config.json",
     params:
-        clades = lambda w: [config["builds"][w.lineage][w.segment]["clade_systems"][clade].get('key', '')
+        clades = lambda w: [config["builds"][w.lineage][w.segment]["clade_systems"][clade].get('key', 'default')
                             for clade in config["builds"][w.lineage][w.segment]["clade_systems"]]
     shell:
         """
@@ -344,6 +344,7 @@ rule make_dataset:
         annotation="datasets/{lineage}/{segment}/{reference}/annotation.gff",
         reference="datasets/{lineage}/{segment}/{reference}/reference.fasta",
         pathogen_json="datasets/{lineage}/{segment}/{reference}/pathogen.json",
+        auspice="auspice/{lineage}_{segment}_{reference}.json",
     shell:
         """
         cp {input.sequences} {output.sequences}
@@ -351,6 +352,7 @@ rule make_dataset:
         cp {input.reference} {output.reference}
         cp {input.annotation} {output.annotation}
         cp {input.pathogen_json} {output.pathogen_json}
+        cp {input.auspice_json} {output.auspice}
         """
 
 

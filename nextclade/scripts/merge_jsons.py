@@ -41,7 +41,7 @@ if __name__=="__main__":
 
     if len(args.clades):
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
-            get_clade_configs(c) for c in args.clades
+            get_clade_configs(c) for c in args.clades if c!='default'
         ]
 
     with open(args.output_pathogen, 'w') as fh:
