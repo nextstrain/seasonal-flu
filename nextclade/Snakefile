@@ -26,7 +26,6 @@ rule download_sequences:
         sequences="data/{lineage}/raw_{segment}.fasta"
     params:
         s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/raw_sequences.fasta.xz"
-    conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
@@ -38,7 +37,7 @@ rule download_clades:
     output:
         clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}_raw.tsv"
     params:
-        source_tsv=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade],
+        source_tsv=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
     shell:
         """
         curl {params.source_tsv} > {output.clade_tsv}
@@ -119,20 +118,19 @@ rule align:
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
-        alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta",
-        insertions="build/{lineage}/{segment}/{reference}/align.insertions.csv",
+        alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta"
     params:
         outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{gene}}.fasta",
+        nextclade_bin = "./nextclade_v3"
     threads: 3
     shell:
         """
-        nextclade run \
+        {params.nextclade_bin} run \
             --jobs={threads} \
             --input-ref {input.reference} \
             --input-annotation {input.annotation} \
             --output-translations {params.outdir} \
             --output-fasta {output.alignment} \
-            --output-insertions {output.insertions} \
             {input.sequences} \
             2>&1
         """
@@ -143,16 +141,11 @@ rule tree:
         alignment=rules.align.output.alignment,
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
-    params:
-        args=lambda w: config["tree"].get("tree-builder-args", "")
-        if "tree" in config
-        else "",
     threads: 3
     shell:
         """
         augur tree \
             --alignment {input.alignment} \
-            --tree-builder-args {params.args} \
             --output {output.tree} \
             --nthreads {threads} \
             > /dev/null
@@ -218,13 +211,7 @@ rule ancestral:
     params:
         inference="joint",
         genes=genes,
-        translations=lambda w: expand(
-            "build/{lineage}/{segment}/{reference}/aligned.gene.{genes}.fasta",
-            lineage=w.lineage,
-            segment=w.segment,
-            genes=genes(w),
-            reference=w.reference,
-        ),
+        translations= "build/{lineage}/{segment}/{reference}/aligned.gene.%GENE.fasta",
     shell:
         """
         augur ancestral \
@@ -234,7 +221,7 @@ rule ancestral:
             --infer-ambiguous \
             --genes {params.genes} \
             --annotation {input.annotation} \
-            --translations {params.translations} \
+            --translations {params.translations:q} \
             --root-sequence {input.reference} \
             --output-node-data {output.node_data}
         """
@@ -248,11 +235,16 @@ rule clades:
         clades=rules.offset_clades.output,
     output:
         node_data="build/{lineage}/{segment}/{reference}/clade_{clade}.json",
+    params:
+        membership_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade_membership'),
+        label_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade')
     shell:
         """
         augur clades --tree {input.tree} \
             --mutations {input.muts} \
             --clades {input.clades} \
+            --membership-name {params.membership_key} \
+            --label-name {params.label_key} \
             --output-node-data {output.node_data} \
             > /dev/null
         """
@@ -292,6 +284,7 @@ rule export:
             --node-data {input.node_data}\
             --auspice-config {input.auspice_config} \
             --color-by-metadata {params.fields} \
+            --minify-json \
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
         """
@@ -321,7 +314,7 @@ rule make_dataset:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
-        pathogen_json="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
+        pathogen_json="config/pathogen.json",
         additional_config="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/example_sequences.fasta",
@@ -331,10 +324,10 @@ rule make_dataset:
         pathogen_json="datasets/{lineage}/{segment}/{reference}/pathogen.json",
     shell:
         """
-        cp {input.sequences} {output.sequences} \
-        cp {input.auspice_json} {output.tree} \
-        cp {input.reference} {output.reference} \
-        cp {input.annotation} {output.annotation} \
+        cp {input.sequences} {output.sequences}
+        cp {input.auspice_json} {output.tree}
+        cp {input.reference} {output.reference}
+        cp {input.annotation} {output.annotation}
         jq -s '.[0] * .[1]' {input.pathogen_json} {input.additional_config} > {output.pathogen_json}
         """
 

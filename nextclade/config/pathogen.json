@@ -1,4 +1,5 @@
 {
+    "schemaVersion": "3.0.0",
     "alignmentParams": {
         "excessBandwidth": 9,
         "terminalBandwidth": 100,
@@ -6,6 +7,13 @@
         "gapAlignmentSide": "right",
         "minSeedCover": 0.1
     },
+    "files":{
+        "examples": "example_sequences.fasta",
+        "genomeAnnotation": "annotation.gff",
+        "pathogenJson": "pathogen.json",
+        "reference": "reference.fasta",
+        "treeJson": "tree.json"
+        },
     "qc": {
         "privateMutations": {
           "enabled": true,
@@ -37,5 +45,9 @@
           "enabled": true,
           "ignoredStopCodons": []
         }
-    }
+    },
+    "geneOrderPreference": [
+        "HA1",
+        "HA2"
+      ]
 }

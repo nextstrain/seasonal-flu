@@ -4,9 +4,11 @@ builds:
   h1n1pdm:
     ha:
       clade_systems:
-        "clade": "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
-        "subclade": "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
-        "short-clade": "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv"
+        clade:
+          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv"
+        subclade:
+          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
+          key: "subclade"
       refs:
         CY121680:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500  --subsample-max-sequences 1500"
@@ -21,7 +23,8 @@ builds:
           reference_strain: A/Wisconsin/588/2019
     na:
       clade_systems:
-        "clade": "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
+        clade:
+          url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
       refs:
         MW626056:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
@@ -31,9 +34,14 @@ builds:
   h3n2:
     ha:
       clade_systems:
-        "clade": "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
-        "subclade": "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
-        "short-clade": "seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv"
+        clade:
+          url: "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
+        subclade:
+          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
+          key: "subclade"
+        short-clade:
+          url: "seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv"
+          key: "short-clade"
       refs:
         EPI1857216:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
@@ -51,7 +59,8 @@ builds:
           reference_strain: A/Wisconsin/67/2005-egg
     na:
       clade_systems:
-        "clade": "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
+        clade:
+          url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
       refs:
         EPI1857215:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
@@ -61,8 +70,11 @@ builds:
   vic:
     ha:
       clade_systems:
-        "clade": "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
-        "subclade": "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+        clade:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
+        subclade:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+          key: "subclade"
       refs:
         KX058884:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
@@ -72,7 +84,8 @@ builds:
           reference_strain: B/Brisbane/60/2008-egg
     na:
       clade_systems:
-        "clade": "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
+        clade:
+          url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
       refs:
         CY073894:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
