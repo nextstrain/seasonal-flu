@@ -249,6 +249,29 @@ rule clades:
             > /dev/null
         """
 
+rule virus_specific_jsons:
+    input:
+        auspice_config= "config/auspice_config.json",
+        pathogen = "config/pathogen.json",
+        additional_pathogen="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
+    output:
+        pathogen = "build/{lineage}/{segment}/{reference}/pathogen.json",
+        auspice = "build/{lineage}/{segment}/{reference}/auspice_config.json",
+    params:
+        clades = lambda w: [config["builds"][w.lineage][w.segment]["clade_systems"][clade].get('key', '')
+                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]]
+    shell:
+        """
+        python3 scripts/merge_jsons.py --lineage {wildcards.lineage} --reference {wildcards.reference} \
+            --segment {wildcards.segment} --clades {params.clades} \
+            --pathogen-jsons {input.pathogen} {input.additional_pathogen} \
+            --auspice-config {input.auspice_config} \
+            --output-pathogen {output.pathogen} \
+            --output-auspice {output.auspice}
+        """
+
+
+
 def get_node_data(w):
     node_data = [
         rules.refine.output.node_data,
@@ -269,7 +292,7 @@ rule export:
         tree=rules.refine.output.tree,
         metadata=rules.parse.output.metadata,
         node_data = get_node_data,
-        auspice_config= "config/auspice_config.json",
+        auspice_config= "build/{lineage}/{segment}/{reference}/auspice_config.json"
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
@@ -314,8 +337,7 @@ rule make_dataset:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
-        pathogen_json="config/pathogen.json",
-        additional_config="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
+        pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/example_sequences.fasta",
         tree="datasets/{lineage}/{segment}/{reference}/tree.json",
@@ -328,7 +350,7 @@ rule make_dataset:
         cp {input.auspice_json} {output.tree}
         cp {input.reference} {output.reference}
         cp {input.annotation} {output.annotation}
-        jq -s '.[0] * .[1]' {input.pathogen_json} {input.additional_config} > {output.pathogen_json}
+        cp {input.pathogen_json} {output.pathogen_json}
         """
 
 
