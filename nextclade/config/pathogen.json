@@ -1,0 +1,41 @@
+{
+    "alignmentParams": {
+        "excessBandwidth": 9,
+        "terminalBandwidth": 100,
+        "allowedMismatches": 4,
+        "gapAlignmentSide": "right",
+        "minSeedCover": 0.1
+    },
+    "qc": {
+        "privateMutations": {
+          "enabled": true,
+          "typical": 5,
+          "cutoff": 15,
+          "weightLabeledSubstitutions": 2,
+          "weightReversionSubstitutions": 1,
+          "weightUnlabeledSubstitutions": 1
+        },
+        "missingData": {
+          "enabled": false,
+          "missingDataThreshold": 100,
+          "scoreBias": 10
+        },
+        "snpClusters": {
+          "enabled": false,
+          "windowSize": 100,
+          "clusterCutOff": 5,
+          "scoreWeight": 50
+        },
+        "mixedSites": {
+          "enabled": true,
+          "mixedSitesThreshold": 4
+        },
+        "frameShifts": {
+          "enabled": true
+        },
+        "stopCodons": {
+          "enabled": true,
+          "ignoredStopCodons": []
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+  "title": "Genomic epidemiology of Influenza",
+  "build_url": "https://github.com/neherlab/nextclade_data_workflows",
+  "maintainers": [
+    { "name": "Cornelius Roemer", "url": "https://neherlab.org" },
+    { "name": "Richard Neher", "url": "https://neherlab.org" }
+  ],
+  "extensions": {
+    "nextclade": {
+    }
+  },
+  "data_provenance": [
+    {
+      "name": "GISAID"
+    }
+  ],
+  "colorings": [
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "date",
+      "title": "Sample Date",
+      "type": "ordinal"
+    },
+    {
+      "key": "EPI_ISL",
+      "title": "EPI_ISL",
+      "type": "categorical"
+    }
+  ],
+  "filters": [
+    "region",
+    "country",
+    "clade_membership"
+  ],
+  "display_defaults": {
+    "color_by": "clade_membership",
+    "distance_measure": "div",
+    "branch_label": "clade"
+  },
+  "panels": ["tree","entropy"]
+}

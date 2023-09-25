@@ -1,0 +1,22 @@
+{
+    "schemaVersion": "1.10.0",
+    "nucMutLabelMap": {},
+    "nucMutLabelMapReverse": {},
+    "aaMotifs": [
+      {
+        "name": "glycosylation",
+        "nameShort": "Glyc.",
+        "nameFriendly": "Glycosylation",
+        "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
+        "includeGenes": [
+          {
+            "gene":"NA",
+            "ranges":[{"begin":33, "end":466}]
+          }
+        ],
+        "motifs": [
+          "N[^P][ST]"
+        ]
+      }
+    ]
+}

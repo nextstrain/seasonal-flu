@@ -1,0 +1,347 @@
+import datetime
+
+
+wildcard_constraints:
+    flu_type="[A-Za-z0-9]+",
+    year="\d\d\d\d",
+    lineage=r"h3n2|h1n1pdm|vic|yam",
+    segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
+    reference="[^_/]+",
+
+
+
+
+rule download_sequences:
+    output:
+        sequences="data/{lineage}/raw_{segment}.fasta"
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/raw_sequences.fasta.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
+        """
+
+rule download_clades:
+    message:
+        "Downloading clade definitions for {wildcards.lineage} from {params.source_tsv} -> {output}"
+    output:
+        clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}_raw.tsv"
+    params:
+        source_tsv=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade],
+    shell:
+        """
+        curl {params.source_tsv} > {output.clade_tsv}
+        """
+
+rule offset_clades:
+    input:
+        rules.download_clades.output,
+    output:
+        "data/{clade}_{lineage}_{segment}_{reference}.tsv",
+    params:
+        offset=lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference][
+            "clade_offset"
+        ],
+    shell:
+        """
+        perl -F'\\t' -ne \
+            '$F[2]+={params.offset} if $F[1] =~ "nuc"; \
+            print join "\\t", @F' \
+            {input} \
+            >{output}
+        """
+
+rule parse:
+    input:
+        sequences="data/{lineage}/raw_{segment}.fasta",
+    output:
+        metadata="data/{lineage}_{segment}_metadata.tsv",
+        sequences="data/{lineage}_{segment}_sequences.fasta",
+    params:
+        fields="strainName virus segment EPI_ISL date submission_date region country division location passage collecting_lab submitting_lab age sex",
+    shell:
+        """
+        augur parse \
+            --sequences {input.sequences} \
+            --fields {params.fields} \
+            --output-metadata {output.metadata} \
+            --output-sequences {output.sequences}
+        """
+
+
+def genes(w):
+    if w.segment=='ha': return ["SigPep", "HA1", "HA2"]
+    if w.segment=='na': return ["NA"]
+
+rule subsample:
+    input:
+        aligned_sequences=rules.parse.output.sequences,
+        enriched_metadata=rules.parse.output.metadata,
+        include_strains="../config/{lineage}/reference_strains.txt",
+        exclude="../config/{lineage}/outliers.txt",
+    output:
+        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
+        sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
+    params:
+        filter_arguments=lambda w: config["builds"][w.lineage][w.segment][
+            w.reference
+        ]["filter"],
+        reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment][
+            w.reference
+        ]["reference_EPI_ISL"],
+        other_include = lambda w:config["builds"][w.lineage][w.segment][w.reference].get("include_file","")
+    shell:
+        """
+        augur filter \
+            --sequences {input.aligned_sequences} \
+            --metadata {input.enriched_metadata} \
+            --include {input.include_strains} {params.other_include} \
+            --include-where EPI_ISL={params.reference_EPI_ISL} \
+            {params.filter_arguments} \
+            --output {output.sampled_sequences} \
+            --output-strains {output.sampled_strains}
+        """
+
+rule align:
+    input:
+        sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
+        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
+    output:
+        alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta",
+        insertions="build/{lineage}/{segment}/{reference}/align.insertions.csv",
+    params:
+        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{gene}}.fasta",
+    threads: 3
+    shell:
+        """
+        nextclade run \
+            --jobs={threads} \
+            --input-ref {input.reference} \
+            --input-annotation {input.annotation} \
+            --output-translations {params.outdir} \
+            --output-fasta {output.alignment} \
+            --output-insertions {output.insertions} \
+            {input.sequences} \
+            2>&1
+        """
+
+
+rule tree:
+    input:
+        alignment=rules.align.output.alignment,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
+    params:
+        args=lambda w: config["tree"].get("tree-builder-args", "")
+        if "tree" in config
+        else "",
+    threads: 3
+    shell:
+        """
+        augur tree \
+            --alignment {input.alignment} \
+            --tree-builder-args {params.args} \
+            --output {output.tree} \
+            --nthreads {threads} \
+            > /dev/null
+        """
+
+# root using dates in treetime, use 1500 as sequence length (good enough, doesn't matter)
+rule root:
+    input:
+        tree=rules.tree.output.tree,
+        metadata = rules.parse.output.metadata,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
+    params:
+        outdir = "build/{lineage}/{segment}/{reference}/tt_out"
+    shell:
+        """
+        treetime clock \
+            --tree {input.tree} \
+            --sequence-length 1500 \
+            --dates {input.metadata} \
+            --clock-filter 4 \
+            --clock-filter-method local \
+            --outdir {params.outdir}
+        cp {params.outdir}/rerooted.newick {output.tree}
+        """
+
+# refine while keeping the root
+rule refine:
+    input:
+        tree=rules.root.output.tree,
+        alignment=rules.align.output.alignment,
+        enriched_metadata=rules.parse.output.metadata,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree.nwk",
+        node_data="build/{lineage}/{segment}/{reference}/branch_lengths.json",
+    threads: 1
+    shell:
+        """
+        augur refine \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --metadata {input.enriched_metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.node_data} \
+            --keep-root \
+            --divergence-unit mutations-per-site
+        """
+
+
+rule ancestral:
+    message:
+        """
+        Reconstructing ancestral sequences and mutations
+          - inferring ambiguous mutations
+        """
+    input:
+        tree=rules.refine.output.tree,
+        alignment=rules.align.output.alignment,
+        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/muts.json",
+    params:
+        inference="joint",
+        genes=genes,
+        translations=lambda w: expand(
+            "build/{lineage}/{segment}/{reference}/aligned.gene.{genes}.fasta",
+            strain=w.lineage,
+            segment=w.segment,
+            genes=genes(w),
+            reference=w.reference,
+        ),
+    shell:
+        """
+        augur ancestral \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --inference {params.inference} \
+            --infer-ambiguous \
+            --genes {params.genes} \
+            --annotation {input.annotation} \
+            --translations {params.translations} \
+            --root-sequence {input.reference} \
+            --output-node-data {output.node_data}
+        """
+
+rule clades:
+    message:
+        "Adding internal clade labels"
+    input:
+        tree=rules.refine.output.tree,
+        nucs=rules.ancestral.output.node_data,
+        clades=rules.offset_clades.output,
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/{clade}.json",
+    shell:
+        """
+        augur clades --tree {input.tree} \
+            --mutations {input.nuc_muts} {input.aa_muts} \
+            --clades {input.clades} \
+            --output-node-data {output.node_data} \
+            > /dev/null
+        """
+
+def get_node_data(w):
+    node_data = [
+        rules.refine.output.node_data,
+        "build/{lineage}/{segment}/{reference}/aa_muts_adapted.json".format(**w),
+        "build/{lineage}/{segment}/{reference}/nuc_muts_adapted.json".format(**w),
+    ]
+
+    for clade in config["builds"][w.lineage][w.segment][w.reference]["clades"]:
+        node_data.append("build/{lineage}/{segment}/{reference}/".format(**w) + f'/{clade}.json')
+
+    if "clade_contractions" in config["builds"][w.lineage][w.segment][w.reference]:
+        node_data.append("build/{lineage}/{segment}/{reference}/clades-short.json".format(**w))
+
+    return node_data
+
+
+rule export:
+    message:
+        "Exporting data files for auspice"
+    input:
+        tree=rules.refine.output.tree,
+        metadata=rules.parse.output.metadata,
+        node_data = get_node_data,
+        auspice_config=lambda w: config["files"]["auspice_config_shortclade"] if "clade_contractions" in config["builds"][w.lineage][w.segment][w.reference] else config["files"]["auspice_config"],
+    output:
+        auspice_json="auspice/{lineage}/{segment}/{reference}/auspice_raw.json",
+    params:
+        fields="region strainName country date EPI_ISL",
+        date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
+    shell:
+        """
+        AUGUR_RECURSION_LIMIT=10000 \
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data}\
+            --auspice-config {input.auspice_config} \
+            --color-by-metadata {params.fields} \
+            --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
+            --output {output.auspice_json} 2>&1;
+        """
+
+
+rule generate_sample_sequences:
+    input:
+        sequences="data/{lineage}_{segment}_sequences.fasta",
+        metadata=rules.parse.output.metadata,
+    output:
+        sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
+    shell:
+        """
+        augur filter \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
+            --min-date 2020 --group-by year --subsample-max-sequences 50  \
+            --exclude-ambiguous-dates-by year \
+            --exclude-where 'country!=USA' 'submitting_lab!=centers_for_disease_control_and_prevention' \
+            --probabilistic-sampling \
+            --output {output.sequences}
+        """
+
+rule make_dataset:
+    input:
+        sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
+        auspice_json="auspice/{lineage}/{segment}/{reference}/auspice.json",
+        annotation="references/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="references/{lineage}/{segment}/{reference}/reference.fasta",
+        pathogen_json="references/{lineage}/{segment}/{reference}/pathogen.json",
+        additional_config="references/{lineage}/{segment}/{reference}/virus_properties.json",
+    output:
+        sequences="datasets/{lineage}/{segment}/{reference}/example_sequences.fasta",
+        tree="datasets/{lineage}/{segment}/{reference}/tree.json",
+        annotation="datasets/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="datasets/{lineage}/{segment}/{reference}/reference.fasta",
+        pathogen_json="datasets/{lineage}/{segment}/{reference}/pathogen.json",
+    shell:
+        """
+        cp {input.sequences} {output.sequences} \
+        cp {input.auspice_json} {output.tree} \
+        cp {input.reference} {output.reference} \
+        cp {input.annotation} {output.annotation} \
+        jq -s '.[0] * .[1]' {input.pathogen_json} {input.additional_config} > {output.pathogen_json}
+        """
+
+
+
+rule clean:
+    shell:
+        """
+        rm -rf output test data/clades* data/include* auspice/*
+        """
+
+
+rule clean_all:
+    shell:
+        """
+        rm -rf output test auspice build data
+        """

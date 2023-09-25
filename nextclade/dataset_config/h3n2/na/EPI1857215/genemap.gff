@@ -1,0 +1,4 @@
+##gff-version 3
+##sequence-region EPI1857215 1 1433
+EPI1857215	annotation	remark	1	1439	.	.	.	accessions=EPI1857215;
+EPI1857215	feature	gene	8	1417	.	+	.	codon_start=1;gene=NA;gene_name=NA;product=neuraminidase;

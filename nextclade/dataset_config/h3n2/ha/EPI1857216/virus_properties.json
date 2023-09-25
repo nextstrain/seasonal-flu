@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.10.0",
+  "nucMutLabelMap": {},
+  "nucMutLabelMapReverse": {},
+  "phenotypeData":[
+    {
+      "name": "RBD",
+      "nameFriendly": "RBD mutations",
+      "description": "This column displays the number of differences between the sequence and the reference at positions identified by Koel et al. (145, 155, 156, 158, 159, 189, and 193 in HA1)",
+      "gene": "HA1",
+      "aaRange": {
+        "begin": 100,
+        "end": 200
+      },
+      "ignore": {
+        "clades": ["outgroup"]
+      },
+      "data": [
+        {
+          "name": "differences",
+          "weight": 1,
+          "locations": {
+            "145": {"default":1},
+            "155": {"default":1},
+            "156": {"default":1},
+            "158": {"default":1},
+            "159": {"default":1},
+            "189": {"default":1},
+            "193": {"default":1}
+          }
+        }
+      ]
+    }
+  ],
+  "aaMotifs": [
+    {
+      "name": "glycosylation",
+      "nameShort": "Glyc.",
+      "nameFriendly": "Glycosylation",
+      "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
+      "includeGenes": [
+        {
+          "gene":"HA1",
+          "ranges":[]
+        },
+        {
+          "gene":"HA2",
+          "ranges":[{"begin":0, "end":186}]
+        }
+      ],
+      "motifs": [
+        "N[^P][ST]"
+      ]
+    }
+  ]
+}
