@@ -11,12 +11,12 @@ builds:
           key: "subclade"
       refs:
         CY121680:
-          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500  --subsample-max-sequences 1500"
+          filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500  --subsample-max-sequences 1500"
           clade_offset: 0
           reference_EPI_ISL: EPI1583287
           reference_strain: A/California/7/2009-egg #TODO: exclude
         MW626062:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
+          filter: "--min-date 2019 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500 --subsample-max-sequences 1500"
           clade_offset: 0
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h1n1pdm/ha/clades-long.tsv"
           reference_EPI_ISL: EPI1812046
@@ -44,14 +44,14 @@ builds:
           key: "short-clade"
       refs:
         EPI1857216:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
+          filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: -17
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
           include_file: dataset_config/h3n2/includes.txt
           reference_EPI_ISL: EPI1857216
           reference_strain: A/Darwin/6/2021
         CY163680:
-          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
+          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
           include_file: dataset_config/h3n2/includes.txt
@@ -77,7 +77,7 @@ builds:
           key: "subclade"
       refs:
         KX058884:
-          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1500"
+          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/vic/ha/clades.tsv"
           reference_EPI_ISL: EPI696970
@@ -88,7 +88,7 @@ builds:
           url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
       refs:
         CY073894:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
+          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
           clade_offset: -30
           reference_EPI_ISL: CY073894
           reference_strain: B/Brisbane/60/2008

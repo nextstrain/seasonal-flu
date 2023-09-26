@@ -5,7 +5,6 @@ A/Arizona/33/2017
 A/Arkansas/4/2020
 A/Arkansas/8/2020
 A/Arkansas/8/2020-egg
-A/Austria/1048413/2018
 A/Bangladesh/2021/2012
 A/Bangladesh/3002/2015
 A/Bolivia/559/2013

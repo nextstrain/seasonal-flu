@@ -10,6 +10,7 @@ A/Asturias/RR6898/2010
 A/Austria/1048413/2018
 A/Austria/183/2009-egg
 A/Bangladesh/2021/2012
+A/Bangkok/P1600/2023
 A/Bari/166/2016
 A/Bari/167/2016
 A/Beijing/1/2009-egg
@@ -51,6 +52,7 @@ A/India/4562/2021
 A/India/8484/2021
 A/India/9324/2021
 A/India/9825/2021
+A/India/CT-AIIMSR-266/2022
 A/India/Pun1418633/2014
 A/India/TS-NIV2019nCoV177/2020
 A/Iowa/1/2006
@@ -110,6 +112,7 @@ A/Rennes/F_006_111_BL/2020
 A/Rennes/F_006_119_JD/2020
 A/RheinlandPfalz/1/2020
 A/RioGrandedoNorte/117490/2012
+A/RioGrandeDoNorte/2023-012263-IEC/2023
 A/SaintLucia/7340/2020
 A/Shandong/1/2009
 A/Shandong/1/2009-egg
@@ -123,6 +126,7 @@ A/SouthAfrica/16112/2021
 A/SouthAfrica/16325/2021
 A/SouthAfrica/1857/2013
 A/SouthAfrica/NHLS-UCT-GS-0017/2021
+A/SouthAfrica/NHLS-UCT-GS-0034/2021
 A/SouthAfrica/PET20279/2021
 A/SouthDakota/3/2008
 A/SriLanka/11/2012

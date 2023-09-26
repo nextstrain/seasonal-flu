@@ -105,6 +105,7 @@ rule subsample:
         augur filter \
             --sequences {input.aligned_sequences} \
             --metadata {input.enriched_metadata} \
+            --exclude {input.exclude} \
             --include {input.include_strains} {params.other_include} \
             --include-where EPI_ISL={params.reference_EPI_ISL} \
             {params.filter_arguments} \
@@ -148,6 +149,7 @@ rule tree:
             --alignment {input.alignment} \
             --output {output.tree} \
             --nthreads {threads} \
+            --tree-builder-args '-ninit 10 -n 4 -czb' \
             > /dev/null
         """
 
