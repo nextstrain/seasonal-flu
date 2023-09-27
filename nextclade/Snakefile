@@ -88,6 +88,7 @@ rule subsample:
         aligned_sequences=rules.parse.output.sequences,
         enriched_metadata=rules.parse.output.metadata,
         include_strains="../config/{lineage}/reference_strains.txt",
+        nextclade_include="dataset_config/{lineage}/include.txt",
         exclude="../config/{lineage}/outliers.txt",
     output:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
@@ -98,15 +99,14 @@ rule subsample:
         ]["filter"],
         reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment]["refs"][
             w.reference
-        ]["reference_EPI_ISL"],
-        other_include = lambda w:config["builds"][w.lineage][w.segment]["refs"][w.reference].get("include_file","")
+        ]["reference_EPI_ISL"]
     shell:
         """
         augur filter \
             --sequences {input.aligned_sequences} \
             --metadata {input.enriched_metadata} \
             --exclude {input.exclude} \
-            --include {input.include_strains} {params.other_include} \
+            --include {input.include_strains} {input.nextclade_include} \
             --include-where EPI_ISL={params.reference_EPI_ISL} \
             {params.filter_arguments} \
             --output {output.sampled_sequences} \

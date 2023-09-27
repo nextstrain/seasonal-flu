@@ -47,14 +47,12 @@ builds:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: -17
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
-          include_file: dataset_config/h3n2/includes.txt
           reference_EPI_ISL: EPI1857216
           reference_strain: A/Darwin/6/2021
         CY163680:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
           clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
-          include_file: dataset_config/h3n2/includes.txt
           reference_EPI_ISL: EPI545340
           reference_strain: A/Wisconsin/67/2005-egg
     na:
