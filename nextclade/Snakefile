@@ -88,7 +88,7 @@ rule subsample:
         aligned_sequences=rules.parse.output.sequences,
         enriched_metadata=rules.parse.output.metadata,
         include_strains="../config/{lineage}/reference_strains.txt",
-        nextclade_include="dataset_config/{lineage}/include.txt",
+        nextclade_include="dataset_config/{lineage}/includes.txt",
         exclude="../config/{lineage}/outliers.txt",
     output:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
@@ -281,7 +281,6 @@ def get_node_data(w):
     ]
 
     for clade in config["builds"][w.lineage][w.segment]["clade_systems"]:
-        print(clade)
         node_data.append("build/{lineage}/{segment}/{reference}/".format(**w) + f'clade_{clade}.json')
 
     return node_data
@@ -362,12 +361,15 @@ rule make_dataset:
 rule clean:
     shell:
         """
-        rm -rf output test data/clades* data/include* auspice/*
+        rm -rf build datasets auspice
         """
 
 
 rule clean_all:
     shell:
         """
-        rm -rf output test auspice build data
+        rm -rf build
+        rm -rf auspice
+        rm -rf datasets
+        rm -rf data/
         """
