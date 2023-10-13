@@ -10,6 +10,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--titer-model", required=True, help="titer model JSON with raw and normalized titers annotated in 'titers' key")
     parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
+    parser.add_argument("--additional-titers-columns", nargs="+", help="list of additional columns from raw titer tables to add to output")
     parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
     parser.add_argument("--subclades", required=True, help="subclade annotations in a node data JSON")
@@ -40,10 +41,14 @@ if __name__ == '__main__':
 
     # Load raw titer data, to get the original source for each tuple of test
     # virus/reference virus/ferret.
+    titers_columns = ["virus_strain", "serum_strain", "serum_id", "source"]
+    if args.additional_titers_columns:
+        titers_columns.extend(args.additional_titers_columns)
+
     raw_titers = pd.read_csv(
         args.titers,
         sep="\t",
-        usecols=("virus_strain", "serum_strain", "serum_id", "source"),
+        usecols=titers_columns),
     )
 
     # The source column starts with the original collaborating center (e.g.,
@@ -79,7 +84,7 @@ if __name__ == '__main__':
                 ].values
                 source = sources[0] if len(sources) > 0 else "unknown"
 
-                titer_records.append({
+                record = {
                     "reference_strain": reference_strain,
                     "reference_date": reference_date,
                     "test_strain": test_strain,
@@ -89,7 +94,16 @@ if __name__ == '__main__':
                     "raw_titer": raw_titer,
                     "test_frequency": test_frequency,
                     "source": source,
-                })
+                }
+
+                if args.additional_titers_columns:
+                    additional_titers_data = raw_titers.loc[
+                        reference_titer_index & test_titer_index & serum_index,
+                        args.additional_titers_fields,
+                    ].to_dict()
+                    record.update(additional_titers_data)
+
+                titer_records.append(record)
 
     titer_table = pd.DataFrame(titer_records)
 
