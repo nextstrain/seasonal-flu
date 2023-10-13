@@ -19,7 +19,7 @@ output:
 build_dir = config.get("build_dir", "builds")
 
 GENES = {
-    'ha': ['SigPep', 'HA1', 'HA2'],
+    'ha': ['SigPep', 'HA1', 'HA2', 'HA'],
     'na': ['NA'],
 }
 
@@ -299,6 +299,48 @@ rule ancestral:
             --output-translations "{params.output_translations}" \
             --inference {params.inference} 2>&1 | tee {log} && touch {output.translations_done}
         """
+
+rule variant_escape_prediction:
+    input:
+        translations=build_dir + "/{build_name}/ha/translations.done",
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/dmsa-phenotype/{experiment}_variant_escape_prediction.json",
+        pred_data = build_dir + "/{build_name}/{segment}/dmsa-phenotype/{experiment}_variant_escape_prediction.csv",
+    log:
+        "logs/{build_name}/{segment}/{experiment}_variant_escape_prediction.txt"
+    params:
+        dms_wt_seq_id = lambda w: config["escape_models"][f"{w.experiment}"]["dms_wt_seq_id"],
+        mut_effects_df = lambda w: config["escape_models"][f"{w.experiment}"]["mut_effects_df"],
+        mut_effect_col = lambda w: config["escape_models"][f"{w.experiment}"]["mut_effect_col"],
+        mutation_col = lambda w: config["escape_models"][f"{w.experiment}"]["mutation_col"],
+        # alignment = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.%GENE_withInternalNodes.fasta",
+        alignment = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.HA_withInternalNodes.fasta"
+        #allow_aa_subs_at_unmeasured_sites = lambda w: config["escape_models"][f"{w.experiment}"]["allow_aa_subs_at_unmeasured_sites"],
+        #allow_unmeasured_aa_subs_at_these_sites = lambda w: config["escape_models"][f"{w.experiment}"]["allow_unmeasured_aa_subs_at_these_sites"],
+        #min_pred_pheno = lambda w: config["escape_models"][f"{w.experiment}"]["min_pred_pheno"],
+        #max_pred_pheno = lambda w: config["escape_models"][f"{w.experiment}"]["max_pred_pheno"],
+    conda:
+        "../../profiles/dmsa-phenotype/dmsa-pred/dmsa_env.yaml"
+    resources:
+        mem_mb=2000
+    shell:
+        """
+        python profiles/dmsa-phenotype/dmsa-pred/dmsa_pred.py phenotype-prediction \
+            --model-type additive \
+            --alignment {params.alignment} \
+            --dms-wt-seq-id {params.dms_wt_seq_id} \
+            --mut-effects-df {params.mut_effects_df} \
+            --mut-effect-col {params.mut_effect_col} \
+            --mutation-col {params.mutation_col} \
+            --experiment-label {wildcards.experiment} \
+            --output-json {output.node_data} \
+            --output-df {output.pred_data} 2>&1 | tee {log}
+        """
+
+#--allow-aa-subs-at-unmeasured-sites {params.allow_aa_subs_at_unmeasured_sites} \
+#--allow-unmeasured-aa-subs-at-these-sites {params.allow_unmeasured_aa_subs_at_these_sites} \
+#--min-pred-pheno {params.min_pred_pheno} \
+#--max-pred-pheno {params.max_pred_pheno} \
 
 rule traits:
     message:

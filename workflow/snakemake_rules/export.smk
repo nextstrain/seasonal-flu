@@ -50,6 +50,17 @@ def _get_node_data_by_wildcards(wildcards):
 
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
+
+    # add in escape model predictions
+    if "escape_models" in config:
+        inputs += list(expand(
+            rules.variant_escape_prediction.output.node_data,
+            build_name=list(config["builds"].keys()),
+            segment=list(config["segments"]),
+            experiment=list(config["escape_models"].keys())
+        ))
+    print(inputs)
+
     return inputs
 
 rule export:

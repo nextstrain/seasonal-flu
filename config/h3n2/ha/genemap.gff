@@ -3,3 +3,4 @@
 CY163680.1	feature	gene	18	65	.	+	.	gene_name="SigPep"
 CY163680.1	feature	gene	66	1052	.	+	.	gene_name="HA1"
 CY163680.1	feature	gene	1053	1715	.	+	.	gene_name="HA2"
+CY163680.1	feature	gene	66	1715	.	+	.	gene_name="HA"

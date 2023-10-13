@@ -39,6 +39,14 @@ recency:
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
+
+escape_models:
+  150C_escape_score:
+    dms_wt_seq_id: "A/HK/45/2019"
+    mut_effects_df: "profiles/dmsa-phenotype/antibody_escape/150C_avg.csv"
+    mut_effect_col: "escape_median"
+    mutation_col: "mutation"
+
 builds:
     "ci_build":
       lineage: h3n2
