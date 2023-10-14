@@ -16,5 +16,6 @@ dependencies:
   - seqkit=2.2.0
   - csvtk=0.23.0
   - tsv-utils=2.2.0
+  - csvkit=1.2.0
   - pip:
     - rethinkdb==2.3.0.post6

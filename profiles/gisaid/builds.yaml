@@ -1,0 +1,46 @@
+custom_rules:
+  - profiles/gisaid/prepare_data.smk
+
+metadata_fields:
+  - Isolate_Name
+  - Isolate_Id
+  - Passage_History
+  - Location
+  - Authors
+  - Originating_Lab
+  - Collection_Date
+  - Submission_Date
+renamed_metadata_fields:
+  - strain
+  - accession
+  - passage
+  - location
+  - authors
+  - originating_lab
+  - date
+  - date_submitted
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+builds:
+    "h3n2":
+      lineage: h3n2
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      auspice_config: "config/h3n2/auspice_config.json"
+      enable_lbi: true
+      enable_glycosylation: true
+      subsamples:
+        global:
+            filters: "--group-by region year month --subsample-max-sequences 100"

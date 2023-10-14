@@ -1,0 +1,4 @@
+cores: all
+use-conda: true
+conda-frontend: mamba
+configfile: profiles/gisaid/builds.yaml
