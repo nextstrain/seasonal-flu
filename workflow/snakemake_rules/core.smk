@@ -105,9 +105,9 @@ rule tree:
     log:
         "logs/tree_{build_name}_{segment}.txt"
     params:
-        method = config["tree"].get("method", "iqtree"),
-        tree_builder_args = lambda wildcards: f"--tree-builder-args {config['tree']['tree-builder-args']}" if config["tree"].get("tree-builder-args") else "",
-        override_default_args = lambda wildcards: "--override-default-args" if config["tree"].get("override_default_args", False) else "",
+        method = config.get("tree", {}).get("method", "iqtree"),
+        tree_builder_args = lambda wildcards: f"--tree-builder-args {config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
+        override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
     threads: 8
     resources:
         mem_mb=16000,
