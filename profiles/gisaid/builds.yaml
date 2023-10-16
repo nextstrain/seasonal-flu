@@ -38,6 +38,7 @@ builds:
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
+      subclades: "config/h3n2/ha/subclades.tsv"
       auspice_config: "config/h3n2/auspice_config.json"
       enable_lbi: true
       enable_glycosylation: true
