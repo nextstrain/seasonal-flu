@@ -9,7 +9,7 @@ rule prepare_metadata:
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        in2csv {input.metadata} \
+        python3 scripts/xls2csv.py --xls {input.metadata} --output /dev/stdout \
             | csvtk cut -f {params.old_fields} \
             | csvtk rename -f {params.old_fields} -n {params.new_fields} \
             | csvtk sep -f location --na "N/A" --names region,country,divison,location --merge --num-cols 4 --sep " / " \
