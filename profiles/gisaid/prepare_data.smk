@@ -27,6 +27,8 @@ rule prepare_sequences:
     shell:
         """
         seqkit replace -p " " -r "" {input.sequences} \
+            | seqkit rename \
+            | seqkit sort -n -r \
             | seqkit replace -p "\|" -r " " \
-            | seqkit rename > {output.sequences}
+            | seqkit rmdup > {output.sequences}
         """
