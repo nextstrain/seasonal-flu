@@ -1,26 +1,10 @@
-# custom_rules:
-  # - workflow/snakemake_rules/download_from_s3.smk
-  # - profiles/nextstrain-public/rename.smk
-  # - profiles/nextstrain-public/deploy.smk
 
 
-data_source: fauna
-fauna_fasta_fields:
-  - strain
-  - virus
-  - locus
-  - accession
-  - collection_date
-  - virus_inclusion_date
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
+sequences: "profiles/dmsa-phenotype/sequences/example_seqs.fasta"
+metadata: "profiles/dmsa-phenotype/sequences/example_metadata.tsv"
+
+custom_rules:
+  - profiles/dmsa-phenotype/dmsa-pred/dmsa_rules.smk
 
 fasta_fields:
   - strain
@@ -50,7 +34,6 @@ lat-longs: "config/lat_longs.tsv"
 
 segments:
   - ha
-  # - na
 
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
@@ -61,11 +44,26 @@ recency:
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
+# DMSA phenotype prediction
+# dictionary of phenotype collections
+# each collection has a name and a set of parameters
+# For a number of individual experiemnts.
+dmsa_phenotype_collections:
+  frances-escape-2023-10-16:
+    # name of the wildtype sequence strain - must be included in sequences
+    dms_wt_seq_id: "A/HK/45/2019"
+    # directory containing escape csv's
+    mut_effects_dir: "profiles/dmsa-phenotype/antibody_escape/"
+    # name of the column containing the effect score
+    mut_effect_col: "escape_median"
+    # name of the column containing the mutation
+    mutation_col: "mutation"
+
 array-builds:
 
   6Y-fra-builds:
     patterns:
-      min_date:
+      min_date: &shared-patterns
         - 6Y
       reference_min_date:
         - 12Y
@@ -90,6 +88,13 @@ array-builds:
       titer_collections:
         - name: cdc_cell_fra
           data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
+    
+    # specify dms datasets/models specified above
+    # to predict phenotypes with
+    dmsa_phenotype:
+        - "frances-escape-2023-10-16"
+
+
     subsamples: &subsampling-scheme
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg

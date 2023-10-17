@@ -48,18 +48,39 @@ def _get_node_data_by_wildcards(wildcards):
     if wildcards.segment == "ha":
         inputs.append(rules.annotate_haplotypes.output.haplotypes)
 
+    # ADDED FOR DMSA_PREDICTIONS
+    build = config["builds"][wildcards.build_name]
+    if build.get('dmsa_phenotype', False) and wildcards.segment == 'ha':
+        import glob
+        for collection in build.get('dmsa_phenotype'):
+
+            # get the kwargs for the collection of dms escape models
+            kwargs = config["dmsa_phenotype_collections"][collection]
+
+            # run the predictions using every csv in the glob
+            requested_files = expand(
+                rules.variant_escape_prediction.output.node_data,
+                collection=collection,
+                experiment=[
+                    os.path.basename(fp) 
+                    for fp in glob.glob(kwargs['mut_effects_dir']+"/*.csv")
+                ],
+                **wildcards_dict
+            )
+            # print("\n".join(requested_files))
+            inputs.extend(requested_files)
+
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
 
-    # add in escape model predictions
-    if "escape_models" in config:
-        inputs += list(expand(
-            rules.variant_escape_prediction.output.node_data,
-            build_name=list(config["builds"].keys()),
-            segment=list(config["segments"]),
-            experiment=list(config["escape_models"].keys())
-        ))
-    print(inputs)
+    # # add in escape model predictions
+    # if "escape_models" in config:
+    #     inputs += list(expand(
+    #         rules.variant_escape_prediction.output.node_data,
+    #         build_name=list(config["builds"].keys()),
+    #         segment=list(config["segments"]),
+    #         experiment=list(config["escape_models"].keys())
+    #     ))
 
     return inputs
 
