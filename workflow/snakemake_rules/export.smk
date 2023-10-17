@@ -49,6 +49,7 @@ def _get_node_data_by_wildcards(wildcards):
         inputs.append(rules.annotate_haplotypes.output.haplotypes)
 
     # ADDED FOR DMSA_PREDICTIONS
+    # TODO how to separate from core code, cleanly?
     build = config["builds"][wildcards.build_name]
     if build.get('dmsa_phenotype', False) and wildcards.segment == 'ha':
         import glob

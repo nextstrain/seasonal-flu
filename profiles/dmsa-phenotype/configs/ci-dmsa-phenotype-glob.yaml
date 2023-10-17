@@ -1,9 +1,9 @@
-sequences: "profiles/dmsa-phenotype/sequences/example_seqs.fasta"
-# metadata: "profiles/dmsa-phenotype/sequences/example_metadata.tsv"
+
+sequences: "profiles/dmsa-phenotype/sequences/example_seqs.fasta.xz"
+metadata: "profiles/dmsa-phenotype/sequences/example_metadata.tsv.xz"
 
 custom_rules:
   - profiles/dmsa-phenotype/dmsa-pred/dmsa_rules.smk
-
 
 fasta_fields:
   - strain
@@ -73,9 +73,10 @@ builds:
       titer_collections:
         - name: cdc_cell_fra
           data: "example_data/cdc_h3n2_cell_fra_titers.tsv"
-      subsamples:
-        global:
-            filters: "--exclude-where 'ha!=True' 'na!=True'"
+      # subsamples:
+        # global:
+            # filters: "--exclude-where 'ha!=True' 'na!=True'"
+            # filters: "--exclude-where 'ha!=True'"
       dmsa_phenotype:
         - "frances-escape-2023-10-16"
 

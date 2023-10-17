@@ -27,7 +27,8 @@ rule parse:
         sequences = "data/{lineage}/raw_{segment}.fasta",
     output:
         sequences = "data/{lineage}/{segment}.fasta",
-        metadata = "data/{lineage}/metadata_{segment}.tsv",
+        # metadata = "data/{lineage}/metadata_{segment}.tsv",
+        metadata = "data/{lineage}/null_metadata_{segment}.tsv", # TODO how to deal with separate metadata
     params:
         fasta_fields=config["fasta_fields"],
         prettify_fields_arg=lambda wildcards: f"--prettify-fields {' '.join(config['prettify_fields'])}" if "prettify_fields" in config else "",
