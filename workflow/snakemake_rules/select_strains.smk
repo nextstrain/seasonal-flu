@@ -29,7 +29,7 @@ rule parse:
         sequences = "data/{lineage}/{segment}.fasta",
         metadata = "data/{lineage}/metadata_{segment}.tsv",
     params:
-        fasta_fields=config["fasta_fields"],
+        fasta_fields=config.get("fasta_fields", ""),
         prettify_fields_arg=lambda wildcards: f"--prettify-fields {' '.join(config['prettify_fields'])}" if "prettify_fields" in config else "",
     conda: "../envs/nextstrain.yaml"
     benchmark:

@@ -45,6 +45,70 @@ When the build has finished running, view the output Auspice trees via:
 nextstrain view auspice/
 ```
 
+## Quickstart with GISAID data
+
+Navigate to [GISAID](http://gisaid.org).
+Select the "EpiFlu" link in the top navigation bar and then select "Search" from the EpiFlu navigation bar.
+From the search interface, select A/H3N2 human samples collected in the last six months, as shown in the example below.
+
+![Search for recent A/H3N2 data](images/01-search-gisaid-for-h3n2.png)
+
+Also, under the "Required Segments" section at the bottom of the page, select "HA".
+Then select the "Search" button.
+Select the checkbox in the top-left corner of the search results (the same row with the column headings), to select all matching records as shown below.
+
+![Select all matching records from search results](images/02-gisaid-search-results.png)
+
+Select the "Download" button.
+From the "Download" window that appears, select "Isolates as XLS (virus metadata only)" and then select the "Download" button.
+
+![Download metadata](images/03-download-metadata.png)
+
+Create a new directory for these data in the `seasonal-flu` working directory.
+
+``` bash
+mkdir -p data/h3n2/
+```
+
+Save the XLS file you downloaded (e.g., `gisaid_epiflu_isolates.xls`) as `data/h3n2/metadata.xls`.
+Return to the GISAID "Download" window, and select "Sequences (DNA) as FASTA".
+In the "DNA" section, select the checkbox for "HA".
+In the "FASTA Header" section, enter only `Isolate name`.
+Leave all other sections at the default values.
+
+![Download sequences](images/04-download-sequences.png)
+
+Select the "Download" button.
+Save the FASTA file you downloaded (e.g., `gisaid_epiflu_sequences.fasta`) as `data/h3n2/raw_sequences_ha.fasta`.
+
+Run the Nextstrain workflow for these data to produce an annotated phylogenetic tree of recent A/H3N2 HA data.
+If you have installed Nextstrain with the Docker runtime, run the following command.
+
+``` bash
+nextstrain build . --configfile profiles/gisaid/builds.yaml
+```
+
+If you have installed Nextstrain with the Conda runtime, run the following command instead.
+
+``` bash
+nextstrain build . --configfile profiles/gisaid/builds.yaml \
+  --use-conda --conda-frontend mamba
+```
+
+When the workflow finishes running, visualize the resulting tree with the following command.
+
+``` bash
+nextstrain view auspice
+```
+
+Explore the configuration file for this workflow by opening `profiles/gisaid/builds.yaml` in your favorite text editor.
+This configuration file determines how the workflow runs, including how samples get selected for the tree.
+Try changing the number of maximum sequences retained from subsampling from `100` to `500` and the geographic grouping from `region` to `country`.
+Rerun your analysis by adding the `--forceall` flag to the end of the `nextstrain build` command you ran above.
+How did those changes to the configuration file change the tree?
+
+Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
+
 ## History
 
  - Prior to March 31, 2023, we selected strains for each build using a custom Python script called [select_strains.py](https://github.com/nextstrain/seasonal-flu/blob/64b5204d23c0b95e4b06f943e4efb8db005759c0/scripts/select_strains.py). With the merge of [the refactored workflow](https://github.com/nextstrain/seasonal-flu/pull/76), we have since used a configuration file to define the `augur filter` query logic we want for strain selection per build.
