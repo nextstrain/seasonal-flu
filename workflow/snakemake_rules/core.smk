@@ -401,7 +401,7 @@ rule annotate_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
         translations=build_dir + "/{build_name}/ha/translations.done",
-        clades=build_dir + "/{build_name}/ha/clades.json",
+        clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json" if "subclades" in config["builds"][wildcards.build_name] else build_dir + "/{build_name}/ha/clades.json",
     output:
         haplotypes=build_dir + "/{build_name}/ha/haplotypes.json",
     conda: "../envs/nextstrain.yaml"
@@ -412,12 +412,16 @@ rule annotate_haplotypes:
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
         alignment=build_dir + "/{build_name}/ha/nextalign/masked.gene.HA1_withInternalNodes.fasta",
+        clade_label_attribute=lambda wildcards: "Subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade",
+        clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
     shell:
         """
         python3 scripts/annotate_haplotypes.py \
             --tree {input.tree} \
             --alignment {params.alignment} \
             --clades {input.clades} \
+            --clade-label-attribute {params.clade_label_attribute} \
+            --clade-node-attribute {params.clade_node_attribute} \
             --min-tips {params.min_tips} \
             --output-node-data {output.haplotypes} 2>&1 | tee {log}
         """

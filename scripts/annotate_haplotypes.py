@@ -17,6 +17,8 @@ if __name__ == '__main__':
     parser.add_argument("--tree", required=True, help="Newick file from augur refine")
     parser.add_argument("--alignment", help="aligned HA1 sequences with internal nodes in FASTA format", required=True)
     parser.add_argument("--clades", help="clade annotations in node data JSON format", required=True)
+    parser.add_argument("--clade-label-attribute", help="name of the branch attribute for clade labels in the given clades JSON", default="clade")
+    parser.add_argument("--clade-node-attribute", help="name of the node attribute for clade membership in the given clades JSON", default="clade_membership")
     parser.add_argument("--attribute-name", default="haplotype", help="name of attribute to store the complete amino acid sequence of each node")
     parser.add_argument("--min-tips", type=int, default=1, help="minimum number of tips with a derived haplotype to include in final output. Haplotypes with fewer than this number of tips will be annotated with the haplotype of their immediate parent in the tree.")
     parser.add_argument("--output-node-data", help="JSON file with translated sequences by node", required=True)
@@ -44,7 +46,7 @@ if __name__ == '__main__':
     if "branches" in clades:
         # Index amino acid sequence by clade label.
         sequence_by_clade = {
-            node_data["labels"]["clade"]: sequence_by_node[node]
+            node_data["labels"][args.clade_label_attribute]: sequence_by_node[node]
             for node, node_data in clades["branches"].items()
         }
     else:
@@ -57,7 +59,7 @@ if __name__ == '__main__':
 
     # Index clade membership by node name.
     clade_by_node = {
-        node: node_data["clade_membership"]
+        node: node_data[args.clade_node_attribute]
         for node, node_data in clades["nodes"].items()
     }
 
