@@ -3,6 +3,7 @@
 data/
 builds/
 results/
+**/Attic/*
 auspice/
 auspice-who/
 auspice_renamed/

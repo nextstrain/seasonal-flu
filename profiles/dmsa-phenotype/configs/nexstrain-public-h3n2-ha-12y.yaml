@@ -1,0 +1,152 @@
+
+
+sequences: "profiles/dmsa-phenotype/sequences/12y_sequences.fasta.xz"
+metadata: "profiles/dmsa-phenotype/sequences/12y_metadata.tsv.xz"
+
+custom_rules:
+  - profiles/dmsa-phenotype/dmsa-pred/dmsa_rules.smk
+
+# John has a branch for parsing and specifying metadata.
+# https://github.com/nextstrain/seasonal-flu/tree/gisaid-quickstart
+fasta_fields:
+  - strain
+#   - virus
+#   - segment
+#   - accession
+#   - date
+#   - date_submitted
+#   - region
+#   - country
+#   - division
+#   - location
+#   - passage_category
+#   - originating_lab
+#   - submitting_lab
+#   - age
+#   - gender
+# prettify_fields:
+#   - region
+#   - country
+#   - division
+#   - location
+#   - originating_lab
+#   - submitting_lab
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+# DMSA phenotype prediction
+# dictionary of phenotype collections
+# each collection has a name and a set of parameters
+# For a number of individual experiemnts.
+dmsa_phenotype_collections:
+  all-sera:
+    # name of the wildtype sequence strain - must be included in sequences
+    dms_wt_seq_id: "A/HK/45/2019"
+    # directory containing escape csv's
+    mut_effects_dir: "profiles/dmsa-phenotype/antibody_escape/filtered_data/"
+    # name of the column containing the effect score
+    mut_effect_col: "escape_median"
+    # name of the column containing the mutation
+    mutation_col: "mutation"
+    allow_unmeasured_aa_subs_at_these_sites: "profiles/dmsa-phenotype/allow_unmeasured_aa_subs_at_these_sites.txt"
+
+builds:
+
+    "flu_seasonal_h3n2_12y":
+
+      lineage: h3n2
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      min_date: "100Y"
+      auspice_config: "config/h3n2/auspice_config.json"
+      enable_titer_models: false
+      enable_lbi: true
+      enable_glycosylation: true
+      titer_collections:
+        - name: cdc_cell_fra
+          data: "example_data/cdc_h3n2_cell_fra_titers.tsv"
+      subsamples:
+        global:
+            filters: "--exclude-where 'ha!=True'"
+      dmsa_phenotype:
+        - "all-sera"
+
+  # 6Y-fra-builds:
+    # patterns:
+    #   min_date:
+    #     - 6Y
+    #   reference_min_date:
+    #     - 12Y
+    #   resolution:
+    #     - 6y
+    # build_name: "flu_seasonal_h3n2_6y"
+    # build_params: &shared-fra-build-params
+    # "flu_seasonal_h3n2_6y"
+    #   lineage: h3n2
+    #   auspice_name: "flu_seasonal_{lineage}_{{segment}}_{resolution}"
+    #   reference: "config/{lineage}/{{segment}}/reference.fasta"
+    #   annotation: "config/{lineage}/{{segment}}/genemap.gff"
+    #   tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+    #   clades: "config/{lineage}/ha/clades.tsv"
+    #   subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+    #   auspice_config: "config/{lineage}/auspice_config.json"
+    #   vaccines: "config/{lineage}/vaccine.json"
+    #   enable_glycosylation: true
+    #   enable_lbi: true
+    #   enable_titer_models: true
+    #   include: "'config/{lineage}/reference_strains.txt'"
+    #   exclude: "'config/{lineage}/outliers.txt'"
+    #   # titer_collections:
+    #   #   - name: cdc_cell_fra
+    #   #     data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
+    #   titer_collections:
+    #     - name: cdc_cell_fra
+    #       data: "example_data/cdc_h3n2_cell_fra_titers.tsv"
+    
+      dmsa_phenotype:
+          - "all-sera"
+
+
+    # subsamples: &subsampling-scheme
+    #   regions_except_europe:
+    #       filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+    #       priorities: "titers"
+    #   europe:
+    #       filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+    #       priorities: "titers"
+    #   references:
+    #       filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude} --exclude-where passage=egg
+
+
+# H3N2-specific fitness model
+# fitness_model:
+#   models:
+#     - cTiter_x-ne_star
+#     - ne_star-lbi
+#   best_model: cTiter_x-ne_star
+#   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+#   pivot_interval: 6
+#   delta_pivots: 1
+#   months_back_for_current_samples: 6
+#   max_years_for_distances: 5
+#   number_of_forecast_samples: 1
+#   excluded_node_data_fields:
+#     - aa_muts
+#     - aa_sequences
+#     - muts
+#     - num_date_confidence
+#     - sequence
