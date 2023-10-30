@@ -74,6 +74,7 @@ A/Kobe/63/2014
 A/LaRioja/2202/2018
 A/Maryland/2/2021
 A/Maryland/23/2016
+A/Massachusetts/18/2022
 A/Michigan/15/2014
 A/Michigan/173/2020
 A/Michigan/173/2020-egg
@@ -136,6 +137,8 @@ A/Texas/50/2012-egg
 A/Texas/68/2017
 A/Texas/71/2017
 A/Texas/88/2016
+A/Thailand/8/2022
+A/Thailand/8/2022-egg
 A/Togo/771/2020
 A/Victoria/223/2019
 A/Victoria/361/2011

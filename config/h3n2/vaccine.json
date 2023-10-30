@@ -79,6 +79,16 @@
             "vaccine": {
                 "selection_date": "2022-09-23"
             }
+        },
+        "A/Massachusetts/18/2022": {
+            "vaccine": {
+                "selection_date": "2023-09-29"
+            }
+        },
+        "A/Thailand/8/2022-egg": {
+            "vaccine": {
+                "selection_date": "2023-09-29"
+            }
         }
     }
 }
