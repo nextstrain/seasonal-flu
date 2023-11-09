@@ -77,10 +77,10 @@ array-builds:
           data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude} --exclude-where passage=egg
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude} --exclude-where passage=egg

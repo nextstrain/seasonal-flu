@@ -82,10 +82,10 @@ builds:
         title: "Cell-passaged HI titers from pooled mouse sera"
     subsamples: &titers-subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
@@ -168,10 +168,10 @@ builds:
         title: "Cell-passaged FRA titers from pooled human sera"
     subsamples: &representative-subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 1800 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True)" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 200 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True)" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
