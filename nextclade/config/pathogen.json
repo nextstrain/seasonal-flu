@@ -7,10 +7,17 @@
     "gapAlignmentSide": "right",
     "minSeedCover": 0.1
   },
+  "compatibility": {
+    "cli": "3.0.0-alpha.0",
+    "web": "3.0.0-alpha.0"
+  },
+  "defaultGene": "HA1",
   "files": {
-    "examples": "example_sequences.fasta",
-    "genomeAnnotation": "annotation.gff",
+    "changelog": "CHANGELOG.md",
+    "examples": "sequences.fasta",
+    "genomeAnnotation": "genome_annotation.gff3",
     "pathogenJson": "pathogen.json",
+    "readme": "README.md",
     "reference": "reference.fasta",
     "treeJson": "tree.json"
   },
