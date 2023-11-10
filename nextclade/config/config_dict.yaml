@@ -3,6 +3,7 @@ clade_repo: "https://raw.githubusercontent.com/influenza-clade-nomenclature/"
 builds:
   h1n1pdm:
     ha:
+      changelog: "seasonal_A-H1N1pdm_HA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
@@ -21,10 +22,10 @@ builds:
         MW626062:
           filter: "--min-date 2019 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500 --subsample-max-sequences 1500"
           clade_offset: 0
-          clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h1n1pdm/ha/clades-long.tsv"
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
     na:
+      changelog: "seasonal_A-H1N1pdm_NA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
@@ -36,6 +37,7 @@ builds:
           reference_strain: A/Wisconsin/588/2019
   h3n2:
     ha:
+      changelog: "seasonal_A-H3N2_HA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
@@ -49,16 +51,15 @@ builds:
         EPI1857216:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: -17
-          clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
           reference_EPI_ISL: EPI1857216
           reference_strain: A/Darwin/6/2021
         CY163680:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
-          clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/h3n2/ha/clades-long.tsv"
           reference_EPI_ISL: EPI545340
           reference_strain: A/Wisconsin/67/2005-egg
     na:
+      changelog: "seasonal_A-H3N2_NA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
@@ -70,6 +71,7 @@ builds:
           reference_strain: A/Darwin/6/2021
   vic:
     ha:
+      changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
@@ -80,10 +82,10 @@ builds:
         KX058884:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
-          clade_url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/vic/ha/clades.tsv"
           reference_EPI_ISL: EPI696970
           reference_strain: B/Brisbane/60/2008-egg
     na:
+      changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
       clade_systems:
         clade:
           url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"

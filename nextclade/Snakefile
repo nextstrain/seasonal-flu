@@ -43,6 +43,18 @@ rule download_clades:
         curl {params.source_tsv} > {output.clade_tsv}
         """
 
+rule download_changelog:
+    message:
+        "Downloading clade definitions for {wildcards.lineage} from {params.source} -> {output}"
+    output:
+        changelog = "data/{lineage}_{segment}_changelog.md"
+    params:
+        source=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["changelog"],
+    shell:
+        """
+        curl {params.source} > {output.changelog}
+        """
+
 rule offset_clades:
     input:
         rules.download_clades.output,
@@ -361,6 +373,7 @@ rule make_dataset:
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
         readme="dataset_config/{lineage}/{segment}/{reference}/README.md",
+        changelog="data/{lineage}_{segment}_changelog.md",
         pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/sequences.fasta",
@@ -370,12 +383,14 @@ rule make_dataset:
         readme="datasets/{lineage}/{segment}/{reference}/README.md",
         pathogen_json="datasets/{lineage}/{segment}/{reference}/pathogen.json",
         auspice="auspice/{lineage}_{segment}_{reference}.json",
+        changelog="datasets/{lineage}/{segment}/{reference}/CHANGELOG.md",
     shell:
         """
         cp {input.sequences} {output.sequences}
         cp {input.auspice_json} {output.tree}
         cp {input.reference} {output.reference}
         cp {input.readme} {output.readme}
+        cp {input.changelog} {output.changelog}
         cp {input.annotation} {output.annotation}
         cp {input.pathogen_json} {output.pathogen_json}
         cp {input.auspice_json} {output.auspice}
