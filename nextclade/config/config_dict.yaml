@@ -5,7 +5,10 @@ builds:
     ha:
       clade_systems:
         clade:
+          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
+        short-clade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv"
+          key: "short-clade"
         subclade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"

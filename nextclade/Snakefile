@@ -174,10 +174,29 @@ rule root:
         cp {params.outdir}/rerooted.newick {output.tree}
         """
 
+rule prune_outliers:
+    input:
+        tree = rules.root.output.tree
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_rooted_pruned.nwk"
+    params:
+        outliers = "build/{lineage}/{segment}/{reference}/tt_out/outliers.tsv"
+    run:
+        import pandas as pd
+        from Bio import Phylo
+        outliers = pd.read_csv(params.outliers, sep='\t', index_col=0)
+        T = Phylo.read(input.tree, 'newick')
+
+        for n in outliers.index:
+            if outliers.loc[n,"given_date"]>2020 and ('-egg' not in n):
+                print("prune", n)
+                T.prune(n)
+        Phylo.write(T, output.tree, "newick")
+
 # refine while keeping the root
 rule refine:
     input:
-        tree=rules.root.output.tree,
+        tree=rules.prune_outliers.output.tree,
         alignment=rules.align.output.alignment,
         enriched_metadata=rules.parse.output.metadata,
     output:
