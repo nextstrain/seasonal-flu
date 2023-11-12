@@ -8,6 +8,14 @@
 | name                 | flu_h3n2_na          | Influenza A H3N2 NA                      |
 | reference            | EPI1857216           | A/Darwin/6/2021                          |
 
+## Clades of seasonal influenza viruses
+
+The WHO Collaborating centers **do not** define "clades" for the neuraminidase segment.
+
+This dataset focuses on "subclades" that in analogy to the HA segment are defined to break down diversity at high resolution and allow following the spread of different viral groups.
+These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `C.1.2`.
+The leading letter is an alias of a previous name.
+
 
 ## Features
 This dataset supports

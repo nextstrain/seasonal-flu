@@ -1,5 +1,6 @@
 # Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu_vic_ha/KX058884)
 
+The reference sequence for this datasets precedes the deletions at positions 162ff in the HA1 protein of the virus and thus follows the canonical numbering of aminoacids in the protein.
 
 ## Dataset attributes
 
@@ -16,6 +17,16 @@ This dataset supports
  * Identification of glycosilation motifs
  * Sequence QC
  * Phylogenetic placement
+
+## Clades of seasonal influenza viruses
+
+The WHO Collaborating centers define "clades" as genetic groups of viruses with signature mutations to facilitate discussion of circulating diversity of the viruses.
+Clade demarcation do not always coincide with significantly different antigenic properties of the viruses.
+Clade names are structured as _Number-Letter_ binomials (with exceptions) separated by periods as in `V1A.3a.2`.
+
+In addition to these clades, "subclades" are defined to break down diversity at higher resolution and allow following the spread of different viral groups.
+These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `A.3.2`.
+The leading letter is an alias of a previous name.
 
 ## What is Nextclade dataset
 
