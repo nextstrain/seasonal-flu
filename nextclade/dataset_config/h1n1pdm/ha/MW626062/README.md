@@ -27,6 +27,7 @@ Clade names are structured as _Number-Letter_ binomials separated by periods as 
 In addition to these clades, "subclades" are defined to break down diversity at higher resolution and allow following the spread of different viral groups.
 These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `C.1.2`.
 The leading letter is an alias of a previous name.
+Details of the nomenclature system can be found at [github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/).
 
 ## What is Nextclade dataset
 

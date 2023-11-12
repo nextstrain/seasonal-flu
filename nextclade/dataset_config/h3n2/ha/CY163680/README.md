@@ -23,11 +23,12 @@ This dataset supports
 
 The WHO Collaborating centers define "clades" as genetic groups of viruses with signature mutations to facilitate discussion of circulating diversity of the viruses.
 Clade demarcation do not always coincide with significantly different antigenic properties of the viruses.
-Clade names are structured as _Number-Letter_ binomials separated by periods as in `3C.2a1b.2a.2a.1a`. These sometimes get shortened by omission of leading binomials like `2a.1`.
+Clade names are structured as _Number-Letter_ binomials (with exceptions) separated by periods as in `3C.2a1b.2a.2a.1a`. These sometimes get shortened by omission of leading binomials like `2a.1`.
 
 In addition to these clades, "subclades" are defined to break down diversity at higher resolution and allow following the spread of different viral groups.
 These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `G.1.3.1`.
 The leading letter is an alias of a previous name.
+Details of the nomenclature system can be found at [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/).
 
 ## What is Nextclade dataset
 

@@ -24,6 +24,7 @@ The WHO Collaborating centers **do not** define "clades" for the neuraminidase s
 This dataset focuses on "subclades" that in analogy to the HA segment are defined to break down diversity at high resolution and allow following the spread of different viral groups.
 These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `A.2.3`.
 The leading letter is an alias of a previous name.
+Details of the nomenclature system can be found at [github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/).
 
 
 ## What is Nextclade dataset
