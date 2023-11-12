@@ -413,3 +413,6 @@ rule clean_all:
         rm -rf datasets
         rm -rf data/
         """
+
+
+# cp datasets/h3n2/ha/EPI1857216/* ../../../nextstrain/nextclade_data/data/nextstrain/flu/h3n2/ha/EPI1857216
