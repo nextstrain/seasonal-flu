@@ -78,7 +78,7 @@ jobs:
         with:
           # Minimum node version to install Netlify CLI
           # https://docs.netlify.com/cli/get-started/#installation
-          node-version: 16
+          node-version: 18
 
       - name: Install Netlify CLI
         run: npm install netlify-cli -g
