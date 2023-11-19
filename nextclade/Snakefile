@@ -370,7 +370,6 @@ rule export:
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
-        AUGUR_RECURSION_LIMIT=10000 \
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
