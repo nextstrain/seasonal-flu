@@ -1,11 +1,11 @@
-# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Austria/1359417/2021" (flu_vic_ha/EPI1926632)
+# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Austria/1359417/2021" (flu/vic/ha/EPI1926632)
 
 
 ## Dataset attributes
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_vic_ha           | Influenza B Vic HA                       |
+| name                 | flu/vic/ha           | Influenza B Vic HA                       |
 | reference            | EPI1926632           | B/Austria/1359417/2021                   |
 
 

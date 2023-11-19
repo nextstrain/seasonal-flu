@@ -1,11 +1,11 @@
-# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu_vic_na/CY073894)
+# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu/vic/na/CY073894)
 
 
 ## Dataset attributes
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_vic_na           | Influenza B Vic HA                       |
+| name                 | flu/vic/na           | Influenza B Vic HA                       |
 | reference            | CY073894             | B/Brisbane/60/2008                       |
 
 

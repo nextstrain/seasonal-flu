@@ -1,11 +1,11 @@
-# Nextclade dataset for "Influenza A H3N2 NA" based on reference "A/Darwin/6/2021" (flu_h3n2_na/EPI1857216)
+# Nextclade dataset for "Influenza A H3N2 NA" based on reference "A/Darwin/6/2021" (flu/h3n2/na/EPI1857216)
 
 
 ## Dataset attributes
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_h3n2_na          | Influenza A H3N2 NA                      |
+| name                 | flu/h3n2/na          | Influenza A H3N2 NA                      |
 | reference            | EPI1857216           | A/Darwin/6/2021                          |
 
 

@@ -1,4 +1,4 @@
-# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu_vic_ha/KX058884)
+# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu/vic/ha/KX058884)
 
 The reference sequence for this datasets precedes the deletions at positions 162ff in the HA1 protein of the virus and thus follows the canonical numbering of aminoacids in the protein.
 
@@ -6,7 +6,7 @@ The reference sequence for this datasets precedes the deletions at positions 162
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_vic_ha           | Influenza B Vic HA                       |
+| name                 | flu/vic/ha           | Influenza B Vic HA                       |
 | reference            | KX058884             | B/Brisbane/60/2008                       |
 
 

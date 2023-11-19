@@ -37,19 +37,31 @@ rule download_clades:
     output:
         clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}_raw.tsv"
     params:
-        source_tsv=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
+        source_tsv=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
     shell:
         """
         curl {params.source_tsv} > {output.clade_tsv}
         """
 
-rule download_changelog:
+rule download_changelog_clades:
     message:
         "Downloading clade definitions for {wildcards.lineage} from {params.source} -> {output}"
     output:
         changelog = "data/{lineage}_{segment}_changelog.md"
     params:
         source=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["changelog"],
+    shell:
+        """
+        curl {params.source} > {output.changelog}
+        """
+
+rule download_changelog_dataset:
+    message:
+        "Downloading clade definitions for {wildcards.lineage} from {params.source} -> {output}"
+    output:
+        changelog = "data/{lineage}_{segment}_{reference}_dataset-changelog.md"
+    params:
+        source=lambda w: f"{config['dataset_repo']}/{w.lineage}/{w.segment}/{w.reference}/CHANGELOG.md",
     shell:
         """
         curl {params.source} > {output.changelog}
@@ -103,8 +115,8 @@ rule subsample:
         nextclade_include="dataset_config/{lineage}/includes.txt",
         exclude="../config/{lineage}/outliers.txt",
     output:
-        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
-        sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
+        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample_tmp.fasta",
+        sampled_strains="build/{lineage}/{segment}/{reference}/subsample_tmp.txt",
     params:
         filter_arguments=lambda w: config["builds"][w.lineage][w.segment]["refs"][
             w.reference
@@ -121,6 +133,27 @@ rule subsample:
             --include {input.include_strains} {input.nextclade_include} \
             --include-where EPI_ISL={params.reference_EPI_ISL} \
             {params.filter_arguments} \
+            --output {output.sampled_sequences} \
+            --output-strains {output.sampled_strains}
+        """
+
+rule subsample_harddate:
+    input:
+        sequences=rules.subsample.output.sampled_sequences,
+        enriched_metadata=rules.parse.output.metadata,
+    output:
+        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
+        sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
+    params:
+        hardmin=lambda w: config["builds"][w.lineage][w.segment]["refs"][
+            w.reference
+        ]["hardmin_date"],
+    shell:
+        """
+        augur filter \
+            --sequences {input.sequences} \
+            --metadata {input.enriched_metadata} \
+            --min-date {params.hardmin} \
             --output {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
         """
@@ -180,7 +213,7 @@ rule root:
             --tree {input.tree} \
             --sequence-length 1500 \
             --dates {input.metadata} \
-            --clock-filter 4 \
+            --clock-filter 3 \
             --clock-filter-method local \
             --outdir {params.outdir}
         cp {params.outdir}/rerooted.newick {output.tree}
@@ -373,6 +406,7 @@ rule make_dataset:
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
         readme="dataset_config/{lineage}/{segment}/{reference}/README.md",
+        dataset_changelog="data/{lineage}_{segment}_{reference}_dataset-changelog.md",
         changelog="data/{lineage}_{segment}_changelog.md",
         pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
     output:
@@ -390,7 +424,7 @@ rule make_dataset:
         cp {input.auspice_json} {output.tree}
         cp {input.reference} {output.reference}
         cp {input.readme} {output.readme}
-        cp {input.changelog} {output.changelog}
+        cp {input.dataset_changelog} {output.changelog}
         cp {input.annotation} {output.annotation}
         cp {input.pathogen_json} {output.pathogen_json}
         cp {input.auspice_json} {output.auspice}

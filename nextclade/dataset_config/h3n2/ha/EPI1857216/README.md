@@ -1,4 +1,4 @@
-# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Darwin/6/2021" (flu_h3n2_ha/EPI1857216)
+# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Darwin/6/2021" (flu/h3n2/ha/EPI1857216)
 
 This dataset uses a recent reference sequence (A/Darwin/6/2021) and is suitable for the analysis of circulating viruses.
 
@@ -6,7 +6,7 @@ This dataset uses a recent reference sequence (A/Darwin/6/2021) and is suitable 
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_h3n2_ha          | Influenza A H3N2 HA                      |
+| name                 | flu/h3n2/ha          | Influenza A H3N2 HA                      |
 | reference            | EPI1857216           | A/Darwin/6/2021                          |
 
 

@@ -1,4 +1,4 @@
-# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/Wisconsin/588/2019" (flu_h1n1pdm_na/MW626056)
+# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/Wisconsin/588/2019" (flu/h1n1pdm/na/MW626056)
 
 This dataset uses a recent reference sequence (A/Wisconsin/588/2019) and is suitable for the analysis of currently circulating viruses.
 
@@ -6,7 +6,7 @@ This dataset uses a recent reference sequence (A/Wisconsin/588/2019) and is suit
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_h1n1pdm_na       | Influenza A H1N1pdm HA                   |
+| name                 | flu/h1n1pdm/na       | Influenza A H1N1pdm HA                   |
 | reference            | MW626056             | A/Wisconsin/588/2019                      |
 
 

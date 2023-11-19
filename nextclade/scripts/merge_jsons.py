@@ -7,11 +7,16 @@ def get_clade_configs(name):
         "displayName": "Abbreviated clade name",
         "description": "For recent subclades with long names, the prefix describing their history is omitted."
     },
+    "short-clades": {
+        "name": "short-clade",
+        "displayName": "Abbreviated clade name",
+        "description": "For recent subclades with long names, the prefix describing their history is omitted."
+    },
     "subclade": {
         "name": "subclade",
         "displayName": "Subclade",
         "description": "Experimental fine-grained subclade annotation."
-    }}.get(name, {'name':name, "displayName":name})
+    }}.get(name, {'name':name, "displayName":name, "description":""})
 
 
 if __name__=="__main__":

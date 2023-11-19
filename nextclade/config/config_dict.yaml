@@ -1,4 +1,5 @@
 clade_repo: "https://raw.githubusercontent.com/influenza-clade-nomenclature/"
+dataset_repo: "https://raw.githubusercontent.com/nextstrain/nextclade_data/master/data/nextstrain/flu"
 
 builds:
   h1n1pdm:
@@ -17,11 +18,13 @@ builds:
         CY121680:
           filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500  --subsample-max-sequences 1500"
           clade_offset: 0
+          hardmin_date: 2009
           reference_EPI_ISL: EPI1583287
           reference_strain: A/California/7/2009-egg #TODO: exclude
         MW626062:
           filter: "--min-date 2019 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500 --subsample-max-sequences 1500"
           clade_offset: 0
+          hardmin_date: 2015
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
     na:
@@ -33,6 +36,7 @@ builds:
         MW626056:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
           clade_offset: 0
+          hardmin_date: 2015
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
   h3n2:
@@ -51,11 +55,13 @@ builds:
         EPI1857216:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: -17
+          hardmin_date: 2015
           reference_EPI_ISL: EPI1857216
           reference_strain: A/Darwin/6/2021
         CY163680:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
+          hardmin_date: 2004
           reference_EPI_ISL: EPI545340
           reference_strain: A/Wisconsin/67/2005-egg
     na:
@@ -67,6 +73,7 @@ builds:
         EPI1857215:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
           clade_offset: 4
+          hardmin_date: 2015
           reference_EPI_ISL: EPI1857215
           reference_strain: A/Darwin/6/2021
   vic:
@@ -82,6 +89,7 @@ builds:
         KX058884:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
+          hardmin_date: 2007
           reference_EPI_ISL: EPI696970
           reference_strain: B/Brisbane/60/2008-egg
     na:
@@ -91,7 +99,21 @@ builds:
           url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
       refs:
         CY073894:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
+          filter: "--min-date 2014 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
           clade_offset: -30
+          hardmin_date: 2007
           reference_EPI_ISL: CY073894
           reference_strain: B/Brisbane/60/2008
+  yam:
+    ha:
+      changelog: "seasonal_B-Yam_HA/main/CHANGELOG.md"
+      clade_systems:
+        clade:
+          url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/yam/ha/clades.tsv"
+      refs:
+        JN993010:
+          filter: "--min-date 2005 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1000"
+          clade_offset: 0
+          hardmin_date: 2003
+          reference_EPI_ISL: EPI271600
+          reference_strain: B/Wisconsin/01/2010

@@ -1,4 +1,4 @@
-# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Wisconsin/67/2005" (flu_h3n2_ha/CY163680)
+# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Wisconsin/67/2005" (flu/h3n2/ha/CY163680)
 
 This dataset uses an older reference sequence (A/Wisconsin/67/2005) and recent sequences will differ at a large number of positions from this reference.
 For the analysis of currently circulating viruses, the dataset using A/Darwin/6/2021 as reference might be more appropriate.
@@ -7,7 +7,7 @@ For the analysis of currently circulating viruses, the dataset using A/Darwin/6/
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_h3n2_ha          | Influenza A H3N2 HA                      |
+| name                 | flu/h3n2/ha          | Influenza A H3N2 HA                      |
 | reference            | CY163680             | A/Wisconsin/67/2005                      |
 
 

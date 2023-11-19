@@ -1,4 +1,4 @@
-# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/California/07/2009" (flu_h1n1pdm_ha/CY121680)
+# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/California/07/2009" (flu/h1n1pdm/ha/CY121680)
 
 This dataset uses an older reference sequence (A/California/07/2009) and recent sequences will differ at a large number of positions from this reference.
 For the analysis of currently circulating viruses, the dataset using A/Wisconsin/588/2019 as reference might be more appropriate.
@@ -7,7 +7,7 @@ For the analysis of currently circulating viruses, the dataset using A/Wisconsin
 
 | attribute            | value                | value friendly                           |
 | -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu_h1n1pdm_ha       | Influenza A H1N1pdm HA                   |
+| name                 | flu/h1n1pdm/ha       | Influenza A H1N1pdm HA                   |
 | reference            | CY121680             | A/California/07/2009                      |
 
 
