@@ -69,6 +69,7 @@ A/Louisiana/EVTL-100047/2022
 A/Malaysia/2142295/2009
 A/Malaysia/2142299/2009
 A/Malaysia/2143696/2009
+A/Manitoba/2/2021
 A/Minnesota/3/2008
 A/Minnesota/33/2014
 A/Minnesota/46/2015
