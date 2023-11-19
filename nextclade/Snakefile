@@ -45,7 +45,7 @@ rule download_clades:
 
 rule download_changelog_clades:
     message:
-        "Downloading clade definitions for {wildcards.lineage} from {params.source} -> {output}"
+        "Downloading nomenclature changelog for {wildcards.lineage} from {params.source} -> {output}"
     output:
         changelog = "data/{lineage}_{segment}_changelog.md"
     params:
@@ -57,7 +57,7 @@ rule download_changelog_clades:
 
 rule download_changelog_dataset:
     message:
-        "Downloading clade definitions for {wildcards.lineage} from {params.source} -> {output}"
+        "Downloading previous dataset changelog for {wildcards.lineage} from {params.source} -> {output}"
     output:
         changelog = "data/{lineage}_{segment}_{reference}_dataset-changelog.md"
     params:
@@ -448,5 +448,3 @@ rule clean_all:
         rm -rf data/
         """
 
-
-# cp datasets/h3n2/ha/EPI1857216/* ../../../nextstrain/nextclade_data/data/nextstrain/flu/h3n2/ha/EPI1857216

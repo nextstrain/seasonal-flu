@@ -15,7 +15,7 @@ builds:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
       refs:
-        CY121680:
+        CY121680: # exclude South Korean genomes because of sequencing artifacts close to the start of HA
           filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500  --subsample-max-sequences 1500"
           clade_offset: 0
           hardmin_date: 2009
