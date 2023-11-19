@@ -8,6 +8,13 @@ wildcard_constraints:
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     reference="[^_/]+",
 
+
+def genes(w):
+    return {
+        'ha': ["SigPep", "HA1", "HA2"],
+        'na': ["N"]
+    }.get(w.segment, [])
+
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
@@ -101,11 +108,6 @@ rule parse:
             --output-metadata {output.metadata} \
             --output-sequences {output.sequences}
         """
-
-
-def genes(w):
-    if w.segment=='ha': return ["SigPep", "HA1", "HA2"]
-    if w.segment=='na': return ["NA"]
 
 rule subsample:
     input:
