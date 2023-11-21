@@ -1,3 +1,5 @@
+configfile: "config/config_dict.yaml"
+
 import datetime
 
 
