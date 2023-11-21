@@ -12,7 +12,7 @@ wildcard_constraints:
 def genes(w):
     return {
         'ha': ["SigPep", "HA1", "HA2"],
-        'na': ["N"]
+        'na': ["NA"]
     }.get(w.segment, [])
 
 def all_builds(w):
