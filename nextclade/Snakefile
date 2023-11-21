@@ -229,15 +229,20 @@ rule prune_outliers:
     params:
         outliers = "build/{lineage}/{segment}/{reference}/tt_out/outliers.tsv"
     run:
+        from pathlib import Path
         import pandas as pd
         from Bio import Phylo
-        outliers = pd.read_csv(params.outliers, sep='\t', index_col=0)
+
         T = Phylo.read(input.tree, 'newick')
 
-        for n in outliers.index:
-            if outliers.loc[n,"given_date"]>2020 and ('-egg' not in n):
-                print("prune", n)
-                T.prune(n)
+        if Path(params.outliers).exists():
+            outliers = pd.read_csv(params.outliers, sep='\t', index_col=0)
+
+            for n in outliers.index:
+                if outliers.loc[n,"given_date"]>2020 and ('-egg' not in n):
+                    print("prune", n)
+                    T.prune(n)
+
         Phylo.write(T, output.tree, "newick")
 
 # refine while keeping the root
