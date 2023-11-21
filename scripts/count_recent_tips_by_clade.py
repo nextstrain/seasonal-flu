@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # Count the clade membership for each recent tip.
     count_by_clade = pd.DataFrame.from_dict(
         Counter([
-            node_data["clade_membership"]
+            node_data["subclade"]
             for node_name, node_data in clades["nodes"].items()
             if node_name in recent_tips
         ]),

@@ -20,7 +20,7 @@ rule all_counts_of_recent_tips_by_clade:
 rule count_recent_tips_by_clade:
     input:
         recency="builds/{build_name}/recency.json",
-        clades="builds/{build_name}/ha/clades.json",
+        clades="builds/{build_name}/ha/subclades.json",
     output:
         counts="builds/{build_name}/counts_of_recent_tips_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
