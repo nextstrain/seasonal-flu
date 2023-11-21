@@ -168,7 +168,7 @@ rule align:
     output:
         alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta"
     params:
-        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{gene}}.fasta",
+        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{cds}}.fasta",
         nextclade_bin = "./nextclade_v3"
     threads: 3
     shell:
