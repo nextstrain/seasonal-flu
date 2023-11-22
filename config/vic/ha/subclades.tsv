@@ -46,6 +46,7 @@ C.1	HA1	122	Q
 C.1	nuc	1218	A
 C.2	clade	C	
 C.2	HA1	182	A
+C.2	HA1	197	E
 C.2	HA1	221	A
 C.2	nuc	739	G
 C.3	clade	C	
@@ -55,6 +56,7 @@ C.3	nuc	882	G
 C.4	clade	C	
 C.4	HA1	198	G
 C.4	nuc	48	C
+C.4	nuc	228	A
 C.5	clade	C	
 C.5	HA1	197	E
 C.5	nuc	351	G
