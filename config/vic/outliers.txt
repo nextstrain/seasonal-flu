@@ -3,6 +3,7 @@ B/Alagoas/4386/2023
 B/Auckland/1/2008
 B/Bangkok/SI17/2012
 B/Bangkok/SI58/2012
+B/Bari/53/2023
 B/Brisbane/14/2016
 B/Brisbine/33/2008
 B/California/87/2017-egg

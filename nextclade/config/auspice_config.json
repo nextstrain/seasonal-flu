@@ -1,0 +1,49 @@
+{
+  "title": "Nextclade reference dataset for seasonal influenza viruses",
+  "build_url": "https://github.com/nextstrain/seasonal-flu",
+  "maintainers": [
+    { "name": "Nextstrain team", "url": "https://nextstrain.org" }
+  ],
+  "extensions": {
+    "nextclade": {
+    }
+  },
+  "data_provenance": [
+    {
+      "name": "GISAID"
+    }
+  ],
+  "colorings": [
+    {
+      "key": "country",
+      "title": "Country",
+      "type": "categorical"
+    },
+    {
+      "key": "region",
+      "title": "Region",
+      "type": "categorical"
+    },
+    {
+      "key": "date",
+      "title": "Sample Date",
+      "type": "ordinal"
+    },
+    {
+      "key": "EPI_ISL",
+      "title": "EPI_ISL",
+      "type": "categorical"
+    }
+  ],
+  "filters": [
+    "region",
+    "country",
+    "clade_membership"
+  ],
+  "display_defaults": {
+    "color_by": "clade_membership",
+    "distance_measure": "div",
+    "branch_label": "clade"
+  },
+  "panels": ["tree","entropy"]
+}

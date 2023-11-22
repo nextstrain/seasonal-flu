@@ -9,6 +9,7 @@ B/Kolkata/N-2047/2009
 B/Nairobi/351/2005
 B/NewHampshire/1/2016
 B/Norway/2155/2017
+B/Palermo/2/2011
 B/Riyadh/3/2010
 B/Riyadh/4/2010
 B/Thailand/CU-B10303/2014

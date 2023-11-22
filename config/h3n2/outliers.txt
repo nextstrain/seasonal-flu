@@ -10,6 +10,9 @@ A/Austria/839906/2015
 A/Bangladesh/3010/2020
 A/BosniaandHerzegovia/288G/2019
 A/Brazil/BA-LACEN-BA053-292045410/2022
+A/Brazil/BA-LACEN-BA071-292012660/2021
+A/Brazil/BA-LACEN-BA123-292029844/2021
+A/Brazil/BA-LACEN-BA128-292008241/2021
 A/Busan/15453/2009
 A/California/NHRC0001/2011
 A/Cambodia/NHRCC00001/2009
@@ -27,6 +30,8 @@ A/Catalonia/NSVH100570896/2017
 A/Catalonia/NSVH100731127/2017
 A/Catalonia/NSVH100748648/2018
 A/Catalonia/NSVH100751838/2018
+A/ChiangRai/NIC-P3252/2022
+A/ChiangRai/D1249/2022
 A/Chile/8266/2003
 A/Corsica/10/2009
 A/Corsica/11/2008
@@ -45,6 +50,7 @@ A/Corsica/39/2009
 A/Corsica/42/2009
 A/Corsica/7/2007
 A/Cyprus/F83/2017
+A/Dakar/922/2022
 A/Darwin/143/2020
 A/Delaware/3/2011
 A/Delaware/33/2017
@@ -463,6 +469,7 @@ A/Sedbury/2991/2023
 A/Shanghai-Minxing/1482/2017
 A/Shanghai/6/2014
 A/Singapore/GP11121/2022
+A/SouthAfrica/K056301/2023
 A/SouthAustralia/1/2021
 A/SouthAustralia/22/2018
 A/SouthAustralia/47/2016

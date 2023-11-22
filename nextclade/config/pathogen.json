@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "3.0.0",
+  "alignmentParams": {
+    "excessBandwidth": 9,
+    "terminalBandwidth": 100,
+    "allowedMismatches": 4,
+    "gapAlignmentSide": "right",
+    "minSeedCover": 0.1
+  },
+  "compatibility": {
+    "cli": "3.0.0-alpha.0",
+    "web": "3.0.0-alpha.0"
+  },
+  "defaultGene": "HA1",
+  "files": {
+    "changelog": "CHANGELOG.md",
+    "examples": "sequences.fasta",
+    "genomeAnnotation": "genome_annotation.gff3",
+    "pathogenJson": "pathogen.json",
+    "readme": "README.md",
+    "reference": "reference.fasta",
+    "treeJson": "tree.json"
+  },
+  "qc": {
+    "privateMutations": {
+      "enabled": true,
+      "typical": 5,
+      "cutoff": 15,
+      "weightLabeledSubstitutions": 2,
+      "weightReversionSubstitutions": 1,
+      "weightUnlabeledSubstitutions": 1
+    },
+    "missingData": {
+      "enabled": false,
+      "missingDataThreshold": 100,
+      "scoreBias": 10
+    },
+    "snpClusters": {
+      "enabled": false,
+      "windowSize": 100,
+      "clusterCutOff": 5,
+      "scoreWeight": 50
+    },
+    "mixedSites": {
+      "enabled": true,
+      "mixedSitesThreshold": 4
+    },
+    "frameShifts": {
+      "enabled": true
+    },
+    "stopCodons": {
+      "enabled": true,
+      "ignoredStopCodons": []
+    }
+  },
+  "geneOrderPreference": [
+    "HA1",
+    "HA2"
+  ],
+  "maintenance": {
+    "website": [
+      "https://nextstrain.org",
+      "https://clades.nextstrain.org"
+    ],
+    "documentation": [
+      "https://github.com/nextstrain/seasonal-flu"
+    ],
+    "source code": [
+      "https://github.com/nextstrain/seasonal_flu"
+    ],
+    "issues": [
+      "https://github.com/nextstrain/seasonal_flu/issues"
+    ],
+    "organizations": [
+      "Nextstrain"
+    ],
+    "authors": [
+      "Nextstrain team <https://nextstrain.org>"
+    ]
+  }
+}
