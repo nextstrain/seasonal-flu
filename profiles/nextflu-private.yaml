@@ -209,7 +209,7 @@ fitness_model:
     - cell_fra_cTiter_x-ne_star
     - human_cell_fra_cTiter_x-ne_star
     - ne_star-lbi
-  best_model: cell_fra_cTiter_x-ne_star
+  best_model: human_cell_fra_cTiter_x-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   pivot_interval: 6
   delta_pivots: 1
