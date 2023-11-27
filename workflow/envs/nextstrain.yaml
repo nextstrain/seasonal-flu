@@ -4,7 +4,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - augur=23.1.0
+  - augur=23.1.1
   - biopython=1.80
   - awscli=1.27.9
   - epiweeks=2.1.2
@@ -16,6 +16,8 @@ dependencies:
   - seqkit=2.2.0
   - csvtk=0.23.0
   - tsv-utils=2.2.0
+  - tabulate=0.9.0
   - xlrd=1.*
+  - pip=23.0.1
   - pip:
     - rethinkdb==2.3.0.post6
