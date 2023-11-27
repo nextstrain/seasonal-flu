@@ -114,15 +114,15 @@ if __name__ == '__main__':
     # Fill missing distinct references with empty string.
     annotated_haplotypes["distinct_references"] = annotated_haplotypes["distinct_references"].fillna("")
 
-    # Round deminal values of frequencies.
-    annotated_haplotypes["current_frequency"] = annotated_haplotypes["current_frequency"].round(2)
-
-    # Keep non-zero frequencies.
-    annotated_haplotypes = annotated_haplotypes.query("current_frequency > 0").copy()
-
-    # Round change in frequency.
-    annotated_haplotypes["delta_frequency"] = annotated_haplotypes["delta_frequency"].round(2)
+    # Keep haplotypes with at least 1% frequency.
+    annotated_haplotypes = annotated_haplotypes.query("current_frequency >= 0.01").copy()
 
     # Save Markdown table.
     with open(args.output_markdown_table, "w", encoding="utf-8") as oh:
-        print(annotated_haplotypes.to_markdown(index=False), file=oh)
+        print(
+            annotated_haplotypes.to_markdown(
+                index=False,
+                floatfmt=".2f",
+            ),
+            file=oh,
+        )
