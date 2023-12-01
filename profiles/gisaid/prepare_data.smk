@@ -1,3 +1,5 @@
+ruleorder: prepare_sequences > parse
+
 # Assumes that metadata XLS is the XLS metadata file downloaded from GISAID for
 # the same samples that appear in the raw sequences FASTA below.
 #
