@@ -1,13 +1,13 @@
-# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/Wisconsin/588/2019" (flu/h1n1pdm/na/MW626056)
+# Influenza A(H1N1pdm) NA based on reference "A/Wisconsin/588/2019"
 
-This dataset uses a recent reference sequence (A/Wisconsin/588/2019) and is suitable for the analysis of currently circulating viruses.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/h1n1pdm/na       | Influenza A H1N1pdm HA                   |
-| reference            | MW626056             | A/Wisconsin/588/2019                      |
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza A(H1N1pdm) NA                      |
+| reference            | A/Wisconsin/588/2019                      |
+| dataset path         | flu/h1n1pdm/na/MW626056                     |
+| reference accession  | MW626056   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/)  |
 
 
 

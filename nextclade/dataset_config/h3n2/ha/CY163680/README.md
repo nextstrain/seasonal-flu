@@ -1,15 +1,17 @@
-# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Wisconsin/67/2005" (flu/h3n2/ha/CY163680)
+# Influenza A(H3N2) HA dataset based on reference "A/Wisconsin/67/2005"
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza A(H3N2) HA                      |
+| reference            | A/Wisconsin/67/2005                      |
+| dataset path         | flu/h3n2/ha/CY163680                     |
+| reference accession  | CY163680   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/)  |
+
+## Scope of this dataset
 This dataset uses an older reference sequence (A/Wisconsin/67/2005) and recent sequences will differ at a large number of positions from this reference.
 For the analysis of currently circulating viruses, the dataset using A/Darwin/6/2021 as reference might be more appropriate.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/h3n2/ha          | Influenza A H3N2 HA                      |
-| reference            | CY163680             | A/Wisconsin/67/2005                      |
-
 
 ## Features
 This dataset supports

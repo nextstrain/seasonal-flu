@@ -1,14 +1,16 @@
-# Nextclade dataset for "Influenza A H3N2 HA" based on reference "A/Darwin/6/2021" (flu/h3n2/ha/EPI1857216)
+# Influenza A(H3N2) HA dataset based on reference "A/Darwin/6/2021"
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza A H3N2 HA                      |
+| reference            | A/Darwin/6/2021                     |
+| dataset path         | flu/h3n2/ha/EPI1857216                     |
+| reference accession  | EPI1857216   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/)  |
+
+## Scope of this dataset
 This dataset uses a recent reference sequence (A/Darwin/6/2021) and is suitable for the analysis of circulating viruses.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/h3n2/ha          | Influenza A H3N2 HA                      |
-| reference            | EPI1857216           | A/Darwin/6/2021                          |
-
 
 ## Features
 This dataset supports

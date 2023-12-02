@@ -1,12 +1,14 @@
-# Nextclade dataset for "Influenza A H3N2 NA" based on reference "A/Darwin/6/2021" (flu/h3n2/na/EPI1857216)
+# Influenza A(H3N2) NA based on reference "A/Darwin/6/2021"
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza A H3N2 NA                      |
+| reference            | A/Darwin/6/2021                      |
+| dataset path         | flu/h3n2/na/EPI1857215                     |
+| reference accession  | EPI1857215   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/)  |
 
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/h3n2/na          | Influenza A H3N2 NA                      |
-| reference            | EPI1857216           | A/Darwin/6/2021                          |
 
 
 ## Features

@@ -1,13 +1,15 @@
 # Nextclade dataset for "Influenza B Yam HA" based on reference "B/Wisconsin/01/2010" (flu/yam/ha/JN993010)
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza B(Yam) HA                      |
+| reference            | B/Wisconsin/01/2010                      |
+| dataset path         | flu/yam/ha/JN993010                     |
+| reference accession  | JN993010   |
+
+## Scope of this dataset
 B/Yamagata viruses have not been observed since 2020. This dataset is provided for analysis of old sequences or suspected Yamagata sequences.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/yam/ha           | Influenza B Yam HA                       |
-| reference            | JN993010             | B/Wisconsin/01/2010                      |
 
 
 ## Features

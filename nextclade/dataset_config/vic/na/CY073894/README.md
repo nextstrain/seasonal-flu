@@ -1,13 +1,13 @@
-# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu/vic/na/CY073894)
+# Influenza B(Vic) NA based on reference "B/Brisbane/60/2008"
 
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/vic/na           | Influenza B Vic HA                       |
-| reference            | CY073894             | B/Brisbane/60/2008                       |
-
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza B(Vic) HA                      |
+| reference            | B/Brisbane/60/2008                      |
+| dataset path         | flu/vic/na/CY073894                     |
+| reference accession  | CY073894   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/)  |
 
 ## Features
 This dataset supports

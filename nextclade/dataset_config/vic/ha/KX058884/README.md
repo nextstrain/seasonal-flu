@@ -1,14 +1,17 @@
-# Nextclade dataset for "Influenza B Vic HA" based on reference "B/Brisbane/60/2008" (flu/vic/ha/KX058884)
+# Influenza B(Vic) HA based on reference "B/Brisbane/60/2008"
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza B(Vic) HA                      |
+| reference            | B/Brisbane/60/2008                      |
+| dataset path         | flu/vic/ha/KX058884                     |
+| reference accession  | KX058884   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/)  |
+
+
+## Scope fo this dataset
 The reference sequence for this datasets precedes the deletions at positions 162ff in the HA1 protein of the virus and thus follows the canonical numbering of aminoacids in the protein.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/vic/ha           | Influenza B Vic HA                       |
-| reference            | KX058884             | B/Brisbane/60/2008                       |
-
 
 ## Features
 This dataset supports

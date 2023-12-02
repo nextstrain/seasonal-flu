@@ -1,15 +1,18 @@
-# Nextclade dataset for "Influenza A H1N1pdm HA" based on reference "A/California/07/2009" (flu/h1n1pdm/ha/CY121680)
+# Influenza A(H1N1pdm) HA based on reference "A/California/07/2009"
 
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza A(H1N1pdm) HA                      |
+| reference            | A/California/07/2009                      |
+| dataset path         | flu/h1n1pdm/ha/CY121680                     |
+| reference accession  | CY121680   |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/)  |
+
+
+## Scope of this dataset
 This dataset uses an older reference sequence (A/California/07/2009) and recent sequences will differ at a large number of positions from this reference.
 For the analysis of currently circulating viruses, the dataset using A/Wisconsin/588/2019 as reference might be more appropriate.
-
-## Dataset attributes
-
-| attribute            | value                | value friendly                           |
-| -------------------- | -------------------- | ---------------------------------------- |
-| name                 | flu/h1n1pdm/ha       | Influenza A H1N1pdm HA                   |
-| reference            | CY121680             | A/California/07/2009                      |
-
 
 ## Features
 This dataset supports
