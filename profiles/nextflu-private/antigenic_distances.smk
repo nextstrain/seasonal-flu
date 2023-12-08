@@ -94,8 +94,25 @@ rule summarize_haplotype_titer_coverage:
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
 
+rule scores:
+    input:
+        metadata = "builds/{build_name}/metadata.tsv",
+        tree = "builds/{build_name}/{segment}/tree.nwk",
+    output:
+        node_data = "builds/{build_name}/{segment}/scores.json",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/scores.py \
+            --metadata {input.metadata} \
+            --tree {input.tree} \
+            --output {output}
+        """
+
 def get_private_node_data(wildcards):
-    node_data = []
+    node_data = [
+        "builds/{build_name}/{segment}/scores.json",
+    ]
 
     # Only try to annotate titer collections for HA.
     if wildcards.segment == "ha":
