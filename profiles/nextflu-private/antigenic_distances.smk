@@ -26,7 +26,7 @@ rule plot_antigenic_distances_between_strains:
     log:
         "logs/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        min_test_date=2022.5,
+        min_test_date=2023.0,
         title=get_titer_collection_title,
         clade_color_field="subclade_test",
     conda: "../../workflow/envs/nextstrain.yaml"
