@@ -6,6 +6,7 @@ matplotlib.use('agg')
 import argparse
 
 from augur.utils import read_colors, read_strains
+import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -16,7 +17,8 @@ import sys
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--antigenic-distances", required=True, help="antigenic distances between strains")
-    parser.add_argument("--colors", required=True, help="table of Nextstrain colors with the clade color field the first column (e.g., 'clade_test'), clade name in the second column, and hex color in the third column.")
+    parser.add_argument("--auspice-config", required=True, help="Auspice config JSON with a custom color scale for clades.")
+    parser.add_argument("--auspice-config-color-field", default="subclade", help="key name for the coloring in the Auspice config JSON to find colors for clades")
     parser.add_argument("--clades", help="a list of clades for which test strains should be plotted")
     parser.add_argument("--clade-color-field", default="clade_test", help="field in antigenic distance table to color measurements by")
     parser.add_argument("--references", help="a list of reference strains to plot in the order they should be displayed from top to bottom")
@@ -67,16 +69,18 @@ if __name__ == '__main__':
     )
 
     # Load colors.
-    colors = read_colors(args.colors)
-    if not args.clade_color_field in colors:
-        print(
-            f"No colors for `{args.clade_color_field}` are defined in the given colors file, '{args.colors}'.",
-            file=sys.stderr
-        )
-        sys.exit(1)
+    with open(args.auspice_config, "r", encoding="utf-8") as fh:
+        auspice_config = json.load(fh)
 
-    # Colors indexed by lower-cased clade name.
-    clade_colors = dict(colors[args.clade_color_field])
+    clade_colors = None
+    for coloring in auspice_config["colorings"]:
+        if coloring["key"] == args.auspice_config_color_field:
+            clade_colors = dict(coloring["scale"])
+            break
+
+    if clade_colors is None:
+        print("Could not load clade colors from the Auspice config JSON.", file=sys.stderr)
+        sys.exit(1)
 
     reference_order = None
     if args.references:
@@ -148,7 +152,7 @@ if __name__ == '__main__':
     # Assign colors to clades.
     number_of_clades = len(clade_order)
     color_by_clade = {
-        clade: clade_colors.get(clade.lower(), "#CCCCCC")
+        clade: clade_colors.get(clade, "#CCCCCC")
         for clade in clade_order
     }
 

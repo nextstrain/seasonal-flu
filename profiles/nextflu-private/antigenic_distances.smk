@@ -18,7 +18,7 @@ rule plot_antigenic_distances_between_strains:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         clades=lambda wildcards: f"config/subclades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
-        colors=lambda wildcards: f"config/colors_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.tsv",
+        auspice_config=lambda wildcards: f"profiles/nextflu-private/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.segment}/auspice_config.json",
     output:
         plot="builds/{build_name}/{segment}/plots/antigenic_distances_between_strains_{build_name}_{titer_collection}.png",
     benchmark:
@@ -29,6 +29,7 @@ rule plot_antigenic_distances_between_strains:
         min_test_date=2023.0,
         title=get_titer_collection_title,
         clade_color_field="subclade_test",
+        auspice_config_color_field="subclade",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -38,7 +39,8 @@ rule plot_antigenic_distances_between_strains:
             --clades {input.clades} \
             --clade-color-field {params.clade_color_field} \
             --references {input.references} \
-            --colors {input.colors} \
+            --auspice-config {input.auspice_config} \
+            --auspice-config-color-field {params.auspice_config_color_field} \
             --title {params.title:q} \
             --output {output.plot} 2>&1 | tee {log}
         """
