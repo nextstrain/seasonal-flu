@@ -1,6 +1,3 @@
-A/Sydney/5/2021
-A/Sydney/178/2022
-A/Darwin/23/2023
 A/Ghana/2711/2022
 A/Norway/25089/2022
 A/SouthAfrica/R05722/2022
@@ -10,6 +7,7 @@ A/Wisconsin/47/2022
 A/Sydney/44/2023
 A/Washington/22/2023
 A/SouthAustralia/59/2023
+A/Darwin/23/2023
 A/Victoria/2570/2019-egg
 A/Sydney/5/2021-egg
 A/Sydney/173/2022-egg

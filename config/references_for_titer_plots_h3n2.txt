@@ -1,9 +1,7 @@
 A/Darwin/6/2021
-A/Slovenia/8720/2022
 A/Michigan/60/2022
 A/SouthAustralia/1/2023
 A/Poland/97/2022
-A/Alaska/1/2021
 A/Norway/24873/2021
 A/Hyogo/3001/2022
 A/Massachusetts/18/2022
@@ -22,7 +20,6 @@ A/Kanagawa/ZC2201/2022
 A/Darwin/9/2021-egg
 A/Darwin/6/2021-egg
 A/Victoria/39/2022-egg
-A/Alaska/1/2021-egg
 A/Canberra/1/2022-egg
 A/Norway/24873/2021-egg
 A/Thailand/8/2022-egg
