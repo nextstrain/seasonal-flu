@@ -1,16 +1,11 @@
-B/Austria/1359417/2021
-B/Singapore/WUH4618/2021
-B/Henan-Xigong/1118/2021
-B/Victoria/16/2023
-B/Massachusetts/1/2021
-B/Stockholm/3/2022
-B/Colorado/5/2022
-B/Austria/1359417/2021-egg
-B/Singapore/WUH4618/2021-egg
-B/Michigan/1/2021-egg
-B/Zhejiang-Xiacheng/11085/2021-egg
-B/Henan-Xigong/1118/2021-egg
-B/Shaanxi-Baota/1278/2022-egg
-B/Netherlands/10335/2023-egg
-B/Catalonia/3514402NS/2023-egg
-B/Catalonia/2279261NS/2023-egg
+B/Austria/1359417/2021 # C
+B/Singapore/WUH4618/2021 # C
+B/Henan-Xigong/1118/2021 # C.1
+B/Victoria/16/2023 # C.3
+B/Stockholm/3/2022 # C.5
+B/Colorado/5/2022 # C.5.2
+B/Austria/1359417/2021-egg # C
+B/Singapore/WUH4618/2021-egg # C
+B/Shaanxi-Baota/1278/2022-egg # C.1
+B/Netherlands/10335/2023-egg # C.2
+B/Catalonia/3514402NS/2023-egg # C.5.4
