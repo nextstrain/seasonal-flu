@@ -16,7 +16,7 @@ rule get_nextclade_dataset:
         dataset = "flu_{lineage}_ha"
     shell:
         """
-        nextclade dataset get --name {params.dataset} --output-dir {params.nextclade_dir} 2>&1 | tee {log}
+        nextclade2 dataset get --name {params.dataset} --output-dir {params.nextclade_dir} 2>&1 | tee {log}
         """
 
 rule nextclade_all:
@@ -36,7 +36,7 @@ rule nextclade_all:
     threads: 8
     shell:
         """
-        nextclade run \
+        nextclade2 run \
             --verbosity=error \
             --input-dataset {params.nextclade_dataset} \
             -j {threads} \
