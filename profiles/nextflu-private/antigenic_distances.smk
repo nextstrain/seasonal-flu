@@ -121,6 +121,7 @@ def get_private_node_data(wildcards):
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
+            node_data.append(rules.titer_tree_cross_immunities.output.cross_immunities.format(titer_collection=collection["name"], **wildcards))
 
     return node_data
 
