@@ -3,9 +3,10 @@ ruleorder: export_private > export
 def get_antigenic_plot_paths(wildcards):
     paths = []
     for build_name in config["builds"].keys():
-        for collection in config["builds"][build_name]["titer_collections"]:
-            if "ferret" in collection["data"]:
-                paths.append(f"builds/{build_name}/ha/plots/antigenic_distances_between_strains_{build_name}_{collection['name']}.png")
+        if "titers" in build_name:
+            for collection in config["builds"][build_name]["titer_collections"]:
+                if "ferret" in collection["data"]:
+                    paths.append(f"builds/{build_name}/ha/plots/antigenic_distances_between_strains_{build_name}_{collection['name']}.png")
 
     return paths
 
