@@ -86,7 +86,10 @@ if __name__ == '__main__':
     if args.references:
         # If references are given in order, we take these as they are.
         with open(args.references, "r") as fh:
-            references_to_use = [line.strip() for line in fh]
+            # We allow comments following each strain in the form of "strain #
+            # comment", so split lines on whitespace and keep only the leading
+            # text to ignore any comments.
+            references_to_use = [line.split(" ")[0].strip() for line in fh]
 
         record_by_strain = df.loc[
             :,
