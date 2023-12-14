@@ -237,7 +237,11 @@ if __name__ == '__main__':
     left = xticks[0]
     right = xticks[-1]
     width = right - left
-    height = yticks[1] - yticks[0]
+
+    if len(yticks) > 1:
+        height = yticks[1] - yticks[0]
+    else:
+        height = 1
 
     # create bars at yticks that are the length of our greatest xtick and have a height equal to our tick spacing
     ax.barh(
