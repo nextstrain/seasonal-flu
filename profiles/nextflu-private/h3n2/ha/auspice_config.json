@@ -172,6 +172,16 @@
       "type": "continuous"
     },
     {
+      "key": "welsh_ep",
+      "title": "Welsh et al. epitope mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "welsh_escape",
+      "title": "Welsh et al. escape score",
+      "type": "continuous"
+    },
+    {
       "key": "glyc",
       "title": "Glycosylation changes",
       "type": "continuous"
