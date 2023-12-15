@@ -115,6 +115,7 @@ A/Switzerland/3330/2017-egg
 A/Switzerland/4217/2019-egg
 A/Sydney/178/2022
 A/Sydney/31/2018
+A/Sydney/5/2021
 A/Sydney/5/2021-egg
 A/Taiwan/80693/2018
 A/Tasmania/24/2014
@@ -133,9 +134,11 @@ A/Victoria/2455/2019
 A/Victoria/2570/2019
 A/Victoria/2570/2019-egg
 A/Victoria/367/2012
+A/Victoria/4897/2022-egg
 A/Victoria/503/2016
 A/Washington/19/2020
 A/Washington/23/2020
 A/Wisconsin/505/2018
 A/Wisconsin/588/2019
+A/Wisconsin/67/2022
 A/Yamaguchi/35/2019
