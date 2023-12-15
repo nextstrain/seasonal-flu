@@ -1,0 +1,32 @@
+name: Run Nextstrain builds for the nextflu-private group
+
+on:
+  workflow_dispatch:
+    inputs:
+      dockerImage:
+        description: "Specific container image to use for build (will override the default of `nextstrain build`)"
+        required: false
+        type: string
+
+jobs:
+  run-build:
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: aws-batch
+      env: |
+        NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+      run: |
+        nextstrain build \
+          --detach \
+          --cpus 36 \
+          --memory 72gib \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          . \
+          all \
+          all_counts_of_recent_tips_by_clade \
+          -p \
+          --configfile profiles/nextflu-private.yaml
