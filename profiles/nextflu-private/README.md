@@ -2,51 +2,8 @@
 
 ## Build trees
 
-Clone this repository and change into its directory.
-
-``` bash
-git clone https://github.com/nextstrain/seasonal-flu.git seasonal-flu-aws
-cd seasonal-flu-aws
-```
-
-Run the build in dry-run mode, to make sure you see all of the rules you expect to see.
-
-``` bash
-nextstrain build . -n -p --configfile profiles/nextflu-private.yaml
-```
-
-Run the build on AWS Batch.
-This step assumes your AWS credentials live in the ambient environment or in the `~/.aws/credentials` file.
-Adjust CPUs and memory as needed.
-This command sets the max number of CPUs used for tree building to an odd number and total CPUs requested to an even number, so we always have at least one CPU free for other steps in the workflow.
-
-``` bash
-nextstrain build \
-  --aws-batch \
-  --cpus 32 \
-  --memory 48Gib \
-  . \
-    -p \
-    all \
-    all_counts_of_recent_tips_by_clade \
-    --configfile profiles/nextflu-private.yaml \
-    --set-threads tree=7
-```
-
-Detach the job from the current terminal with Ctrl-Z and save the AWS Batch job id to reattach later.
-After reattaching, wait for files to download, and then explore the trees locally with auspice.us or Auspice.
-
-Alternately, run the jobs on the Hutch's SLURM cluster with the following command.
-
-```bash
-snakemake \
-  -j 10 \
-  all \
-  all_counts_of_recent_tips_by_clade \
-  --configfile profiles/nextflu-private.yaml \
-  --profile profiles/hutch
-```
-
+[Run the nextflu-private build with the GitHub Action](https://github.com/nextstrain/seasonal-flu/actions/workflows/run-nextflu-private-builds.yaml).
+Use the build summary for the job to track the progress of the builds on AWS Batch and download the final builds.
 If trees look reasonable, rename them to match the current date (or the date corresponding to when the data were updated).
 
 ``` bash
