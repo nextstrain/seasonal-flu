@@ -12,31 +12,31 @@
         {
           "from": "Q",
           "to": "R",
-          "weight": 0.064755
+          "weight": 0.060408
         }
       ],
       "2": [
         {
           "from": "K",
           "to": "N",
-          "weight": 0.047108
+          "weight": 0.050964
         }
       ],
       "3": [
         {
           "from": "I",
           "to": "A",
-          "weight": 0.048244
+          "weight": 0.058464
         },
         {
           "from": "I",
           "to": "D",
-          "weight": 0.050621
+          "weight": 0.05142
         },
         {
           "from": "I",
           "to": "E",
-          "weight": 0.025
+          "weight": 0.02348
         },
         {
           "from": "I",
@@ -56,7 +56,7 @@
         {
           "from": "I",
           "to": "K",
-          "weight": 0.049755
+          "weight": 0.060908
         },
         {
           "from": "I",
@@ -71,12 +71,12 @@
         {
           "from": "I",
           "to": "N",
-          "weight": 0.033388
+          "weight": 0.031022
         },
         {
           "from": "I",
           "to": "P",
-          "weight": 0.02405
+          "weight": 0.0327
         },
         {
           "from": "I",
@@ -96,12 +96,12 @@
         {
           "from": "I",
           "to": "V",
-          "weight": 0.033167
+          "weight": 0.036627
         },
         {
           "from": "I",
           "to": "W",
-          "weight": 0.08365
+          "weight": 0.079188
         },
         {
           "from": "I",
@@ -118,12 +118,12 @@
         {
           "from": "P",
           "to": "C",
-          "weight": 0.067743
+          "weight": 0.054989
         },
         {
           "from": "P",
           "to": "D",
-          "weight": 0.056975
+          "weight": 0.0639
         },
         {
           "from": "P",
@@ -133,7 +133,7 @@
         {
           "from": "P",
           "to": "F",
-          "weight": 0.036935
+          "weight": 0.035233
         },
         {
           "from": "P",
@@ -143,12 +143,12 @@
         {
           "from": "P",
           "to": "H",
-          "weight": 0.028271
+          "weight": 0.030025
         },
         {
           "from": "P",
           "to": "I",
-          "weight": 0.036915
+          "weight": 0.03444
         },
         {
           "from": "P",
@@ -158,22 +158,22 @@
         {
           "from": "P",
           "to": "L",
-          "weight": 0.0424
+          "weight": 0.0445
         },
         {
           "from": "P",
           "to": "M",
-          "weight": 0.06939
+          "weight": 0.080708
         },
         {
           "from": "P",
           "to": "N",
-          "weight": 0.055109
+          "weight": 0.054308
         },
         {
           "from": "P",
           "to": "Q",
-          "weight": 0.058371
+          "weight": 0.057288
         },
         {
           "from": "P",
@@ -183,27 +183,27 @@
         {
           "from": "P",
           "to": "S",
-          "weight": 0.032857
+          "weight": 0.029737
         },
         {
           "from": "P",
           "to": "T",
-          "weight": 0.037658
+          "weight": 0.037246
         },
         {
           "from": "P",
           "to": "V",
-          "weight": 0.023318
+          "weight": 0.032125
         },
         {
           "from": "P",
           "to": "W",
-          "weight": 0.054375
+          "weight": 0.049733
         },
         {
           "from": "P",
           "to": "Y",
-          "weight": 0.050373
+          "weight": 0.046969
         }
       ],
       "5": [
@@ -215,7 +215,7 @@
         {
           "from": "G",
           "to": "D",
-          "weight": 0.028775
+          "weight": 0.028238
         },
         {
           "from": "G",
@@ -225,22 +225,22 @@
         {
           "from": "G",
           "to": "F",
-          "weight": 0.0627
+          "weight": 0.06514
         },
         {
           "from": "G",
           "to": "H",
-          "weight": 0.0469
+          "weight": 0.047725
         },
         {
           "from": "G",
           "to": "I",
-          "weight": 0.051142
+          "weight": 0.047308
         },
         {
           "from": "G",
           "to": "L",
-          "weight": 0.03469
+          "weight": 0.038036
         },
         {
           "from": "G",
@@ -250,22 +250,22 @@
         {
           "from": "G",
           "to": "N",
-          "weight": 0.04848
+          "weight": 0.056745
         },
         {
           "from": "G",
           "to": "P",
-          "weight": 0.067212
+          "weight": 0.066706
         },
         {
           "from": "G",
           "to": "Q",
-          "weight": 0.02882
+          "weight": 0.026545
         },
         {
           "from": "G",
           "to": "R",
-          "weight": 0.021478
+          "weight": 0.02314
         },
         {
           "from": "G",
@@ -275,12 +275,12 @@
         {
           "from": "G",
           "to": "T",
-          "weight": 0.05956
+          "weight": 0.0511
         },
         {
           "from": "G",
           "to": "V",
-          "weight": 0.046157
+          "weight": 0.041869
         },
         {
           "from": "G",
@@ -302,22 +302,22 @@
         {
           "from": "N",
           "to": "D",
-          "weight": 0.045791
+          "weight": 0.0441
         },
         {
           "from": "N",
           "to": "E",
-          "weight": 0.0424
+          "weight": 0.0541
         },
         {
           "from": "N",
           "to": "F",
-          "weight": 0.059215
+          "weight": 0.058679
         },
         {
           "from": "N",
           "to": "G",
-          "weight": 0.054781
+          "weight": 0.068929
         },
         {
           "from": "N",
@@ -327,7 +327,7 @@
         {
           "from": "N",
           "to": "I",
-          "weight": 0.04704
+          "weight": 0.051359
         },
         {
           "from": "N",
@@ -337,7 +337,7 @@
         {
           "from": "N",
           "to": "L",
-          "weight": 0.047043
+          "weight": 0.048787
         },
         {
           "from": "N",
@@ -347,7 +347,7 @@
         {
           "from": "N",
           "to": "P",
-          "weight": 0.043564
+          "weight": 0.045523
         },
         {
           "from": "N",
@@ -372,7 +372,7 @@
         {
           "from": "N",
           "to": "V",
-          "weight": 0.031186
+          "weight": 0.042053
         },
         {
           "from": "N",
@@ -404,12 +404,12 @@
         {
           "from": "D",
           "to": "G",
-          "weight": 0.028167
+          "weight": 0.025814
         },
         {
           "from": "D",
           "to": "H",
-          "weight": 0.066433
+          "weight": 0.0603
         },
         {
           "from": "D",
@@ -429,7 +429,7 @@
         {
           "from": "D",
           "to": "M",
-          "weight": 0.035888
+          "weight": 0.056611
         },
         {
           "from": "D",
@@ -439,7 +439,7 @@
         {
           "from": "D",
           "to": "P",
-          "weight": 0.068111
+          "weight": 0.06273
         },
         {
           "from": "D",
@@ -454,7 +454,7 @@
         {
           "from": "D",
           "to": "T",
-          "weight": 0.0359
+          "weight": 0.038067
         },
         {
           "from": "D",
@@ -471,82 +471,82 @@
         {
           "from": "N",
           "to": "A",
-          "weight": 0.06802
+          "weight": 0.064713
         },
         {
           "from": "N",
           "to": "C",
-          "weight": 0.0486
+          "weight": 0.043733
         },
         {
           "from": "N",
           "to": "D",
-          "weight": 0.046823
+          "weight": 0.044543
         },
         {
           "from": "N",
           "to": "E",
-          "weight": 0.046193
+          "weight": 0.055806
         },
         {
           "from": "N",
           "to": "F",
-          "weight": 0.047911
+          "weight": 0.05338
         },
         {
           "from": "N",
           "to": "G",
-          "weight": 0.04695
+          "weight": 0.043918
         },
         {
           "from": "N",
           "to": "H",
-          "weight": 0.065605
+          "weight": 0.07206
         },
         {
           "from": "N",
           "to": "I",
-          "weight": 0.027467
+          "weight": 0.0289
         },
         {
           "from": "N",
           "to": "K",
-          "weight": 0.029238
+          "weight": 0.034307
         },
         {
           "from": "N",
           "to": "L",
-          "weight": 0.067493
+          "weight": 0.068287
         },
         {
           "from": "N",
           "to": "M",
-          "weight": 0.041225
+          "weight": 0.037822
         },
         {
           "from": "N",
           "to": "P",
-          "weight": 0.04348
+          "weight": 0.046691
         },
         {
           "from": "N",
           "to": "Q",
-          "weight": 0.054708
+          "weight": 0.05215
         },
         {
           "from": "N",
           "to": "R",
-          "weight": 0.01852
+          "weight": 0.061933
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.058664
+          "weight": 0.067585
         },
         {
           "from": "N",
           "to": "T",
-          "weight": 0.075008
+          "weight": 0.072836
         },
         {
           "from": "N",
@@ -561,14 +561,14 @@
         {
           "from": "N",
           "to": "Y",
-          "weight": 0.04934
+          "weight": 0.051082
         }
       ],
       "9": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.05454
+          "weight": 0.0498
         },
         {
           "from": "S",
@@ -593,27 +593,27 @@
         {
           "from": "S",
           "to": "H",
-          "weight": 0.058607
+          "weight": 0.057531
         },
         {
           "from": "S",
           "to": "I",
-          "weight": 0.036122
+          "weight": 0.0341
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.050467
+          "weight": 0.046143
         },
         {
           "from": "S",
           "to": "L",
-          "weight": 0.040491
+          "weight": 0.037158
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.059158
+          "weight": 0.055154
         },
         {
           "from": "S",
@@ -623,7 +623,7 @@
         {
           "from": "S",
           "to": "P",
-          "weight": 0.085723
+          "weight": 0.089553
         },
         {
           "from": "S",
@@ -638,17 +638,17 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.06382
+          "weight": 0.059909
         },
         {
           "from": "S",
           "to": "V",
-          "weight": 0.055071
+          "weight": 0.089575
         },
         {
           "from": "S",
           "to": "W",
-          "weight": 0.028243
+          "weight": 0.026925
         },
         {
           "from": "S",
@@ -660,7 +660,7 @@
         {
           "from": "T",
           "to": "A",
-          "weight": 0.071182
+          "weight": 0.068246
         },
         {
           "from": "T",
@@ -680,27 +680,27 @@
         {
           "from": "T",
           "to": "F",
-          "weight": 0.060231
+          "weight": 0.058236
         },
         {
           "from": "T",
           "to": "G",
-          "weight": 0.04345
+          "weight": 0.03986
         },
         {
           "from": "T",
           "to": "H",
-          "weight": 0.070447
+          "weight": 0.068481
         },
         {
           "from": "T",
           "to": "I",
-          "weight": 0.046011
+          "weight": 0.043773
         },
         {
           "from": "T",
           "to": "K",
-          "weight": 0.048133
+          "weight": 0.0542
         },
         {
           "from": "T",
@@ -720,12 +720,12 @@
         {
           "from": "T",
           "to": "R",
-          "weight": 0.0454
+          "weight": 0.057314
         },
         {
           "from": "T",
           "to": "V",
-          "weight": 0.047027
+          "weight": 0.045492
         },
         {
           "from": "T",
@@ -735,7 +735,7 @@
         {
           "from": "T",
           "to": "Y",
-          "weight": 0.045258
+          "weight": 0.042346
         }
       ],
       "11": [
@@ -747,19 +747,19 @@
         {
           "from": "A",
           "to": "T",
-          "weight": 0.046429
+          "weight": 0.043916
         },
         {
           "from": "A",
           "to": "V",
-          "weight": 0.026867
+          "weight": 0.039071
         }
       ],
       "12": [
         {
           "from": "T",
           "to": "E",
-          "weight": 0.117517
+          "weight": 0.102271
         },
         {
           "from": "T",
@@ -774,17 +774,17 @@
         {
           "from": "T",
           "to": "M",
-          "weight": 0.05768
+          "weight": 0.069325
         },
         {
           "from": "T",
           "to": "V",
-          "weight": 0.06118
+          "weight": 0.056667
         },
         {
           "from": "T",
           "to": "W",
-          "weight": 0.067407
+          "weight": 0.091975
         },
         {
           "from": "T",
@@ -796,19 +796,19 @@
         {
           "from": "L",
           "to": "I",
-          "weight": 0.042225
+          "weight": 0.041111
         }
       ],
       "15": [
         {
           "from": "L",
           "to": "I",
-          "weight": 0.040219
+          "weight": 0.043
         },
         {
           "from": "L",
           "to": "V",
-          "weight": 0.053757
+          "weight": 0.065975
         }
       ],
       "16": [
@@ -829,7 +829,7 @@
         {
           "from": "H",
           "to": "I",
-          "weight": 0.0268
+          "weight": 0.028109
         },
         {
           "from": "H",
@@ -846,22 +846,22 @@
         {
           "from": "A",
           "to": "N",
-          "weight": 0.023111
+          "weight": 0.022455
         },
         {
           "from": "A",
           "to": "S",
-          "weight": 0.035025
+          "weight": 0.039111
         },
         {
           "from": "A",
           "to": "T",
-          "weight": 0.043878
+          "weight": 0.05491
         },
         {
           "from": "A",
           "to": "V",
-          "weight": 0.05176
+          "weight": 0.046783
         }
       ],
       "20": [
@@ -880,17 +880,17 @@
         {
           "from": "P",
           "to": "A",
-          "weight": 0.059312
+          "weight": 0.060544
         },
         {
           "from": "P",
           "to": "F",
-          "weight": 0.066675
+          "weight": 0.06381
         },
         {
           "from": "P",
           "to": "G",
-          "weight": 0.0512
+          "weight": 0.053786
         },
         {
           "from": "P",
@@ -900,7 +900,7 @@
         {
           "from": "P",
           "to": "I",
-          "weight": 0.080261
+          "weight": 0.076737
         },
         {
           "from": "P",
@@ -910,12 +910,12 @@
         {
           "from": "P",
           "to": "L",
-          "weight": 0.0363
+          "weight": 0.03314
         },
         {
           "from": "P",
           "to": "M",
-          "weight": 0.039569
+          "weight": 0.04248
         },
         {
           "from": "P",
@@ -925,22 +925,22 @@
         {
           "from": "P",
           "to": "Q",
-          "weight": 0.026833
+          "weight": 0.0413
         },
         {
           "from": "P",
           "to": "R",
-          "weight": 0.03868
+          "weight": 0.038306
         },
         {
           "from": "P",
           "to": "S",
-          "weight": 0.061422
+          "weight": 0.07113
         },
         {
           "from": "P",
           "to": "T",
-          "weight": 0.059406
+          "weight": 0.057611
         },
         {
           "from": "P",
@@ -950,19 +950,19 @@
         {
           "from": "P",
           "to": "W",
-          "weight": 0.055438
+          "weight": 0.105711
         }
       ],
       "22": [
         {
           "from": "N",
           "to": "A",
-          "weight": 0.051273
+          "weight": 0.046915
         },
         {
           "from": "N",
           "to": "D",
-          "weight": 0.048386
+          "weight": 0.043088
         },
         {
           "from": "N",
@@ -987,7 +987,7 @@
         {
           "from": "N",
           "to": "Q",
-          "weight": 0.06305
+          "weight": 0.064856
         },
         {
           "from": "N",
@@ -1007,34 +1007,34 @@
         {
           "from": "N",
           "to": "Y",
-          "weight": 0.076757
+          "weight": 0.075075
         }
       ],
       "24": [
         {
           "from": "T",
           "to": "A",
-          "weight": 0.052767
+          "weight": 0.046571
         },
         {
           "from": "T",
           "to": "E",
-          "weight": 0.042486
+          "weight": 0.0459
         },
         {
           "from": "T",
           "to": "F",
-          "weight": 0.087808
+          "weight": 0.081262
         },
         {
           "from": "T",
           "to": "H",
-          "weight": 0.039718
+          "weight": 0.039608
         },
         {
           "from": "T",
           "to": "I",
-          "weight": 0.025813
+          "weight": 0.025756
         },
         {
           "from": "T",
@@ -1044,7 +1044,7 @@
         {
           "from": "T",
           "to": "M",
-          "weight": 0.044533
+          "weight": 0.0389
         },
         {
           "from": "T",
@@ -1054,19 +1054,19 @@
         {
           "from": "T",
           "to": "V",
-          "weight": 0.043233
+          "weight": 0.041493
         },
         {
           "from": "T",
           "to": "Y",
-          "weight": 0.067
+          "weight": 0.063767
         }
       ],
       "25": [
         {
           "from": "I",
           "to": "F",
-          "weight": 0.07936
+          "weight": 0.085741
         },
         {
           "from": "I",
@@ -1076,12 +1076,12 @@
         {
           "from": "I",
           "to": "K",
-          "weight": 0.051583
+          "weight": 0.045886
         },
         {
           "from": "I",
           "to": "L",
-          "weight": 0.091353
+          "weight": 0.088831
         },
         {
           "from": "I",
@@ -1091,12 +1091,12 @@
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.045786
+          "weight": 0.047862
         },
         {
           "from": "I",
           "to": "R",
-          "weight": 0.036411
+          "weight": 0.037173
         },
         {
           "from": "I",
@@ -1111,7 +1111,7 @@
         {
           "from": "I",
           "to": "W",
-          "weight": 0.059369
+          "weight": 0.057424
         },
         {
           "from": "I",
@@ -1123,19 +1123,19 @@
         {
           "from": "V",
           "to": "I",
-          "weight": 0.0602
+          "weight": 0.0612
         }
       ],
       "27": [
         {
           "from": "K",
           "to": "A",
-          "weight": 0.0505
+          "weight": 0.046
         },
         {
           "from": "K",
           "to": "H",
-          "weight": 0.027312
+          "weight": 0.025789
         },
         {
           "from": "K",
@@ -1150,12 +1150,12 @@
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.041155
+          "weight": 0.045038
         },
         {
           "from": "K",
           "to": "R",
-          "weight": 0.039894
+          "weight": 0.043872
         },
         {
           "from": "K",
@@ -1165,7 +1165,7 @@
         {
           "from": "K",
           "to": "T",
-          "weight": 0.0461
+          "weight": 0.046729
         }
       ],
       "28": [
@@ -1177,7 +1177,7 @@
         {
           "from": "T",
           "to": "S",
-          "weight": 0.06402
+          "weight": 0.061133
         }
       ],
       "29": [
@@ -1216,7 +1216,7 @@
         {
           "from": "T",
           "to": "H",
-          "weight": 0.0054
+          "weight": 0.01165
         },
         {
           "from": "T",
@@ -1226,17 +1226,17 @@
         {
           "from": "T",
           "to": "K",
-          "weight": 0.0533
+          "weight": 0.05649
         },
         {
           "from": "T",
           "to": "L",
-          "weight": 0.068144
+          "weight": 0.0665
         },
         {
           "from": "T",
           "to": "M",
-          "weight": 0.052312
+          "weight": 0.054389
         },
         {
           "from": "T",
@@ -1246,12 +1246,12 @@
         {
           "from": "T",
           "to": "Q",
-          "weight": 0.0546
+          "weight": 0.047767
         },
         {
           "from": "T",
           "to": "R",
-          "weight": 0.058623
+          "weight": 0.069307
         },
         {
           "from": "T",
@@ -1261,7 +1261,7 @@
         {
           "from": "T",
           "to": "V",
-          "weight": 0.047123
+          "weight": 0.056864
         },
         {
           "from": "T",
@@ -1273,7 +1273,7 @@
         {
           "from": "N",
           "to": "A",
-          "weight": 0.030138
+          "weight": 0.035878
         },
         {
           "from": "N",
@@ -1283,12 +1283,12 @@
         {
           "from": "N",
           "to": "D",
-          "weight": 0.055325
+          "weight": 0.052822
         },
         {
           "from": "N",
           "to": "E",
-          "weight": 0.047393
+          "weight": 0.04895
         },
         {
           "from": "N",
@@ -1303,7 +1303,7 @@
         {
           "from": "N",
           "to": "H",
-          "weight": 0.063262
+          "weight": 0.067694
         },
         {
           "from": "N",
@@ -1323,17 +1323,17 @@
         {
           "from": "N",
           "to": "M",
-          "weight": 0.034893
+          "weight": 0.052862
         },
         {
           "from": "N",
           "to": "Q",
-          "weight": 0.064617
+          "weight": 0.063315
         },
         {
           "from": "N",
           "to": "R",
-          "weight": 0.05626
+          "weight": 0.062973
         },
         {
           "from": "N",
@@ -1343,7 +1343,7 @@
         {
           "from": "N",
           "to": "T",
-          "weight": 0.04783
+          "weight": 0.046855
         },
         {
           "from": "N",
@@ -1358,7 +1358,7 @@
         {
           "from": "N",
           "to": "Y",
-          "weight": 0.053567
+          "weight": 0.05425
         }
       ],
       "32": [
@@ -1370,12 +1370,12 @@
         {
           "from": "D",
           "to": "E",
-          "weight": 0.035083
+          "weight": 0.032777
         },
         {
           "from": "D",
           "to": "G",
-          "weight": 0.058286
+          "weight": 0.056037
         },
         {
           "from": "D",
@@ -1390,37 +1390,37 @@
         {
           "from": "D",
           "to": "L",
-          "weight": 0.097233
+          "weight": 0.077825
         },
         {
           "from": "D",
           "to": "M",
-          "weight": 0.0534
+          "weight": 0.05085
         },
         {
           "from": "D",
           "to": "N",
-          "weight": 0.047267
+          "weight": 0.040629
         },
         {
           "from": "D",
           "to": "P",
-          "weight": 0.037333
+          "weight": 0.04065
         },
         {
           "from": "D",
           "to": "Q",
-          "weight": 0.039815
+          "weight": 0.045093
         },
         {
           "from": "D",
           "to": "S",
-          "weight": 0.052544
+          "weight": 0.06233
         },
         {
           "from": "D",
           "to": "T",
-          "weight": 0.072667
+          "weight": 0.09565
         },
         {
           "from": "D",
@@ -1442,12 +1442,12 @@
         {
           "from": "R",
           "to": "E",
-          "weight": 0.044973
+          "weight": 0.041765
         },
         {
           "from": "R",
           "to": "F",
-          "weight": 0.038408
+          "weight": 0.036392
         },
         {
           "from": "R",
@@ -1462,32 +1462,32 @@
         {
           "from": "R",
           "to": "I",
-          "weight": 0.05945
+          "weight": 0.056689
         },
         {
           "from": "R",
           "to": "K",
-          "weight": 0.042186
+          "weight": 0.039493
         },
         {
           "from": "R",
           "to": "L",
-          "weight": 0.030038
+          "weight": 0.037578
         },
         {
           "from": "R",
           "to": "M",
-          "weight": 0.040207
+          "weight": 0.040576
         },
         {
           "from": "R",
           "to": "N",
-          "weight": 0.033487
+          "weight": 0.041367
         },
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.038933
+          "weight": 0.039129
         },
         {
           "from": "R",
@@ -1497,12 +1497,12 @@
         {
           "from": "R",
           "to": "W",
-          "weight": 0.036046
+          "weight": 0.035086
         },
         {
           "from": "R",
           "to": "Y",
-          "weight": 0.052354
+          "weight": 0.052073
         }
       ],
       "34": [
@@ -1514,7 +1514,7 @@
         {
           "from": "I",
           "to": "L",
-          "weight": 0.020582
+          "weight": 0.026517
         },
         {
           "from": "I",
@@ -1524,12 +1524,12 @@
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.0601
+          "weight": 0.054867
         },
         {
           "from": "I",
           "to": "T",
-          "weight": 0.020567
+          "weight": 0.019671
         },
         {
           "from": "I",
@@ -1541,7 +1541,7 @@
         {
           "from": "E",
           "to": "A",
-          "weight": 0.01744
+          "weight": 0.024814
         },
         {
           "from": "E",
@@ -1551,12 +1551,12 @@
         {
           "from": "E",
           "to": "Q",
-          "weight": 0.03868
+          "weight": 0.036055
         },
         {
           "from": "E",
           "to": "S",
-          "weight": 0.073167
+          "weight": 0.064043
         }
       ],
       "37": [
@@ -1567,8 +1567,13 @@
         },
         {
           "from": "T",
+          "to": "M",
+          "weight": 0.0057
+        },
+        {
+          "from": "T",
           "to": "V",
-          "weight": 0.021575
+          "weight": 0.01934
         }
       ],
       "38": [
@@ -1580,7 +1585,7 @@
         {
           "from": "N",
           "to": "C",
-          "weight": 0.05114
+          "weight": 0.057883
         },
         {
           "from": "N",
@@ -1589,8 +1594,13 @@
         },
         {
           "from": "N",
+          "to": "E",
+          "weight": 0.007
+        },
+        {
+          "from": "N",
           "to": "F",
-          "weight": 0.03936
+          "weight": 0.0399
         },
         {
           "from": "N",
@@ -1600,7 +1610,7 @@
         {
           "from": "N",
           "to": "K",
-          "weight": 0.0197
+          "weight": 0.1204
         },
         {
           "from": "N",
@@ -1615,17 +1625,17 @@
         {
           "from": "N",
           "to": "R",
-          "weight": 0.044614
+          "weight": 0.053522
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.034557
+          "weight": 0.033787
         },
         {
           "from": "N",
           "to": "T",
-          "weight": 0.058
+          "weight": 0.055817
         },
         {
           "from": "N",
@@ -1637,14 +1647,14 @@
         {
           "from": "A",
           "to": "S",
-          "weight": 0.061833
+          "weight": 0.062571
         }
       ],
       "40": [
         {
           "from": "T",
           "to": "A",
-          "weight": 0.03285
+          "weight": 0.0284
         },
         {
           "from": "T",
@@ -1654,12 +1664,12 @@
         {
           "from": "T",
           "to": "F",
-          "weight": 0.043775
+          "weight": 0.04984
         },
         {
           "from": "T",
           "to": "I",
-          "weight": 0.08584
+          "weight": 0.084991
         },
         {
           "from": "T",
@@ -1669,22 +1679,22 @@
         {
           "from": "T",
           "to": "M",
-          "weight": 0.022733
+          "weight": 0.0756
         },
         {
           "from": "T",
           "to": "Q",
-          "weight": 0.05985
+          "weight": 0.071333
         },
         {
           "from": "T",
           "to": "V",
-          "weight": 0.0224
+          "weight": 0.02758
         },
         {
           "from": "T",
           "to": "Y",
-          "weight": 0.02965
+          "weight": 0.021575
         }
       ],
       "41": [
@@ -1698,27 +1708,27 @@
         {
           "from": "Q",
           "to": "A",
-          "weight": 0.0486
+          "weight": 0.04886
         },
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.052981
+          "weight": 0.056024
         },
         {
           "from": "Q",
           "to": "H",
-          "weight": 0.03965
+          "weight": 0.046711
         },
         {
           "from": "Q",
           "to": "I",
-          "weight": 0.047693
+          "weight": 0.048367
         },
         {
           "from": "Q",
           "to": "L",
-          "weight": 0.03963
+          "weight": 0.039655
         },
         {
           "from": "Q",
@@ -1728,12 +1738,12 @@
         {
           "from": "Q",
           "to": "R",
-          "weight": 0.0143
+          "weight": 0.025157
         },
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.054278
+          "weight": 0.05422
         },
         {
           "from": "Q",
@@ -1743,14 +1753,14 @@
         {
           "from": "Q",
           "to": "Y",
-          "weight": 0.041643
+          "weight": 0.036575
         }
       ],
       "45": [
         {
           "from": "N",
           "to": "A",
-          "weight": 0.079164
+          "weight": 0.076308
         },
         {
           "from": "N",
@@ -1760,12 +1770,12 @@
         {
           "from": "N",
           "to": "D",
-          "weight": 0.055667
+          "weight": 0.04458
         },
         {
           "from": "N",
           "to": "G",
-          "weight": 0.048725
+          "weight": 0.0654
         },
         {
           "from": "N",
@@ -1775,27 +1785,27 @@
         {
           "from": "N",
           "to": "I",
-          "weight": 0.036814
+          "weight": 0.0465
         },
         {
           "from": "N",
           "to": "K",
-          "weight": 0.048778
+          "weight": 0.04537
         },
         {
           "from": "N",
           "to": "L",
-          "weight": 0.04355
+          "weight": 0.03788
         },
         {
           "from": "N",
           "to": "R",
-          "weight": 0.097978
+          "weight": 0.09024
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.070393
+          "weight": 0.067153
         },
         {
           "from": "N",
@@ -1812,17 +1822,17 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.056914
+          "weight": 0.070563
         },
         {
           "from": "S",
           "to": "D",
-          "weight": 0.0457
+          "weight": 0.0394
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.042761
+          "weight": 0.040716
         },
         {
           "from": "S",
@@ -1842,12 +1852,12 @@
         {
           "from": "S",
           "to": "I",
-          "weight": 0.034436
+          "weight": 0.03545
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.046443
+          "weight": 0.060325
         },
         {
           "from": "S",
@@ -1857,27 +1867,27 @@
         {
           "from": "S",
           "to": "M",
-          "weight": 0.057625
+          "weight": 0.063931
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.02194
+          "weight": 0.023533
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.046157
+          "weight": 0.043173
         },
         {
           "from": "S",
           "to": "R",
-          "weight": 0.06668
+          "weight": 0.077882
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.050355
+          "weight": 0.049808
         },
         {
           "from": "S",
@@ -1887,12 +1897,12 @@
         {
           "from": "S",
           "to": "W",
-          "weight": 0.04575
+          "weight": 0.049283
         },
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.047264
+          "weight": 0.05625
         }
       ],
       "47": [
@@ -1909,7 +1919,7 @@
         {
           "from": "S",
           "to": "F",
-          "weight": 0.03685
+          "weight": 0.041385
         },
         {
           "from": "S",
@@ -1919,7 +1929,7 @@
         {
           "from": "S",
           "to": "I",
-          "weight": 0.056322
+          "weight": 0.0536
         },
         {
           "from": "S",
@@ -1939,7 +1949,7 @@
         {
           "from": "S",
           "to": "P",
-          "weight": 0.06023
+          "weight": 0.068582
         },
         {
           "from": "S",
@@ -1954,19 +1964,19 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.041433
+          "weight": 0.038614
         }
       ],
       "48": [
         {
           "from": "I",
           "to": "A",
-          "weight": 0.076489
+          "weight": 0.078175
         },
         {
           "from": "I",
           "to": "D",
-          "weight": 0.083642
+          "weight": 0.073021
         },
         {
           "from": "I",
@@ -1976,7 +1986,7 @@
         {
           "from": "I",
           "to": "F",
-          "weight": 0.080167
+          "weight": 0.076269
         },
         {
           "from": "I",
@@ -1986,17 +1996,17 @@
         {
           "from": "I",
           "to": "H",
-          "weight": 0.056608
+          "weight": 0.050714
         },
         {
           "from": "I",
           "to": "K",
-          "weight": 0.081888
+          "weight": 0.07915
         },
         {
           "from": "I",
           "to": "L",
-          "weight": 0.056475
+          "weight": 0.054872
         },
         {
           "from": "I",
@@ -2006,27 +2016,27 @@
         {
           "from": "I",
           "to": "N",
-          "weight": 0.049371
+          "weight": 0.052127
         },
         {
           "from": "I",
           "to": "P",
-          "weight": 0.072353
+          "weight": 0.090094
         },
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.087022
+          "weight": 0.08428
         },
         {
           "from": "I",
           "to": "R",
-          "weight": 0.112156
+          "weight": 0.108189
         },
         {
           "from": "I",
           "to": "S",
-          "weight": 0.063507
+          "weight": 0.061387
         },
         {
           "from": "I",
@@ -2041,12 +2051,12 @@
         {
           "from": "I",
           "to": "W",
-          "weight": 0.065132
+          "weight": 0.067295
         },
         {
           "from": "I",
           "to": "Y",
-          "weight": 0.055371
+          "weight": 0.06022
         }
       ],
       "49": [
@@ -2058,7 +2068,7 @@
         {
           "from": "G",
           "to": "P",
-          "weight": 0.076082
+          "weight": 0.073333
         },
         {
           "from": "G",
@@ -2075,52 +2085,52 @@
         {
           "from": "E",
           "to": "A",
-          "weight": 0.10487
+          "weight": 0.096367
         },
         {
           "from": "E",
           "to": "C",
-          "weight": 0.128435
+          "weight": 0.123484
         },
         {
           "from": "E",
           "to": "F",
-          "weight": 0.118
+          "weight": 0.112306
         },
         {
           "from": "E",
           "to": "H",
-          "weight": 0.132942
+          "weight": 0.124492
         },
         {
           "from": "E",
           "to": "I",
-          "weight": 0.087612
+          "weight": 0.082624
         },
         {
           "from": "E",
           "to": "K",
-          "weight": 0.117389
+          "weight": 0.11679
         },
         {
           "from": "E",
           "to": "L",
-          "weight": 0.1153
+          "weight": 0.108636
         },
         {
           "from": "E",
           "to": "M",
-          "weight": 0.141373
+          "weight": 0.138282
         },
         {
           "from": "E",
           "to": "N",
-          "weight": 0.08775
+          "weight": 0.0802
         },
         {
           "from": "E",
           "to": "P",
-          "weight": 0.101027
+          "weight": 0.092608
         },
         {
           "from": "E",
@@ -2130,7 +2140,7 @@
         {
           "from": "E",
           "to": "R",
-          "weight": 0.134773
+          "weight": 0.126475
         },
         {
           "from": "E",
@@ -2140,12 +2150,12 @@
         {
           "from": "E",
           "to": "T",
-          "weight": 0.107086
+          "weight": 0.1032
         },
         {
           "from": "E",
           "to": "V",
-          "weight": 0.117009
+          "weight": 0.1113
         },
         {
           "from": "E",
@@ -2155,14 +2165,14 @@
         {
           "from": "E",
           "to": "Y",
-          "weight": 0.093131
+          "weight": 0.0906
         }
       ],
       "51": [
         {
           "from": "I",
           "to": "L",
-          "weight": 0.0737
+          "weight": 0.073514
         }
       ],
       "53": [
@@ -2179,7 +2189,7 @@
         {
           "from": "D",
           "to": "G",
-          "weight": 0.0653
+          "weight": 0.06243
         },
         {
           "from": "D",
@@ -2189,12 +2199,12 @@
         {
           "from": "D",
           "to": "Q",
-          "weight": 0.0761
+          "weight": 0.085892
         },
         {
           "from": "D",
           "to": "S",
-          "weight": 0.08875
+          "weight": 0.101264
         }
       ],
       "54": [
@@ -2206,7 +2216,7 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.094526
+          "weight": 0.10433
         },
         {
           "from": "S",
@@ -2216,22 +2226,22 @@
         {
           "from": "S",
           "to": "H",
-          "weight": 0.032793
+          "weight": 0.0393
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.056433
+          "weight": 0.05362
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.052229
+          "weight": 0.052125
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.03588
+          "weight": 0.034882
         },
         {
           "from": "S",
@@ -2241,12 +2251,12 @@
         {
           "from": "S",
           "to": "R",
-          "weight": 0.026388
+          "weight": 0.027433
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.063689
+          "weight": 0.06846
         },
         {
           "from": "S",
@@ -2258,27 +2268,27 @@
         {
           "from": "H",
           "to": "F",
-          "weight": 0.038382
+          "weight": 0.046285
         },
         {
           "from": "H",
           "to": "I",
-          "weight": 0.06201
+          "weight": 0.061317
         },
         {
           "from": "H",
           "to": "L",
-          "weight": 0.047167
+          "weight": 0.04596
         },
         {
           "from": "H",
           "to": "W",
-          "weight": 0.08
+          "weight": 0.07211
         },
         {
           "from": "H",
           "to": "Y",
-          "weight": 0.051838
+          "weight": 0.047933
         }
       ],
       "57": [
@@ -2295,7 +2305,7 @@
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.049555
+          "weight": 0.054433
         },
         {
           "from": "Q",
@@ -2305,12 +2315,12 @@
         {
           "from": "Q",
           "to": "H",
-          "weight": 0.016078
+          "weight": 0.01965
         },
         {
           "from": "Q",
           "to": "I",
-          "weight": 0.043036
+          "weight": 0.039658
         },
         {
           "from": "Q",
@@ -2320,44 +2330,44 @@
         {
           "from": "Q",
           "to": "L",
-          "weight": 0.03758
+          "weight": 0.035244
         },
         {
           "from": "Q",
           "to": "M",
-          "weight": 0.046575
+          "weight": 0.04042
         },
         {
           "from": "Q",
           "to": "N",
-          "weight": 0.04158
+          "weight": 0.05209
         },
         {
           "from": "Q",
           "to": "R",
-          "weight": 0.038067
+          "weight": 0.0403
         },
         {
           "from": "Q",
           "to": "S",
-          "weight": 0.042627
+          "weight": 0.041065
         },
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.0245
+          "weight": 0.05846
         },
         {
           "from": "Q",
           "to": "V",
-          "weight": 0.075354
+          "weight": 0.070871
         }
       ],
       "58": [
         {
           "from": "I",
           "to": "V",
-          "weight": 0.050828
+          "weight": 0.054163
         }
       ],
       "59": [
@@ -2386,7 +2396,7 @@
         {
           "from": "G",
           "to": "E",
-          "weight": 0.047842
+          "weight": 0.05043
         },
         {
           "from": "G",
@@ -2401,17 +2411,17 @@
         {
           "from": "G",
           "to": "K",
-          "weight": 0.073325
+          "weight": 0.068069
         },
         {
           "from": "G",
           "to": "L",
-          "weight": 0.022089
+          "weight": 0.02673
         },
         {
           "from": "G",
           "to": "M",
-          "weight": 0.047767
+          "weight": 0.0466
         },
         {
           "from": "G",
@@ -2493,7 +2503,7 @@
         {
           "from": "Q",
           "to": "H",
-          "weight": 0.0556
+          "weight": 0.0591
         },
         {
           "from": "Q",
@@ -2530,46 +2540,46 @@
         {
           "from": "D",
           "to": "E",
-          "weight": 0.0303
+          "weight": 0.045425
         }
       ],
       "78": [
         {
           "from": "G",
           "to": "C",
-          "weight": 0.068158
+          "weight": 0.070954
         },
         {
           "from": "G",
           "to": "D",
-          "weight": 0.072038
+          "weight": 0.072195
         },
         {
           "from": "G",
           "to": "E",
-          "weight": 0.052894
+          "weight": 0.057455
         },
         {
           "from": "G",
           "to": "S",
-          "weight": 0.04456
+          "weight": 0.042194
         },
         {
           "from": "G",
           "to": "V",
-          "weight": 0.02999
+          "weight": 0.043991
         }
       ],
       "79": [
         {
           "from": "F",
           "to": "I",
-          "weight": 0.047159
+          "weight": 0.053017
         },
         {
           "from": "F",
           "to": "L",
-          "weight": 0.062506
+          "weight": 0.066568
         }
       ],
       "80": [
@@ -2581,7 +2591,7 @@
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.059352
+          "weight": 0.058348
         },
         {
           "from": "Q",
@@ -2591,7 +2601,7 @@
         {
           "from": "Q",
           "to": "M",
-          "weight": 0.021091
+          "weight": 0.032358
         },
         {
           "from": "Q",
@@ -2603,7 +2613,7 @@
         {
           "from": "N",
           "to": "D",
-          "weight": 0.0372
+          "weight": 0.03594
         },
         {
           "from": "N",
@@ -2615,7 +2625,7 @@
         {
           "from": "K",
           "to": "A",
-          "weight": 0.085004
+          "weight": 0.087681
         },
         {
           "from": "K",
@@ -2625,32 +2635,32 @@
         {
           "from": "K",
           "to": "N",
-          "weight": 0.04025
+          "weight": 0.04485
         },
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.069111
+          "weight": 0.066385
         },
         {
           "from": "K",
           "to": "R",
-          "weight": 0.042153
+          "weight": 0.050806
         },
         {
           "from": "K",
           "to": "S",
-          "weight": 0.079808
+          "weight": 0.096353
         },
         {
           "from": "K",
           "to": "T",
-          "weight": 0.072508
+          "weight": 0.069646
         },
         {
           "from": "K",
           "to": "V",
-          "weight": 0.060878
+          "weight": 0.061413
         }
       ],
       "83": [
@@ -2662,7 +2672,7 @@
         {
           "from": "K",
           "to": "D",
-          "weight": 0.062687
+          "weight": 0.057944
         },
         {
           "from": "K",
@@ -2672,47 +2682,47 @@
         {
           "from": "K",
           "to": "H",
-          "weight": 0.047308
+          "weight": 0.044677
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.057887
+          "weight": 0.067044
         },
         {
           "from": "K",
           "to": "M",
-          "weight": 0.08995
+          "weight": 0.077757
         },
         {
           "from": "K",
           "to": "N",
-          "weight": 0.031621
+          "weight": 0.035733
         },
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.03335
+          "weight": 0.037143
         },
         {
           "from": "K",
           "to": "R",
-          "weight": 0.036889
+          "weight": 0.03344
         },
         {
           "from": "K",
           "to": "S",
-          "weight": 0.085915
+          "weight": 0.089
         },
         {
           "from": "K",
           "to": "T",
-          "weight": 0.075367
+          "weight": 0.072541
         },
         {
           "from": "K",
           "to": "V",
-          "weight": 0.050871
+          "weight": 0.054853
         },
         {
           "from": "K",
@@ -2722,14 +2732,14 @@
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.077915
+          "weight": 0.083353
         }
       ],
       "84": [
         {
           "from": "W",
           "to": "F",
-          "weight": 0.0318
+          "weight": 0.025125
         }
       ],
       "86": [
@@ -2741,43 +2751,43 @@
         {
           "from": "L",
           "to": "V",
-          "weight": 0.0334
+          "weight": 0.031883
         }
       ],
       "87": [
         {
           "from": "F",
           "to": "Y",
-          "weight": 0.04799
+          "weight": 0.046564
         }
       ],
       "88": [
         {
           "from": "V",
           "to": "I",
-          "weight": 0.04091
+          "weight": 0.039962
         },
         {
           "from": "V",
           "to": "L",
-          "weight": 0.027667
+          "weight": 0.056986
         }
       ],
       "91": [
         {
           "from": "S",
           "to": "E",
-          "weight": 0.100087
+          "weight": 0.092922
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.05308
+          "weight": 0.070575
         },
         {
           "from": "S",
           "to": "P",
-          "weight": 0.0535
+          "weight": 0.048154
         },
         {
           "from": "S",
@@ -2787,34 +2797,34 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.022515
+          "weight": 0.021064
         }
       ],
       "92": [
         {
           "from": "R",
           "to": "A",
-          "weight": 0.0446
+          "weight": 0.052067
         },
         {
           "from": "R",
           "to": "C",
-          "weight": 0.10375
+          "weight": 0.092756
         },
         {
           "from": "R",
           "to": "D",
-          "weight": 0.0522
+          "weight": 0.050864
         },
         {
           "from": "R",
           "to": "E",
-          "weight": 0.036733
+          "weight": 0.045846
         },
         {
           "from": "R",
           "to": "F",
-          "weight": 0.0341
+          "weight": 0.035761
         },
         {
           "from": "R",
@@ -2824,7 +2834,7 @@
         {
           "from": "R",
           "to": "H",
-          "weight": 0.067672
+          "weight": 0.071663
         },
         {
           "from": "R",
@@ -2834,7 +2844,7 @@
         {
           "from": "R",
           "to": "K",
-          "weight": 0.02995
+          "weight": 0.02962
         },
         {
           "from": "R",
@@ -2849,49 +2859,49 @@
         {
           "from": "R",
           "to": "N",
-          "weight": 0.0422
+          "weight": 0.048229
         },
         {
           "from": "R",
           "to": "P",
-          "weight": 0.08461
+          "weight": 0.082891
         },
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.037346
+          "weight": 0.03615
         },
         {
           "from": "R",
           "to": "S",
-          "weight": 0.040282
+          "weight": 0.051417
         },
         {
           "from": "R",
           "to": "T",
-          "weight": 0.054267
+          "weight": 0.055505
         },
         {
           "from": "R",
           "to": "V",
-          "weight": 0.04235
+          "weight": 0.041445
         },
         {
           "from": "R",
           "to": "W",
-          "weight": 0.092033
+          "weight": 0.094643
         },
         {
           "from": "R",
           "to": "Y",
-          "weight": 0.0622
+          "weight": 0.066408
         }
       ],
       "93": [
         {
           "from": "A",
           "to": "S",
-          "weight": 0.041389
+          "weight": 0.03977
         },
         {
           "from": "A",
@@ -2918,12 +2928,12 @@
         {
           "from": "Y",
           "to": "E",
-          "weight": 0.055362
+          "weight": 0.054835
         },
         {
           "from": "Y",
           "to": "F",
-          "weight": 0.062931
+          "weight": 0.069494
         },
         {
           "from": "Y",
@@ -2938,37 +2948,37 @@
         {
           "from": "Y",
           "to": "I",
-          "weight": 0.072119
+          "weight": 0.075147
         },
         {
           "from": "Y",
           "to": "K",
-          "weight": 0.063276
+          "weight": 0.069563
         },
         {
           "from": "Y",
           "to": "M",
-          "weight": 0.06129
+          "weight": 0.0612
         },
         {
           "from": "Y",
           "to": "N",
-          "weight": 0.049675
+          "weight": 0.052808
         },
         {
           "from": "Y",
           "to": "Q",
-          "weight": 0.062343
+          "weight": 0.06965
         },
         {
           "from": "Y",
           "to": "R",
-          "weight": 0.08088
+          "weight": 0.097165
         },
         {
           "from": "Y",
           "to": "S",
-          "weight": 0.063881
+          "weight": 0.057361
         },
         {
           "from": "Y",
@@ -2978,12 +2988,12 @@
         {
           "from": "Y",
           "to": "V",
-          "weight": 0.05196
+          "weight": 0.061362
         },
         {
           "from": "Y",
           "to": "W",
-          "weight": 0.050743
+          "weight": 0.05025
         }
       ],
       "96": [
@@ -3010,7 +3020,7 @@
         {
           "from": "N",
           "to": "S",
-          "weight": 0.02045
+          "weight": 0.026871
         },
         {
           "from": "N",
@@ -3027,19 +3037,19 @@
         {
           "from": "D",
           "to": "E",
-          "weight": 0.032138
+          "weight": 0.033287
         },
         {
           "from": "D",
           "to": "V",
-          "weight": 0.031783
+          "weight": 0.047786
         }
       ],
       "102": [
         {
           "from": "V",
           "to": "I",
-          "weight": 0.04822
+          "weight": 0.0517
         }
       ],
       "103": [
@@ -3051,7 +3061,7 @@
         {
           "from": "P",
           "to": "D",
-          "weight": 0.041067
+          "weight": 0.03095
         },
         {
           "from": "P",
@@ -3071,7 +3081,7 @@
         {
           "from": "P",
           "to": "I",
-          "weight": 0.022527
+          "weight": 0.033317
         },
         {
           "from": "P",
@@ -3091,7 +3101,7 @@
         {
           "from": "P",
           "to": "Q",
-          "weight": 0.04085
+          "weight": 0.042286
         },
         {
           "from": "P",
@@ -3101,51 +3111,51 @@
         {
           "from": "P",
           "to": "S",
-          "weight": 0.052067
+          "weight": 0.04225
         },
         {
           "from": "P",
           "to": "T",
-          "weight": 0.0212
+          "weight": 0.021967
         },
         {
           "from": "P",
           "to": "V",
-          "weight": 0.0528
+          "weight": 0.06805
         },
         {
           "from": "P",
           "to": "W",
-          "weight": 0.045833
+          "weight": 0.041629
         },
         {
           "from": "P",
           "to": "Y",
-          "weight": 0.0403
+          "weight": 0.037271
         }
       ],
       "104": [
         {
           "from": "D",
           "to": "H",
-          "weight": 0.045173
+          "weight": 0.043269
         },
         {
           "from": "D",
           "to": "Q",
-          "weight": 0.048115
+          "weight": 0.048621
         },
         {
           "from": "D",
           "to": "Y",
-          "weight": 0.091633
+          "weight": 0.099513
         }
       ],
       "105": [
         {
           "from": "Y",
           "to": "H",
-          "weight": 0.055262
+          "weight": 0.056367
         },
         {
           "from": "Y",
@@ -3157,12 +3167,12 @@
         {
           "from": "A",
           "to": "D",
-          "weight": 0.056175
+          "weight": 0.07164
         },
         {
           "from": "A",
           "to": "E",
-          "weight": 0.03277
+          "weight": 0.030927
         },
         {
           "from": "A",
@@ -3177,12 +3187,12 @@
         {
           "from": "A",
           "to": "L",
-          "weight": 0.03814
+          "weight": 0.0344
         },
         {
           "from": "A",
           "to": "M",
-          "weight": 0.041044
+          "weight": 0.038983
         },
         {
           "from": "A",
@@ -3192,17 +3202,17 @@
         {
           "from": "A",
           "to": "Q",
-          "weight": 0.039208
+          "weight": 0.037286
         },
         {
           "from": "A",
           "to": "S",
-          "weight": 0.033958
+          "weight": 0.0329
         },
         {
           "from": "A",
           "to": "T",
-          "weight": 0.02904
+          "weight": 0.030717
         },
         {
           "from": "A",
@@ -3212,7 +3222,7 @@
         {
           "from": "A",
           "to": "W",
-          "weight": 0.046178
+          "weight": 0.04225
         }
       ],
       "107": [
@@ -3234,7 +3244,7 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.0842
+          "weight": 0.07645
         },
         {
           "from": "S",
@@ -3244,7 +3254,7 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.0198
+          "weight": 0.0287
         }
       ],
       "109": [
@@ -3270,21 +3280,21 @@
         {
           "from": "V",
           "to": "I",
-          "weight": 0.042031
+          "weight": 0.03996
         }
       ],
       "113": [
         {
           "from": "A",
           "to": "S",
-          "weight": 0.071362
+          "weight": 0.0674
         }
       ],
       "114": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.06015
+          "weight": 0.060924
         },
         {
           "from": "S",
@@ -3294,7 +3304,7 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.053822
+          "weight": 0.054658
         },
         {
           "from": "S",
@@ -3309,17 +3319,17 @@
         {
           "from": "S",
           "to": "L",
-          "weight": 0.02477
+          "weight": 0.0245
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.0498
+          "weight": 0.07605
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.052257
+          "weight": 0.061225
         },
         {
           "from": "S",
@@ -3329,7 +3339,7 @@
         {
           "from": "S",
           "to": "R",
-          "weight": 0.046655
+          "weight": 0.048115
         },
         {
           "from": "S",
@@ -3346,7 +3356,7 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.032323
+          "weight": 0.047453
         },
         {
           "from": "S",
@@ -3356,12 +3366,12 @@
         {
           "from": "S",
           "to": "L",
-          "weight": 0.039044
+          "weight": 0.04058
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.050245
+          "weight": 0.058195
         },
         {
           "from": "S",
@@ -3378,7 +3388,7 @@
         {
           "from": "T",
           "to": "S",
-          "weight": 0.045736
+          "weight": 0.042777
         }
       ],
       "121": [
@@ -3410,12 +3420,12 @@
         {
           "from": "K",
           "to": "H",
-          "weight": 0.053889
+          "weight": 0.05009
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.029775
+          "weight": 0.0251
         },
         {
           "from": "K",
@@ -3440,7 +3450,7 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.0329
+          "weight": 0.035675
         },
         {
           "from": "K",
@@ -3450,7 +3460,7 @@
         {
           "from": "K",
           "to": "T",
-          "weight": 0.02704
+          "weight": 0.023483
         },
         {
           "from": "K",
@@ -3487,7 +3497,7 @@
         {
           "from": "N",
           "to": "F",
-          "weight": 0.1225
+          "weight": 0.0968
         },
         {
           "from": "N",
@@ -3574,7 +3584,7 @@
         {
           "from": "S",
           "to": "K",
-          "weight": 0.353669
+          "weight": 0.342665
         },
         {
           "from": "S",
@@ -3589,12 +3599,12 @@
         {
           "from": "S",
           "to": "P",
-          "weight": 0.0465
+          "weight": 0.0463
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.066775
+          "weight": 0.05842
         },
         {
           "from": "S",
@@ -3628,7 +3638,7 @@
         {
           "from": "A",
           "to": "D",
-          "weight": 0.029882
+          "weight": 0.032174
         },
         {
           "from": "A",
@@ -3638,7 +3648,7 @@
         {
           "from": "A",
           "to": "F",
-          "weight": 0.040162
+          "weight": 0.038876
         },
         {
           "from": "A",
@@ -3653,7 +3663,7 @@
         {
           "from": "A",
           "to": "I",
-          "weight": 0.04315
+          "weight": 0.042
         },
         {
           "from": "A",
@@ -3668,22 +3678,22 @@
         {
           "from": "A",
           "to": "M",
-          "weight": 0.047533
+          "weight": 0.043914
         },
         {
           "from": "A",
           "to": "N",
-          "weight": 0.043192
+          "weight": 0.044736
         },
         {
           "from": "A",
           "to": "P",
-          "weight": 0.035213
+          "weight": 0.03852
         },
         {
           "from": "A",
           "to": "Q",
-          "weight": 0.047736
+          "weight": 0.047419
         },
         {
           "from": "A",
@@ -3693,7 +3703,7 @@
         {
           "from": "A",
           "to": "S",
-          "weight": 0.0518
+          "weight": 0.04914
         },
         {
           "from": "A",
@@ -3703,12 +3713,12 @@
         {
           "from": "A",
           "to": "V",
-          "weight": 0.057356
+          "weight": 0.058289
         },
         {
           "from": "A",
           "to": "W",
-          "weight": 0.0769
+          "weight": 0.072833
         },
         {
           "from": "A",
@@ -3725,12 +3735,12 @@
         {
           "from": "T",
           "to": "E",
-          "weight": 0.102275
+          "weight": 0.110665
         },
         {
           "from": "T",
           "to": "K",
-          "weight": 0.187589
+          "weight": 0.18298
         },
         {
           "from": "T",
@@ -3745,48 +3755,48 @@
         {
           "from": "T",
           "to": "Q",
-          "weight": 0.099213
+          "weight": 0.090694
         },
         {
           "from": "T",
           "to": "R",
-          "weight": 0.37268
+          "weight": 0.313483
         },
         {
           "from": "T",
           "to": "S",
-          "weight": 0.029711
+          "weight": 0.04461
         },
         {
           "from": "T",
           "to": "V",
-          "weight": 0.06875
+          "weight": 0.068162
         }
       ],
       "132": [
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.046406
+          "weight": 0.05421
         }
       ],
       "133": [
         {
           "from": "N",
           "to": "D",
-          "weight": 0.081062
+          "weight": 0.085667
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.028967
+          "weight": 0.04552
         }
       ],
       "135": [
         {
           "from": "K",
           "to": "A",
-          "weight": 0.084964
+          "weight": 0.102275
         },
         {
           "from": "K",
@@ -3796,17 +3806,17 @@
         {
           "from": "K",
           "to": "D",
-          "weight": 0.096212
+          "weight": 0.1186
         },
         {
           "from": "K",
           "to": "E",
-          "weight": 0.201838
+          "weight": 0.231883
         },
         {
           "from": "K",
           "to": "F",
-          "weight": 0.077618
+          "weight": 0.077277
         },
         {
           "from": "K",
@@ -3816,12 +3826,12 @@
         {
           "from": "K",
           "to": "H",
-          "weight": 0.144
+          "weight": 0.139167
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.1065
+          "weight": 0.220543
         },
         {
           "from": "K",
@@ -3836,7 +3846,7 @@
         {
           "from": "K",
           "to": "N",
-          "weight": 0.077218
+          "weight": 0.092822
         },
         {
           "from": "K",
@@ -3851,7 +3861,7 @@
         {
           "from": "K",
           "to": "S",
-          "weight": 0.134193
+          "weight": 0.158925
         },
         {
           "from": "K",
@@ -3861,12 +3871,12 @@
         {
           "from": "K",
           "to": "V",
-          "weight": 0.110338
+          "weight": 0.220736
         },
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.0631
+          "weight": 0.059567
         }
       ],
       "136": [
@@ -3880,22 +3890,22 @@
         {
           "from": "F",
           "to": "A",
-          "weight": 0.169974
+          "weight": 0.271781
         },
         {
           "from": "F",
           "to": "G",
-          "weight": 0.134
+          "weight": 0.163262
         },
         {
           "from": "F",
           "to": "S",
-          "weight": 0.177976
+          "weight": 0.324711
         },
         {
           "from": "F",
           "to": "Y",
-          "weight": 0.035215
+          "weight": 0.035971
         }
       ],
       "138": [
@@ -3919,7 +3929,7 @@
         {
           "from": "I",
           "to": "M",
-          "weight": 0.210464
+          "weight": 0.210627
         },
         {
           "from": "I",
@@ -3929,41 +3939,41 @@
         {
           "from": "I",
           "to": "P",
-          "weight": 0.075427
+          "weight": 0.071458
         },
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.070067
+          "weight": 0.06466
         }
       ],
       "141": [
         {
           "from": "R",
           "to": "S",
-          "weight": 0.060223
+          "weight": 0.056964
         }
       ],
       "142": [
         {
           "from": "G",
           "to": "A",
-          "weight": 0.047488
+          "weight": 0.057356
         },
         {
           "from": "G",
           "to": "D",
-          "weight": 0.057627
+          "weight": 0.070524
         },
         {
           "from": "G",
           "to": "E",
-          "weight": 0.07059
+          "weight": 0.062592
         },
         {
           "from": "G",
           "to": "H",
-          "weight": 0.0557
+          "weight": 0.082247
         },
         {
           "from": "G",
@@ -3973,12 +3983,12 @@
         {
           "from": "G",
           "to": "N",
-          "weight": 0.093671
+          "weight": 0.097846
         },
         {
           "from": "G",
           "to": "Q",
-          "weight": 0.0479
+          "weight": 0.076643
         },
         {
           "from": "G",
@@ -3988,39 +3998,39 @@
         {
           "from": "G",
           "to": "S",
-          "weight": 0.055264
+          "weight": 0.064942
         },
         {
           "from": "G",
           "to": "Y",
-          "weight": 0.042345
+          "weight": 0.040362
         }
       ],
       "143": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.070179
+          "weight": 0.068347
         },
         {
           "from": "S",
           "to": "D",
-          "weight": 0.103026
+          "weight": 0.108829
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.101929
+          "weight": 0.106661
         },
         {
           "from": "S",
           "to": "G",
-          "weight": 0.09
+          "weight": 0.098382
         },
         {
           "from": "S",
           "to": "H",
-          "weight": 0.08934
+          "weight": 0.079183
         },
         {
           "from": "S",
@@ -4030,22 +4040,22 @@
         {
           "from": "S",
           "to": "M",
-          "weight": 0.03582
+          "weight": 0.050157
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.186744
+          "weight": 0.214289
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.044713
+          "weight": 0.060244
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.058271
+          "weight": 0.059444
         },
         {
           "from": "S",
@@ -4055,7 +4065,7 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.056733
+          "weight": 0.0524
         }
       ],
       "144": [
@@ -4067,17 +4077,17 @@
         {
           "from": "S",
           "to": "D",
-          "weight": 0.147329
+          "weight": 0.175573
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.158013
+          "weight": 0.18242
         },
         {
           "from": "S",
           "to": "F",
-          "weight": 0.098425
+          "weight": 0.08305
         },
         {
           "from": "S",
@@ -4087,12 +4097,12 @@
         {
           "from": "S",
           "to": "H",
-          "weight": 0.050069
+          "weight": 0.046764
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.103567
+          "weight": 0.130792
         },
         {
           "from": "S",
@@ -4102,27 +4112,27 @@
         {
           "from": "S",
           "to": "M",
-          "weight": 0.073067
+          "weight": 0.10295
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.313246
+          "weight": 0.337365
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.084123
+          "weight": 0.08525
         },
         {
           "from": "S",
           "to": "R",
-          "weight": 0.01755
+          "weight": 0.02902
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.04945
+          "weight": 0.055153
         },
         {
           "from": "S",
@@ -4144,17 +4154,17 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.256536
+          "weight": 0.289513
         },
         {
           "from": "S",
           "to": "G",
-          "weight": 0.086745
+          "weight": 0.083462
         },
         {
           "from": "S",
           "to": "H",
-          "weight": 0.114919
+          "weight": 0.185494
         },
         {
           "from": "S",
@@ -4164,41 +4174,41 @@
         {
           "from": "S",
           "to": "K",
-          "weight": 0.499319
+          "weight": 0.615161
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.128009
+          "weight": 0.2632
         },
         {
           "from": "S",
           "to": "P",
-          "weight": 0.1414
+          "weight": 0.146271
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.194692
+          "weight": 0.276604
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.0319
+          "weight": 0.228683
         }
       ],
       "150": [
         {
           "from": "R",
           "to": "K",
-          "weight": 0.028612
+          "weight": 0.0304
         }
       ],
       "155": [
         {
           "from": "T",
           "to": "S",
-          "weight": 0.043817
+          "weight": 0.0383
         }
       ],
       "156": [
@@ -4289,7 +4299,7 @@
         {
           "from": "N",
           "to": "D",
-          "weight": 0.1297
+          "weight": 0.102275
         }
       ],
       "159": [
@@ -4301,12 +4311,12 @@
         {
           "from": "Y",
           "to": "D",
-          "weight": 0.303869
+          "weight": 0.288688
         },
         {
           "from": "Y",
           "to": "E",
-          "weight": 0.279125
+          "weight": 0.266835
         },
         {
           "from": "Y",
@@ -4321,12 +4331,12 @@
         {
           "from": "Y",
           "to": "H",
-          "weight": 0.143364
+          "weight": 0.145217
         },
         {
           "from": "Y",
           "to": "K",
-          "weight": 0.235583
+          "weight": 0.202443
         },
         {
           "from": "Y",
@@ -4341,7 +4351,7 @@
         {
           "from": "Y",
           "to": "N",
-          "weight": 0.262985
+          "weight": 0.248929
         },
         {
           "from": "Y",
@@ -4361,14 +4371,14 @@
         {
           "from": "Y",
           "to": "W",
-          "weight": 0.19205
+          "weight": 0.175525
         }
       ],
       "160": [
         {
           "from": "T",
           "to": "A",
-          "weight": 0.147675
+          "weight": 0.16026
         },
         {
           "from": "T",
@@ -4383,12 +4393,12 @@
         {
           "from": "T",
           "to": "F",
-          "weight": 0.14255
+          "weight": 0.1138
         },
         {
           "from": "T",
           "to": "H",
-          "weight": 0.23468
+          "weight": 0.198617
         },
         {
           "from": "T",
@@ -4398,37 +4408,37 @@
         {
           "from": "T",
           "to": "K",
-          "weight": 0.255075
+          "weight": 0.26338
         },
         {
           "from": "T",
           "to": "M",
-          "weight": 0.161333
+          "weight": 0.147725
         },
         {
           "from": "T",
           "to": "N",
-          "weight": 0.1801
+          "weight": 0.20406
         },
         {
           "from": "T",
           "to": "Q",
-          "weight": 0.2682
+          "weight": 0.2279
         },
         {
           "from": "T",
           "to": "R",
-          "weight": 0.2894
+          "weight": 0.251175
         },
         {
           "from": "T",
           "to": "S",
-          "weight": 0.010822
+          "weight": 0.019109
         },
         {
           "from": "T",
           "to": "V",
-          "weight": 0.174025
+          "weight": 0.1547
         },
         {
           "from": "T",
@@ -4440,7 +4450,7 @@
         {
           "from": "A",
           "to": "D",
-          "weight": 0.058414
+          "weight": 0.0597
         },
         {
           "from": "A",
@@ -4450,12 +4460,12 @@
         {
           "from": "A",
           "to": "F",
-          "weight": 0.039433
+          "weight": 0.03959
         },
         {
           "from": "A",
           "to": "H",
-          "weight": 0.076525
+          "weight": 0.073757
         },
         {
           "from": "A",
@@ -4480,7 +4490,7 @@
         {
           "from": "A",
           "to": "P",
-          "weight": 0.069265
+          "weight": 0.070811
         },
         {
           "from": "A",
@@ -4517,19 +4527,19 @@
         {
           "from": "L",
           "to": "Q",
-          "weight": 0.0607
+          "weight": 0.063287
         }
       ],
       "166": [
         {
           "from": "V",
           "to": "A",
-          "weight": 0.106855
+          "weight": 0.097569
         },
         {
           "from": "V",
           "to": "M",
-          "weight": 0.070162
+          "weight": 0.067293
         }
       ],
       "167": [
@@ -4541,12 +4551,12 @@
         {
           "from": "T",
           "to": "I",
-          "weight": 0.0723
+          "weight": 0.073413
         },
         {
           "from": "T",
           "to": "S",
-          "weight": 0.031122
+          "weight": 0.03124
         }
       ],
       "168": [
@@ -4558,7 +4568,7 @@
         {
           "from": "M",
           "to": "Q",
-          "weight": 0.052614
+          "weight": 0.054893
         }
       ],
       "169": [
@@ -4577,7 +4587,7 @@
         {
           "from": "K",
           "to": "A",
-          "weight": 0.0222
+          "weight": 0.055614
         },
         {
           "from": "K",
@@ -4587,7 +4597,7 @@
         {
           "from": "K",
           "to": "D",
-          "weight": 0.06685
+          "weight": 0.065353
         },
         {
           "from": "K",
@@ -4597,27 +4607,27 @@
         {
           "from": "K",
           "to": "F",
-          "weight": 0.032189
+          "weight": 0.04649
         },
         {
           "from": "K",
           "to": "G",
-          "weight": 0.03771
+          "weight": 0.042391
         },
         {
           "from": "K",
           "to": "H",
-          "weight": 0.04043
+          "weight": 0.037255
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.043054
+          "weight": 0.04098
         },
         {
           "from": "K",
           "to": "L",
-          "weight": 0.042171
+          "weight": 0.038613
         },
         {
           "from": "K",
@@ -4637,17 +4647,17 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.034078
+          "weight": 0.039318
         },
         {
           "from": "K",
           "to": "S",
-          "weight": 0.053962
+          "weight": 0.051064
         },
         {
           "from": "K",
           "to": "T",
-          "weight": 0.032492
+          "weight": 0.029387
         },
         {
           "from": "K",
@@ -4662,14 +4672,14 @@
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.0313
+          "weight": 0.038492
         }
       ],
       "172": [
         {
           "from": "E",
           "to": "D",
-          "weight": 0.043754
+          "weight": 0.042093
         },
         {
           "from": "E",
@@ -4686,12 +4696,12 @@
         {
           "from": "Q",
           "to": "A",
-          "weight": 0.050656
+          "weight": 0.04697
         },
         {
           "from": "Q",
           "to": "C",
-          "weight": 0.060175
+          "weight": 0.057269
         },
         {
           "from": "Q",
@@ -4701,7 +4711,7 @@
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.078336
+          "weight": 0.076767
         },
         {
           "from": "Q",
@@ -4716,7 +4726,7 @@
         {
           "from": "Q",
           "to": "H",
-          "weight": 0.0326
+          "weight": 0.030429
         },
         {
           "from": "Q",
@@ -4736,32 +4746,32 @@
         {
           "from": "Q",
           "to": "M",
-          "weight": 0.025833
+          "weight": 0.02959
         },
         {
           "from": "Q",
           "to": "N",
-          "weight": 0.090008
+          "weight": 0.084421
         },
         {
           "from": "Q",
           "to": "P",
-          "weight": 0.05047
+          "weight": 0.047691
         },
         {
           "from": "Q",
           "to": "S",
-          "weight": 0.04965
+          "weight": 0.044036
         },
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.075163
+          "weight": 0.073225
         },
         {
           "from": "Q",
           "to": "V",
-          "weight": 0.059929
+          "weight": 0.060175
         },
         {
           "from": "Q",
@@ -4771,7 +4781,7 @@
         {
           "from": "Q",
           "to": "Y",
-          "weight": 0.053383
+          "weight": 0.061536
         }
       ],
       "174": [
@@ -4783,7 +4793,7 @@
         {
           "from": "F",
           "to": "Y",
-          "weight": 0.045131
+          "weight": 0.047736
         }
       ],
       "175": [
@@ -4795,7 +4805,7 @@
         {
           "from": "D",
           "to": "T",
-          "weight": 0.06545
+          "weight": 0.0671
         }
       ],
       "179": [
@@ -4809,7 +4819,7 @@
         {
           "from": "V",
           "to": "I",
-          "weight": 0.071407
+          "weight": 0.067587
         }
       ],
       "184": [
@@ -4828,42 +4838,57 @@
         {
           "from": "G",
           "to": "A",
-          "weight": 0.050713
+          "weight": 0.098267
         },
         {
           "from": "G",
           "to": "C",
-          "weight": 0.0122
+          "weight": 0.0877
         },
         {
           "from": "G",
           "to": "D",
-          "weight": 0.125533
+          "weight": 0.139657
         },
         {
           "from": "G",
           "to": "E",
-          "weight": 0.145832
+          "weight": 0.149867
         },
         {
           "from": "G",
           "to": "F",
-          "weight": 0.046933
+          "weight": 0.03506
         },
         {
           "from": "G",
           "to": "H",
-          "weight": 0.074369
+          "weight": 0.080722
         },
         {
           "from": "G",
           "to": "I",
-          "weight": 0.0361
+          "weight": 0.0381
+        },
+        {
+          "from": "G",
+          "to": "L",
+          "weight": 0.0799
+        },
+        {
+          "from": "G",
+          "to": "M",
+          "weight": 0.0674
+        },
+        {
+          "from": "G",
+          "to": "N",
+          "weight": 0.3024
         },
         {
           "from": "G",
           "to": "P",
-          "weight": 0.109175
+          "weight": 0.123041
         },
         {
           "from": "G",
@@ -4873,7 +4898,12 @@
         {
           "from": "G",
           "to": "S",
-          "weight": 0.055217
+          "weight": 0.140414
+        },
+        {
+          "from": "G",
+          "to": "T",
+          "weight": 0.0124
         },
         {
           "from": "G",
@@ -4883,7 +4913,7 @@
         {
           "from": "G",
           "to": "W",
-          "weight": 0.085067
+          "weight": 0.085238
         },
         {
           "from": "G",
@@ -4895,12 +4925,12 @@
         {
           "from": "T",
           "to": "A",
-          "weight": 0.060788
+          "weight": 0.058856
         },
         {
           "from": "T",
           "to": "D",
-          "weight": 0.206282
+          "weight": 0.21015
         },
         {
           "from": "T",
@@ -4910,12 +4940,12 @@
         {
           "from": "T",
           "to": "N",
-          "weight": 0.064787
+          "weight": 0.062641
         },
         {
           "from": "T",
           "to": "S",
-          "weight": 0.115548
+          "weight": 0.12533
         }
       ],
       "188": [
@@ -4927,7 +4957,7 @@
         {
           "from": "D",
           "to": "E",
-          "weight": 0.04561
+          "weight": 0.048773
         },
         {
           "from": "D",
@@ -4937,7 +4967,7 @@
         {
           "from": "D",
           "to": "I",
-          "weight": 0.03225
+          "weight": 0.025067
         },
         {
           "from": "D",
@@ -4974,57 +5004,57 @@
         {
           "from": "K",
           "to": "A",
-          "weight": 0.501592
+          "weight": 0.497915
         },
         {
           "from": "K",
           "to": "D",
-          "weight": 0.60407
+          "weight": 0.600672
         },
         {
           "from": "K",
           "to": "E",
-          "weight": 0.648465
+          "weight": 0.654929
         },
         {
           "from": "K",
           "to": "F",
-          "weight": 0.313579
+          "weight": 0.299495
         },
         {
           "from": "K",
           "to": "G",
-          "weight": 0.399288
+          "weight": 0.381385
         },
         {
           "from": "K",
           "to": "H",
-          "weight": 0.348781
+          "weight": 0.337868
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.422933
+          "weight": 0.419373
         },
         {
           "from": "K",
           "to": "L",
-          "weight": 0.426743
+          "weight": 0.420396
         },
         {
           "from": "K",
           "to": "M",
-          "weight": 0.490091
+          "weight": 0.486161
         },
         {
           "from": "K",
           "to": "N",
-          "weight": 0.447278
+          "weight": 0.432792
         },
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.52707
+          "weight": 0.521787
         },
         {
           "from": "K",
@@ -5034,22 +5064,22 @@
         {
           "from": "K",
           "to": "S",
-          "weight": 0.463228
+          "weight": 0.454719
         },
         {
           "from": "K",
           "to": "T",
-          "weight": 0.467905
+          "weight": 0.461786
         },
         {
           "from": "K",
           "to": "V",
-          "weight": 0.45645
+          "weight": 0.448148
         },
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.30119
+          "weight": 0.290864
         }
       ],
       "190": [
@@ -5078,27 +5108,27 @@
         {
           "from": "I",
           "to": "D",
-          "weight": 0.11714
+          "weight": 0.1076
         },
         {
           "from": "I",
           "to": "E",
-          "weight": 0.163219
+          "weight": 0.159013
         },
         {
           "from": "I",
           "to": "F",
-          "weight": 0.075581
+          "weight": 0.072141
         },
         {
           "from": "I",
           "to": "H",
-          "weight": 0.060673
+          "weight": 0.058987
         },
         {
           "from": "I",
           "to": "K",
-          "weight": 0.054811
+          "weight": 0.05316
         },
         {
           "from": "I",
@@ -5118,7 +5148,7 @@
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.0642
+          "weight": 0.067936
         },
         {
           "from": "I",
@@ -5143,29 +5173,29 @@
         {
           "from": "I",
           "to": "W",
-          "weight": 0.110793
+          "weight": 0.104044
         },
         {
           "from": "I",
           "to": "Y",
-          "weight": 0.075
+          "weight": 0.086453
         }
       ],
       "193": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.11505
+          "weight": 0.109591
         },
         {
           "from": "S",
           "to": "D",
-          "weight": 0.531852
+          "weight": 0.562415
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.517175
+          "weight": 0.5026
         },
         {
           "from": "S",
@@ -5207,7 +5237,7 @@
         {
           "from": "A",
           "to": "G",
-          "weight": 0.079794
+          "weight": 0.077895
         },
         {
           "from": "A",
@@ -5217,12 +5247,12 @@
         {
           "from": "A",
           "to": "S",
-          "weight": 0.052571
+          "weight": 0.052244
         },
         {
           "from": "A",
           "to": "T",
-          "weight": 0.09712
+          "weight": 0.082583
         },
         {
           "from": "A",
@@ -5234,12 +5264,12 @@
         {
           "from": "Q",
           "to": "A",
-          "weight": 0.034243
+          "weight": 0.030113
         },
         {
           "from": "Q",
           "to": "C",
-          "weight": 0.075383
+          "weight": 0.075492
         },
         {
           "from": "Q",
@@ -5254,37 +5284,37 @@
         {
           "from": "Q",
           "to": "G",
-          "weight": 0.0243
+          "weight": 0.021575
         },
         {
           "from": "Q",
           "to": "H",
-          "weight": 0.059376
+          "weight": 0.05803
         },
         {
           "from": "Q",
           "to": "I",
-          "weight": 0.060988
+          "weight": 0.058356
         },
         {
           "from": "Q",
           "to": "K",
-          "weight": 0.04263
+          "weight": 0.0504
         },
         {
           "from": "Q",
           "to": "M",
-          "weight": 0.050467
+          "weight": 0.04552
         },
         {
           "from": "Q",
           "to": "N",
-          "weight": 0.11155
+          "weight": 0.110262
         },
         {
           "from": "Q",
           "to": "R",
-          "weight": 0.05026
+          "weight": 0.055112
         },
         {
           "from": "Q",
@@ -5294,19 +5324,19 @@
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.043087
+          "weight": 0.041506
         },
         {
           "from": "Q",
           "to": "V",
-          "weight": 0.048407
+          "weight": 0.054193
         }
       ],
       "198": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.075956
+          "weight": 0.080063
         },
         {
           "from": "S",
@@ -5316,67 +5346,67 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.038183
+          "weight": 0.051423
         },
         {
           "from": "S",
           "to": "F",
-          "weight": 0.017112
+          "weight": 0.027956
         },
         {
           "from": "S",
           "to": "G",
-          "weight": 0.036573
+          "weight": 0.037842
         },
         {
           "from": "S",
           "to": "H",
-          "weight": 0.03314
+          "weight": 0.03325
         },
         {
           "from": "S",
           "to": "I",
-          "weight": 0.059243
+          "weight": 0.054363
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.053773
+          "weight": 0.052581
         },
         {
           "from": "S",
           "to": "L",
-          "weight": 0.04296
+          "weight": 0.041327
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.046767
+          "weight": 0.048926
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.019333
+          "weight": 0.029391
         },
         {
           "from": "S",
           "to": "P",
-          "weight": 0.041026
+          "weight": 0.045745
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.040679
+          "weight": 0.038307
         },
         {
           "from": "S",
           "to": "R",
-          "weight": 0.071817
+          "weight": 0.067986
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.02935
+          "weight": 0.027878
         },
         {
           "from": "S",
@@ -5393,7 +5423,7 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.030267
+          "weight": 0.050227
         },
         {
           "from": "S",
@@ -5403,42 +5433,42 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.043585
+          "weight": 0.04551
         },
         {
           "from": "S",
           "to": "G",
-          "weight": 0.091833
+          "weight": 0.088881
         },
         {
           "from": "S",
           "to": "H",
-          "weight": 0.051894
+          "weight": 0.053978
         },
         {
           "from": "S",
           "to": "I",
-          "weight": 0.0372
+          "weight": 0.03643
         },
         {
           "from": "S",
           "to": "K",
-          "weight": 0.052756
+          "weight": 0.053027
         },
         {
           "from": "S",
           "to": "L",
-          "weight": 0.046617
+          "weight": 0.053885
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.034391
+          "weight": 0.035923
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.054769
+          "weight": 0.072807
         },
         {
           "from": "S",
@@ -5448,12 +5478,12 @@
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.038233
+          "weight": 0.040569
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.0485
+          "weight": 0.046124
         },
         {
           "from": "S",
@@ -5468,7 +5498,7 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.042107
+          "weight": 0.046
         }
       ],
       "200": [
@@ -5485,7 +5515,7 @@
         {
           "from": "G",
           "to": "P",
-          "weight": 0.074737
+          "weight": 0.0704
         },
         {
           "from": "G",
@@ -5502,7 +5532,7 @@
         {
           "from": "R",
           "to": "A",
-          "weight": 0.0567
+          "weight": 0.053273
         },
         {
           "from": "R",
@@ -5512,27 +5542,27 @@
         {
           "from": "R",
           "to": "E",
-          "weight": 0.053375
+          "weight": 0.071767
         },
         {
           "from": "R",
           "to": "F",
-          "weight": 0.052811
+          "weight": 0.05064
         },
         {
           "from": "R",
           "to": "G",
-          "weight": 0.052723
+          "weight": 0.051493
         },
         {
           "from": "R",
           "to": "H",
-          "weight": 0.044731
+          "weight": 0.044507
         },
         {
           "from": "R",
           "to": "I",
-          "weight": 0.052847
+          "weight": 0.0538
         },
         {
           "from": "R",
@@ -5557,22 +5587,22 @@
         {
           "from": "R",
           "to": "P",
-          "weight": 0.078929
+          "weight": 0.075733
         },
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.042527
+          "weight": 0.043181
         },
         {
           "from": "R",
           "to": "S",
-          "weight": 0.069971
+          "weight": 0.068593
         },
         {
           "from": "R",
           "to": "T",
-          "weight": 0.038781
+          "weight": 0.040388
         },
         {
           "from": "R",
@@ -5594,7 +5624,7 @@
         {
           "from": "I",
           "to": "V",
-          "weight": 0.047573
+          "weight": 0.044894
         }
       ],
       "203": [
@@ -5606,7 +5636,7 @@
         {
           "from": "T",
           "to": "E",
-          "weight": 0.05715
+          "weight": 0.0762
         },
         {
           "from": "T",
@@ -5616,7 +5646,7 @@
         {
           "from": "T",
           "to": "M",
-          "weight": 0.031325
+          "weight": 0.0291
         },
         {
           "from": "T",
@@ -5633,39 +5663,39 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.034933
+          "weight": 0.02835
         }
       ],
       "207": [
         {
           "from": "K",
           "to": "A",
-          "weight": 0.046633
+          "weight": 0.044419
         },
         {
           "from": "K",
           "to": "G",
-          "weight": 0.045467
+          "weight": 0.044223
         },
         {
           "from": "K",
           "to": "M",
-          "weight": 0.04089
+          "weight": 0.042009
         },
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.05735
+          "weight": 0.058695
         },
         {
           "from": "K",
           "to": "R",
-          "weight": 0.066778
+          "weight": 0.071368
         },
         {
           "from": "K",
           "to": "S",
-          "weight": 0.043719
+          "weight": 0.041506
         },
         {
           "from": "K",
@@ -5677,7 +5707,7 @@
         {
           "from": "R",
           "to": "A",
-          "weight": 0.025864
+          "weight": 0.024283
         },
         {
           "from": "R",
@@ -5692,7 +5722,7 @@
         {
           "from": "R",
           "to": "F",
-          "weight": 0.05364
+          "weight": 0.053881
         },
         {
           "from": "R",
@@ -5707,17 +5737,17 @@
         {
           "from": "R",
           "to": "I",
-          "weight": 0.042181
+          "weight": 0.046088
         },
         {
           "from": "R",
           "to": "K",
-          "weight": 0.05045
+          "weight": 0.044629
         },
         {
           "from": "R",
           "to": "L",
-          "weight": 0.057829
+          "weight": 0.059419
         },
         {
           "from": "R",
@@ -5732,7 +5762,7 @@
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.049138
+          "weight": 0.054765
         },
         {
           "from": "R",
@@ -5747,7 +5777,7 @@
         {
           "from": "R",
           "to": "V",
-          "weight": 0.047536
+          "weight": 0.051194
         },
         {
           "from": "R",
@@ -5759,7 +5789,7 @@
         {
           "from": "S",
           "to": "I",
-          "weight": 0.032663
+          "weight": 0.031622
         },
         {
           "from": "S",
@@ -5769,7 +5799,7 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.032083
+          "weight": 0.039292
         }
       ],
       "210": [
@@ -5781,7 +5811,7 @@
         {
           "from": "Q",
           "to": "I",
-          "weight": 0.048533
+          "weight": 0.044
         },
         {
           "from": "Q",
@@ -5798,7 +5828,7 @@
         {
           "from": "A",
           "to": "D",
-          "weight": 0.0609
+          "weight": 0.06975
         },
         {
           "from": "A",
@@ -5823,14 +5853,14 @@
         {
           "from": "A",
           "to": "V",
-          "weight": 0.080511
+          "weight": 0.088895
         }
       ],
       "213": [
         {
           "from": "V",
           "to": "A",
-          "weight": 0.087337
+          "weight": 0.081222
         },
         {
           "from": "V",
@@ -5847,17 +5877,17 @@
         {
           "from": "I",
           "to": "E",
-          "weight": 0.050037
+          "weight": 0.04835
         },
         {
           "from": "I",
           "to": "F",
-          "weight": 0.0452
+          "weight": 0.04492
         },
         {
           "from": "I",
           "to": "G",
-          "weight": 0.074677
+          "weight": 0.078321
         },
         {
           "from": "I",
@@ -5867,27 +5897,27 @@
         {
           "from": "I",
           "to": "K",
-          "weight": 0.073283
+          "weight": 0.082954
         },
         {
           "from": "I",
           "to": "L",
-          "weight": 0.041217
+          "weight": 0.082671
         },
         {
           "from": "I",
           "to": "M",
-          "weight": 0.039073
+          "weight": 0.049431
         },
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.053618
+          "weight": 0.051411
         },
         {
           "from": "I",
           "to": "R",
-          "weight": 0.081047
+          "weight": 0.07708
         },
         {
           "from": "I",
@@ -5897,7 +5927,7 @@
         {
           "from": "I",
           "to": "T",
-          "weight": 0.032121
+          "weight": 0.03078
         },
         {
           "from": "I",
@@ -5907,12 +5937,12 @@
         {
           "from": "I",
           "to": "W",
-          "weight": 0.051182
+          "weight": 0.04755
         },
         {
           "from": "I",
           "to": "Y",
-          "weight": 0.052638
+          "weight": 0.052287
         }
       ],
       "215": [
@@ -5941,12 +5971,12 @@
         {
           "from": "N",
           "to": "A",
-          "weight": 0.051718
+          "weight": 0.048008
         },
         {
           "from": "N",
           "to": "D",
-          "weight": 0.025989
+          "weight": 0.03168
         },
         {
           "from": "N",
@@ -5956,22 +5986,22 @@
         {
           "from": "N",
           "to": "F",
-          "weight": 0.047008
+          "weight": 0.048308
         },
         {
           "from": "N",
           "to": "H",
-          "weight": 0.063889
+          "weight": 0.062362
         },
         {
           "from": "N",
           "to": "I",
-          "weight": 0.025111
+          "weight": 0.03756
         },
         {
           "from": "N",
           "to": "K",
-          "weight": 0.051385
+          "weight": 0.057973
         },
         {
           "from": "N",
@@ -5981,22 +6011,22 @@
         {
           "from": "N",
           "to": "M",
-          "weight": 0.07828
+          "weight": 0.075927
         },
         {
           "from": "N",
           "to": "Q",
-          "weight": 0.074588
+          "weight": 0.069853
         },
         {
           "from": "N",
           "to": "R",
-          "weight": 0.058924
+          "weight": 0.071878
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.053536
+          "weight": 0.052207
         },
         {
           "from": "N",
@@ -6011,14 +6041,14 @@
         {
           "from": "N",
           "to": "Y",
-          "weight": 0.041018
+          "weight": 0.04115
         }
       ],
       "217": [
         {
           "from": "I",
           "to": "L",
-          "weight": 0.00855
+          "weight": 0.082833
         },
         {
           "from": "I",
@@ -6030,7 +6060,7 @@
         {
           "from": "G",
           "to": "A",
-          "weight": 0.0411
+          "weight": 0.045533
         },
         {
           "from": "G",
@@ -6050,7 +6080,7 @@
         {
           "from": "G",
           "to": "I",
-          "weight": 0.112135
+          "weight": 0.108022
         },
         {
           "from": "G",
@@ -6097,7 +6127,7 @@
         {
           "from": "S",
           "to": "E",
-          "weight": 0.071768
+          "weight": 0.080695
         },
         {
           "from": "S",
@@ -6107,7 +6137,7 @@
         {
           "from": "S",
           "to": "G",
-          "weight": 0.029544
+          "weight": 0.02937
         },
         {
           "from": "S",
@@ -6117,7 +6147,7 @@
         {
           "from": "S",
           "to": "I",
-          "weight": 0.05105
+          "weight": 0.056038
         },
         {
           "from": "S",
@@ -6127,7 +6157,7 @@
         {
           "from": "S",
           "to": "L",
-          "weight": 0.075187
+          "weight": 0.071144
         },
         {
           "from": "S",
@@ -6137,34 +6167,39 @@
         {
           "from": "S",
           "to": "N",
-          "weight": 0.0436
+          "weight": 0.04938
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.02446
+          "weight": 0.02335
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.05923
+          "weight": 0.058045
         },
         {
           "from": "S",
           "to": "V",
-          "weight": 0.058308
+          "weight": 0.06572
         }
       ],
       "220": [
         {
           "from": "R",
           "to": "A",
-          "weight": 0.0157
+          "weight": 0.0887
+        },
+        {
+          "from": "R",
+          "to": "C",
+          "weight": 0.0201
         },
         {
           "from": "R",
           "to": "F",
-          "weight": 0.02345
+          "weight": 0.037533
         },
         {
           "from": "R",
@@ -6194,7 +6229,12 @@
         {
           "from": "R",
           "to": "S",
-          "weight": 0.0052
+          "weight": 0.073767
+        },
+        {
+          "from": "R",
+          "to": "V",
+          "weight": 0.1893
         },
         {
           "from": "R",
@@ -6204,14 +6244,14 @@
         {
           "from": "R",
           "to": "Y",
-          "weight": 0.02435
+          "weight": 0.038033
         }
       ],
       "221": [
         {
           "from": "P",
           "to": "A",
-          "weight": 0.084768
+          "weight": 0.084505
         },
         {
           "from": "P",
@@ -6221,7 +6261,7 @@
         {
           "from": "P",
           "to": "T",
-          "weight": 0.117656
+          "weight": 0.108928
         }
       ],
       "222": [
@@ -6243,12 +6283,12 @@
         {
           "from": "R",
           "to": "H",
-          "weight": 0.079186
+          "weight": 0.081775
         },
         {
           "from": "R",
           "to": "I",
-          "weight": 0.044675
+          "weight": 0.05794
         },
         {
           "from": "R",
@@ -6263,7 +6303,7 @@
         {
           "from": "R",
           "to": "M",
-          "weight": 0.053622
+          "weight": 0.04856
         },
         {
           "from": "R",
@@ -6298,12 +6338,12 @@
         {
           "from": "R",
           "to": "W",
-          "weight": 0.025967
+          "weight": 0.030675
         },
         {
           "from": "R",
           "to": "Y",
-          "weight": 0.093233
+          "weight": 0.0728
         }
       ],
       "223": [
@@ -6358,8 +6398,18 @@
       "225": [
         {
           "from": "D",
+          "to": "E",
+          "weight": 0.1315
+        },
+        {
+          "from": "D",
+          "to": "N",
+          "weight": 0.1098
+        },
+        {
+          "from": "D",
           "to": "T",
-          "weight": 0.0292
+          "weight": 0.48785
         }
       ],
       "226": [
@@ -6371,17 +6421,17 @@
         {
           "from": "I",
           "to": "M",
-          "weight": 0.06172
+          "weight": 0.1067
         },
         {
           "from": "I",
           "to": "Q",
-          "weight": 0.1155
+          "weight": 0.2897
         },
         {
           "from": "I",
           "to": "V",
-          "weight": 0.0907
+          "weight": 0.070233
         }
       ],
       "227": [
@@ -6408,7 +6458,7 @@
         {
           "from": "P",
           "to": "H",
-          "weight": 0.033157
+          "weight": 0.0362
         },
         {
           "from": "P",
@@ -6450,31 +6500,31 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.042317
+          "weight": 0.156586
         }
       ],
       "229": [
         {
           "from": "R",
           "to": "F",
-          "weight": 0.1
+          "weight": 0.0737
         },
         {
           "from": "R",
           "to": "G",
-          "weight": 0.0287
+          "weight": 0.2415
         },
         {
           "from": "R",
           "to": "I",
-          "weight": 0.0515
+          "weight": 0.0565
         }
       ],
       "230": [
         {
           "from": "I",
           "to": "V",
-          "weight": 0.065787
+          "weight": 0.0562
         }
       ],
       "231": [
@@ -6486,12 +6536,12 @@
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.045943
+          "weight": 0.052312
         },
         {
           "from": "S",
           "to": "T",
-          "weight": 0.023667
+          "weight": 0.024
         }
       ],
       "233": [
@@ -6534,7 +6584,7 @@
         {
           "from": "K",
           "to": "P",
-          "weight": 0.050882
+          "weight": 0.0484
         },
         {
           "from": "K",
@@ -6544,7 +6594,7 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.026925
+          "weight": 0.03042
         }
       ],
       "242": [
@@ -6556,7 +6606,7 @@
         {
           "from": "I",
           "to": "C",
-          "weight": 0.077294
+          "weight": 0.077811
         },
         {
           "from": "I",
@@ -6571,7 +6621,7 @@
         {
           "from": "I",
           "to": "M",
-          "weight": 0.066395
+          "weight": 0.074864
         },
         {
           "from": "I",
@@ -6586,19 +6636,19 @@
         {
           "from": "I",
           "to": "T",
-          "weight": 0.043317
+          "weight": 0.038614
         },
         {
           "from": "I",
           "to": "V",
-          "weight": 0.048706
+          "weight": 0.046717
         }
       ],
       "244": [
         {
           "from": "L",
           "to": "A",
-          "weight": 0.037914
+          "weight": 0.037988
         },
         {
           "from": "L",
@@ -6608,12 +6658,12 @@
         {
           "from": "L",
           "to": "E",
-          "weight": 0.0296
+          "weight": 0.038025
         },
         {
           "from": "L",
           "to": "F",
-          "weight": 0.102161
+          "weight": 0.107889
         },
         {
           "from": "L",
@@ -6623,12 +6673,12 @@
         {
           "from": "L",
           "to": "I",
-          "weight": 0.12006
+          "weight": 0.134656
         },
         {
           "from": "L",
           "to": "M",
-          "weight": 0.125006
+          "weight": 0.144383
         },
         {
           "from": "L",
@@ -6648,7 +6698,7 @@
         {
           "from": "L",
           "to": "Y",
-          "weight": 0.152247
+          "weight": 0.160733
         }
       ],
       "246": [
@@ -6662,7 +6712,7 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.08554
+          "weight": 0.083819
         },
         {
           "from": "S",
@@ -6672,21 +6722,21 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.062873
+          "weight": 0.075677
         }
       ],
       "251": [
         {
           "from": "L",
           "to": "F",
-          "weight": 0.036475
+          "weight": 0.034854
         }
       ],
       "258": [
         {
           "from": "F",
           "to": "Y",
-          "weight": 0.042369
+          "weight": 0.039628
         }
       ],
       "259": [
@@ -6698,19 +6748,19 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.02795
+          "weight": 0.0273
         },
         {
           "from": "K",
           "to": "V",
-          "weight": 0.069607
+          "weight": 0.065033
         }
       ],
       "260": [
         {
           "from": "I",
           "to": "L",
-          "weight": 0.045584
+          "weight": 0.04391
         },
         {
           "from": "I",
@@ -6732,7 +6782,7 @@
         {
           "from": "R",
           "to": "C",
-          "weight": 0.034525
+          "weight": 0.08914
         },
         {
           "from": "R",
@@ -6747,32 +6797,32 @@
         {
           "from": "R",
           "to": "F",
-          "weight": 0.043158
+          "weight": 0.040821
         },
         {
           "from": "R",
           "to": "G",
-          "weight": 0.03591
+          "weight": 0.046381
         },
         {
           "from": "R",
           "to": "H",
-          "weight": 0.042322
+          "weight": 0.047318
         },
         {
           "from": "R",
           "to": "I",
-          "weight": 0.0117
+          "weight": 0.026317
         },
         {
           "from": "R",
           "to": "K",
-          "weight": 0.046353
+          "weight": 0.044561
         },
         {
           "from": "R",
           "to": "L",
-          "weight": 0.036285
+          "weight": 0.03432
         },
         {
           "from": "R",
@@ -6782,22 +6832,22 @@
         {
           "from": "R",
           "to": "N",
-          "weight": 0.031689
+          "weight": 0.027618
         },
         {
           "from": "R",
           "to": "P",
-          "weight": 0.021557
+          "weight": 0.028987
         },
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.02584
+          "weight": 0.028855
         },
         {
           "from": "R",
           "to": "S",
-          "weight": 0.027008
+          "weight": 0.027979
         },
         {
           "from": "R",
@@ -6807,7 +6857,7 @@
         {
           "from": "R",
           "to": "V",
-          "weight": 0.0314
+          "weight": 0.029978
         },
         {
           "from": "R",
@@ -6824,27 +6874,27 @@
         {
           "from": "S",
           "to": "A",
-          "weight": 0.03405
+          "weight": 0.035118
         },
         {
           "from": "S",
           "to": "D",
-          "weight": 0.03296
+          "weight": 0.067083
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.047343
+          "weight": 0.0483
         },
         {
           "from": "S",
           "to": "G",
-          "weight": 0.0441
+          "weight": 0.04572
         },
         {
           "from": "S",
           "to": "H",
-          "weight": 0.035471
+          "weight": 0.032025
         },
         {
           "from": "S",
@@ -6859,7 +6909,7 @@
         {
           "from": "S",
           "to": "M",
-          "weight": 0.0291
+          "weight": 0.031792
         },
         {
           "from": "S",
@@ -6869,17 +6919,17 @@
         {
           "from": "S",
           "to": "P",
-          "weight": 0.04365
+          "weight": 0.04168
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.036286
+          "weight": 0.0382
         },
         {
           "from": "S",
           "to": "R",
-          "weight": 0.064206
+          "weight": 0.062433
         },
         {
           "from": "S",
@@ -6889,7 +6939,7 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.02719
+          "weight": 0.035055
         }
       ],
       "263": [
@@ -6906,19 +6956,19 @@
         {
           "from": "G",
           "to": "W",
-          "weight": 0.09499
+          "weight": 0.091673
         }
       ],
       "264": [
         {
           "from": "K",
           "to": "A",
-          "weight": 0.023525
+          "weight": 0.0242
         },
         {
           "from": "K",
           "to": "D",
-          "weight": 0.039345
+          "weight": 0.040567
         },
         {
           "from": "K",
@@ -6928,17 +6978,17 @@
         {
           "from": "K",
           "to": "G",
-          "weight": 0.0382
+          "weight": 0.06566
         },
         {
           "from": "K",
           "to": "H",
-          "weight": 0.0502
+          "weight": 0.047915
         },
         {
           "from": "K",
           "to": "N",
-          "weight": 0.046411
+          "weight": 0.047705
         },
         {
           "from": "K",
@@ -6948,7 +6998,7 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.028562
+          "weight": 0.0236
         },
         {
           "from": "K",
@@ -6958,7 +7008,7 @@
         {
           "from": "K",
           "to": "T",
-          "weight": 0.07
+          "weight": 0.0484
         }
       ],
       "265": [
@@ -6982,26 +7032,26 @@
         {
           "from": "S",
           "to": "T",
-          "weight": 0.030687
+          "weight": 0.043889
         }
       ],
       "267": [
         {
           "from": "I",
           "to": "V",
-          "weight": 0.045044
+          "weight": 0.04581
         }
       ],
       "268": [
         {
           "from": "M",
           "to": "I",
-          "weight": 0.02328
+          "weight": 0.025083
         },
         {
           "from": "M",
           "to": "L",
-          "weight": 0.025317
+          "weight": 0.023487
         }
       ],
       "269": [
@@ -7023,17 +7073,17 @@
         {
           "from": "R",
           "to": "L",
-          "weight": 0.029167
+          "weight": 0.025725
         },
         {
           "from": "R",
           "to": "M",
-          "weight": 0.032989
+          "weight": 0.04537
         },
         {
           "from": "R",
           "to": "Q",
-          "weight": 0.05587
+          "weight": 0.051692
         },
         {
           "from": "R",
@@ -7043,65 +7093,65 @@
         {
           "from": "R",
           "to": "V",
-          "weight": 0.0319
+          "weight": 0.039086
         }
       ],
       "270": [
         {
           "from": "S",
           "to": "T",
-          "weight": 0.03045
+          "weight": 0.028931
         }
       ],
       "272": [
         {
           "from": "A",
           "to": "L",
-          "weight": 0.041438
+          "weight": 0.05525
         },
         {
           "from": "A",
           "to": "M",
-          "weight": 0.052318
+          "weight": 0.04895
         },
         {
           "from": "A",
           "to": "T",
-          "weight": 0.049633
+          "weight": 0.044
         },
         {
           "from": "A",
           "to": "V",
-          "weight": 0.031414
+          "weight": 0.030287
         }
       ],
       "273": [
         {
           "from": "P",
           "to": "K",
-          "weight": 0.077567
+          "weight": 0.0819
         }
       ],
       "275": [
         {
           "from": "G",
           "to": "A",
-          "weight": 0.067729
+          "weight": 0.07382
         },
         {
           "from": "G",
           "to": "H",
-          "weight": 0.078882
+          "weight": 0.08375
         },
         {
           "from": "G",
           "to": "I",
-          "weight": 0.127988
+          "weight": 0.117533
         },
         {
           "from": "G",
           "to": "K",
-          "weight": 0.106628
+          "weight": 0.1077
         },
         {
           "from": "G",
@@ -7111,7 +7161,7 @@
         {
           "from": "G",
           "to": "Q",
-          "weight": 0.079213
+          "weight": 0.075872
         },
         {
           "from": "G",
@@ -7126,7 +7176,7 @@
         {
           "from": "G",
           "to": "T",
-          "weight": 0.067433
+          "weight": 0.070558
         },
         {
           "from": "G",
@@ -7148,12 +7198,12 @@
         {
           "from": "K",
           "to": "I",
-          "weight": 0.0738
+          "weight": 0.072375
         },
         {
           "from": "K",
           "to": "L",
-          "weight": 0.0571
+          "weight": 0.061258
         },
         {
           "from": "K",
@@ -7163,7 +7213,7 @@
         {
           "from": "K",
           "to": "N",
-          "weight": 0.115847
+          "weight": 0.11145
         },
         {
           "from": "K",
@@ -7173,12 +7223,12 @@
         {
           "from": "K",
           "to": "R",
-          "weight": 0.088309
+          "weight": 0.0872
         },
         {
           "from": "K",
           "to": "S",
-          "weight": 0.095494
+          "weight": 0.0893
         },
         {
           "from": "K",
@@ -7190,7 +7240,7 @@
         {
           "from": "K",
           "to": "A",
-          "weight": 0.046136
+          "weight": 0.048133
         },
         {
           "from": "K",
@@ -7200,7 +7250,7 @@
         {
           "from": "K",
           "to": "E",
-          "weight": 0.030664
+          "weight": 0.031858
         },
         {
           "from": "K",
@@ -7210,32 +7260,32 @@
         {
           "from": "K",
           "to": "H",
-          "weight": 0.046818
+          "weight": 0.043742
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.056476
+          "weight": 0.064811
         },
         {
           "from": "K",
           "to": "L",
-          "weight": 0.054867
+          "weight": 0.04997
         },
         {
           "from": "K",
           "to": "M",
-          "weight": 0.042033
+          "weight": 0.039469
         },
         {
           "from": "K",
           "to": "N",
-          "weight": 0.031621
+          "weight": 0.038125
         },
         {
           "from": "K",
           "to": "Q",
-          "weight": 0.0376
+          "weight": 0.038327
         },
         {
           "from": "K",
@@ -7250,44 +7300,44 @@
         {
           "from": "K",
           "to": "T",
-          "weight": 0.04526
+          "weight": 0.048091
         },
         {
           "from": "K",
           "to": "V",
-          "weight": 0.040947
+          "weight": 0.038531
         },
         {
           "from": "K",
           "to": "W",
-          "weight": 0.030027
+          "weight": 0.0381
         },
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.035082
+          "weight": 0.033358
         }
       ],
       "279": [
         {
           "from": "S",
           "to": "A",
-          "weight": 0.077727
+          "weight": 0.076325
         },
         {
           "from": "S",
           "to": "C",
-          "weight": 0.051967
+          "weight": 0.052192
         },
         {
           "from": "S",
           "to": "E",
-          "weight": 0.069837
+          "weight": 0.065922
         },
         {
           "from": "S",
           "to": "F",
-          "weight": 0.031363
+          "weight": 0.03819
         },
         {
           "from": "S",
@@ -7297,7 +7347,7 @@
         {
           "from": "S",
           "to": "H",
-          "weight": 0.051222
+          "weight": 0.06376
         },
         {
           "from": "S",
@@ -7312,27 +7362,27 @@
         {
           "from": "S",
           "to": "L",
-          "weight": 0.040267
+          "weight": 0.044029
         },
         {
           "from": "S",
           "to": "M",
-          "weight": 0.044427
+          "weight": 0.043758
         },
         {
           "from": "S",
           "to": "N",
-          "weight": 0.040473
+          "weight": 0.037617
         },
         {
           "from": "S",
           "to": "Q",
-          "weight": 0.048576
+          "weight": 0.046356
         },
         {
           "from": "S",
           "to": "R",
-          "weight": 0.074825
+          "weight": 0.08077
         },
         {
           "from": "S",
@@ -7342,19 +7392,19 @@
         {
           "from": "S",
           "to": "Y",
-          "weight": 0.045286
+          "weight": 0.048087
         }
       ],
       "280": [
         {
           "from": "E",
           "to": "A",
-          "weight": 0.060959
+          "weight": 0.063472
         },
         {
           "from": "E",
           "to": "D",
-          "weight": 0.0421
+          "weight": 0.039133
         },
         {
           "from": "E",
@@ -7364,12 +7414,12 @@
         {
           "from": "E",
           "to": "G",
-          "weight": 0.085671
+          "weight": 0.086762
         },
         {
           "from": "E",
           "to": "H",
-          "weight": 0.058767
+          "weight": 0.053286
         },
         {
           "from": "E",
@@ -7379,22 +7429,22 @@
         {
           "from": "E",
           "to": "L",
-          "weight": 0.068146
+          "weight": 0.063979
         },
         {
           "from": "E",
           "to": "M",
-          "weight": 0.034817
+          "weight": 0.032308
         },
         {
           "from": "E",
           "to": "P",
-          "weight": 0.041592
+          "weight": 0.04225
         },
         {
           "from": "E",
           "to": "Q",
-          "weight": 0.041978
+          "weight": 0.0443
         },
         {
           "from": "E",
@@ -7409,12 +7459,12 @@
         {
           "from": "E",
           "to": "V",
-          "weight": 0.054244
+          "weight": 0.05183
         },
         {
           "from": "E",
           "to": "W",
-          "weight": 0.035267
+          "weight": 0.048136
         }
       ],
       "282": [
@@ -7433,38 +7483,38 @@
         {
           "from": "T",
           "to": "S",
-          "weight": 0.070587
+          "weight": 0.06694
         }
       ],
       "284": [
         {
           "from": "P",
           "to": "A",
-          "weight": 0.0648
+          "weight": 0.04815
         }
       ],
       "288": [
         {
           "from": "I",
           "to": "L",
-          "weight": 0.039689
+          "weight": 0.03724
         },
         {
           "from": "I",
           "to": "M",
-          "weight": 0.0167
+          "weight": 0.027862
         }
       ],
       "289": [
         {
           "from": "P",
           "to": "A",
-          "weight": 0.016113
+          "weight": 0.015756
         },
         {
           "from": "P",
           "to": "E",
-          "weight": 0.05666
+          "weight": 0.062483
         },
         {
           "from": "P",
@@ -7479,24 +7529,24 @@
         {
           "from": "P",
           "to": "T",
-          "weight": 0.031617
+          "weight": 0.033614
         }
       ],
       "290": [
         {
           "from": "N",
           "to": "A",
-          "weight": 0.034408
+          "weight": 0.040093
         },
         {
           "from": "N",
           "to": "G",
-          "weight": 0.077267
+          "weight": 0.0948
         },
         {
           "from": "N",
           "to": "T",
-          "weight": 0.044456
+          "weight": 0.05161
         },
         {
           "from": "N",
@@ -7508,17 +7558,17 @@
         {
           "from": "D",
           "to": "A",
-          "weight": 0.040746
+          "weight": 0.050664
         },
         {
           "from": "D",
           "to": "E",
-          "weight": 0.048858
+          "weight": 0.045529
         },
         {
           "from": "D",
           "to": "G",
-          "weight": 0.071214
+          "weight": 0.066863
         },
         {
           "from": "D",
@@ -7528,12 +7578,12 @@
         {
           "from": "D",
           "to": "I",
-          "weight": 0.061129
+          "weight": 0.054875
         },
         {
           "from": "D",
           "to": "N",
-          "weight": 0.060418
+          "weight": 0.065092
         },
         {
           "from": "D",
@@ -7543,17 +7593,17 @@
         {
           "from": "D",
           "to": "S",
-          "weight": 0.063491
+          "weight": 0.064583
         },
         {
           "from": "D",
           "to": "T",
-          "weight": 0.087745
+          "weight": 0.092883
         },
         {
           "from": "D",
           "to": "V",
-          "weight": 0.06298
+          "weight": 0.052733
         },
         {
           "from": "D",
@@ -7565,7 +7615,7 @@
         {
           "from": "K",
           "to": "L",
-          "weight": 0.053225
+          "weight": 0.063589
         },
         {
           "from": "K",
@@ -7582,7 +7632,7 @@
         {
           "from": "N",
           "to": "S",
-          "weight": 0.04573
+          "weight": 0.0442
         }
       ],
       "297": [
@@ -7594,17 +7644,22 @@
         {
           "from": "V",
           "to": "L",
-          "weight": 0.021
+          "weight": 0.033771
         }
       ],
       "298": [
         {
           "from": "N",
           "to": "H",
-          "weight": 0.0444
+          "weight": 0.042733
         }
       ],
       "299": [
+        {
+          "from": "R",
+          "to": "H",
+          "weight": 0.0132
+        },
         {
           "from": "R",
           "to": "K",
@@ -7618,7 +7673,7 @@
         {
           "from": "R",
           "to": "P",
-          "weight": 0.0617
+          "weight": 0.063627
         },
         {
           "from": "R",
@@ -7640,7 +7695,7 @@
         {
           "from": "I",
           "to": "A",
-          "weight": 0.04668
+          "weight": 0.042017
         },
         {
           "from": "I",
@@ -7660,7 +7715,7 @@
         {
           "from": "I",
           "to": "W",
-          "weight": 0.025618
+          "weight": 0.023925
         }
       ],
       "301": [
@@ -7672,26 +7727,26 @@
         {
           "from": "T",
           "to": "H",
-          "weight": 0.062
+          "weight": 0.056614
         },
         {
           "from": "T",
           "to": "S",
-          "weight": 0.0227
+          "weight": 0.0175
         }
       ],
       "302": [
         {
           "from": "Y",
           "to": "F",
-          "weight": 0.015967
+          "weight": 0.02605
         }
       ],
       "304": [
         {
           "from": "A",
           "to": "D",
-          "weight": 0.030456
+          "weight": 0.0437
         },
         {
           "from": "A",
@@ -7701,17 +7756,17 @@
         {
           "from": "A",
           "to": "H",
-          "weight": 0.029225
+          "weight": 0.05946
         },
         {
           "from": "A",
           "to": "K",
-          "weight": 0.04142
+          "weight": 0.037333
         },
         {
           "from": "A",
           "to": "L",
-          "weight": 0.047457
+          "weight": 0.042075
         },
         {
           "from": "A",
@@ -7721,22 +7776,22 @@
         {
           "from": "A",
           "to": "N",
-          "weight": 0.04775
+          "weight": 0.049375
         },
         {
           "from": "A",
           "to": "R",
-          "weight": 0.054229
+          "weight": 0.053478
         },
         {
           "from": "A",
           "to": "S",
-          "weight": 0.050238
+          "weight": 0.057213
         },
         {
           "from": "A",
           "to": "T",
-          "weight": 0.00995
+          "weight": 0.013967
         },
         {
           "from": "A",
@@ -7763,22 +7818,22 @@
         {
           "from": "R",
           "to": "I",
-          "weight": 0.015457
+          "weight": 0.013888
         },
         {
           "from": "R",
           "to": "K",
-          "weight": 0.045
+          "weight": 0.047007
         },
         {
           "from": "R",
           "to": "L",
-          "weight": 0.050671
+          "weight": 0.050022
         },
         {
           "from": "R",
           "to": "M",
-          "weight": 0.0412
+          "weight": 0.03846
         },
         {
           "from": "R",
@@ -7793,12 +7848,12 @@
         {
           "from": "R",
           "to": "S",
-          "weight": 0.05448
+          "weight": 0.051483
         },
         {
           "from": "R",
           "to": "T",
-          "weight": 0.0256
+          "weight": 0.047033
         },
         {
           "from": "R",
@@ -7813,43 +7868,43 @@
         {
           "from": "R",
           "to": "Y",
-          "weight": 0.0569
+          "weight": 0.054625
         }
       ],
       "308": [
         {
           "from": "Y",
           "to": "F",
-          "weight": 0.035638
+          "weight": 0.032489
         }
       ],
       "309": [
         {
           "from": "V",
           "to": "I",
-          "weight": 0.058177
+          "weight": 0.056686
         }
       ],
       "310": [
         {
           "from": "K",
           "to": "H",
-          "weight": 0.030333
+          "weight": 0.049575
         },
         {
           "from": "K",
           "to": "I",
-          "weight": 0.044557
+          "weight": 0.03915
         },
         {
           "from": "K",
           "to": "L",
-          "weight": 0.0697
+          "weight": 0.072055
         },
         {
           "from": "K",
           "to": "N",
-          "weight": 0.0099
+          "weight": 0.0264
         },
         {
           "from": "K",
@@ -7864,19 +7919,19 @@
         {
           "from": "K",
           "to": "V",
-          "weight": 0.02038
+          "weight": 0.0239
         }
       ],
       "311": [
         {
           "from": "Q",
           "to": "A",
-          "weight": 0.0307
+          "weight": 0.02668
         },
         {
           "from": "Q",
           "to": "C",
-          "weight": 0.064162
+          "weight": 0.074221
         },
         {
           "from": "Q",
@@ -7886,7 +7941,7 @@
         {
           "from": "Q",
           "to": "K",
-          "weight": 0.06022
+          "weight": 0.062133
         },
         {
           "from": "Q",
@@ -7896,32 +7951,32 @@
         {
           "from": "Q",
           "to": "M",
-          "weight": 0.040331
+          "weight": 0.038888
         },
         {
           "from": "Q",
           "to": "R",
-          "weight": 0.0845
+          "weight": 0.0781
         },
         {
           "from": "Q",
           "to": "S",
-          "weight": 0.028567
+          "weight": 0.026957
         },
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.019733
+          "weight": 0.0278
         },
         {
           "from": "Q",
           "to": "V",
-          "weight": 0.026856
+          "weight": 0.03576
         },
         {
           "from": "Q",
           "to": "W",
-          "weight": 0.0424
+          "weight": 0.03995
         },
         {
           "from": "Q",
@@ -7948,22 +8003,22 @@
         {
           "from": "N",
           "to": "G",
-          "weight": 0.0509
+          "weight": 0.047733
         },
         {
           "from": "N",
           "to": "K",
-          "weight": 0.044222
+          "weight": 0.061745
         },
         {
           "from": "N",
           "to": "M",
-          "weight": 0.0197
+          "weight": 0.027229
         },
         {
           "from": "N",
           "to": "P",
-          "weight": 0.033186
+          "weight": 0.050922
         },
         {
           "from": "N",
@@ -7973,22 +8028,22 @@
         {
           "from": "N",
           "to": "R",
-          "weight": 0.052623
+          "weight": 0.05898
         },
         {
           "from": "N",
           "to": "S",
-          "weight": 0.042744
+          "weight": 0.048882
         },
         {
           "from": "N",
           "to": "T",
-          "weight": 0.0603
+          "weight": 0.043417
         },
         {
           "from": "N",
           "to": "Y",
-          "weight": 0.048689
+          "weight": 0.04504
         }
       ],
       "313": [
@@ -8000,7 +8055,7 @@
         {
           "from": "T",
           "to": "S",
-          "weight": 0.048933
+          "weight": 0.046819
         }
       ],
       "314": [
@@ -8012,19 +8067,19 @@
         {
           "from": "L",
           "to": "M",
-          "weight": 0.039683
+          "weight": 0.039343
         }
       ],
       "315": [
         {
           "from": "K",
           "to": "L",
-          "weight": 0.140019
+          "weight": 0.143082
         },
         {
           "from": "K",
           "to": "M",
-          "weight": 0.0655
+          "weight": 0.071778
         },
         {
           "from": "K",
@@ -8041,7 +8096,7 @@
         {
           "from": "T",
           "to": "L",
-          "weight": 0.055829
+          "weight": 0.056389
         },
         {
           "from": "T",
@@ -8051,7 +8106,7 @@
         {
           "from": "T",
           "to": "V",
-          "weight": 0.049656
+          "weight": 0.050429
         }
       ],
       "320": [
@@ -8065,32 +8120,32 @@
         {
           "from": "V",
           "to": "C",
-          "weight": 0.061523
+          "weight": 0.060929
         },
         {
           "from": "V",
           "to": "F",
-          "weight": 0.068631
+          "weight": 0.07382
         },
         {
           "from": "V",
           "to": "H",
-          "weight": 0.03018
+          "weight": 0.032758
         },
         {
           "from": "V",
           "to": "I",
-          "weight": 0.054386
+          "weight": 0.0621
         },
         {
           "from": "V",
           "to": "K",
-          "weight": 0.057068
+          "weight": 0.077757
         },
         {
           "from": "V",
           "to": "L",
-          "weight": 0.055762
+          "weight": 0.06732
         },
         {
           "from": "V",
@@ -8100,12 +8155,12 @@
         {
           "from": "V",
           "to": "N",
-          "weight": 0.038773
+          "weight": 0.046106
         },
         {
           "from": "V",
           "to": "R",
-          "weight": 0.056983
+          "weight": 0.074456
         },
         {
           "from": "V",
@@ -8115,24 +8170,24 @@
         {
           "from": "V",
           "to": "T",
-          "weight": 0.05735
+          "weight": 0.053638
         },
         {
           "from": "V",
           "to": "W",
-          "weight": 0.042192
+          "weight": 0.049429
         },
         {
           "from": "V",
           "to": "Y",
-          "weight": 0.01536
+          "weight": 0.016017
         }
       ],
       "324": [
         {
           "from": "P",
           "to": "A",
-          "weight": 0.056573
+          "weight": 0.065846
         },
         {
           "from": "P",
@@ -8147,22 +8202,22 @@
         {
           "from": "P",
           "to": "M",
-          "weight": 0.084936
+          "weight": 0.082694
         },
         {
           "from": "P",
           "to": "N",
-          "weight": 0.052977
+          "weight": 0.059
         },
         {
           "from": "P",
           "to": "Q",
-          "weight": 0.04077
+          "weight": 0.049417
         },
         {
           "from": "P",
           "to": "R",
-          "weight": 0.03745
+          "weight": 0.036044
         }
       ],
       "325": [
@@ -8174,14 +8229,14 @@
         {
           "from": "E",
           "to": "S",
-          "weight": 0.038283
+          "weight": 0.039014
         }
       ],
       "326": [
         {
           "from": "K",
           "to": "A",
-          "weight": 0.0442
+          "weight": 0.04812
         },
         {
           "from": "K",
@@ -8196,7 +8251,7 @@
         {
           "from": "K",
           "to": "I",
-          "weight": 0.030329
+          "weight": 0.030433
         },
         {
           "from": "K",
@@ -8206,7 +8261,7 @@
         {
           "from": "K",
           "to": "M",
-          "weight": 0.043078
+          "weight": 0.040218
         },
         {
           "from": "K",
@@ -8236,24 +8291,24 @@
         {
           "from": "K",
           "to": "W",
-          "weight": 0.03862
+          "weight": 0.0457
         },
         {
           "from": "K",
           "to": "Y",
-          "weight": 0.03675
+          "weight": 0.08396
         }
       ],
       "327": [
         {
           "from": "Q",
           "to": "A",
-          "weight": 0.05754
+          "weight": 0.0492
         },
         {
           "from": "Q",
           "to": "E",
-          "weight": 0.03252
+          "weight": 0.036183
         },
         {
           "from": "Q",
@@ -8278,19 +8333,19 @@
         {
           "from": "Q",
           "to": "T",
-          "weight": 0.042592
+          "weight": 0.0395
         }
       ],
       "328": [
         {
           "from": "T",
           "to": "A",
-          "weight": 0.051844
+          "weight": 0.04818
         },
         {
           "from": "T",
           "to": "F",
-          "weight": 0.049959
+          "weight": 0.064521
         },
         {
           "from": "T",
@@ -8300,7 +8355,7 @@
         {
           "from": "T",
           "to": "M",
-          "weight": 0.053971
+          "weight": 0.056293
         },
         {
           "from": "T",
@@ -8325,14 +8380,14 @@
         {
           "from": "T",
           "to": "Y",
-          "weight": 0.051486
+          "weight": 0.053706
         }
       ],
       "329": [
         {
           "from": "R",
           "to": "K",
-          "weight": 0.039813
+          "weight": 0.040676
         }
       ]
     }
