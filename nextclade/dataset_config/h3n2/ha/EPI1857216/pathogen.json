@@ -1,7 +1,13 @@
 {
   "nucMutLabelMap": {},
   "nucMutLabelMapReverse": {},
-  "phenotypeData":[
+  "shortcuts": [
+    "flu-h3n2-ha",
+    "nextstrain/flu/h3n2",
+    "nextstrain/flu/h3n2/ha",
+    "nextstrain/flu/h3n2/ha/darwin-6-2021"
+  ],
+"phenotypeData":[
     {
       "name": "RBD",
       "nameFriendly": "RBD mutations",

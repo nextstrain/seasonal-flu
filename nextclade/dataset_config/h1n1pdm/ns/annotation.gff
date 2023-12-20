@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_026432.1 1 863
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=641809
+NC_026432.1	RefSeq	region	1	863	.	+	.	ID=NC_026432.1:1..863;Dbxref=taxon:641809;Name=8;collection-date=09-Apr-2009;country=USA: California state;gbkey=Src;genome=genomic;mol_type=viral cRNA;nat-host=Homo sapiens%3B gender M%3B age 54;segment=8;serotype=H1N1;strain=A/California/07/2009
+NC_026432.1	RefSeq	CDS	1	30	.	+	0	Name=NEP;gbkey=CDS;gene=NEP;locus_tag=UJ99_s8gp1;protein_id=YP_009118624.1;ID=cds-YP_009118624.1;product=nuclear export protein;Note=nonstructural protein 2;Dbxref=GenBank:YP_009118624.1,GeneID:23308112
+NC_026432.1	RefSeq	CDS	503	838	.	+	0	Name=NEP;gbkey=CDS;gene=NEP;locus_tag=UJ99_s8gp1;protein_id=YP_009118624.1;ID=cds-YP_009118624.1;product=nuclear export protein;Note=nonstructural protein 2;Dbxref=GenBank:YP_009118624.1,GeneID:23308112
+NC_026432.1	RefSeq	CDS	1	660	.	+	0	Name=NS1;gbkey=CDS;gene=NS1;locus_tag=UJ99_s8gp2;protein_id=YP_009118625.1;ID=cds-YP_009118625.1;product=nonstructural protein 1;Dbxref=GenBank:YP_009118625.1,GeneID:23308111

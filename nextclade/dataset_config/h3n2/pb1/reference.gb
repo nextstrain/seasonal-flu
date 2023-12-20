@@ -1,0 +1,107 @@
+LOCUS       NC_007372               2341 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/New York/392/2004(H3N2)) segment 2, complete
+            sequence.
+ACCESSION   NC_007372
+VERSION     NC_007372.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/New York/392/2004(H3N2))
+  ORGANISM  Influenza A virus (A/New York/392/2004(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2341)
+  AUTHORS   Ghedin,E., Miller,N., Zaborsky,J., Feldblyum,T., Subbu,V.,
+            Shumway,M., Sitz,J., Kosack,D., Koo,H., Salzberg,S.L., Griesemer,S.,
+            St. George,K., Bennett,R., Taylor,J., Bao,Y., Bolotov,P.,
+            Dernovoy,D., Lipman,D.J. and Tatusova,T.
+  TITLE     The NIAID Influenza Genome Sequencing Project
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 2341)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 2341)
+  CONSRTM   The NIAID Influenza Genome Sequencing Consortium
+  TITLE     Direct Submission
+  JOURNAL   Submitted (01-AUG-2005) on behalf of TIGR/Wadsworth-NYSDOH/NCBI,
+            National Center for Biotechnology Information, NIH, Bethesda, MD
+            20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from CY002070.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2341
+                     /organism="Influenza A virus (A/New York/392/2004(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/New York/392/2004"
+                     /serotype="H3N2"
+                     /isolation_source="gender:M; age:16y"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:335341"
+                     /segment="2"
+                     /lab_host="RhMK 1 passage(s)"
+                     /country="USA: Tompkins County, NY"
+                     /collection_date="21-Dec-2004"
+     CDS             25..2298
+                     /ID="cds-YP_308847.1"
+                     /Dbxref="GenBank:YP_308847.1,GeneID:3655159"
+                     /Name="PB1"
+                     /gbkey="CDS"
+                     /gene="PB1"
+                     /locus_tag="PB1"
+                     /product="polymerase PB1"
+                     /protein_id="YP_308847.1"
+     CDS             119..391
+                     /ID="cds-YP_308848.1"
+                     /Dbxref="GenBank:YP_308848.1,GeneID:3655160"
+                     /Name="PB1-F2"
+                     /gbkey="CDS"
+                     /gene="PB1-F2"
+                     /locus_tag="PB1-F2"
+                     /product="PB1-F2 protein"
+                     /protein_id="YP_308848.1"
+ORIGIN
+        1 agcaaaagca ggcaaaccat ttgaatggat gtcaatccga ctctactgtt cctaaaggtt
+       61 ccagcgcaaa atgccataag caccacattc ccttatactg gagatcctcc atacagccat
+      121 ggaacaggaa caggatacac catggacaca gtcaacagaa cacaccaata ttcagagaag
+      181 gggaagtgga cgacaaatac agaaactggg gcaccccaac tcaacccaat tgatggacca
+      241 ctacctgagg ataatgagcc aagtggatat gcacaaacag actgtgtcct ggaggctatg
+      301 gccttccttg aagaatccca cccaggtatc tttgagaact catgccttga aacaatggaa
+      361 gtcgttcaac aaacaagggt ggacaaacta acccaaggcc gccagactta tgattggaca
+      421 ttaaacagaa atcaaccggc agcaactgca ttagccaaca ccatagaagt ttttagatcg
+      481 aatggactaa cagccaatga atcaggaagg ctaatagatt tcctcaagga tgtgatggaa
+      541 tcaatggata aagaggaaat ggagataaca acacactttc aaagaaaaag gagagtaaga
+      601 gacaacatga ccaagaaaat ggtcacacaa agaacaatag ggaagaaaaa acaaagagtg
+      661 aataagagag gctatctaat aagagctttg acattgaaca cgatgaccaa agatgcagag
+      721 agaggtaaat taaaaagaag ggctattgca acacccggga tgcaaattag agggttcgtg
+      781 tacttcgttg aaactttagc tagaagcatt tgcgaaaagc ttgaacagtc tggacttccg
+      841 gttgggggta atgaaaagaa ggccaaactg gcaaatgttg tgagaaaaat gatgactaat
+      901 tcacaagaca ctgagctttc tttcacaatc actggggaca acactaagtg gaatgaaaat
+      961 caaaaccctc gaatgttttt ggcgatgatt acatatatca caaaaaatca acctgagtgg
+     1021 ttcagaaaca tcctgagcat cgcaccaata atgttctcaa acaaaatggc aagactagga
+     1081 aaaggataca tgttcgagag taagagaatg aagctccgaa cacaaatacc cgcagaaatg
+     1141 ctagcaagca ttgacctgaa gtatttcaat gaatcaacaa ggaagaaaat tgagaaaata
+     1201 aggcctcttc taatagatgg cacagcatca ttgagccctg ggatgatgat gggcatgttc
+     1261 aacatgctaa gtacggtttt aggagtctcg gtactgaatc ttgggcaaaa gaaatacacc
+     1321 aagacaacat actggtggga tgggctccaa tcctccgacg attttgccct catagtgaat
+     1381 gcaccaaatc atgagggaat acaagcagga gtggatagat tctacaggac ctgcaagtta
+     1441 gtgggaatca acatgagcaa aaagaagtcc tatataaata aaacagggac atttgaattc
+     1501 acaagctttt tttatcgata tggatttgtg gctaatttta gcatggagct tcccagtttt
+     1561 ggagtgtctg gaataaacga gtcagctgat atgagtattg gagtaacagt gataaagaac
+     1621 aacatgataa acaatgacct tgggccagca acagcccaga tggctctcca attgttcatc
+     1681 aaagactaca gatatacata taggtgccat agaggagaca cacaaattca gacgagaaga
+     1741 tcattcgagc taaagaagct gtgggatcaa acccaatcaa gggcaggact attggtatca
+     1801 gatgggggac caaacttata caatatccgg aaccttcaca tccctgaagt ctgcttaaag
+     1861 tgggagctaa tggatgagaa ttatcgggga agactttgta accccctgaa tccctttgtc
+     1921 agccataaag aaattgagtc tgtaaacaat gctgtagtga tgccagccca cggtccagcc
+     1981 aaaagtatgg aatatgatgc cgttgcaact acacactcct ggaatcccaa gaggaaccgc
+     2041 tctattctaa acactagcca aaggggaatt cttgaggatg aacagatgta ccaaaagtgc
+     2101 tgcaacttgt tcgagaaatt tttccctagt agttcatata ggagaccgat tggaatttct
+     2161 agcatggtgg aggccatggt gtctagggcc cggattgatg ccagaattga cttcgagtct
+     2221 ggacggatta agaaggaaga gttctctgag atcatgaaga tctgttccac cattgaagaa
+     2281 ctcagacggc aaaaataatg aatttagctt gtccttcatg aaaaaatgcc ttgtttctac
+     2341 t
+//

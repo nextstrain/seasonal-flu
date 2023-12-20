@@ -1,0 +1,7 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_026438.1 1 2280
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=641809
+NC_026438.1	RefSeq	region	1	2280	.	+	.	ID=NC_026438.1:1..2280;Dbxref=taxon:641809;Name=1;collection-date=09-Apr-2009;country=USA: California state;gbkey=Src;genome=genomic;mol_type=viral cRNA;nat-host=Homo sapiens%3B gender M%3B age 54;segment=1;serotype=H1N1;strain=A/California/07/2009
+NC_026438.1	RefSeq	CDS	1	2280	.	+	0	Name=PB2;gbkey=CDS;gene=PB2;locus_tag=UJ99_s1gp1;product=polymerase PB2;protein_id=YP_009118631.1;ID=cds-YP_009118631.1;Dbxref=GenBank:YP_009118631.1,GeneID:23308131

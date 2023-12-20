@@ -1,0 +1,82 @@
+LOCUS       NC_007370                890 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/New York/392/2004(H3N2)) segment 8, complete
+            sequence.
+ACCESSION   NC_007370
+VERSION     NC_007370.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/New York/392/2004(H3N2))
+  ORGANISM  Influenza A virus (A/New York/392/2004(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 890)
+  AUTHORS   Ghedin,E., Miller,N., Zaborsky,J., Feldblyum,T., Subbu,V.,
+            Shumway,M., Sitz,J., Kosack,D., Koo,H., Salzberg,S.L., Griesemer,S.,
+            St. George,K., Bennett,R., Taylor,J., Bao,Y., Bolotov,P.,
+            Dernovoy,D., Lipman,D.J. and Tatusova,T.
+  TITLE     The NIAID Influenza Genome Sequencing Project
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 890)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 890)
+  CONSRTM   The NIAID Influenza Genome Sequencing Consortium
+  TITLE     Direct Submission
+  JOURNAL   Submitted (01-AUG-2005) on behalf of TIGR/Wadsworth-NYSDOH/NCBI,
+            National Center for Biotechnology Information, NIH, Bethesda, MD
+            20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from CY002068.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..890
+                     /organism="Influenza A virus (A/New York/392/2004(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/New York/392/2004"
+                     /serotype="H3N2"
+                     /isolation_source="gender:M; age:16y"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:335341"
+                     /segment="8"
+                     /lab_host="RhMK 1 passage(s)"
+                     /country="USA: Tompkins County, NY"
+                     /collection_date="21-Dec-2004"
+     CDS             join(27..56,529..864)
+                     /ID="cds-YP_308844.1"
+                     /Dbxref="GenBank:YP_308844.1,GeneID:3655157"
+                     /Name="NEP"
+                     /gbkey="CDS"
+                     /gene="NEP"
+                     /locus_tag="NEP"
+                     /product="nonstructural protein 2"
+                     /protein_id="YP_308844.1"
+     CDS             27..719
+                     /ID="cds-YP_308845.1"
+                     /Dbxref="GenBank:YP_308845.1,GeneID:3655156"
+                     /Name="NS1"
+                     /gbkey="CDS"
+                     /gene="NS1"
+                     /locus_tag="NS1"
+                     /product="nonstructural protein 1"
+                     /protein_id="YP_308845.1"
+ORIGIN
+        1 agcaaaagca gggtgacaaa gacataatgg attccaacac tgtgtcaagt ttccaggtag
+       61 attgctttct ttggcatatc cggaaacaag ttgtagacca agaactgagt gatgccccat
+      121 tccttgatcg gcttcgccga gatcagaggt ccctaagggg aagaggcaat actctcggtc
+      181 tagacatcaa agcagccacc catgttggaa agcaaattgt agaaaagatt ctgaaagaag
+      241 aatctgatga ggcacttaaa atgaccatgg tctccacacc tgcttcgcga tacataactg
+      301 acatgactat tgaggaattg tcaagaaact ggttcatgct aatgcccaag cagaaagtgg
+      361 aaggacctct ttgcatcaga atggaccagg caatcatgga gaaaaacatc atgttgaaag
+      421 cgaatttcag tgtgattttt gaccgactag agaccatagt attactaagg gctttcaccg
+      481 aagagggagc aattgttggc gaaatctcac cattgccttc ttttccagga catactattg
+      541 aggatgtcaa aaatgcaatt ggggtcctca tcggaggact tgaatggaat gataacacag
+      601 ttcgagtctc taaaaatcta cagagattcg cttggagaag cagtaatgag aatgggggac
+      661 ctccacttac tccaaaacag aaacggaaaa tggcgagaac agctaggtca aaagtttgaa
+      721 gagataagat ggctgattga agaagtgaga cacagactaa aaacaactga aaatagcttt
+      781 gaacaaataa cattcatgca agcattacaa ctgctgtttg aagtggaaca ggagataaga
+      841 actttctcat ttcagcttat ttaatgataa aaaacaccct tgtttctact
+//

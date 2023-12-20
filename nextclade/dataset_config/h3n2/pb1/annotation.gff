@@ -1,0 +1,8 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007372.1 1 2341
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341
+NC_007372.1	RefSeq	region	1	2341	.	+	.	ID=NC_007372.1:1..2341;Dbxref=taxon:335341;Name=2;collection-date=21-Dec-2004;country=USA: Tompkins County%2C NY;gbkey=Src;genome=genomic;isolation-source=gender:M%3B age:16y;lab-host=RhMK 1 passage(s);mol_type=viral cRNA;nat-host=Homo sapiens;segment=2;serotype=H3N2;strain=A/New York/392/2004
+NC_007372.1	RefSeq	CDS	25	2298	.	+	0	Name=PB1;gbkey=CDS;gene=PB1;protein_id=YP_308847.1;locus_tag=FLUAVH3N2_s2p1;product=polymerase PB1;ID=cds-YP_308847.1;Dbxref=GenBank:YP_308847.1,GeneID:3655159
+NC_007372.1	RefSeq	CDS	119	391	.	+	0	Name=PB1-F2;gbkey=CDS;gene=PB1-F2;protein_id=YP_308848.1;locus_tag=FLUAVH3N2_s2p2;product=PB1-F2 protein;ID=cds-YP_308848.1;Dbxref=GenBank:YP_308848.1,GeneID:3655160

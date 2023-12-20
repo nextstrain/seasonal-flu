@@ -1,6 +1,10 @@
 {
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
+    "shortcuts": [
+      "flu-h1n1pdm-ha-broad",
+      "nextstrain/flu/h1n1pdm/ha/california-7-2009"
+    ],
     "aaMotifs": [
       {
         "name": "glycosylation",

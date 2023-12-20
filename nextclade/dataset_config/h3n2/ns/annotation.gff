@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007370.1 1 890
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341
+NC_007370.1	RefSeq	region	1	890	.	+	.	ID=NC_007370.1:1..890;Dbxref=taxon:335341;Name=8;collection-date=21-Dec-2004;country=USA: Tompkins County%2C NY;gbkey=Src;genome=genomic;isolation-source=gender:M%3B age:16y;lab-host=RhMK 1 passage(s);mol_type=viral cRNA;nat-host=Homo sapiens;segment=8;serotype=H3N2;strain=A/New York/392/2004
+NC_007370.1	RefSeq	CDS	27	56	.	+	0	Name=NEP;gbkey=CDS;gene=NEP;protein_id=YP_308844.1;locus_tag=FLUAVH3N2_s8p1;ID=cds-YP_308844.1;product=nonstructural protein 2;Dbxref=GenBank:YP_308844.1,GeneID:3655157
+NC_007370.1	RefSeq	CDS	529	864	.	+	0	Name=NEP;gbkey=CDS;gene=NEP;protein_id=YP_308844.1;locus_tag=FLUAVH3N2_s8p1;ID=cds-YP_308844.1;product=nonstructural protein 2;Dbxref=GenBank:YP_308844.1,GeneID:3655157
+NC_007370.1	RefSeq	CDS	27	719	.	+	0	Name=NS1;gbkey=CDS;gene=NS1;protein_id=YP_308845.1;locus_tag=FLUAVH3N2_s8p2;ID=cds-YP_308845.1;product=nonstructural protein 1;Dbxref=GenBank:YP_308845.1,GeneID:3655156

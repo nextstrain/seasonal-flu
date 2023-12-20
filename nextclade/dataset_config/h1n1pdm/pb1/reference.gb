@@ -1,0 +1,114 @@
+LOCUS       NC_026435               2274 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/California/07/2009(H1N1)) segment 2 polymerase
+            PB1 (PB1) gene, complete cds; and nonfunctional PB1-F2 protein
+            (PB1-F2) gene, complete sequence.
+ACCESSION   NC_026435
+VERSION     NC_026435.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/California/07/2009(H1N1))
+  ORGANISM  Influenza A virus (A/California/07/2009(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2274)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (06-FEB-2015) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   2  (bases 1 to 2274)
+  AUTHORS   Shu,B., Balish,A., Garten,R., Smith,C., Emery,S., Barnes,J.,
+            Deyde,V., Klimov,A. and Cox,N.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (24-JUN-2009) WHO Collaborating Center for Surveillance,
+            Epidemiology and Control of Influenza, Influenza Division, Centers
+            for Disease Control and Prevention, 1600 Clifton Road, N.E.,
+            Atlanta, GA 30333, USA
+COMMENT     ##EpifluData-START##
+            Isolate                :: A/California/07/2009
+            Subtype                :: H1N1
+            Segment_name           :: PB1
+            Host_gender            :: M
+            Host_age               :: 54
+            Passage_history        :: E2
+            Antigen_character      :: A/CALIFORNIA/07/2009-LIKE (H1N1)V
+            Adamantane_resistance  :: resistant
+            Zanamivir_resistance   :: sensitive
+            Oseltamivir_resistance :: sensitive
+            Country                :: USA
+            State/Province         :: California state
+            Collection_day         :: 9
+            Collection_month       :: 4
+            Collection_year        :: 2009
+            Isolate_note :: Comment: Human case of 2009 H1N1 swine influenza.
+            EPI_accession          :: EPI183116
+            Lineage                :: swl
+            ##EpifluData-END##
+            REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence is identical to GQ323558.
+            Swine influenza A (H1N1) virus isolated during human swine flu
+            outbreak of 2009.  For more information, see http://www.cdc.gov/.
+            Some of the information does not have GenBank feature identifiers
+            and is being provided in the comment section.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2274
+                     /organism="Influenza A virus (A/California/07/2009(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/California/07/2009"
+                     /serotype="H1N1"
+                     /host="Homo sapiens; gender M; age 54"
+                     /db_xref="taxon:641809"
+                     /segment="2"
+                     /country="USA: California state"
+                     /collection_date="09-Apr-2009"
+     CDS             1..2274
+                     /ID="cds-YP_009118628.1"
+                     /Dbxref="GenBank:YP_009118628.1,GeneID:23308122"
+                     /Name="PB1"
+                     /gbkey="CDS"
+                     /gene="PB1"
+                     /locus_tag="PB1"
+                     /product="polymerase PB1"
+                     /protein_id="YP_009118628.1"
+ORIGIN
+        1 atggatgtca atccgactct acttttccta aaaattccag cgcaaaatgc cataagcacc
+       61 acattccctt atactggaga tcctccatac agccatggaa caggaacagg atacaccatg
+      121 gacacagtaa acagaacaca ccaatactca gaaaagggaa agtggacgac aaacacagag
+      181 actggtgcac cccagctcaa cccgattgat ggaccactac ctgaggataa tgaaccaagt
+      241 gggtatgcac aaacagactg tgttctagag gctatggctt tccttgaaga atcccaccca
+      301 ggaatatttg agaattcatg ccttgaaaca atggaagttg ttcaacaaac aagggtagat
+      361 aaactaactc aaggtcgcca gacttatgat tggacattaa acagaaatca accggcagca
+      421 actgcattgg ccaacaccat agaagtcttt agatcgaatg gcctaacagc taatgagtca
+      481 ggaaggctaa tagatttctt aaaggatgta atggaatcaa tgaacaaaga ggaaatagag
+      541 ataacaaccc actttcaaag aaaaaggaga gtaagagaca acatgaccaa gaagatggtc
+      601 acgcaaagaa caatagggaa gaaaaaacaa agactgaata agagaggcta tctaataaga
+      661 gcactgacat taaatacgat gaccaaagat gcagagagag gcaagttaaa aagaagggct
+      721 atcgcaacac ctgggatgca gattagaggt ttcgtatact ttgttgaaac tttagctagg
+      781 agcatttgcg aaaagcttga acagtctggg ctcccagtag ggggcaatga aaagaaggcc
+      841 aaactggcaa atgttgtgag aaagatgatg actaattcac aagacacaga gatttctttc
+      901 acaatcactg gggacaacac taagtggaat gaaaatcaaa atcctcgaat gttcctggcg
+      961 atgattacat atatcaccag aaatcaaccc gagtggttca gaaacatcct gagcatggca
+     1021 cccataatgt tctcaaacaa aatggcaaga ctagggaaag ggtacatgtt cgagagtaaa
+     1081 agaatgaaga ttcgaacaca aataccagca gaaatgctag caagcattga cctgaagtac
+     1141 ttcaatgaat caacaaagaa gaaaattgag aaaataaggc ctcttctaat agatggcaca
+     1201 gcatcactga gtcctgggat gatgatgggc atgttcaaca tgctaagtac ggtcttggga
+     1261 gtctcgatac tgaatcttgg acaaaagaaa tacaccaaga caatatactg gtgggatggg
+     1321 ctccaatcat ccgacgattt tgctctcata gtgaatgcac caaaccatga gggaatacaa
+     1381 gcaggagtgg acagattcta caggacctgc aagttagtgg gaatcaacat gagcaaaaag
+     1441 aagtcctata taaataagac agggacattt gaattcacaa gcttttttta tcgctatgga
+     1501 tttgtggcta attttagcat ggagctaccc agctttggag tgtctggagt aaatgaatca
+     1561 gctgacatga gtattggagt aacagtgata aagaacaaca tgataaacaa tgaccttgga
+     1621 cctgcaacgg cccagatggc tcttcaattg ttcatcaaag actacagata cacatatagg
+     1681 tgccataggg gagacacaca aattcagacg agaagatcat ttgagttaaa gaagctgtgg
+     1741 gatcaaaccc aatcaaaggt agggctatta gtatcagatg gaggaccaaa cttatacaat
+     1801 atacggaatc ttcacattcc tgaagtctgc ttaaaatggg agctaatgga tgatgattat
+     1861 cggggaagac tttgtaatcc cctgaatccc tttgtcagtc ataaagagat tgattctgta
+     1921 aacaatgctg tggtaatgcc agcccatggt ccagccaaaa gcatggaata tgatgccgtt
+     1981 gcaactacac attcctggat tcccaagagg aatcgttcta ttctcaacac aagccaaagg
+     2041 ggaattcttg aggatgaaca gatgtaccag aagtgctgca atctattcga gaaatttttc
+     2101 cctagcagtt catataggag accggttgga atttctagca tggtggaggc catggtgtct
+     2161 agggcccgga ttgatgccag ggtcgacttc gagtctggac ggatcaagaa agaagagttc
+     2221 tctgagatca tgaagatctg ttccaccatt gaagaactca gacggcaaaa ataa
+//

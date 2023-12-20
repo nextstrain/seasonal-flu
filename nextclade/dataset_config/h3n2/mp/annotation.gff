@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007367.1 1 1027
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341
+NC_007367.1	RefSeq	region	1	1027	.	+	.	ID=NC_007367.1:1..1027;Dbxref=taxon:335341;Name=7;collection-date=21-Dec-2004;country=USA: Tompkins County%2C NY;gbkey=Src;genome=genomic;isolation-source=gender:M%3B age:16y;lab-host=RhMK 1 passage(s);mol_type=viral cRNA;nat-host=Homo sapiens;segment=7;serotype=H3N2;strain=A/New York/392/2004
+NC_007367.1	RefSeq	CDS	26	51	.	+	0	Name=M2;gene=M2;gbkey=CDS;protein_id=YP_308840.1;locus_tag=FLUAVH3N2_s7p1;ID=cds-YP_308840.1;product=matrix protein 2;Dbxref=GenBank:YP_308840.1,GeneID:3655153
+NC_007367.1	RefSeq	CDS	740	1007	.	+	1	Name=M2;gene=M2;gbkey=CDS;protein_id=YP_308840.1;locus_tag=FLUAVH3N2_s7p1;ID=cds-YP_308840.1;product=matrix protein 2;Dbxref=GenBank:YP_308840.1,GeneID:3655153
+NC_007367.1	RefSeq	CDS	26	784	.	+	0	Name=M1;gene=M1;gbkey=CDS;protein_id=YP_308841.1;locus_tag=FLUAVH3N2_s7p2;ID=cds-YP_308841.1;product=matrix protein 1;Dbxref=GenBank:YP_308841.1,GeneID:3655152

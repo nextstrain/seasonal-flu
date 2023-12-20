@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_026431.1 1 982
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=641809
+NC_026431.1	RefSeq	region	1	982	.	+	.	ID=NC_026431.1:1..982;Dbxref=taxon:641809;Name=7;collection-date=09-Apr-2009;country=USA: California state;gbkey=Src;genome=genomic;mol_type=viral cRNA;nat-host=Homo sapiens%3B gender M%3B age 54;segment=7;serotype=H1N1;strain=A/California/07/2009
+NC_026431.1	RefSeq	CDS	1	26	.	+	0	Name=M2;gene=M2;gbkey=CDS;locus_tag=UJ99_s7gp1;protein_id=YP_009118622.1;product=matrix protein 2;ID=cds-YP_009118622.1;Dbxref=GenBank:YP_009118622.1,GeneID:23308108
+NC_026431.1	RefSeq	CDS	715	982	.	+	1	Name=M2;gene=M2;gbkey=CDS;locus_tag=UJ99_s7gp1;protein_id=YP_009118622.1;product=matrix protein 2;ID=cds-YP_009118622.1;Dbxref=GenBank:YP_009118622.1,GeneID:23308108
+NC_026431.1	RefSeq	CDS	1	759	.	+	0	Name=M1;gene=M1;gbkey=CDS;locus_tag=UJ99_s7gp2;protein_id=YP_009118623.1;product=matrix protein 1;ID=cds-YP_009118623.1;Dbxref=GenBank:YP_009118623.1,GeneID:23308107

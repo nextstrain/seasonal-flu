@@ -48,9 +48,9 @@ if __name__=="__main__":
                                    "reference accession": args.reference,
                                    "reference name": args.reference_name}
 
-    pathogen_json['geneOrderPreference'] = {"ha": ["HA1", "HA2"], "na":["NA"]}.get(args.segment, [])
+    pathogen_json['cdsOrderPreference'] = {"ha": ["HA1", "HA2"], "na":["NA"]}.get(args.segment, [])
     if args.segment in ['ha', 'na']:
-        pathogen_json['defaultGene'] = {"ha": "HA1", "na":"NA"}.get(args.segment)
+        pathogen_json['defaultCds'] = {"ha": "HA1", "na":"NA"}.get(args.segment)
 
     if len(args.clades):
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [

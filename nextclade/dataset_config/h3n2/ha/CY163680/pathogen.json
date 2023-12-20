@@ -1,6 +1,10 @@
 {
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
+    "shortcuts": [
+      "flu-h3n2-ha-broad",
+      "nextstrain/flu/h3n2/ha/wisconsin-67-2005"
+    ],
     "aaMotifs": [
       {
         "name": "glycosylation",

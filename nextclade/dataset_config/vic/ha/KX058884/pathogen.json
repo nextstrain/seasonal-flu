@@ -1,6 +1,12 @@
 {
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
+    "shortcuts": [
+      "flu-vic-ha",
+      "nextstrain/flu/vic",
+      "nextstrain/flu/vic/ha",
+      "nextstrain/flu/vic/ha/brisbane-60-2008"
+    ],
     "aaMotifs": [
       {
         "name": "glycosylation",

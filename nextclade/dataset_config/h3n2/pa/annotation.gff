@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007371.1 1 2233
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341
+NC_007371.1	RefSeq	region	1	2233	.	+	.	ID=NC_007371.1:1..2233;Dbxref=taxon:335341;Name=3;collection-date=21-Dec-2004;country=USA: Tompkins County%2C NY;gbkey=Src;genome=genomic;isolation-source=gender:M%3B age:16y;lab-host=RhMK 1 passage(s);mol_type=viral cRNA;nat-host=Homo sapiens;segment=3;serotype=H3N2;strain=A/New York/392/2004
+NC_007371.1	RefSeq	CDS	25	2175	.	+	0	Name=PA;gene=PA;gbkey=CDS;protein_id=YP_308846.1;product=polymerase PA;locus_tag=FLUAVH3N2_s3p1;ID=cds-YP_308846.1;Dbxref=GenBank:YP_308846.1,GeneID:3655158
+NC_007371.1	RefSeq	CDS	25	597	.	+	0	Name=PA-X;gbkey=CDS;gene=PA-X;product=PA-X protein;locus_tag=FLUAVH3N2_s3p2;protein_id=YP_006575868.1;ID=cds-YP_006575868.1;exception=ribosomal slippage;Dbxref=GenBank:YP_006575868.1,GeneID:13229459
+NC_007371.1	RefSeq	CDS	599	784	.	+	0	Name=PA-X;gbkey=CDS;gene=PA-X;product=PA-X protein;locus_tag=FLUAVH3N2_s3p2;protein_id=YP_006575868.1;ID=cds-YP_006575868.1;exception=ribosomal slippage;Dbxref=GenBank:YP_006575868.1,GeneID:13229459

@@ -1,0 +1,132 @@
+LOCUS       NC_026438               2280 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/California/07/2009(H1N1)) segment 1 polymerase
+            PB2 (PB2) gene, complete cds.
+ACCESSION   NC_026438
+VERSION     NC_026438.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/California/07/2009(H1N1))
+  ORGANISM  Influenza A virus (A/California/07/2009(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2280)
+  AUTHORS   Garten,R.J., Davis,C.T., Russell,C.A., Shu,B., Lindstrom,S.,
+            Balish,A., Sessions,W.M., Xu,X., Skepner,E., Deyde,V.,
+            Okomo-Adhiambo,M., Gubareva,L., Barnes,J., Smith,C.B., Emery,S.L.,
+            Hillman,M.J., Rivailler,P., Smagala,J., de Graaf,M., Burke,D.F.,
+            Fouchier,R.A., Pappas,C., Alpuche-Aranda,C.M., Lopez-Gatell,H.,
+            Olivera,H., Lopez,I., Myers,C.A., Faix,D., Blair,P.J., Yu,C.,
+            Keene,K.M., Dotson,P.D. Jr., Boxrud,D., Sambol,A.R., Abid,S.H., St
+            George,K., Bannerman,T., Moore,A.L., Stringer,D.J., Blevins,P.,
+            Demmler-Harrison,G.J., Ginsberg,M., Kriner,P., Waterman,S.,
+            Smole,S., Guevara,H.F., Belongia,E.A., Clark,P.A., Beatrice,S.T.,
+            Donis,R., Katz,J., Finelli,L., Bridges,C.B., Shaw,M., Jernigan,D.B.,
+            Uyeki,T.M., Smith,D.J., Klimov,A.I. and Cox,N.J.
+  TITLE     Antigenic and genetic characteristics of swine-origin 2009 A(H1N1)
+            influenza viruses circulating in humans
+  JOURNAL   Science 325 (5937), 197-201 (2009)
+   PUBMED   19465683
+REFERENCE   2  (bases 1 to 2280)
+  AUTHORS   Shu,B., Balish,A., Garten,R., Smith,C., Emery,S., Barnes,J.,
+            Deyde,V., Klimov,A. and Cox,N.
+  TITLE     Human infection with novel swine H1N1 influenza
+  JOURNAL   Unpublished
+REFERENCE   3  (bases 1 to 2280)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (06-FEB-2015) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   4  (bases 1 to 2280)
+  AUTHORS   Shu,B., Balish,A., Garten,R., Smith,C., Emery,S., Barnes,J.,
+            Deyde,V., Klimov,A. and Cox,N.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (04-MAY-2009) WHO Collaborating Center for Surveillance,
+            Epidemiology and Control of Influenza, Influenza Division, Centers
+            for Disease Control and Prevention, Atlanta, 1600 Clifton Road,
+            N.E., Atlanta, GA 30333, USA
+COMMENT     ##EpifluData-START##
+            Isolate                :: A/California/07/2009
+            Subtype                :: H1N1
+            Segment_name           :: PB2
+            Host_gender            :: M
+            Host_age               :: 54
+            Passage_history        :: E2
+            Adamantane_resistance  :: resistant
+            Zanamivir_resistance   :: sensitive
+            Oseltamivir_resistance :: sensitive
+            Country                :: USA
+            State/Province         :: California state
+            Collection_day         :: 9
+            Collection_month       :: 4
+            Collection_year        :: 2009
+            EPI_accession          :: EPI177327
+            ##EpifluData-END##
+            REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence is identical to FJ984387.
+            Swine influenza A (H1N1) virus isolated during human swine flu
+            outbreak of 2009.  For more information, see http://www.cdc.gov/.
+            Some of the information does not have GenBank feature identifiers
+            and is being provided in the comment section.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2280
+                     /organism="Influenza A virus (A/California/07/2009(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/California/07/2009"
+                     /serotype="H1N1"
+                     /host="Homo sapiens; gender M; age 54"
+                     /db_xref="taxon:641809"
+                     /segment="1"
+                     /country="USA: California state"
+                     /collection_date="09-Apr-2009"
+     CDS             1..2280
+                     /ID="cds-YP_009118631.1"
+                     /Dbxref="GenBank:YP_009118631.1,GeneID:23308131"
+                     /Name="PB2"
+                     /gbkey="CDS"
+                     /gene="PB2"
+                     /locus_tag="PB2"
+                     /product="polymerase PB2"
+                     /protein_id="YP_009118631.1"
+ORIGIN
+        1 atggagagaa taaaagaact gagagatcta atgtcgcagt cccgcactcg cgagatactc
+       61 actaagacca ctgtggacca tatggccata atcaaaaagt acacatcagg aaggcaagag
+      121 aagaaccccg cactcagaat gaagtggatg atggcaatga gatacccaat tacagcagac
+      181 aagagaataa tggacatgat tccagagagg aatgaacaag gacaaaccct ctggagcaaa
+      241 acaaacgatg ctggatcaga ccgagtgatg gtatcacctc tggccgtaac atggtggaat
+      301 aggaatggcc caacaacaag tacagttcat taccctaagg tatataaaac ttatttcgaa
+      361 aaggtcgaaa ggttgaaaca tggtaccttc ggccctgtcc acttcagaaa tcaagttaaa
+      421 ataaggagga gagttgatac aaaccctggc catgcagatc tcagtgccaa ggaggcacag
+      481 gatgtgatta tggaagttgt tttcccaaat gaagtggggg caagaatact gacatcagag
+      541 tcacagctgg caataacaaa agagaagaaa gaagagctcc aggattgtaa aattgctccc
+      601 ttgatggtgg cgtacatgct agaaagagaa ttggtccgta aaacaaggtt tctcccagta
+      661 gccggcggaa caggcagtgt ttatattgaa gtgttgcact taacccaagg gacgtgctgg
+      721 gagcagatgt acactccagg aggagaagtg agaaatgatg atgttgacca aagtttgatt
+      781 atcgctgcta gaaacatagt aagaagagca gcagtgtcag cagacccatt agcatctctc
+      841 ttggaaatgt gccacagcac acagattgga ggagtaagga tggtggacat ccttagacag
+      901 aatccaactg aggaacaagc cgtagacata tgcaaggcag caatagggtt gaggattagc
+      961 tcatctttca gttttggtgg gttcactttc aaaaggacaa gcggatcatc agtcaagaaa
+     1021 gaagaagaag tgctaacggg caacctccaa acactgaaaa taagagtaca tgaagggtat
+     1081 gaagaattca caatggttgg gagaagagca acagctattc tcagaaaggc aaccaggaga
+     1141 ttgatccagt tgatagtaag cgggagagac gagcagtcaa ttgctgaggc aataattgtg
+     1201 gccatggtat tctcacagga ggattgcatg atcaaggcag ttaggggcga tctgaacttt
+     1261 gtcaataggg caaaccagcg actgaacccc atgcaccaac tcttgaggca tttccaaaaa
+     1321 gatgcaaaag tgcttttcca gaactgggga attgaatcca tcgacaatgt gatgggaatg
+     1381 atcggaatac tgcccgacat gaccccaagc acggagatgt cgctgagagg gataagagtc
+     1441 agcaaaatgg gagtagatga atactccagc acggagagag tggtagtgag tattgaccga
+     1501 tttttaaggg ttagagatca aagagggaac gtactattgt ctcccgaaga agtcagtgaa
+     1561 acgcaaggaa ctgagaagtt gacaataact tattcgtcat caatgatgtg ggagatcaat
+     1621 ggccctgagt cagtgctagt caacacttat caatggataa tcaggaactg ggaaattgtg
+     1681 aaaattcaat ggtcacaaga tcccacaatg ttatacaaca aaatggaatt tgaaccattt
+     1741 cagtctcttg tccctaaggc aaccagaagc cggtacagtg gattcgtaag gacactgttc
+     1801 cagcaaatgc gggatgtgct tgggacattt gacactgtcc aaataataaa acttctcccc
+     1861 tttgctgctg ccccaccaga acagagtagg atgcaatttt cctcattgac tgtgaatgtg
+     1921 agaggatcag ggttgaggat actggtaaga ggcaattctc cagtattcaa ttacaacaag
+     1981 gcaaccaaac gacttacagt tcttggaaag gatgcaggtg cattgactga agatccagat
+     2041 gaaggcacat ctggggtgga gtctgctgtc ctgagaggat ttctcatttt gggcaaagaa
+     2101 gacaagagat atggcccagc attaagcatc aatgaactga gcaatcttgc aaaaggagag
+     2161 aaggctaatg tgctaattgg gcaaggggac gtagtgttgg taatgaaacg aaaacgggac
+     2221 tctagcatac ttactgacag ccagacagcg accaaaagaa ttcggatggc catcaattag
+//

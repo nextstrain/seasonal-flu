@@ -1,7 +1,12 @@
 {
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
-    "aaMotifs": [
+    "shortcuts": [
+      "flu-h3n2-na",
+      "nextstrain/flu/h3n2/na",
+      "nextstrain/flu/h3n2/na/darwin-6-2021"
+    ],
+      "aaMotifs": [
       {
         "name": "glycosylation",
         "nameShort": "Glyc.",
