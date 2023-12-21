@@ -52,7 +52,7 @@ checkpoint align:
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
-        translations = directory(build_dir + "/{build_name}/{segment}/nextalign"),
+        translations = directory(build_dir + "/{build_name}/{segment}/nextclade"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/align_{build_name}_{segment}.txt"
@@ -66,15 +66,15 @@ checkpoint align:
         time="0:30:00",
     shell:
         """
-        nextalign run\
+        nextclade3 run\
             -r {input.reference} \
             -m {input.annotation} \
-            --genes {params.genes} \
+            --cds-selection {params.genes} \
             --jobs {threads} \
             --include-reference \
             {input.sequences} \
             --output-fasta {output.alignment} \
-            --output-translations "{output.translations}/masked.gene.{{gene}}.fasta" 2>&1 | tee {log}
+            --output-translations "{output.translations}/translation.{{cds}}.fasta" 2>&1 | tee {log}
         """
 
 def aggregate_translations(wildcards):
@@ -88,7 +88,7 @@ def aggregate_translations(wildcards):
 
     """
     checkpoint_output = checkpoints.align.get(**wildcards).output.translations
-    return expand(build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
+    return expand(build_dir + "/{build_name}/{segment}/nextclade/translation.{gene}.fasta",
                   build_name=wildcards.build_name,
                   segment=wildcards.segment,
                   gene=GENES[wildcards.segment])
@@ -277,8 +277,8 @@ rule ancestral:
     params:
         inference = "joint",
         genes = lambda w: GENES[w.segment],
-        input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.%GENE.fasta",
-        output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextalign/masked.gene.%GENE_withInternalNodes.fasta",
+        input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextclade/translation.%GENE.fasta",
+        output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/nextclade/translation.%GENE_withInternalNodes.fasta",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/ancestral_{build_name}_{segment}.txt"
@@ -411,7 +411,7 @@ rule annotate_haplotypes:
         "logs/annotate_haplotypes_{build_name}_ha.txt"
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
-        alignment=build_dir + "/{build_name}/ha/nextalign/masked.gene.HA1_withInternalNodes.fasta",
+        alignment=build_dir + "/{build_name}/ha/nextclade/translation.HA1_withInternalNodes.fasta",
         clade_label_attribute=lambda wildcards: "Subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade",
         clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
     shell:
