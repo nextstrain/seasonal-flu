@@ -144,3 +144,15 @@ G.4	HA1	156	Q
 G.4	HA1	199	P
 H	clade	G.1.3.1	
 H	HA1	140	K
+H.1	clade	H	
+H.1	HA1	25	V
+H.1	HA2	18	M
+H.2	clade	H	
+H.2	HA1	276	E
+H.2	HA1	122	D
+H.3	clade	H	
+H.3	HA2	176	I
+H.4	clade	H	
+H.4	HA1	173	R
+H.4	HA1	276	E
+H.4	SigPep	3	T
