@@ -191,7 +191,7 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
-      enable_forecasts: true
+      enable_forecasts: false
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
