@@ -68,6 +68,16 @@
       "type": "categorical"
     },
     {
+      "key": "accession_ha",
+      "title": "Accession (HA)",
+      "type": "categorical"
+    },
+    {
+      "key": "accession_na",
+      "title": "Accession (NA)",
+      "type": "categorical"
+    },
+    {
       "key": "submitting_lab",
       "title": "Submitting lab",
       "type": "categorical"
