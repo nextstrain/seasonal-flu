@@ -2,6 +2,10 @@ custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
   - profiles/nextflu-private/antigenic_distances.smk
   - profiles/nextflu-private/report.smk
+  - profiles/nextflu-private/rename.smk
+
+# URL for auto-deploying builds
+deploy_url: https://nextstrain.org/groups/nextflu-private/
 
 fasta_fields:
   - strain
@@ -46,6 +50,7 @@ recency:
 
 builds:
   h1n1pdm_2y_titers:
+    auspice_name: "flu_seasonal_{build_date}_h1n1pdm_2y_titers_{segment}"
     lineage: h1n1pdm
     reference: "config/h1n1pdm/{segment}/reference.fasta"
     annotation: "config/h1n1pdm/{segment}/genemap.gff"
@@ -94,6 +99,8 @@ builds:
           # enabling titer models to be fit to egg-passaged data.
           filters: --query "(is_titer_strain == True)" --min-date {min_date} --exclude {exclude}
   h3n2_2y_titers:
+    # flu/seasonal/2023-10-26/h3n2/2y/titers/ha
+    auspice_name: "flu_seasonal_{build_date}_h3n2_2y_titers_{segment}"
     lineage: "h3n2"
     reference: "config/h3n2/{segment}/reference.fasta"
     annotation: "config/h3n2/{segment}/genemap.gff"
@@ -139,6 +146,7 @@ builds:
         title: "Cell-passaged HI titers from pooled human sera"
     subsamples: *titers-subsampling-scheme
   h3n2_2y:
+    auspice_name: "flu_seasonal_{build_date}_h3n2_2y_{segment}"
     lineage: "h3n2"
     reference: "config/h3n2/{segment}/reference.fasta"
     annotation: "config/h3n2/{segment}/genemap.gff"
@@ -176,6 +184,7 @@ builds:
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
   vic_2y_titers:
+    auspice_name: "flu_seasonal_{build_date}_vic_2y_titers_{segment}"
     lineage: vic
     reference: "config/vic/{segment}/reference.fasta"
     annotation: "config/vic/{segment}/genemap.gff"
