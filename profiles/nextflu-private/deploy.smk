@@ -9,6 +9,6 @@ rule deploy_all:
         deploy_url = config["deploy_url"]
     shell:
         """
-        nextstrain login;
+        nextstrain login --no-prompt;
         nextstrain remote upload {params.deploy_url} {input}
         """
