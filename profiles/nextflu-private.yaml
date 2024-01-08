@@ -3,6 +3,7 @@ custom_rules:
   - profiles/nextflu-private/antigenic_distances.smk
   - profiles/nextflu-private/report.smk
   - profiles/nextflu-private/rename.smk
+  - profiles/nextflu-private/deploy.smk
 
 # URL for auto-deploying builds
 deploy_url: https://nextstrain.org/groups/nextflu-private/
