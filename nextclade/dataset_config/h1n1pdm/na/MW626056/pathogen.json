@@ -12,9 +12,9 @@
         "nameShort": "Glyc.",
         "nameFriendly": "Glycosylation",
         "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
-        "includeGenes": [
+        "includeCdses": [
           {
-            "gene":"NA",
+            "cds":"NA",
             "ranges":[{"begin":33, "end":470}]
           }
         ],

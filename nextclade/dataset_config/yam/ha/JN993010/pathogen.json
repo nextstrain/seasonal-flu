@@ -7,13 +7,13 @@
         "nameShort": "Glyc.",
         "nameFriendly": "Glycosylation",
         "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
-        "includeGenes": [
+        "includeCdses": [
           {
-            "gene":"HA1",
+            "cds":"HA1",
             "ranges":[]
           },
           {
-            "gene":"HA2",
+            "cds":"HA2",
             "ranges":[{"begin":0, "end":186}]
           }
         ],

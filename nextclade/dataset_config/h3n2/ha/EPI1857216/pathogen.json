@@ -12,7 +12,7 @@
       "name": "RBD",
       "nameFriendly": "RBD mutations",
       "description": "This column displays the number of differences between the sequence and the reference at positions identified by Koel et al. (145, 155, 156, 158, 159, 189, and 193 in HA1)",
-      "gene": "HA1",
+      "cds": "HA1",
       "aaRange": {
         "begin": 100,
         "end": 200
@@ -43,13 +43,13 @@
       "nameShort": "Glyc.",
       "nameFriendly": "Glycosylation",
       "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
-      "includeGenes": [
+      "includeCdses": [
         {
-          "gene":"HA1",
+          "cds":"HA1",
           "ranges":[]
         },
         {
-          "gene":"HA2",
+          "cds":"HA2",
           "ranges":[{"begin":0, "end":186}]
         }
       ],
