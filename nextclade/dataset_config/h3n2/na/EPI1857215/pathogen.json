@@ -2,7 +2,7 @@
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
     "shortcuts": [
-      "flu-h3n2-na",
+      "flu_h3n2_na",
       "nextstrain/flu/h3n2/na",
       "nextstrain/flu/h3n2/na/darwin-6-2021"
     ],

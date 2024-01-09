@@ -2,7 +2,7 @@
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
     "shortcuts": [
-      "flu-h1n1pdm-na",
+      "flu_h1n1pdm_na",
       "nextstrain/flu/h1n1pdm/na",
       "nextstrain/flu/h1n1pdm/na/wisconsin-588-2019"
     ],

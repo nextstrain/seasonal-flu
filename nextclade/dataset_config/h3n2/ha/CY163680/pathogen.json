@@ -2,7 +2,7 @@
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
     "shortcuts": [
-      "flu-h3n2-ha-broad",
+      "flu_h3n2_ha_broad",
       "nextstrain/flu/h3n2/ha/wisconsin-67-2005"
     ],
     "aaMotifs": [

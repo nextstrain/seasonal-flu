@@ -2,7 +2,7 @@
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
     "shortcuts": [
-      "flu-h1n1pdm-ha-broad",
+      "flu_h1n1pdm_ha_broad",
       "nextstrain/flu/h1n1pdm/ha/california-7-2009"
     ],
     "aaMotifs": [
