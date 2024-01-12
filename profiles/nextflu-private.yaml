@@ -2,6 +2,10 @@ custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
   - profiles/nextflu-private/antigenic_distances.smk
   - profiles/nextflu-private/report.smk
+  - profiles/nextflu-private/deploy.smk
+
+# URL for auto-deploying builds
+deploy_url: https://nextstrain.org/groups/nextflu-private/
 
 fasta_fields:
   - strain

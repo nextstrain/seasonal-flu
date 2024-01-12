@@ -25,8 +25,10 @@ jobs:
           --memory 72gib \
           --env AWS_ACCESS_KEY_ID \
           --env AWS_SECRET_ACCESS_KEY \
+          --env NEXTSTRAIN_USERNAME \
+          --env NEXTSTRAIN_PASSWORD \
           . \
-          all \
+          deploy_all \
           all_counts_of_recent_tips_by_clade \
           -p \
           --configfile profiles/nextflu-private.yaml
