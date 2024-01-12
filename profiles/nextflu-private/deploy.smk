@@ -11,6 +11,7 @@ rule all_private:
         build_date=datetime.date.today().strftime("%Y-%m-%d"),
     shell:
         """
+        mkdir -p {output.json_dir};
         for file in {input.jsons}
         do
             ln ${{file}} {output.json_dir}/"flu_seasonal_{params.build_date}_`basename ${{file}}`"
