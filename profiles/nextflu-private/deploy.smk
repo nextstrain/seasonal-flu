@@ -20,7 +20,7 @@ rule all_private:
 
 rule deploy_all:
     input:
-        json_dir=directory("auspice_renamed"),
+        json_dir="auspice_renamed",
     params:
         deploy_url = config["deploy_url"]
     shell:
