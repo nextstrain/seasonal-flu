@@ -66,7 +66,7 @@ checkpoint align:
         time="0:30:00",
     shell:
         """
-        nextalign run\
+        nextalign2 run\
             -r {input.reference} \
             -m {input.annotation} \
             --genes {params.genes} \
