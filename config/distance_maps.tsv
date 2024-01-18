@@ -3,8 +3,6 @@ h3n2	ha	root	ep	wolf
 h3n2	ha	root	ne	wolf_nonepitope
 h3n2	ha	root	rb	koel
 h3n2	ha	ancestor	ne_star	luksza_nonepitope
-h3n2	ha	root	welsh_ep	welsh_epitope_sites
-h3n2	ha	root	welsh_escape	welsh_escape_by_site_and_amino_acid
 h3n2	na	root	ep	bhatt
 h3n2	na	root	ne	bhatt_nonepitope
 h1n1pdm	ha	root	ep	canton
