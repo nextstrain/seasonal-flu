@@ -45,3 +45,10 @@ snakemake \
   -p \
   --configfile profiles/nextflu-private.yaml
 ```
+
+The private builds also produce Markdown table summarizing two different types of lineage or genotype counts:
+
+ - counts of samples collected in the last month per build and clade (e.g., `builds/h1n1pdm_2y_titers/counts_of_recent_tips_by_clade.md`)
+ - current frequency, change in frequency in the last 4 weeks, and titer reference strains for derived haplotypes (e.g., `builds/h1n1pdm_2y_titers/ha/haplotype_summary/cell_hi.md` per titer collection)
+
+Copy the contents of these files into the corresponding sections of the narrative Markdown.
