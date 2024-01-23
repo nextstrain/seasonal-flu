@@ -40,7 +40,7 @@ Plots use Altair which is not part of the Nextstrain Docker or Conda base enviro
 snakemake \
   figures/total-sample-count-by-lineage.png \
   --use-conda \
-  --conda-frontend mamba \
+  --conda-frontend conda \
   -j 1 \
   -p \
   --configfile profiles/nextflu-private.yaml
