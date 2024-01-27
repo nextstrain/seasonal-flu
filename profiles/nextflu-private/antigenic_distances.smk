@@ -112,6 +112,41 @@ rule scores:
             --output {output}
         """
 
+rule welsh_epitope_distances:
+    input:
+        tree = rules.refine.output.tree,
+        translations_done = build_dir + "/{build_name}/{segment}/translations.done",
+        distance_maps = [
+            "config/distance_maps/h3n2/ha/welsh_epitope_sites.json",
+            "config/distance_maps/h3n2/ha/welsh_escape_by_site_and_amino_acid.json",
+        ],
+    output:
+        distances = "builds/{build_name}/{segment}/welsh_epitope_distances.json",
+    params:
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        genes = lambda w: GENES[w.segment],
+        comparisons = ["root", "root"],
+        attribute_names = ["welsh_ep", "welsh_escape"],
+    conda: "../../workflow/envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/welsh_epitope_distances_{build_name}_{segment}.txt"
+    log:
+        "logs/welsh_epitope_distances_{build_name}_{segment}.txt"
+    resources:
+        mem_mb=8000,
+        time="00:30:00",
+    shell:
+        """
+        augur distance \
+            --tree {input.tree} \
+            --alignment {params.alignments} \
+            --gene-names {params.genes} \
+            --compare-to {params.comparisons} \
+            --attribute-name {params.attribute_names} \
+            --map {input.distance_maps} \
+            --output {output.distances} 2>&1 | tee {log}
+        """
+
 def get_private_node_data(wildcards):
     node_data = [
         "builds/{build_name}/{segment}/scores.json",
@@ -123,6 +158,10 @@ def get_private_node_data(wildcards):
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
             node_data.append(rules.titer_tree_cross_immunities.output.cross_immunities.format(titer_collection=collection["name"], **wildcards))
+
+    # Only annotate Welsh epitope distances for H3N2 HA builds.
+    if "h3n2" in wildcards.build_name and wildcards.segment == "ha":
+        node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/welsh_epitope_distances.json")
 
     return node_data
 
