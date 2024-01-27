@@ -6,7 +6,7 @@ def get_antigenic_plot_paths(wildcards):
         if "titers" in build_name:
             for collection in config["builds"][build_name]["titer_collections"]:
                 if "ferret" in collection["data"]:
-                    paths.append(f"builds/{build_name}/ha/plots/antigenic_distances_between_strains_{build_name}_{collection['name']}.png")
+                    paths.append(f"figures/antigenic_distances_between_strains_{build_name}_ha_{collection['name']}.png")
 
     return paths
 
@@ -21,7 +21,7 @@ rule plot_antigenic_distances_between_strains:
         references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
         auspice_config=lambda wildcards: f"profiles/nextflu-private/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.segment}/auspice_config.json",
     output:
-        plot="builds/{build_name}/{segment}/plots/antigenic_distances_between_strains_{build_name}_{titer_collection}.png",
+        plot="figures/antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.png",
     benchmark:
         "benchmarks/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     log:
