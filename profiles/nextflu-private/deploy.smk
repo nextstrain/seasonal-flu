@@ -8,7 +8,7 @@ rule all_private:
     output:
         json_dir=directory("auspice_renamed"),
     params:
-        build_date=datetime.date.today().strftime("%Y-%m-%d"),
+        build_date=config.get("build_date", datetime.date.today().strftime("%Y-%m-%d")),
     shell:
         """
         mkdir -p {output.json_dir};
