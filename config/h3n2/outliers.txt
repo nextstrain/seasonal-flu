@@ -8,6 +8,7 @@ A/Austria/838902/2015
 A/Austria/839669/2015
 A/Austria/839906/2015
 A/Bangladesh/3010/2020
+A/Belgium/S03941/2023
 A/BosniaandHerzegovia/288G/2019
 A/Brazil/BA-LACEN-BA053-292045410/2022
 A/Brazil/BA-LACEN-BA071-292012660/2021
@@ -476,6 +477,7 @@ A/SouthAustralia/47/2016
 A/SouthAustralia/85/2018
 A/SouthCarolina/NHRC0001/2011
 A/SriLanka/35/2018
+A/SriLanka/217/2023
 A/StPetersburg/5/2009
 A/StPetersburg/5/2009-egg
 A/StPetersburg/RII-2415S/2021
