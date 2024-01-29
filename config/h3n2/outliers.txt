@@ -349,6 +349,7 @@ A/Nebraska/1/2021
 A/Neimenggu-Keerqin/1194/2020
 A/Nepal/142/2011
 A/Nepal/21FL2237/2021
+A/Nepal/S1825/2023
 A/Netherlands/233/1982
 A/NewJersey/53/2015
 A/NewMexico/19/2022
