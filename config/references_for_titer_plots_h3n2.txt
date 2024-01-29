@@ -1,10 +1,10 @@
 A/Massachusetts/18/2022 # H, vaccine strain
-A/Hyogo/3001/2022 # H
-A/Shimane/1/2022 # H
 A/Thailand/8/2022 # H for HI
 A/NewYork/66/2022 # H:122D
 A/SouthAustralia/48/2023 # H:122D
 A/Albania/289813/2022 # H:91N,122D for HI
+A/Sydney/856/2023 # H.1
+A/Sydney/878/2023 # H.2
 A/Darwin/6/2021 # G.1:53G, vaccine strain
 A/Michigan/60/2022 # G.1.1.2
 A/SouthAustralia/1/2023 # G.1.1.2 for HI
@@ -15,10 +15,9 @@ A/SouthAustralia/389/2022 # G.2.1 for HI
 A/SouthAustralia/380/2022 # G.2.2 for HI
 A/Kanagawa/ZC2201/2022 # G.2.2
 A/Thailand/8/2022-egg # H, vaccine strain
-A/California/122/2022-egg # H
 A/California/122/2022-egg # H for HI
 A/Brandenburg/15/2022-egg # H for HI
 A/Albania/289813/2022-egg # H:91N,122D for HI
 A/Darwin/9/2021-egg # G.1, vaccine strain
-A/SouthAustralia/389/2022-egg # G.2.1
 A/Darwin/6/2021-egg # G.1:53G
+A/SouthAustralia/389/2022-egg # G.2.1
