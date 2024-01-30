@@ -1,6 +1,12 @@
 {
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
+    "shortcuts": [
+      "flu_yam_ha",
+      "nextstrain/flu/yam",
+      "nextstrain/flu/yam/ha",
+      "nextstrain/flu/yam/ha/wisconsin-01-2010"
+    ],
     "aaMotifs": [
       {
         "name": "glycosylation",
