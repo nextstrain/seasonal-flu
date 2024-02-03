@@ -72,7 +72,7 @@ checkpoint filter_translations_by_region:
     output:
         translations = build_dir + "/{build_name}/{segment}/translations_by_region/{region}/{gene}.fasta",
     params:
-        translations = build_dir + "/{build_name}/{segment}/nextalign/masked.gene.{gene}.fasta",
+        translations = build_dir + "/{build_name}/{segment}/translations/{gene}.fasta",
         min_date = lambda wildcards: config["builds"][wildcards.build_name].get("min_date"),
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
@@ -230,7 +230,7 @@ rule export_sequence_json:
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment]
     output:
         "auspice/{build_name}_{segment}_sequences.json",
