@@ -67,12 +67,12 @@ checkpoint align:
     shell:
         """
         nextclade3 run\
+            {input.sequences} \
             -r {input.reference} \
             -m {input.annotation} \
             --cds-selection {params.genes} \
             --jobs {threads} \
             --include-reference \
-            {input.sequences} \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
         """
