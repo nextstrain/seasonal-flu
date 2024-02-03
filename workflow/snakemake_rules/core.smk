@@ -27,7 +27,7 @@ rule mask:
     input:
         sequences = build_dir + "/{build_name}/{segment}/sequences.fasta",
     output:
-        sequences = build_dir + "/{build_name}/{segment}/fasta",
+        sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/mask_{build_name}_{segment}.txt"
@@ -47,7 +47,7 @@ checkpoint align:
         Aligning sequences to {input.reference}
         """
     input:
-        sequences = build_dir + "/{build_name}/{segment}/fasta",
+        sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
         reference =  lambda w: config['builds'][w.build_name]['reference'],
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
