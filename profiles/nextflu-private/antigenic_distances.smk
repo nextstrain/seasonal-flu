@@ -123,7 +123,7 @@ rule welsh_epitope_distances:
     output:
         distances = "builds/{build_name}/{segment}/welsh_epitope_distances.json",
     params:
-        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment],
         comparisons = ["root", "root"],
         attribute_names = ["welsh_ep", "welsh_escape"],

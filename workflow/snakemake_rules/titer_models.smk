@@ -29,7 +29,7 @@ rule titers_sub:
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment],
         attribute_prefix_argument = get_titer_collection_attribute_prefix_argument,
     output:

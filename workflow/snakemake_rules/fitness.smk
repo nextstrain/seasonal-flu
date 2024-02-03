@@ -61,7 +61,7 @@ rule convert_translations_to_json:
     output:
         translations = "builds/{build_name}/{segment}/aa-seq.json",
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         gene_names = lambda w: GENES[w.segment],
     conda: "../envs/nextstrain.yaml"
     benchmark:
@@ -182,7 +182,7 @@ rule distances:
     output:
         distances = "builds/{build_name}/{segment}/distances.json",
     params:
-        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/nextalign/masked.gene.{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        alignments = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
         genes = lambda w: GENES[w.segment],
         comparisons = _get_distance_comparisons_by_lineage_and_segment,
         attribute_names = _get_distance_attributes_by_lineage_and_segment,
