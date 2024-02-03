@@ -90,7 +90,7 @@ if __name__=="__main__":
     parser.add_argument('--reroot', action="store_true", help="reroot the tree")
     parser.add_argument('--optimize', action="store_true", help="optimize sigma and mu")
     parser.add_argument('--dates', type=str, help='csv/tsv file with dates for each sequence')
-    parser.add_argument('--keep-strains', type=str, help='a list of strains to keep in the output tree regardless of outlier status (i.e., reference strains that need to be retained in the build)')
+    parser.add_argument('--keep-strains', type=str, nargs='+', help='a list of strains to keep in the output tree regardless of outlier status (i.e., reference strains that need to be retained in the build)')
     parser.add_argument('--output-outliers', type=str, help='file for outliers')
     parser.add_argument('--output-tree', type=str, help='file for pruned tree')
 
@@ -156,8 +156,11 @@ if __name__=="__main__":
     if args.output_tree:
         keep_strains = set()
         if args.keep_strains:
-            with open(args.keep_strains, "r", encoding="utf-8") as fh:
-                keep_strains = {line.strip() for line in fh}
+            if type(args.keep_strains)==str:
+                args.keep_strains = [args.keep_strains]
+            for fname in args.keep_strains:
+                with open(fname, "r", encoding="utf-8") as fh:
+                    keep_strains = {line.strip() for line in fh}
 
         from Bio import Phylo
         T = tt.tree
