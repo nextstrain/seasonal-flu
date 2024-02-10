@@ -70,6 +70,7 @@ checkpoint align:
             {input.sequences} \
             -r {input.reference} \
             -m {input.annotation} \
+            --gap-alignment-side right \
             --cds-selection {params.genes} \
             --jobs {threads} \
             --include-reference \
