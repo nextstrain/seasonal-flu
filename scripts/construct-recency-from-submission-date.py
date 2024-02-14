@@ -55,7 +55,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     meta = read_metadata(args.metadata)
-    meta[args.submission_date_field] = pd.to_datetime(meta[args.submission_date_field])
+    meta[args.submission_date_field] = pd.to_datetime(
+        meta[args.submission_date_field],
+        errors="coerce",
+    )
 
     node_data = {'nodes': {}}
 
@@ -88,6 +91,8 @@ if __name__ == '__main__':
     # Create node data annotations of recency per strain.
     recency_by_strain = meta["_day_bins"].to_dict()
     for strain, recency in recency_by_strain.items():
-        node_data['nodes'][strain] = {args.output_field_name: recency}
+        node_data['nodes'][strain] = {
+            args.output_field_name: recency if not pd.isnull(recency) else "undefined"
+        }
 
     write_json(node_data, args.output)
