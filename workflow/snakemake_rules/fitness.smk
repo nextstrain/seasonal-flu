@@ -225,6 +225,10 @@ def _get_node_data_for_predictors(wildcards):
     if _get_build_distance_map_config(wildcards) is not None:
         inputs.append(rules.distances.output.distances)
 
+    # Only annotate Welsh epitope distances for H3N2 HA builds.
+    if "h3n2" in wildcards.build_name and wildcards.segment == "ha":
+        inputs.append(f"builds/{wildcards.build_name}/{wildcards.segment}/welsh_epitope_distances.json")
+
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards) for input_file in inputs]
     return inputs

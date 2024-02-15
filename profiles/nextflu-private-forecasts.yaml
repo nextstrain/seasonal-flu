@@ -1,5 +1,6 @@
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
+  - profiles/nextflu-private/antigenic_distances.smk
   - profiles/nextflu-private-forecasts/zoltar.smk
   - profiles/nextflu-private-forecasts/rename.smk
 
@@ -90,10 +91,11 @@ array-builds:
 
 fitness_model:
   models:
+    - welsh_escape
     - cell_fra_cTiter_x-ne_star
     - human_cell_fra_cTiter_x-ne_star
     - ne_star-lbi
-  best_model: cell_fra_cTiter_x-ne_star
+  best_model: human_cell_fra_cTiter_x-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   pivot_interval: 6
   delta_pivots: 1

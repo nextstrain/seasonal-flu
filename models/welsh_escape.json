@@ -1,0 +1,24 @@
+{
+ "predictors": [
+  "welsh_escape"
+ ],
+ "cv_error_mean": 5.444043356439342,
+ "cv_error_std": 1.7586532985230514,
+ "coefficients_mean": [
+  1.0
+ ],
+ "coefficients_std": [
+  0.3
+ ],
+ "mean_stds_mean": [
+  1.0
+ ],
+ "mean_stds_std": [
+  0.02
+ ],
+ "cost_function": "diffsum",
+ "l1_lambda": 0.1,
+ "delta_months": 12,
+ "training_window": 6,
+ "pseudocount": null
+}
