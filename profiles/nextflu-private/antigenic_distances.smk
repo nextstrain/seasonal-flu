@@ -1,4 +1,5 @@
 ruleorder: export_private > export
+ruleorder: concat_measurements_private > concat_measurements
 
 def get_antigenic_plot_paths(wildcards):
     paths = []
@@ -192,4 +193,143 @@ rule export_private:
             --auspice-config {input.auspice_config} \
             --minify-json \
             --output {output.auspice_json} 2>&1 | tee {log}
+        """
+
+rule welsh_epitope_distances_by_serum:
+    input:
+        tree=rules.refine.output.tree,
+        translations_done= build_dir + "/{build_name}/{segment}/translations.done",
+        distance_map="config/distance_maps/h3n2/ha/welsh_escape_by_site_and_amino_acid_by_serum/{serum}.json",
+    output:
+        distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum/{serum}.json",
+    params:
+        alignments=lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
+        genes=lambda w: GENES[w.segment],
+        comparisons="root",
+        attribute_names="welsh_escape_for_serum",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/welsh_epitope_distances_by_serum_{build_name}_{segment}_{serum}.txt"
+    log:
+        "logs/welsh_epitope_distances_by_serum_{build_name}_{segment}_{serum}.txt"
+    shell:
+        """
+        augur distance \
+            --tree {input.tree} \
+            --alignment {params.alignments} \
+            --gene-names {params.genes} \
+            --compare-to {params.comparisons} \
+            --attribute-name {params.attribute_names} \
+            --map {input.distance_map} \
+            --output {output.distances} 2>&1 | tee {log}
+        """
+
+rule convert_welsh_epitope_distances_to_table:
+    input:
+        tree="builds/{build_name}/{segment}/tree.nwk",
+        distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum/{serum}.json",
+        distance_map="config/distance_maps/h3n2/ha/welsh_escape_by_site_and_amino_acid_by_serum/{serum}.json",
+    output:
+        distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum/{serum}.tsv",
+    params:
+        distance_map_attributes=["cohort"]
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/convert_welsh_epitope_distances_to_table.py \
+            --tree {input.tree} \
+            --distances {input.distances} \
+            --distance-map {input.distance_map} \
+            --distance-map-attributes {params.distance_map_attributes:q} \
+            --output {output.distances}
+        """
+
+def get_welsh_epitope_distances_by_serum(wildcards):
+    import glob
+    from pathlib import Path
+
+    distance_maps = glob.glob("config/distance_maps/h3n2/ha/welsh_escape_by_site_and_amino_acid_by_serum/*.json")
+    serum_samples = [
+        Path(distance_map).stem
+        for distance_map in distance_maps
+    ]
+
+    return [
+        f"builds/{wildcards.build_name}/{wildcards.segment}/welsh_epitope_distances_by_serum/{serum}.tsv"
+        for serum in serum_samples
+    ]
+
+rule aggregate_welsh_epitope_distances_by_serum:
+    input:
+        distances=get_welsh_epitope_distances_by_serum,
+    output:
+        distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        csvtk concat -t {input.distances} > {output.distances}
+        """
+
+rule export_welsh_measurements:
+    input:
+        distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum.tsv",
+    output:
+        measurements="builds/{build_name}/{segment}/welsh_measurements.json",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/export_welsh_measurements_{build_name}_{segment}.txt"
+    log:
+        "logs/export_welsh_measurements_{build_name}_{segment}.txt"
+    params:
+        strain_column="strain",
+        value_column="welsh_escape_for_serum",
+        key="welsh_escape",
+        title="Welsh et al. escape scores",
+        x_axis_label="escape score",
+        thresholds=[0.0],
+        filters=[
+            "serum",
+            "cohort",
+        ],
+        include_columns=[
+            "strain",
+            "serum",
+            "cohort",
+            "welsh_escape_for_serum",
+        ],
+    shell:
+        """
+        augur measurements export \
+            --collection {input.distances} \
+            --include-columns {params.include_columns:q} \
+            --strain-column {params.strain_column} \
+            --value-column {params.value_column} \
+            --key {params.key} \
+            --title {params.title:q} \
+            --x-axis-label {params.x_axis_label:q} \
+            --thresholds {params.thresholds} \
+            --filters {params.filters} \
+            --show-threshold \
+            --hide-overall-mean \
+            --minify-json \
+            --output-json {output.measurements} 2>&1 | tee {log}
+        """
+
+rule concat_measurements_private:
+    input:
+        titer_measurements=get_titer_collections,
+        welsh_measurements="builds/{build_name}/{segment}/welsh_measurements.json",
+    output:
+        measurements="auspice/{build_name}_{segment}_measurements.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/concat_measurements_{build_name}_{segment}.txt"
+    log:
+        "logs/concat_measurements_{build_name}_{segment}.txt"
+    shell:
+        """
+        augur measurements concat \
+            --jsons {input.titer_measurements} {input.welsh_measurements} \
+            --minify-json \
+            --output-json {output.measurements} 2>&1 | tee {log}
         """
