@@ -2,6 +2,7 @@
   "name": "Welsh et al. escape scores per site and amino acid for sample 'AUSAB-13' in cohort '68_years'",
   "serum": "AUSAB-13",
   "cohort": "68_years",
+  "cohort_serum": "68_years/AUSAB-13",
   "default": 0,
   "map": {
     "HA1": {

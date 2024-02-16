@@ -2,6 +2,7 @@
   "name": "Welsh et al. escape scores per site and amino acid for sample '215C' in cohort '40-45_years'",
   "serum": "215C",
   "cohort": "40-45_years",
+  "cohort_serum": "40-45_years/215C",
   "default": 0,
   "map": {
     "HA1": {
