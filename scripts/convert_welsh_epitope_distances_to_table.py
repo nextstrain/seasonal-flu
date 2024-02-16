@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
         for node in tree.find_clades(terminal=True):
             record = [
-                node,
-                distances_per_node[node]["welsh_escape_for_serum"],
+                node.name,
+                distances_per_node[node.name]["welsh_escape_for_serum"],
             ] + attributes
             writer.writerow(record)
