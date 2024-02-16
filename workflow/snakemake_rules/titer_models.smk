@@ -226,6 +226,9 @@ def get_titer_collections(wildcards):
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
         files.append(f"builds/{wildcards.build_name}/{wildcards.segment}/measurements/{collection['name']}.json")
 
+    if wildcards.build_name == "h3n2_2y" and wildcards.segment == "ha":
+        files.append(f"builds/{wildcards.build_name}/{wildcards.segment}/welsh_measurements.json",)
+
     return files
 
 rule concat_measurements:
