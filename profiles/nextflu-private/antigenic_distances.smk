@@ -1,5 +1,4 @@
 ruleorder: export_private > export
-ruleorder: concat_measurements_private > concat_measurements
 
 def get_antigenic_plot_paths(wildcards):
     paths = []
@@ -232,7 +231,7 @@ rule convert_welsh_epitope_distances_to_table:
     output:
         distances="builds/{build_name}/{segment}/welsh_epitope_distances_by_serum/{serum}.tsv",
     params:
-        distance_map_attributes=["cohort"]
+        distance_map_attributes=["cohort_serum", "serum", "cohort"]
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -281,6 +280,7 @@ rule export_welsh_measurements:
     log:
         "logs/export_welsh_measurements_{build_name}_{segment}.txt"
     params:
+        default_group_by="cohort_serum",
         strain_column="strain",
         value_column="welsh_escape_for_serum",
         key="welsh_escape",
@@ -288,12 +288,12 @@ rule export_welsh_measurements:
         x_axis_label="escape score",
         thresholds=[0.0],
         filters=[
-            "serum",
+            "cohort_serum",
             "cohort",
         ],
         include_columns=[
             "strain",
-            "serum",
+            "cohort_serum",
             "cohort",
             "welsh_escape_for_serum",
         ],
@@ -301,6 +301,8 @@ rule export_welsh_measurements:
         """
         augur measurements export \
             --collection {input.distances} \
+            --grouping-column {params.filters} \
+            --group-by {params.default_group_by} \
             --include-columns {params.include_columns:q} \
             --strain-column {params.strain_column} \
             --value-column {params.value_column} \
@@ -311,25 +313,6 @@ rule export_welsh_measurements:
             --filters {params.filters} \
             --show-threshold \
             --hide-overall-mean \
-            --minify-json \
-            --output-json {output.measurements} 2>&1 | tee {log}
-        """
-
-rule concat_measurements_private:
-    input:
-        titer_measurements=get_titer_collections,
-        welsh_measurements="builds/{build_name}/{segment}/welsh_measurements.json",
-    output:
-        measurements="auspice/{build_name}_{segment}_measurements.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/concat_measurements_{build_name}_{segment}.txt"
-    log:
-        "logs/concat_measurements_{build_name}_{segment}.txt"
-    shell:
-        """
-        augur measurements concat \
-            --jsons {input.titer_measurements} {input.welsh_measurements} \
             --minify-json \
             --output-json {output.measurements} 2>&1 | tee {log}
         """
