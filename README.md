@@ -81,18 +81,10 @@ Leave all other sections at the default values.
 Select the "Download" button.
 Save the FASTA file you downloaded (e.g., `gisaid_epiflu_sequences.fasta`) as `data/h3n2/raw_sequences_ha.fasta`.
 
-Run the Nextstrain workflow for these data to produce an annotated phylogenetic tree of recent A/H3N2 HA data.
-If you have installed Nextstrain with the Docker runtime, run the following command.
+Run the Nextstrain workflow for these data to produce an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
 
 ``` bash
 nextstrain build . --configfile profiles/gisaid/builds.yaml
-```
-
-If you have installed Nextstrain with the Conda runtime, run the following command instead.
-
-``` bash
-nextstrain build . --configfile profiles/gisaid/builds.yaml \
-  --use-conda --conda-frontend mamba
 ```
 
 When the workflow finishes running, visualize the resulting tree with the following command.
