@@ -5,3 +5,9 @@ A/Victoria/361/2011
 
 A/Singapore/INFTT0001/2021
 A/Nepal/21FL2632/2021
+
+A/Sichuan-Pidou/36/2023
+A/Hubei-Jianli/2583/2023
+A/Shanghai-Huangpu/11639/2023
+A/HongKong/1542/2023
+A/Macau/9901287/2023

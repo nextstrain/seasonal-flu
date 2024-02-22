@@ -32,13 +32,67 @@ rule all:
 
 rule download_sequences:
     output:
-        sequences="data/{lineage}/raw_{segment}.fasta"
+        sequences="data/{lineage}_{segment}.fasta",
     params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/raw_sequences.fasta.xz"
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/sequences.fasta.xz",
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
         """
+
+rule download_metadata:
+    output:
+        metadata="data/{lineage}_{segment}_metadata-raw.tsv",
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/metadata.tsv.xz",
+    shell:
+        """
+        aws s3 cp {params.s3_path} - | xz -c -d > {output.metadata}
+        """
+
+rule get_nextclade_dataset:
+    output:
+        "nextclade/{lineage}_{segment}/reference.fasta",
+    threads: 1
+    shell:
+        """
+        nextclade3 dataset get -n flu_{wildcards.lineage}_{wildcards.segment} --output-dir nextclade/{wildcards.lineage}_{wildcards.segment}
+        """
+
+rule run_nextclade:
+    input:
+        sequences="data/{lineage}_{segment}.fasta",
+        reference="nextclade/{lineage}_{segment}/reference.fasta",
+    output:
+        "data/{lineage}_{segment}_nextclade.tsv",
+    threads: workflow.cores
+    shell:
+        """
+        nextclade3 run -j {threads} -D nextclade/{wildcards.lineage}_{wildcards.segment} \
+                  {input.sequences} --quiet --output-tsv {output}
+        """
+
+def get_clade_columns(w):
+    return ",".join(["seqName", "qc.overallStatus"] + {
+        'h3n2_ha':["clade", "subclade"],
+        'h1n1pdm_ha':["clade", "subclade"],
+        'vic_ha':["clade", "subclade"]
+    }.get(f"{w.lineage}_{w.segment}", ["clade"]))
+
+rule combined_with_metadata:
+    input:
+        nextclade="data/{lineage}_{segment}_nextclade.tsv",
+        metadata="data/{lineage}_{segment}_metadata-raw.tsv"
+    output:
+        metadata="data/{lineage}_{segment}_metadata.tsv"
+    params:
+        nextclade_columns=get_clade_columns
+    shell:
+        """
+        tsv-select -H -f {params.nextclade_columns} {input.nextclade} \
+            | csvtk join -t --fields "strain;seqName" {input.metadata} /dev/stdin > {output.metadata}
+        """
+
 
 rule download_clades:
     message:
@@ -94,27 +148,10 @@ rule offset_clades:
             >{output}
         """
 
-rule parse:
-    input:
-        sequences="data/{lineage}/raw_{segment}.fasta",
-    output:
-        metadata="data/{lineage}_{segment}_metadata.tsv",
-        sequences="data/{lineage}_{segment}_sequences.fasta",
-    params:
-        fields="strainName virus segment EPI_ISL date submission_date region country division location passage collecting_lab submitting_lab age sex",
-    shell:
-        """
-        augur parse \
-            --sequences {input.sequences} \
-            --fields {params.fields} \
-            --output-metadata {output.metadata} \
-            --output-sequences {output.sequences}
-        """
-
 rule subsample:
     input:
-        aligned_sequences=rules.parse.output.sequences,
-        enriched_metadata=rules.parse.output.metadata,
+        sequences="data/{lineage}_{segment}.fasta",
+        metadata="data/{lineage}_{segment}_metadata.tsv",
         include_strains="../config/{lineage}/reference_strains.txt",
         nextclade_include="dataset_config/{lineage}/includes.txt",
         exclude="../config/{lineage}/outliers.txt",
@@ -131,11 +168,12 @@ rule subsample:
     shell:
         """
         augur filter \
-            --sequences {input.aligned_sequences} \
-            --metadata {input.enriched_metadata} \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
             --exclude {input.exclude} \
             --include {input.include_strains} {input.nextclade_include} \
             --include-where EPI_ISL={params.reference_EPI_ISL} \
+            --exclude-where qc.overallStatus='bad' \
             {params.filter_arguments} \
             --output {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
@@ -144,7 +182,7 @@ rule subsample:
 rule subsample_harddate:
     input:
         sequences=rules.subsample.output.sampled_sequences,
-        enriched_metadata=rules.parse.output.metadata,
+        metadata="data/{lineage}_{segment}_metadata.tsv"
     output:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
         sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
@@ -156,7 +194,7 @@ rule subsample_harddate:
         """
         augur filter \
             --sequences {input.sequences} \
-            --metadata {input.enriched_metadata} \
+            --metadata {input.metadata} \
             --min-date {params.hardmin} \
             --output {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
@@ -171,7 +209,7 @@ rule align:
         alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta"
     params:
         outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{cds}}.fasta",
-        nextclade_bin = "./nextclade_v3"
+        nextclade_bin = "nextclade3"
     threads: 3
     shell:
         """
@@ -206,7 +244,7 @@ rule tree:
 rule root:
     input:
         tree=rules.tree.output.tree,
-        metadata = rules.parse.output.metadata,
+        metadata="data/{lineage}_{segment}_metadata.tsv",
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
     params:
@@ -252,7 +290,7 @@ rule refine:
     input:
         tree=rules.prune_outliers.output.tree,
         alignment=rules.align.output.alignment,
-        enriched_metadata=rules.parse.output.metadata,
+        metadata="data/{lineage}_{segment}_metadata.tsv"
     output:
         tree="build/{lineage}/{segment}/{reference}/tree.nwk",
         node_data="build/{lineage}/{segment}/{reference}/branch_lengths.json",
@@ -262,7 +300,7 @@ rule refine:
         augur refine \
             --tree {input.tree} \
             --alignment {input.alignment} \
-            --metadata {input.enriched_metadata} \
+            --metadata {input.metadata} \
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
@@ -321,7 +359,6 @@ rule clades:
             --membership-name {params.membership_key} \
             --label-name {params.label_key} \
             --output-node-data {output.node_data} \
-            > /dev/null
         """
 
 rule virus_specific_jsons:
@@ -367,19 +404,21 @@ rule export:
         "Exporting data files for auspice"
     input:
         tree=rules.refine.output.tree,
-        metadata=rules.parse.output.metadata,
+        metadata="data/{lineage}_{segment}_metadata.tsv",
         node_data = get_node_data,
         auspice_config= "build/{lineage}/{segment}/{reference}/auspice_config.json"
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields="region strainName country date EPI_ISL",
+        fields="strain region country date",
+        select_fields = ','.join(["strain", "region", "country", "date"]),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
+        tsv-select -H -f {params.select_fields} {input.metadata} > {input.metadata}.tmp 
         augur export v2 \
             --tree {input.tree} \
-            --metadata {input.metadata} \
+            --metadata {input.metadata}.tmp \
             --node-data {input.node_data}\
             --auspice-config {input.auspice_config} \
             --color-by-metadata {params.fields} \
@@ -392,7 +431,7 @@ rule export:
 rule generate_sample_sequences:
     input:
         sequences="data/{lineage}_{segment}_sequences.fasta",
-        metadata=rules.parse.output.metadata,
+        metadata="data/{lineage}_{segment}_metadata.tsv"
     output:
         sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
     shell:
@@ -402,7 +441,7 @@ rule generate_sample_sequences:
             --metadata {input.metadata} \
             --min-date 2020 --group-by year --subsample-max-sequences 50  \
             --exclude-ambiguous-dates-by year \
-            --exclude-where 'country!=USA' 'submitting_lab!=centers_for_disease_control_and_prevention' \
+            --exclude-where 'country!=Usa' 'submitting_lab!=Centers For Disease Control And Prevention' \
             --probabilistic-sampling \
             --output {output.sequences}
         """

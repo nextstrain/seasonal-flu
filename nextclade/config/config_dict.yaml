@@ -53,13 +53,13 @@ builds:
           key: "short-clade"
       refs:
         EPI1857216:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
+          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: -17
           hardmin_date: 2015
           reference_EPI_ISL: EPI1857216
           reference_strain: A/Darwin/6/2021
         CY163680:
-          filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
+          filter: "--min-date 2014 --probabilistic-sampling --group-by year region --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
           hardmin_date: 2004
           reference_EPI_ISL: EPI545340
