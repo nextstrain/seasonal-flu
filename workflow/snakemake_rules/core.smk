@@ -328,6 +328,17 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
+rule download_clades:
+    output:
+        clades="config/{lineage}/{segment}/clades.tsv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        url=lambda wildcards: clade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+    shell:
+        """
+        curl -o {output.clades} "{params.url}"
+        """
+
 # Determine clades with HA mutations.
 rule clades:
     input:
@@ -348,6 +359,17 @@ rule clades:
             --mutations {input.muts} \
             --clades {input.clades} \
             --output {output.node_data} 2>&1 | tee {log}
+        """
+
+rule download_subclades:
+    output:
+        subclades="config/{lineage}/{segment}/subclades.tsv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        url=lambda wildcards: subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+    shell:
+        """
+        curl -o {output.subclades} "{params.url}"
         """
 
 # Determine subclades for na and ha.
