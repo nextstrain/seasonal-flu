@@ -76,7 +76,6 @@ A/Helsinki/897/2013
 A/Helsinki/941/2013
 A/Helsinki/942/2013
 A/HoChiMinh/4596/2010
-A/HongKong/45/2019
 A/HongKong/H090-781-V10/2009
 A/HongKong/HK1/2008
 A/HongKong/HK10/2008
