@@ -109,7 +109,7 @@ builds:
       context:
           filters: --query "(passage_category != 'egg')" --group-by region year --subsample-max-sequences 300 --max-date 2020-03-01 --min-date 2016-01-01 --exclude {exclude}
       references:
-          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date}
   h3n2_2y:
     lineage: "h3n2"
     reference: "config/h3n2/{segment}/reference.fasta"

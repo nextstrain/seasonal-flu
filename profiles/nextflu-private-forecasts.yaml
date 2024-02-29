@@ -84,7 +84,7 @@ array-builds:
       europe:
           filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
       references:
-          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date}
       titer_strains:
           filters: --query "(passage_category != 'egg') & (is_titer_strain == True)" --group-by region year month --subsample-max-sequences 350 --min-date 1Y --exclude {exclude}
           priorities: "titers"
