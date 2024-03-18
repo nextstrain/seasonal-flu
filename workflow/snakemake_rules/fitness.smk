@@ -84,7 +84,7 @@ rule pairwise_titer_tree_distances:
         model = rules.titers_tree.output.titers_model,
         date_annotations = rules.refine.output.node_data,
     output:
-        distances = "builds/{build_name}/{segment}/pairwise-titer-tree-distances/{titer_collection}.json",
+        distances = temp("builds/{build_name}/{segment}/pairwise-titer-tree-distances/{titer_collection}.json"),
     params:
         model_attribute_name = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}dTiter",
         attribute_name = lambda wildcards: f"{get_titer_collection_attribute_prefix(wildcards)}cTiter_pairwise",
@@ -347,7 +347,7 @@ rule target_distances:
     input:
         attributes = rules.merge_node_data_and_frequencies.output.table,
     output:
-        distances = "builds/{build_name}/{segment}/target-distances.tsv",
+        distances = temp("builds/{build_name}/{segment}/target-distances.tsv"),
     params:
         delta_months = _get_delta_months_to_forecast,
     conda: "../envs/nextstrain.yaml"
