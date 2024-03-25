@@ -1,0 +1,32 @@
+name: Run Nextclade on all sequences
+
+on:
+  workflow_dispatch:
+    inputs:
+      dockerImage:
+        description: "Specific container image to use for build (will override the default of `nextstrain build`)"
+        required: false
+        type: string
+
+jobs:
+  run-build:
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: aws-batch
+      env: |
+        NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+      run: |
+        nextstrain build \
+          --detach \
+          --cpus 36 \
+          --memory 72gib \
+          --env AWS_ACCESS_KEY_ID \
+          --env AWS_SECRET_ACCESS_KEY \
+          . \
+          upload_all_nextclade_files \
+          -p \
+          --configfile profiles/nextclade.yaml \
+          --set-threads run_nextclade=16
