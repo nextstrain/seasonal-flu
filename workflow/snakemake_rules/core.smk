@@ -488,10 +488,10 @@ rule annotate_recency_of_submissions:
     output:
         node_data = "builds/{build_name}/recency.json",
     params:
-        submission_date_field=config["submission_date_field"],
-        date_bins=config["recency"]["date_bins"],
-        date_bin_labels=config["recency"]["date_bin_labels"],
-        upper_bin_label=config["recency"]["upper_bin_label"],
+        submission_date_field=config.get("submission_date_field"),
+        date_bins=config.get("recency", {}).get("date_bins"),
+        date_bin_labels=config.get("recency", {}).get("date_bin_labels"),
+        upper_bin_label=config.get("recency", {}).get("upper_bin_label"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/recency_{build_name}.txt"
