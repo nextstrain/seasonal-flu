@@ -1,7 +1,6 @@
 name: Run Nextclade on all sequences
 
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
       dockerImage:
