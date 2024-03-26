@@ -1,33 +1,19 @@
-nextclade_dataset_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "nextstrain/flu/h1n1pdm/ha/california-7-2009",
-    },
-    "h3n2": {
-        "ha": "nextstrain/flu/h3n2/ha/wisconsin-67-2005",
-    },
-    "vic": {
-        "ha": "nextstrain/flu/vic/ha/brisbane-60-2008",
-    },
-}
-
 rule upload_all_nextclade_files:
     input:
         files=lambda wildcards: [
-            "data/upload/s3/{filetype}_{lineage}_{segment}.done".format(filetype=filetype, lineage=lineage, segment=segment)
+            "data/upload/s3/{filetype}_{lineage}_{segment}.done".format(filetype=filetype, lineage=build["lineage"], segment=segment)
             for filetype in ("alignment", "nextclade")
-            for lineage in nextclade_dataset_by_lineage_and_segment.keys()
-            for segment in nextclade_dataset_by_lineage_and_segment[lineage].keys()
+            for build in config["builds"].values()
+            for segment in config["segments"]
         ]
 
 rule get_nextclade_dataset_for_lineage_and_segment:
     output:
         nextclade_dir=directory("nextclade_dataset/{lineage}_{segment}/"),
-    params:
-        dataset_name=lambda wildcards: nextclade_dataset_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
     shell:
         """
         nextclade3 dataset get \
-            -n {params.dataset_name:q} \
+            -n flu_{wildcards.lineage}_{wildcards.segment} \
             --output-dir {output.nextclade_dir}
         """
 

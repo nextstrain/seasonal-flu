@@ -10,3 +10,7 @@ segments:
 builds:
   h1n1pdm:
     lineage: h1n1pdm
+  h3n2:
+    lineage: h3n2
+  vic:
+    lineage: vic
