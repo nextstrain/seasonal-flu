@@ -6,6 +6,7 @@ s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu"
 
 segments:
   - ha
+  - na
 
 builds:
   h1n1pdm:
