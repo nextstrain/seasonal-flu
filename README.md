@@ -36,7 +36,7 @@ for Nextstrain's suite of software tools.
 Then run the example build via:
 
 ```
-nextstrain build .  --configfile profiles/ci/builds.yaml
+nextstrain build .  --configfile profiles/example/builds.yaml
 ```
 
 When the build has finished running, view the output Auspice trees via:
