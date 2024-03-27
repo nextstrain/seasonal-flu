@@ -1,25 +1,9 @@
-# Define inputs.
-data_source: fauna
-fauna_fasta_fields:
-  - strain
-  - virus
-  - locus
-  - accession
-  - collection_date
-  - virus_inclusion_date
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
+custom_rules:
+  - profiles/ci/prepare_data.smk
+
 fasta_fields:
   - strain
   - virus
-  - segment
   - accession
   - date
   - date_submitted
@@ -62,8 +46,7 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       lineage: "h3n2"
-      min_date: "2019-01-01"
       auspice_config: "config/h3n2/auspice_config.json"
       subsamples:
         global:
-            filters: "--group-by region year month --subsample-max-sequences 200 --min-date 2019-01-01 --exclude-where 'ha!=True' 'na!=True'"
+            filters: "--exclude-where 'ha!=True' 'na!=True'"
