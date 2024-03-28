@@ -4,6 +4,7 @@ from treetime.utils import numeric_date
 
 
 wildcard_constraints:
+    lineage = r'h1n1pdm|h3n2|vic|yam',
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     center = r'who|cdc|crick|niid|crick|vidrl',
     passage = r'cell|egg',
