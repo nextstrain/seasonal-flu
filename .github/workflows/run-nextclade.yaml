@@ -29,4 +29,4 @@ jobs:
           upload_all_nextclade_files \
           -p \
           --configfile profiles/nextclade.yaml \
-          --set-threads run_nextclade=16
+          --set-threads run_nextclade=12
