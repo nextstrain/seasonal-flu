@@ -59,7 +59,7 @@ rule export:
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
-        lat_longs = config['lat-longs']
+        lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
     output:
         auspice_json = "auspice/{build_name}_{segment}.json",
         root_sequence_json = "auspice/{build_name}_{segment}_root-sequence.json",
