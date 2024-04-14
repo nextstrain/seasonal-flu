@@ -11,3 +11,7 @@ A/Hubei-Jianli/2583/2023
 A/Shanghai-Huangpu/11639/2023
 A/HongKong/1542/2023
 A/Macau/9901287/2023
+
+A/California/70/2023
+A/Norway/9164/2023
+A/Bahrain/1899/2023

@@ -16,13 +16,13 @@ builds:
           key: "subclade"
       refs:
         CY121680: # exclude South Korean genomes because of sequencing artifacts close to the start of HA
-          filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500  --subsample-max-sequences 1500"
+          filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' qc.overallStatus='bad' --group-by year --min-length 1500  --subsample-max-sequences 1500"
           clade_offset: 0
           hardmin_date: 2009
           reference_EPI_ISL: EPI1583287
           reference_strain: A/California/7/2009-egg #TODO: exclude
         MW626062:
-          filter: "--min-date 2019 --probabilistic-sampling  --exclude-where country='south_korea' --group-by year --min-length 1500 --subsample-max-sequences 1500"
+          filter: "--min-date 2019 --probabilistic-sampling  --exclude-where country='south_korea' qc.overallStatus='bad' --group-by year --min-length 1500 --subsample-max-sequences 1500"
           clade_offset: 0
           hardmin_date: 2015
           reference_EPI_ISL: EPI1812046
@@ -34,7 +34,7 @@ builds:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
       refs:
         MW626056:
-          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
+          filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
           clade_offset: 0
           hardmin_date: 2015
           reference_EPI_ISL: EPI1812046
