@@ -5,9 +5,8 @@ import datetime
 
 wildcard_constraints:
     flu_type="[A-Za-z0-9]+",
-    year="\d\d\d\d",
     lineage=r"h3n2|h1n1pdm|vic|yam",
-    segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
+    segment = r"pb2|pb1|pa|ha|np|na|mp|ns",
     reference="[^_/]+",
 
 
@@ -217,6 +216,7 @@ rule align:
             --jobs={threads} \
             --input-ref {input.reference} \
             --input-annotation {input.annotation} \
+            --gap-alignment-side right \
             --output-translations {params.outdir} \
             --output-fasta {output.alignment} \
             {input.sequences} \
@@ -410,8 +410,8 @@ rule export:
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields="strain region country date EPI_ISL",
-        select_fields = ','.join(["strain", "region", "country", "date"]),
+        fields="strain region country date EPI_ISL accession_{segment}",
+        select_fields = ','.join(["strain", "region", "country", "date", "accession_{segment}"]),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
@@ -430,7 +430,7 @@ rule export:
 
 rule generate_sample_sequences:
     input:
-        sequences="data/{lineage}_{segment}_sequences.fasta",
+        sequences="data/{lineage}_{segment}.fasta",
         metadata="data/{lineage}_{segment}_metadata.tsv"
     output:
         sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
