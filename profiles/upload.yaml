@@ -8,6 +8,7 @@ fauna_fasta_fields:
   - strain
   - virus
   - locus
+  - isolate_id
   - accession
   - collection_date
   - submission_date
@@ -24,6 +25,7 @@ fasta_fields:
   - strain
   - virus
   - segment
+  - isolate_id
   - accession
   - date
   - date_submitted
