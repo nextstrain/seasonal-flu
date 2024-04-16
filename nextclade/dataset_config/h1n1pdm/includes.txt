@@ -9,3 +9,5 @@ A/Singapore/GP6589/2022
 
 A/Seoul/1292/2023
 A/Qatar/34-VI-23-0091938/2023
+A/SouthAustralia/46/2023
+A/Brisbane/145/2023
