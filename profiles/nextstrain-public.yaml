@@ -57,9 +57,9 @@ array-builds:
         - 6Y6M
       resolution:
         - 6m
-    build_name: "flu_seasonal_{lineage}_6m"
+    build_name: "seasonal-flu_{lineage}_6m"
     build_params: &shared-hi-build-params
-      auspice_name: "flu_seasonal_{lineage}_{{segment}}_{resolution}"
+      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -95,7 +95,7 @@ array-builds:
         - 8Y
       resolution:
         - 2y
-    build_name: "flu_seasonal_{lineage}_2y"
+    build_name: "seasonal-flu_{lineage}_2y"
     build_params: *shared-hi-build-params
     subsamples: *subsampling-scheme
   3Y-hi-builds:
@@ -109,7 +109,7 @@ array-builds:
         - 9Y
       resolution:
         - 3y
-    build_name: "flu_seasonal_{lineage}_3y"
+    build_name: "seasonal-flu_{lineage}_3y"
     build_params: *shared-hi-build-params
     subsamples: *subsampling-scheme
   6Y-hi-builds:
@@ -123,7 +123,7 @@ array-builds:
         - 12Y
       resolution:
         - 6y
-    build_name: "flu_seasonal_{lineage}_6y"
+    build_name: "seasonal-flu_{lineage}_6y"
     build_params: *shared-hi-build-params
     subsamples: *subsampling-scheme
   12Y-hi-builds:
@@ -137,7 +137,7 @@ array-builds:
         - 18Y
       resolution:
         - 12y
-    build_name: "flu_seasonal_{lineage}_12y"
+    build_name: "seasonal-flu_{lineage}_12y"
     build_params: *shared-hi-build-params
     subsamples: *subsampling-scheme
   6M-fra-builds:
@@ -148,10 +148,10 @@ array-builds:
         - 6Y6M
       resolution:
         - 6m
-    build_name: "flu_seasonal_h3n2_6m"
+    build_name: "seasonal-flu_h3n2_6m"
     build_params: &shared-fra-build-params
       lineage: h3n2
-      auspice_name: "flu_seasonal_{lineage}_{{segment}}_{resolution}"
+      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -177,10 +177,10 @@ array-builds:
         - 8Y
       resolution:
         - 2y
-    build_name: "flu_seasonal_h3n2_2y"
+    build_name: "seasonal-flu_h3n2_2y"
     build_params:
       lineage: h3n2
-      auspice_name: "flu_seasonal_{lineage}_{{segment}}_{resolution}"
+      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -206,7 +206,7 @@ array-builds:
         - 9Y
       resolution:
         - 3y
-    build_name: "flu_seasonal_h3n2_3y"
+    build_name: "seasonal-flu_h3n2_3y"
     build_params: *shared-fra-build-params
     subsamples: *subsampling-scheme
   6Y-fra-builds:
@@ -217,7 +217,7 @@ array-builds:
         - 12Y
       resolution:
         - 6y
-    build_name: "flu_seasonal_h3n2_6y"
+    build_name: "seasonal-flu_h3n2_6y"
     build_params: *shared-fra-build-params
     subsamples: *subsampling-scheme
   12Y-fra-builds:
@@ -228,7 +228,7 @@ array-builds:
         - 18Y
       resolution:
         - 12y
-    build_name: "flu_seasonal_h3n2_12y"
+    build_name: "seasonal-flu_h3n2_12y"
     build_params: *shared-fra-build-params
     subsamples: *subsampling-scheme
 
