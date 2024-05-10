@@ -9,9 +9,20 @@ rule plot_lineage_counts:
         total_sample_count_h3n2="figures/total-sample-count_h3n2.png",
         total_sample_count_vic="figures/total-sample-count_vic.png",
     conda: "../../workflow/envs/notebook.yaml"
-    log:
-        "logs/plot-counts-per-lineage.ipynb"
-    notebook: "../../notebooks/plot-counts-per-lineage.py.ipynb"
+    params:
+        lineages=["H1N1pdm", "H3N2", "Vic"],
+        min_date="2022-11-01",
+    shell:
+        """
+        python3 scripts/plot_counts_per_lineage.py \
+            --metadata {input.h1n1pdm_metadata} {input.h3n2_metadata} {input.vic_metadata} \
+            --lineages {params.lineages:q} \
+            --min-date {params.min_date} \
+            --output-count-by-lineage {output.total_sample_count_by_lineage} \
+            --output-h1n1pdm-count {output.total_sample_count_h1n1pdm} \
+            --output-h3n2-count {output.total_sample_count_h3n2} \
+            --output-vic-count {output.total_sample_count_vic}
+        """
 
 rule all_counts_of_recent_tips_by_clade:
     input:
