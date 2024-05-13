@@ -29,7 +29,7 @@ nextstrain remote upload \
 The nextflu-private workflow automatically generates several outputs used for reporting including:
 
  - Plots of the number of genomes available in GISAID for all lineages (e.g., `figures/total-sample-count-by-lineage.png`)
- - Markdown tables of counts of samples collected in the last month per build and clade (e.g., `builds/h1n1pdm_2y_titers/counts_of_recent_tips_by_clade.md`)
+ - Markdown tables of counts of HA sequences collected in the last month per clade (e.g., `tables/h1n1pdm/counts_of_recent_sequences_by_clade.md`)
  - Markdown tables of current frequency, change in frequency in the last 4 weeks, and titer reference strains for derived haplotypes (e.g., `builds/h1n1pdm_2y_titers/ha/haplotype_summary/cell_hi.md` per titer collection)
 
 Copy these files (or their contents) into the corresponding sections of the narrative Markdown.

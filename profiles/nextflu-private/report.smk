@@ -1,6 +1,6 @@
 rule all_report_outputs:
     input:
-        tip_counts_by_clade=expand("builds/{build_name}/counts_of_recent_tips_by_clade.md", build_name=list(config["builds"].keys())),
+        counts_by_clade=expand("tables/{lineage}/counts_of_recent_sequences_by_clade.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         total_sample_count_by_lineage="figures/total-sample-count-by-lineage.png",
 
 rule plot_lineage_counts:
@@ -29,12 +29,49 @@ rule plot_lineage_counts:
             --output-vic-count {output.total_sample_count_vic}
         """
 
+rule annotate_recency_of_all_submissions:
+    input:
+        metadata = "data/{lineage}/metadata.tsv",
+    output:
+        node_data = "tables/{lineage}/recency.json",
+    params:
+        submission_date_field=config.get("submission_date_field"),
+        date_bins=config.get("recency", {}).get("date_bins"),
+        date_bin_labels=config.get("recency", {}).get("date_bin_labels"),
+        upper_bin_label=config.get("recency", {}).get("upper_bin_label"),
+    conda: "../../workflow/envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/all_recency_{lineage}.txt"
+    log:
+        "logs/all_recency_{lineage}.txt"
+    shell:
+        """
+        python3 scripts/construct-recency-from-submission-date.py \
+            --metadata {input.metadata} \
+            --submission-date-field {params.submission_date_field} \
+            --date-bins {params.date_bins} \
+            --date-bin-labels {params.date_bin_labels:q} \
+            --upper-bin-label {params.upper_bin_label} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
+rule download_nextclade:
+    output:
+        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/nextclade.tsv.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        aws s3 cp {params.s3_path} {output.nextclade}
+        """
+
 rule count_recent_tips_by_clade:
     input:
-        recency="builds/{build_name}/recency.json",
-        clades="builds/{build_name}/ha/subclades.json",
+        recency="tables/{lineage}/recency.json",
+        clades="data/{lineage}/ha/nextclade.tsv.xz",
     output:
-        counts="builds/{build_name}/counts_of_recent_tips_by_clade.md",
+        counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
