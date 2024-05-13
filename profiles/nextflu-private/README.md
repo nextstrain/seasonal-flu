@@ -26,29 +26,15 @@ nextstrain remote upload \
   narratives/nextstrain-cdc_2022-10-03.md
 ```
 
+The nextflu-private workflow automatically generates several outputs used for reporting including:
+
+ - Plots of the number of genomes available in GISAID for all lineages (e.g., `figures/total-sample-count-by-lineage.png`)
+ - Markdown tables of counts of samples collected in the last month per build and clade (e.g., `builds/h1n1pdm_2y_titers/counts_of_recent_tips_by_clade.md`)
+ - Markdown tables of current frequency, change in frequency in the last 4 weeks, and titer reference strains for derived haplotypes (e.g., `builds/h1n1pdm_2y_titers/ha/haplotype_summary/cell_hi.md` per titer collection)
+
+Copy these files (or their contents) into the corresponding sections of the narrative Markdown.
+
 ## Update the group overview
 
 [The nextflu-private group's overview](https://nextstrain.org/groups/nextflu-private/) lists recent reports and trees by date with the most recent at the top of the page.
 [Open the group's settings page](https://nextstrain.org/groups/nextflu-private/settings) and update the list of builds to include the builds you just uploaded.
-
-## Plot counts per lineage for reports
-
-Plot the number of genomes available in GISAID for all lineages in a single plot and then plot number per region within each lineage.
-Plots use Altair which is not part of the Nextstrain Docker or Conda base environments, so we use a custom Conda environment with Snakemake.
-
-``` bash
-snakemake \
-  figures/total-sample-count-by-lineage.png \
-  --use-conda \
-  --conda-frontend conda \
-  -j 1 \
-  -p \
-  --configfile profiles/nextflu-private.yaml
-```
-
-The private builds also produce Markdown table summarizing two different types of lineage or genotype counts:
-
- - counts of samples collected in the last month per build and clade (e.g., `builds/h1n1pdm_2y_titers/counts_of_recent_tips_by_clade.md`)
- - current frequency, change in frequency in the last 4 weeks, and titer reference strains for derived haplotypes (e.g., `builds/h1n1pdm_2y_titers/ha/haplotype_summary/cell_hi.md` per titer collection)
-
-Copy the contents of these files into the corresponding sections of the narrative Markdown.
