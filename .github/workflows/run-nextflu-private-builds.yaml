@@ -29,6 +29,6 @@ jobs:
           --env NEXTSTRAIN_PASSWORD \
           . \
           deploy_all \
-          all_counts_of_recent_tips_by_clade \
+          all_report_outputs \
           -p \
           --configfile profiles/nextflu-private.yaml

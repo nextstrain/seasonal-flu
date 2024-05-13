@@ -1,3 +1,8 @@
+rule all_report_outputs:
+    input:
+        tip_counts_by_clade=expand("builds/{build_name}/counts_of_recent_tips_by_clade.md", build_name=list(config["builds"].keys())),
+        total_sample_count_by_lineage="figures/total-sample-count-by-lineage.png",
+
 rule plot_lineage_counts:
     input:
         h1n1pdm_metadata="data/h1n1pdm/metadata.tsv",
@@ -23,10 +28,6 @@ rule plot_lineage_counts:
             --output-h3n2-count {output.total_sample_count_h3n2} \
             --output-vic-count {output.total_sample_count_vic}
         """
-
-rule all_counts_of_recent_tips_by_clade:
-    input:
-        counts=expand("builds/{build_name}/counts_of_recent_tips_by_clade.md", build_name=list(config["builds"].keys()))
 
 rule count_recent_tips_by_clade:
     input:
