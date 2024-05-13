@@ -31,13 +31,15 @@ if __name__ == '__main__':
     clades = pd.read_csv(
         args.clades,
         sep="\t",
-        usecols=["seqName", "subclade"],
+        usecols=["seqName", "subclade", "qc.overallStatus"],
     )
 
-    # Filter clade labels to recent sequences and count the clade membership for
-    # each recent tip.
+
+    # Filter clade labels to recent non-low-quality sequences and count the
+    # clade membership for each recent tip.
     count_by_clade = clades[
-        clades["seqName"].isin(recent_tips)
+        (clades["qc.overallStatus"] != "bad") &
+        (clades["seqName"].isin(recent_tips))
     ].groupby(
         "subclade"
     )["seqName"].count().reset_index(
