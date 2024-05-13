@@ -28,6 +28,14 @@ on:
         description: "Specific container image to use for nextflu-private group builds"
         required: false
         type: string
+      triggerNextclade:
+        description: "Trigger run-nextclade workflow"
+        required: true
+        type: boolean
+      nextcladeDockerImage:
+        description: "Specific container image to use for the Nextclade workflow"
+        required: false
+        type: string
 
 jobs:
   upload:
@@ -65,6 +73,9 @@ jobs:
           - trigger: ${{ inputs.triggerNextfluPrivate }}
             workflow: run-nextflu-private-builds.yaml
             image: ${{ inputs.nextfluPrivateDockerImage }}
+          - trigger: ${{ inputs.triggerNextclade }}
+            workflow: run-nextclade.yaml
+            image: ${{ inputs.nextcladeDockerImage }}
     runs-on: ubuntu-latest
     steps:
       - if: ${{ matrix.trigger }}
