@@ -28,7 +28,15 @@ on:
         description: "Specific container image to use for nextflu-private group builds"
         required: false
         type: string
-        
+      triggerNextclade:
+        description: "Trigger run-nextclade workflow"
+        required: true
+        type: boolean
+      nextcladeDockerImage:
+        description: "Specific container image to use for the Nextclade workflow"
+        required: false
+        type: string
+
 jobs:
   upload:
     permissions:
@@ -51,44 +59,31 @@ jobs:
           upload_all_metadata \
           --configfile profiles/upload.yaml
 
-  trigger-public-builds:
+  trigger:
     needs: [upload]
-    if: ${{ inputs.triggerPublic }}
+    strategy:
+      matrix:
+        include:
+          - trigger: ${{ inputs.triggerPublic }}
+            workflow: run-public-builds.yaml
+            image: ${{ inputs.publicDockerImage }}
+          - trigger: ${{ inputs.triggerPrivateNextflu }}
+            workflow: run-private-nextflu-builds.yaml
+            image: ${{ inputs.privateNextfluDockerImage }}
+          - trigger: ${{ inputs.triggerNextfluPrivate }}
+            workflow: run-nextflu-private-builds.yaml
+            image: ${{ inputs.nextfluPrivateDockerImage }}
+          - trigger: ${{ inputs.triggerNextclade }}
+            workflow: run-nextclade.yaml
+            image: ${{ inputs.nextcladeDockerImage }}
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Nextstrain public builds
+      - if: ${{ matrix.trigger }}
+        name: Trigger ${{ matrix.workflow }}
         run: |
           gh workflow run \
-            run-public-builds.yaml \
+            ${{ matrix.workflow }} \
             --repo nextstrain/seasonal-flu \
-            -f dockerImage=${{ github.event.inputs.publicDockerImage }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-  trigger-private-nextflu-builds:
-    needs: [upload]
-    if: ${{ inputs.triggerPrivateNextflu }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger private Nextflu builds
-        run: |
-          gh workflow run \
-            run-private-nextflu-builds.yaml \
-            --repo nextstrain/seasonal-flu \
-            -f dockerImage=${{ github.event.inputs.privateNextfluDockerImage }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-  trigger-nextflu-private-builds:
-    needs: [upload]
-    if: ${{ inputs.triggerNextfluPrivate }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger nextflu-private group builds
-        run: |
-          gh workflow run \
-            run-nextflu-private-builds.yaml \
-            --repo nextstrain/seasonal-flu \
-            -f dockerImage=${{ github.event.inputs.nextfluPrivateDockerImage }}
+            -f dockerImage=${{ matrix.image }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
