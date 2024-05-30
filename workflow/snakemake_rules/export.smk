@@ -61,8 +61,7 @@ rule export:
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
     output:
-        auspice_json = "auspice/{build_name}_{segment}.json",
-        root_sequence_json = "auspice/{build_name}_{segment}_root-sequence.json",
+        auspice_json = "auspice/{build_name}_{segment}.json"
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/export_{build_name}_{segment}.txt"
@@ -74,7 +73,7 @@ rule export:
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} \
-            --include-root-sequence \
+            --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
             --output {output.auspice_json} 2>&1 | tee {log}
