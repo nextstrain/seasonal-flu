@@ -71,7 +71,6 @@ def _get_build_outputs():
         for segment in config["segments"]:
             outputs.extend([
                 f"auspice/{build_name}_{segment}.json",
-                f"auspice/{build_name}_{segment}_root-sequence.json",
                 f"auspice/{build_name}_{segment}_tip-frequencies.json",
             ])
 
