@@ -5,7 +5,7 @@ rule all_public:
             "auspice_renamed/" + build.get("auspice_name", f"{build_name}_{{segment}}").format(segment=segment) + suffix + ".json"
             for build_name, build in config["builds"].items()
             for segment in config["segments"]
-            for suffix in ["", "_root-sequence", "_tip-frequencies", "_measurements"]
+            for suffix in ["", "_tip-frequencies", "_measurements"]
         ],
 
 def _get_file_by_auspice_name(wildcards):
@@ -21,16 +21,6 @@ rule rename_auspice_main:
         _get_file_by_auspice_name,
     output:
         "auspice_renamed/{auspice_name}.json",
-    shell:
-        """
-        ln {input} {output}
-        """
-
-rule rename_auspice_root_sequence:
-    input:
-        lambda wildcards: _get_file_by_auspice_name(wildcards).replace(".json", "_root-sequence.json"),
-    output:
-        "auspice_renamed/{auspice_name}_root-sequence.json",
     shell:
         """
         ln {input} {output}

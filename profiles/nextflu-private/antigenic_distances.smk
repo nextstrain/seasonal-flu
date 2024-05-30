@@ -174,8 +174,7 @@ rule export_private:
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         lat_longs = config['lat-longs']
     output:
-        auspice_json = "auspice/{build_name}_{segment}.json",
-        root_sequence_json = "auspice/{build_name}_{segment}_root-sequence.json",
+        auspice_json = "auspice/{build_name}_{segment}.json"
     conda: "../../workflow/envs/nextstrain.yaml"
     benchmark:
         "benchmarks/export_{build_name}_{segment}.txt"
@@ -187,7 +186,7 @@ rule export_private:
             --tree {input.tree} \
             --metadata {input.metadata} \
             --node-data {input.node_data} {input.private_node_data} \
-            --include-root-sequence \
+            --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
             --minify-json \
