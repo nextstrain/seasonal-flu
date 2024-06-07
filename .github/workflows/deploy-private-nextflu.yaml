@@ -28,6 +28,8 @@ defaults:
 jobs:
   deploy_to_netlify:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,6 +49,12 @@ jobs:
           # https://github.com/blab/nextflu/blob/12c5645d990f53c553d6f04e293e2f12b4ad3575/auspice/Gemfile.lock
           working-directory: ${{ env.WORKING_DIR }}
 
+      - name: Configure credentials for GitHub Actions job access to AWS Batch
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::827581582529:role/GitHubActionsRoleNextstrainBatchJobs
+
       - uses: nextstrain/.github/actions/setup-nextstrain-cli@master
 
       - name: Download builds from AWS Batch
@@ -58,8 +66,6 @@ jobs:
           --no-logs \
           .
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_BATCH_JOB_ID: ${{ inputs.aws_batch_job_id }}
 
       - name: Move Auspice JSONs
