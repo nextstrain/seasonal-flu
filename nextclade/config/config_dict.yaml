@@ -16,7 +16,7 @@ builds:
           key: "subclade"
       refs:
         CY121680: # exclude South Korean genomes because of sequencing artifacts close to the start of HA
-          filter: "--min-date 2014 --probabilistic-sampling  --exclude-where country='south_korea' qc.overallStatus='bad' --group-by year --min-length 1500  --subsample-max-sequences 1500"
+          filter: "--min-date 2009 --probabilistic-sampling  --exclude-where country='south_korea' qc.overallStatus='bad' --group-by year --min-length 1500  --subsample-max-sequences 1500"
           clade_offset: 0
           hardmin_date: 2009
           reference_EPI_ISL: EPI1583287
