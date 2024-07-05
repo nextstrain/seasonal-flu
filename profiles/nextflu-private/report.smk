@@ -141,3 +141,20 @@ rule estimate_derived_haplotype_frequencies:
             --max-date {params.max_date} \
             --output {output.frequencies}
         """
+
+rule summarize_derived_haplotypes:
+    input:
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+        frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
+    output:
+        table="tables/{lineage}/derived_haplotypes.tsv",
+        markdown_table="tables/{lineage}/derived_haplotypes.md",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/summarize_haplotypes.py \
+            --metadata {input.metadata} \
+            --frequencies {input.frequencies} \
+            --output-table {output.table} \
+            --output-markdown-table {output.markdown_table}
+        """
