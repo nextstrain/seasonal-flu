@@ -92,3 +92,32 @@ rule count_recent_tips_by_clade:
             --clades {input.clades} \
             --output {output.counts}
         """
+
+rule get_derived_haplotypes:
+    input:
+        nextclade="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
+    output:
+        haplotypes="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        genes=["HA1"],
+    shell:
+        """
+        python3 scripts/add_derived_haplotypes.py \
+            --nextclade {input.nextclade} \
+            --genes {params.genes:q} \
+            --strip-genes \
+            --output {output.haplotypes}
+        """
+
+rule join_metadata_and_nextclade:
+    input:
+        metadata="data/{lineage}/metadata.tsv",
+        nextclade="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
+    output:
+        nextclade="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.nextclade}
+        """
