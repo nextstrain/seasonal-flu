@@ -66,10 +66,22 @@ rule download_nextclade:
         aws s3 cp {params.s3_path} {output.nextclade}
         """
 
+rule filter_nextclade_by_qc:
+    input:
+        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+    output:
+        nextclade="data/{lineage}/{segment}/nextclade_without_bad_qc.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        xz -c -d {input.nextclade} \
+            | tsv-filter -H --str-ne "qc.overallStatus:bad" > {output.nextclade}
+        """
+
 rule count_recent_tips_by_clade:
     input:
         recency="tables/{lineage}/recency.json",
-        clades="data/{lineage}/ha/nextclade.tsv.xz",
+        clades="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
