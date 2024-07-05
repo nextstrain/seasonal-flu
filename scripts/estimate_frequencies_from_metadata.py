@@ -55,12 +55,16 @@ if __name__ == '__main__':
         observations,
         pivots,
     )
-    frequencies.frequencies = {
+    tip_frequencies = {
         strain: frequency_matrix[index]
         for index, strain in enumerate(metadata.index.values)
         if frequency_matrix[index].sum() > 0
     }
-    frequencies.pivots = pivots
 
-    frequency_dict = frequencies.to_json()
+    frequency_dict = {"pivots": list(pivots)}
+    for node_name in tip_frequencies:
+        frequency_dict[node_name] = {
+            "frequencies": format_frequencies(tip_frequencies[node_name])
+        }
+
     write_json(frequency_dict, args.output)
