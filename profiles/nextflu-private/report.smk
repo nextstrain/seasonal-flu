@@ -115,9 +115,29 @@ rule join_metadata_and_nextclade:
         metadata="data/{lineage}/metadata.tsv",
         nextclade="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
     output:
-        nextclade="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.nextclade}
+        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.metadata}
+        """
+
+rule estimate_derived_haplotype_frequencies:
+    input:
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+    output:
+        frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        narrow_bandwidth=1 / 12.0,
+        min_date="16W",
+        max_date="4W",
+    shell:
+        """
+        python3 scripts/estimate_frequencies_from_metadata.py \
+            --metadata {input.metadata} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output.frequencies}
         """
