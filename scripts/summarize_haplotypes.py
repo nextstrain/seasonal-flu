@@ -11,6 +11,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--metadata", required=True, help="metadata TSV with derived haplotypes per strain")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON")
+    parser.add_argument("--titers", nargs="+", help="titers TSV files with columns named 'virus_strain' and 'serum_strain' representing test and reference strains, respectively")
+    parser.add_argument("--titer-names", nargs="+", help="names of the titer collections provided to the `--titers` argument to use in the table output")
     parser.add_argument("--output-table", required=True, help="TSV of haplotypes along with number of reference viruses, distinct reference viruses, number of test viruses, current frequency, and delta frequency from the last month.")
     parser.add_argument("--output-markdown-table", required=True, help="Markdown table of the TSV table above for use in narratives.")
 
@@ -33,11 +35,13 @@ if __name__ == '__main__':
 
     # Calculate haplotype frequencies and delta frequencies.
     haplotype_frequencies = {}
+    haplotype_by_strain = {}
     for strain, record in metadata.iterrows():
+        haplotype = record["haplotype"]
+        haplotype_by_strain[strain] = haplotype
+
         if strain not in current_frequency_by_strain:
             continue
-
-        haplotype = record["haplotype"]
 
         if haplotype not in haplotype_frequencies:
             haplotype_frequencies[haplotype] = {
@@ -58,12 +62,43 @@ if __name__ == '__main__':
             "delta_frequency": (haplotype_frequencies[haplotype]["current_frequency"] - haplotype_frequencies[haplotype]["previous_frequency"]),
         })
 
-    haplotypes_df = pd.DataFrame(haplotype_records).set_index("haplotype")
+    haplotypes_df = pd.DataFrame(haplotype_records)
 
-    # Join haplotypes with titer reference counts and names.
+    # Load titer collections and annotate haplotypes by the number and list of
+    # available references.
     annotated_haplotypes = haplotypes_df
-    # TODO: Annotate haplotypes with number and list of titer references and number of titer test strains.
-    annotated_haplotypes = annotated_haplotypes.query("current_frequency > 0").copy()
+    for titer_name, titer_collection in zip(args.titer_names, args.titers):
+        titers = pd.read_csv(
+            titer_collection,
+            sep="\t",
+            usecols=["virus_strain", "serum_strain"],
+        ).drop_duplicates()
+
+        reference_counts = titers.groupby("serum_strain")["virus_strain"].count().reset_index(name="count")
+        reference_counts["reference"] = reference_counts.apply(
+            lambda record: f"{record['serum_strain']} ({record['count']})",
+            axis=1,
+        )
+        reference_counts["haplotype"] = reference_counts["serum_strain"].map(haplotype_by_strain)
+
+        haplotype_references = reference_counts.groupby("haplotype").aggregate(
+            total_references=("reference", "count"),
+            distinct_references=("reference", "unique"),
+        ).rename(columns={
+            "total_references": f"total_references_{titer_name}",
+            "distinct_references": f"distinct_references_{titer_name}"
+        })
+
+        # Annotate haplotypes with number and list of titer references and
+        # number of titer test strains.
+        annotated_haplotypes = annotated_haplotypes.merge(
+            haplotype_references,
+            on="haplotype",
+            how="left",
+        )
+
+    annotated_haplotypes = annotated_haplotypes.set_index("haplotype")
+    annotated_haplotypes = annotated_haplotypes.query("current_frequency >= 0.01").copy()
     annotated_haplotypes = annotated_haplotypes.sort_values("current_frequency", ascending=False)
 
     annotated_haplotypes.to_csv(
@@ -79,9 +114,6 @@ if __name__ == '__main__':
     # Use spaces instead of commas, allowing Markdown to wrap
     # lines.
     annotated_haplotypes["haplotype"] = annotated_haplotypes["haplotype"].str.replace(",", " ")
-
-    # Keep haplotypes with at least 1% frequency.
-    annotated_haplotypes = annotated_haplotypes.query("current_frequency >= 0.01").copy()
 
     # Round frequencies prior to writing out the markdown table.
     annotated_haplotypes["current_frequency"] = (annotated_haplotypes["current_frequency"] * 100).round(0).astype(int)

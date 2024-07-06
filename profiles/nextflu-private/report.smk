@@ -146,15 +146,26 @@ rule summarize_derived_haplotypes:
     input:
         metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
         frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
+        titers=lambda wildcards: [
+            collection["data"]
+            for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+        ],
     output:
         table="tables/{lineage}/derived_haplotypes.tsv",
         markdown_table="tables/{lineage}/derived_haplotypes.md",
     conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        titer_names=lambda wildcards: [
+            collection["name"]
+            for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+        ],
     shell:
         """
         python3 scripts/summarize_haplotypes.py \
             --metadata {input.metadata} \
             --frequencies {input.frequencies} \
+            --titers {input.titers:q} \
+            --titer-names {params.titer_names:q} \
             --output-table {output.table} \
             --output-markdown-table {output.markdown_table}
         """
