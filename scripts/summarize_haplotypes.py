@@ -45,11 +45,11 @@ if __name__ == '__main__':
 
         if haplotype not in haplotype_frequencies:
             haplotype_frequencies[haplotype] = {
-                "current_frequency": 0.0,
+                "frequency": 0.0,
                 "previous_frequency": 0.0,
             }
 
-        haplotype_frequencies[haplotype]["current_frequency"] += current_frequency_by_strain[strain]
+        haplotype_frequencies[haplotype]["frequency"] += current_frequency_by_strain[strain]
         haplotype_frequencies[haplotype]["previous_frequency"] += previous_frequency_by_strain[strain]
 
     # Build a data frame of haplotypes and their frequencies.
@@ -58,8 +58,8 @@ if __name__ == '__main__':
     for haplotype in haplotype_frequencies:
         haplotype_records.append({
             "haplotype": haplotype,
-            "current_frequency": haplotype_frequencies[haplotype]["current_frequency"],
-            "delta_frequency": (haplotype_frequencies[haplotype]["current_frequency"] - haplotype_frequencies[haplotype]["previous_frequency"]),
+            "frequency": haplotype_frequencies[haplotype]["frequency"],
+            "delta_frequency": (haplotype_frequencies[haplotype]["frequency"] - haplotype_frequencies[haplotype]["previous_frequency"]),
         })
 
     haplotypes_df = pd.DataFrame(haplotype_records)
@@ -89,8 +89,8 @@ if __name__ == '__main__':
             total_references=("reference", "count"),
             distinct_references=("reference", "unique"),
         ).rename(columns={
-            "total_references": f"total_references_{titer_name}",
-            "distinct_references": f"distinct_references_{titer_name}"
+            "total_references": f"{titer_name} count",
+            "distinct_references": f"{titer_name} names"
         })
 
         # Annotate haplotypes with number and list of titer references and
@@ -102,12 +102,15 @@ if __name__ == '__main__':
         )
 
     annotated_haplotypes = annotated_haplotypes.set_index("haplotype")
-    annotated_haplotypes = annotated_haplotypes.query("current_frequency >= 0.01").copy()
-    annotated_haplotypes = annotated_haplotypes.sort_values("current_frequency", ascending=False)
+    annotated_haplotypes = annotated_haplotypes.query("frequency >= 0.01").copy()
+    annotated_haplotypes = annotated_haplotypes.sort_values("frequency", ascending=False)
 
     for column in annotated_haplotypes.columns:
-        if column.startswith("total_references_"):
+        if column.endswith("count"):
             annotated_haplotypes[column] = annotated_haplotypes[column].apply(lambda value: "" if pd.isnull(value) else int(value))
+
+        if column.endswith("names"):
+            annotated_haplotypes[column] = annotated_haplotypes[column].apply(lambda value: "\n".join(value) if str(value) != "nan" else "")
 
     annotated_haplotypes.to_csv(
         args.output_table,
@@ -124,7 +127,7 @@ if __name__ == '__main__':
     annotated_haplotypes["haplotype"] = annotated_haplotypes["haplotype"].str.replace(",", " ")
 
     # Round frequencies prior to writing out the markdown table.
-    annotated_haplotypes["current_frequency"] = (annotated_haplotypes["current_frequency"] * 100).round(0).astype(int)
+    annotated_haplotypes["frequency"] = (annotated_haplotypes["frequency"] * 100).round(0).astype(int)
     annotated_haplotypes["delta_frequency"] = (annotated_haplotypes["delta_frequency"] * 100).round(0).astype(int)
 
     # Save Markdown table.
