@@ -1,5 +1,6 @@
 rule all_report_outputs:
     input:
+        derived_haplotypes=expand("tables/{lineage}/derived_haplotypes.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         counts_by_clade=expand("tables/{lineage}/counts_of_recent_sequences_by_clade.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         total_sample_count_by_lineage="figures/total-sample-count-by-lineage.png",
 
@@ -149,6 +150,7 @@ rule summarize_derived_haplotypes:
         titers=lambda wildcards: [
             collection["data"]
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+            if "ferret" in collection["data"]
         ],
     output:
         table="tables/{lineage}/derived_haplotypes.tsv",
@@ -158,6 +160,7 @@ rule summarize_derived_haplotypes:
         titer_names=lambda wildcards: [
             collection["name"]
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+            if "ferret" in collection["data"]
         ],
     shell:
         """

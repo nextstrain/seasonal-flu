@@ -74,6 +74,10 @@ if __name__ == '__main__':
             usecols=["virus_strain", "serum_strain"],
         ).drop_duplicates()
 
+        # Strip the "-egg" suffix from egg-passaged titer references, so we can
+        # find those strains in the haplotype frequencies.
+        titers["serum_strain"] = titers["serum_strain"].str.replace("-egg", "")
+
         reference_counts = titers.groupby("serum_strain")["virus_strain"].count().reset_index(name="count")
         reference_counts["reference"] = reference_counts.apply(
             lambda record: f"{record['serum_strain']} ({record['count']})",
@@ -101,6 +105,10 @@ if __name__ == '__main__':
     annotated_haplotypes = annotated_haplotypes.query("current_frequency >= 0.01").copy()
     annotated_haplotypes = annotated_haplotypes.sort_values("current_frequency", ascending=False)
 
+    for column in annotated_haplotypes.columns:
+        if column.startswith("total_references_"):
+            annotated_haplotypes[column] = annotated_haplotypes[column].apply(lambda value: "" if pd.isnull(value) else int(value))
+
     annotated_haplotypes.to_csv(
         args.output_table,
         sep="\t",
@@ -122,7 +130,7 @@ if __name__ == '__main__':
     # Save Markdown table.
     with open(args.output_markdown_table, "w", encoding="utf-8") as oh:
         print(
-            annotated_haplotypes.to_markdown(
+            annotated_haplotypes.fillna("").to_markdown(
                 index=False,
             ),
             file=oh,

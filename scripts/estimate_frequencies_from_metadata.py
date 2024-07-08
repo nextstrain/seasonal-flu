@@ -32,10 +32,13 @@ if __name__ == '__main__':
     )
     dates = get_numerical_dates(metadata, fmt='%Y-%m-%d')
 
-    observations = [
-        np.mean(dates[strain])
-        for strain in metadata.index.values
-    ]
+    strains = []
+    observations = []
+    for strain in metadata.index.values:
+        if dates.get(strain):
+            strains.append(strain)
+            observations.append(np.mean(dates[strain]))
+
     pivots = get_pivots(
         observations,
         args.pivot_interval,
@@ -57,7 +60,7 @@ if __name__ == '__main__':
     )
     tip_frequencies = {
         strain: frequency_matrix[index]
-        for index, strain in enumerate(metadata.index.values)
+        for index, strain in enumerate(strains)
         if frequency_matrix[index].sum() > 0
     }
 
