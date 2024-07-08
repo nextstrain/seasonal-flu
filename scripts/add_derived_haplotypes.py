@@ -22,7 +22,7 @@ def create_haplotype_for_record(record, clade_column, mutations_column, genes=No
             if mutation.split(":")[0] in genes
         ]
 
-    mutations = "|".join(mutations).replace(":", "-")
+    mutations = "-".join(mutations).replace(":", "-")
 
     if mutations:
         if strip_genes and genes is not None:
