@@ -132,7 +132,7 @@ rule estimate_derived_haplotype_frequencies:
     params:
         narrow_bandwidth=1 / 12.0,
         min_date="16W",
-        max_date="4W",
+        max_date=config.get("build_date", "4W"),
     shell:
         """
         python3 scripts/estimate_frequencies_from_metadata.py \
