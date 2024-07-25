@@ -1,5 +1,6 @@
 rule all_report_outputs:
     input:
+        derived_haplotypes=expand("tables/{lineage}/derived_haplotypes.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         counts_by_clade=expand("tables/{lineage}/counts_of_recent_sequences_by_clade.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         total_sample_count_by_lineage="figures/total-sample-count-by-lineage.png",
 
@@ -66,10 +67,22 @@ rule download_nextclade:
         aws s3 cp {params.s3_path} {output.nextclade}
         """
 
+rule filter_nextclade_by_qc:
+    input:
+        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+    output:
+        nextclade="data/{lineage}/{segment}/nextclade_without_bad_qc.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        xz -c -d {input.nextclade} \
+            | tsv-filter -H --str-ne "qc.overallStatus:bad" > {output.nextclade}
+        """
+
 rule count_recent_tips_by_clade:
     input:
         recency="tables/{lineage}/recency.json",
-        clades="data/{lineage}/ha/nextclade.tsv.xz",
+        clades="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
@@ -79,4 +92,83 @@ rule count_recent_tips_by_clade:
             --recency {input.recency} \
             --clades {input.clades} \
             --output {output.counts}
+        """
+
+rule get_derived_haplotypes:
+    input:
+        nextclade="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
+    output:
+        haplotypes="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        genes=["HA1"],
+    shell:
+        """
+        python3 scripts/add_derived_haplotypes.py \
+            --nextclade {input.nextclade} \
+            --genes {params.genes:q} \
+            --strip-genes \
+            --output {output.haplotypes}
+        """
+
+rule join_metadata_and_nextclade:
+    input:
+        metadata="data/{lineage}/metadata.tsv",
+        nextclade="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
+    output:
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.metadata}
+        """
+
+rule estimate_derived_haplotype_frequencies:
+    input:
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+    output:
+        frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        narrow_bandwidth=1 / 12.0,
+        min_date="16W",
+        max_date=config.get("build_date", "4W"),
+    shell:
+        """
+        python3 scripts/estimate_frequencies_from_metadata.py \
+            --metadata {input.metadata} \
+            --narrow-bandwidth {params.narrow_bandwidth} \
+            --min-date {params.min_date} \
+            --max-date {params.max_date} \
+            --output {output.frequencies}
+        """
+
+rule summarize_derived_haplotypes:
+    input:
+        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+        frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
+        titers=lambda wildcards: [
+            collection["data"]
+            for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+            if "ferret" in collection["data"]
+        ],
+    output:
+        table="tables/{lineage}/derived_haplotypes.tsv",
+        markdown_table="tables/{lineage}/derived_haplotypes.md",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        titer_names=lambda wildcards: [
+            collection["name"]
+            for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
+            if "ferret" in collection["data"]
+        ],
+    shell:
+        """
+        python3 scripts/summarize_haplotypes.py \
+            --metadata {input.metadata} \
+            --frequencies {input.frequencies} \
+            --titers {input.titers:q} \
+            --titer-names {params.titer_names:q} \
+            --output-table {output.table} \
+            --output-markdown-table {output.markdown_table}
         """
