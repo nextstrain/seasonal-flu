@@ -78,6 +78,10 @@ array-builds:
           data: "data/h3n2/who_human_cell_fra_titers.tsv"
           prefix: human_cell_fra_
           title: "Cell-passaged FRA titers from pooled human sera"
+        - name: human_cell_hi
+          data: "data/h3n2/who_human_cell_hi_titers.tsv"
+          prefix: human_cell_hi_
+          title: "Cell-passaged HI titers from pooled human sera"
     subsamples:
       regions_except_europe:
           filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
@@ -94,6 +98,7 @@ fitness_model:
     - welsh_escape
     - cell_fra_cTiter_x-ne_star
     - human_cell_fra_cTiter_x-ne_star
+    - human_cell_hi_cTiter_x-ne_star
     - ne_star-lbi
   best_model: human_cell_fra_cTiter_x-ne_star
   delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
