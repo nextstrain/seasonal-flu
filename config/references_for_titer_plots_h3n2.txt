@@ -1,17 +1,13 @@
-A/Massachusetts/18/2022 # H, vaccine strain
-A/Thailand/8/2022 # H for HI
-A/NewYork/66/2022 # H:122D
-A/SouthAustralia/48/2023 # H:122D
-A/Albania/289813/2022 # H:91N,122D for HI
-A/Sydney/856/2023 # H.1
-A/Sydney/878/2023 # H.2
-A/Darwin/6/2021 # G.1:53G, vaccine strain
-A/Michigan/60/2022 # G.1.1.2
-A/SouthAustralia/1/2023 # G.1.1.2 for HI
-A/Poland/97/2022 # G.1.2:4S,25V,145N for HI
-A/Thailand/8/2022-egg # H, vaccine strain
-A/California/122/2022-egg # H for HI
-A/Brandenburg/15/2022-egg # H for HI
-A/Albania/289813/2022-egg # H:91N,122D for HI
-A/Darwin/9/2021-egg # G.1, vaccine strain
-A/Darwin/6/2021-egg # G.1:53G
+A/Massachusetts/18/2022 # J, vaccine strain
+A/Thailand/8/2022 # J for HI
+A/Nevada/32/2023 # J.2, FRA and HI
+A/Sydney/878/2023 # J.2, FRA and HI
+A/Lao/F4672/2023 # J.2, HI
+A/Colorado/6/2024 # J.2:79L,239S, FRA and HI
+A/DistrictOfColumbia/27/2023 # J.2:145N, FRA and HI
+A/Kanagawa/IC2346/2023 # J.2:145N, HI
+A/Victoria/2997/2023 # J.2:145N, HI
+
+A/Thailand/8/2022-egg # J, vaccine strain
+A/Wisconsin/90/2023-egg # J.2, HI
+A/Kanagawa/IC2346/2023-egg # J.2:145N, HI

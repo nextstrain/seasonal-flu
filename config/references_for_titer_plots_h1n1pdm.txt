@@ -1,16 +1,11 @@
-A/Sydney/5/2021 # C.1, vaccine strain
-A/Sydney/604/2023 # C.1 + 222N
-A/Victoria/650/2023 # C.1 + 142R + 260E + 270I + 321I
 A/Wisconsin/67/2022 # C.1.1, vaccine strain
-A/Norway/25089/2022 # C.1.1
-A/Victoria/4897/2022 # C.1.1.1
-A/Wisconsin/47/2022 # C.1.1.1
-A/Darwin/7/2023 # C.1.6
-A/SouthAustralia/59/2023 # C.1.6
-A/Darwin/23/2023 # C.1.7
-A/Darwin/463/2023 # C.1.7 + 142R + 152I + 271S
-A/Sydney/5/2021-egg # C.1, vaccine strain
-A/Norway/31694/2022-egg # C.1.1
-A/SouthAfrica/R05722/2022-egg # C.1.1
-A/Victoria/4897/2022-egg # C.1.1.1, vaccine strain
+A/Michigan/59/2023 # C.1.9
+A/Victoria/376/2024 # C.1.9
+A/Connecticut/17/2023 # C.1.8:96T
+A/Canberra/4/2024 # C.1.8:96T
+A/Darwin/328/2024 # C.1.8:96T
+A/WestVirginia/30/2022 # D
+A/Victoria/4897/2022 # D
+A/Alaska/14/2023 # D.2
+A/Victoria/4897/2022-egg # D, vaccine strain
 A/Darwin/7/2023-egg # C.1.6
