@@ -80,12 +80,12 @@ if __name__ == '__main__':
             mutations = []
             for i in range(len(sequence_by_node[node.name])):
                 if sequence_by_node[node.name][i] != sequence_by_clade[clade][i]:
-                    # Store 1-based mutation position and derived allele.
-                    mutations.append(f"{i + 1}{sequence_by_node[node.name][i]}")
+                    # Store ancestral allele, 1-based mutation position, and derived allele.
+                    mutations.append(f"{sequence_by_clade[clade][i]}{i + 1}{sequence_by_node[node.name][i]}")
 
-            # Store the clade name plus a comma-delimited list of derived
-            # mutations present in the current node.
-            haplotype = f"{clade}:{','.join(mutations)}"
+            # Store the clade name plus a delimited list of derived mutations
+            # present in the current node.
+            haplotype = f"{clade}:{'-'.join(mutations)}"
 
         # Store the clade and haplotype values for this node.
         haplotypes[node.name][args.attribute_name] = haplotype
