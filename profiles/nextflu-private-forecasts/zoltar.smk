@@ -3,7 +3,7 @@ rule calculate_clade_frequency_forecasts:
         tree="auspice/{build_name}_ha.json",
         forecast_frequencies="auspice/{build_name}_ha_{model}_forecast-tip-frequencies.json",
     output:
-        forecast="forecasts/by_build_and_model/{build_name}/{model}.tsv",
+        forecast=temp("forecasts/by_build_and_model/{build_name}/{model}.tsv"),
     conda: "../../workflow/envs/nextstrain.yaml"
     benchmark:
         "benchmarks/calculate_clade_frequency_forecasts_{build_name}_{model}.txt"
@@ -25,7 +25,7 @@ rule aggregate_forecasts_by_model:
     input:
         forecasts=expand("forecasts/by_build_and_model/{build_name}/{{model}}.tsv", build_name=list(config["builds"].keys()))
     output:
-        forecasts="forecasts/by_model/{model}.tsv",
+        forecasts=temp("forecasts/by_model/{model}.tsv"),
     conda: "../../workflow/envs/nextstrain.yaml"
     benchmark:
         "benchmarks/aggregate_forecasts_by_model_{model}.txt"
@@ -40,15 +40,13 @@ rule aggregate_forecasts:
     input:
         forecasts=expand("forecasts/by_model/{model}.tsv", model=config["fitness_model"]["models"]),
     output:
-        forecasts="forecasts/all.tsv",
+        forecasts="forecasts/all.tsv.xz",
     conda: "../../workflow/envs/nextstrain.yaml"
     benchmark:
         "benchmarks/aggregate_forecasts.txt"
-    log:
-        "logs/aggregate_forecasts.txt"
     shell:
         """
-        tsv-append -H {input.forecasts} > {output.forecasts} 2> {log}
+        tsv-append -H {input.forecasts} | xz -c > {output.forecasts}
         """
 
 rule prepare_zoltar_predictions:
@@ -70,5 +68,5 @@ rule prepare_zoltar_predictions:
 
 rule all_forecasts:
     input:
-        "forecasts/all.tsv",
+        "forecasts/all.tsv.xz",
         expand("forecasts/zoltar/{model}.json", model=config["fitness_model"]["models"]),
