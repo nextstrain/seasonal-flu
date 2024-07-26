@@ -4,8 +4,12 @@ A/Victoria/376/2024 # C.1.9
 A/Connecticut/17/2023 # C.1.8:96T
 A/Canberra/4/2024 # C.1.8:96T
 A/Darwin/328/2024 # C.1.8:96T
-A/WestVirginia/30/2022 # D
-A/Victoria/4897/2022 # D
+A/Darwin/463/2023 # C.1.7.1
+A/Darwin/7/2023 # C.1.6
 A/Alaska/14/2023 # D.2
+A/Illinois/18/2023 # D.1
+A/Victoria/4897/2022 # D
+A/WestVirginia/30/2022 # D
+
 A/Victoria/4897/2022-egg # D, vaccine strain
 A/Darwin/7/2023-egg # C.1.6
