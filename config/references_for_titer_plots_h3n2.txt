@@ -5,9 +5,14 @@ A/Sydney/878/2023 # J.2, FRA and HI
 A/Lao/F4672/2023 # J.2, HI
 A/Colorado/6/2024 # J.2:79L,239S, FRA and HI
 A/DistrictOfColumbia/27/2023 # J.2:145N, FRA and HI
+A/Croatia/10136/RV/2023 # J.2:145N, HI
 A/Kanagawa/IC2346/2023 # J.2:145N, HI
 A/Victoria/2997/2023 # J.2:145N, HI
+A/Pennsylvania/89/2023 # J.2:145G, HI
+A/Sydney/856/2023 # J.1
+A/Pennsylvania/98/2023 # J.1:145N, HI
 
 A/Thailand/8/2022-egg # J, vaccine strain
 A/Wisconsin/90/2023-egg # J.2, HI
+A/Croatia/10136/RV/2023-egg # J.2:145N, HI
 A/Kanagawa/IC2346/2023-egg # J.2:145N, HI
