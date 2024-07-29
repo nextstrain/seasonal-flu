@@ -102,7 +102,7 @@ if __name__ == '__main__':
         )
 
     annotated_haplotypes = annotated_haplotypes.set_index("haplotype")
-    annotated_haplotypes = annotated_haplotypes.query("frequency >= 0.01").copy()
+    annotated_haplotypes = annotated_haplotypes.query("frequency > 0").copy()
     annotated_haplotypes = annotated_haplotypes.sort_values("frequency", ascending=False)
 
     for column in annotated_haplotypes.columns:
@@ -127,8 +127,8 @@ if __name__ == '__main__':
     annotated_haplotypes["haplotype"] = annotated_haplotypes["haplotype"].str.replace(",", " ")
 
     # Round frequencies prior to writing out the markdown table.
-    annotated_haplotypes["frequency"] = (annotated_haplotypes["frequency"] * 100).round(0).astype(int)
-    annotated_haplotypes["delta_frequency"] = (annotated_haplotypes["delta_frequency"] * 100).round(0).astype(int)
+    annotated_haplotypes["frequency"] = (annotated_haplotypes["frequency"] * 100).round(2).astype(float)
+    annotated_haplotypes["delta_frequency"] = (annotated_haplotypes["delta_frequency"] * 100).round(2).astype(float)
 
     # Save Markdown table.
     with open(args.output_markdown_table, "w", encoding="utf-8") as oh:
