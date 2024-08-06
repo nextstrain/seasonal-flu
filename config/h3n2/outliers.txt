@@ -31,8 +31,8 @@ A/Catalonia/NSVH100570896/2017
 A/Catalonia/NSVH100731127/2017
 A/Catalonia/NSVH100748648/2018
 A/Catalonia/NSVH100751838/2018
-A/ChiangRai/NIC-P3252/2022
 A/ChiangRai/D1249/2022
+A/ChiangRai/NIC-P3252/2022
 A/Chile/8266/2003
 A/Corsica/10/2009
 A/Corsica/11/2008
@@ -476,8 +476,8 @@ A/SouthAustralia/22/2018
 A/SouthAustralia/47/2016
 A/SouthAustralia/85/2018
 A/SouthCarolina/NHRC0001/2011
-A/SriLanka/35/2018
 A/SriLanka/217/2023
+A/SriLanka/35/2018
 A/StPetersburg/5/2009
 A/StPetersburg/5/2009-egg
 A/StPetersburg/RII-2415S/2021

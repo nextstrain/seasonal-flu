@@ -9,8 +9,8 @@ A/Astrakhan/1/2019
 A/Asturias/RR6898/2010
 A/Austria/1048413/2018
 A/Austria/183/2009-egg
-A/Bangladesh/2021/2012
 A/Bangkok/P1600/2023
+A/Bangladesh/2021/2012
 A/Bari/166/2016
 A/Bari/167/2016
 A/Beijing/1/2009-egg
@@ -93,9 +93,9 @@ A/Ohio/9/2015
 A/Ohio/9/2015-egg
 A/Ontario/N163578/2012
 A/Pakistan/GIHSN/ICT/1454/2023
+A/Parana/13897/2023
 A/Parana/20675/2022
 A/Parana/22972/2022
-A/Parana/13897/2023
 A/Paris/2603/2020
 A/Paris/2604/2020
 A/Paris/28350/2021
@@ -114,8 +114,8 @@ A/Rennes/F_006_105_LS/2020
 A/Rennes/F_006_111_BL/2020
 A/Rennes/F_006_119_JD/2020
 A/RheinlandPfalz/1/2020
-A/RioGrandedoNorte/117490/2012
 A/RioGrandeDoNorte/2023-012263-IEC/2023
+A/RioGrandedoNorte/117490/2012
 A/SaintLucia/7340/2020
 A/Shandong/1/2009
 A/Shandong/1/2009-egg
