@@ -39,6 +39,10 @@ recency:
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
+embedding:
+  # Set lower value of perplexity when sample size is small.
+  perplexity: 9
+
 builds:
     "ci_build":
       lineage: h3n2

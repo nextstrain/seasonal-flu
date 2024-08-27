@@ -524,3 +524,109 @@ rule annotate_epiweeks:
             --metadata {input.metadata} \
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
+
+rule get_strains_in_alignment:
+    input:
+        alignment = "builds/{build_name}/{segment}/aligned.fasta",
+    output:
+        alignment_strains = "builds/{build_name}/{segment}/aligned_strains.txt",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        seqkit fx2tab -n -i {input.alignment} | sort -k 1,1 > {output.alignment_strains}
+        """
+
+rule get_shared_strains_in_alignments:
+    input:
+        alignment_strains = expand("builds/{{build_name}}/{segment}/aligned_strains.txt", segment=config["segments"]),
+    output:
+        shared_strains = "builds/{build_name}/shared_strains_in_alignment.txt",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/intersect_items.py \
+            --items {input.alignment_strains:q} \
+            --output {output.shared_strains}
+        """
+
+rule select_shared_strains_from_alignment_and_sort:
+    input:
+        shared_strains = "builds/{build_name}/shared_strains_in_alignment.txt",
+        alignment = "builds/{build_name}/{segment}/aligned.fasta",
+    output:
+        alignment = "builds/{build_name}/{segment}/aligned.sorted.fasta",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        seqkit grep -f {input.shared_strains} {input.alignment} \
+            | seqkit sort -n > {output.alignment}
+        """
+
+rule calculate_pairwise_distances:
+    input:
+        alignment = "builds/{build_name}/{segment}/aligned.sorted.fasta",
+    output:
+        distances = "builds/{build_name}/{segment}/distances.csv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/calculate_pairwise_distances_{build_name}_{segment}.txt"
+    shell:
+        """
+        pathogen-distance \
+            --alignment {input.alignment} \
+            --output {output.distances}
+        """
+
+rule embed_with_tsne:
+    input:
+        alignments = expand("builds/{{build_name}}/{segment}/aligned.sorted.fasta", segment=config["segments"]),
+        distances = expand("builds/{{build_name}}/{segment}/distances.csv", segment=config["segments"]),
+    output:
+        embedding = "builds/{build_name}/embed_tsne.csv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        perplexity=config.get("embedding", {}).get("perplexity", 200),
+    benchmark:
+        "benchmarks/embd_with_tsne_{build_name}.txt"
+    shell:
+        """
+        pathogen-embed \
+            --alignment {input.alignments} \
+            --distance-matrix {input.distances} \
+            --output-dataframe {output.embedding} \
+            t-sne \
+                --perplexity {params.perplexity}
+        """
+
+rule cluster_tsne_embedding:
+    input:
+        embedding = "builds/{build_name}/embed_tsne.csv",
+    output:
+        clusters = "builds/{build_name}/cluster_embed_tsne.csv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        label_attribute="tsne_cluster",
+        distance_threshold=1.0,
+    benchmark:
+        "benchmarks/cluster_tsne_embedding_{build_name}.txt"
+    shell:
+        """
+        pathogen-cluster \
+            --embedding {input.embedding} \
+            --label-attribute {params.label_attribute:q} \
+            --distance-threshold {params.distance_threshold} \
+            --output-dataframe {output.clusters}
+        """
+
+rule convert_embedding_clusters_to_node_data:
+    input:
+        clusters = "builds/{build_name}/cluster_embed_tsne.csv",
+    output:
+        node_data = "builds/{build_name}/cluster_embed_tsne.json",
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        """
+        python3 scripts/table_to_node_data.py \
+            --table {input.clusters} \
+            --output {output.node_data}
+        """
