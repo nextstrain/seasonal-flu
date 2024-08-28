@@ -55,6 +55,7 @@ builds:
       enable_titer_models: true
       enable_lbi: true
       enable_glycosylation: true
+      enable_embeddings: true
       titer_collections:
         - name: cdc_cell_fra
           data: "example_data/cdc_h3n2_cell_fra_titers.tsv"

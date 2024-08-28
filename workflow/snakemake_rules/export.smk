@@ -12,7 +12,6 @@ def _get_node_data_by_wildcards(wildcards):
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
         rules.annotate_recency_of_submissions.output.node_data,
-        rules.convert_embedding_clusters_to_node_data.output.node_data,
     ]
 
     # Only request a distance file for builds that have distance map
@@ -45,6 +44,9 @@ def _get_node_data_by_wildcards(wildcards):
 
     if config['builds'][wildcards.build_name].get('vaccines', False):
         inputs.append(config['builds'][wildcards.build_name].get('vaccines'))
+
+    if config["builds"][wildcards.build_name].get("enable_embeddings", False):
+        inputs.append(rules.convert_embedding_clusters_to_node_data.output.node_data)
 
     if wildcards.segment == "ha":
         inputs.append(rules.annotate_haplotypes.output.haplotypes)

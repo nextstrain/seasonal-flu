@@ -70,6 +70,7 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
+      enable_embeddings: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -162,6 +163,7 @@ array-builds:
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
+      enable_embeddings: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -192,6 +194,7 @@ array-builds:
       enable_lbi: true
       enable_titer_models: true
       enable_forecasts: false
+      enable_embeddings: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
