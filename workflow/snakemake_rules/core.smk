@@ -587,7 +587,7 @@ rule embed_with_tsne:
     params:
         perplexity=config.get("embedding", {}).get("perplexity", 200),
     benchmark:
-        "benchmarks/embd_with_tsne_{build_name}.txt"
+        "benchmarks/embed_with_tsne_{build_name}.txt"
     shell:
         """
         pathogen-embed \
