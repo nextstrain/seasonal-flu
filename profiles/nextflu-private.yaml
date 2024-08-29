@@ -185,6 +185,7 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_embeddings: true
     min_date: "2Y"
     reference_min_date: "6Y"
     max_date: "4W"
@@ -218,6 +219,7 @@ builds:
     enable_forecasts: true
     enable_titer_models: true
     enable_measurements: true
+    enable_embeddings: true
     min_date: "2Y"
     reference_min_date: "6Y"
     max_date: "4W"
@@ -246,6 +248,7 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_embeddings: true
     min_date: "2Y"
     reference_min_date: "6Y"
     max_date: "4W"

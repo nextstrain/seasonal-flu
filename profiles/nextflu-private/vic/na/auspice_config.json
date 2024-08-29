@@ -132,6 +132,21 @@
       "key": "year_month",
       "title": "Year/month",
       "type": "categorical"
+    },
+    {
+      "key": "tsne_x",
+      "title": "t-SNE 1",
+      "type": "continuous"
+    },
+    {
+      "key": "tsne_y",
+      "title": "t-SNE 2",
+      "type": "continuous"
+    },
+    {
+      "key": "tsne_cluster",
+      "title": "t-SNE cluster",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
@@ -153,7 +168,8 @@
     "submitting_lab",
     "recency",
     "epiweek",
-    "year_month"
+    "year_month",
+    "tsne_cluster"
   ],
   "panels": [
     "tree",
