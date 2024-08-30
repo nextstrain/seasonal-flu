@@ -259,6 +259,10 @@ builds:
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
         prefix: cell_hi_
         title: "Cell-passaged HI titers from ferret sera"
+      - name: human_cell_hi
+        data: "data/vic/who_human_cell_hi_titers.tsv"
+        prefix: human_cell_hi_
+        title: "Cell-passaged HI titers from pooled human sera"
     subsamples: *representative-subsampling-scheme
 
 fitness_model:

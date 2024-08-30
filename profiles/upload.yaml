@@ -187,6 +187,8 @@ builds:
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
       - name: who_ferret_egg_hi
         data: "data/vic/who_ferret_egg_hi_titers.tsv"
+      - name: who_human_cell_hi
+        data: "data/vic/who_human_cell_hi_titers.tsv"
       - name: cdc_ferret_cell_hi
         data: "data/vic/cdc_ferret_cell_hi_titers.tsv"
       - name: cdc_ferret_egg_hi
