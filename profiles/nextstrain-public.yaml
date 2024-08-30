@@ -97,7 +97,24 @@ array-builds:
       resolution:
         - 2y
     build_name: "seasonal-flu_{lineage}_2y"
-    build_params: *shared-hi-build-params
+    build_params:
+      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_titer_models: true
+      enable_embeddings: true
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+      titer_collections:
+        - name: cdc_cell_hi
+          data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
     subsamples: *subsampling-scheme
   3Y-hi-builds:
     patterns:
@@ -188,7 +205,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
