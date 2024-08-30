@@ -189,10 +189,10 @@ if __name__ == '__main__':
         hue_order=clade_order,
         data=filtered_df,
         dodge=0.55,
-        join=False,
+        linestyle='none',
         palette=color_by_clade,
         markers="d",
-        scale=0.75,
+        markersize=8,
         errorbar=("ci", 89),
     )
 
