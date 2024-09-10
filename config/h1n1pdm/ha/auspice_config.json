@@ -239,5 +239,8 @@
     "map",
     "entropy",
     "frequencies"
+  ],
+  "metadata_columns": [
+    "gisaid_epi_isl"
   ]
 }
