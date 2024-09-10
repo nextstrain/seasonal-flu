@@ -25,7 +25,7 @@ fasta_fields:
   - strain
   - virus
   - segment
-  - isolate_id
+  - gisaid_epi_isl
   - accession
   - date
   - date_submitted
