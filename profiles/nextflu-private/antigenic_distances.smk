@@ -153,7 +153,7 @@ def get_private_node_data(wildcards):
     ]
 
     # Only try to annotate titer collections for HA.
-    if wildcards.segment == "ha":
+    if wildcards.segment == "ha" and config["builds"][wildcards.build_name].get("enable_titer_models", False):
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/titers_for_reference_viruses/{collection['name']}.json")
             node_data.append(f"builds/{wildcards.build_name}/{wildcards.segment}/haplotypes_without_references/{collection['name']}.json")
