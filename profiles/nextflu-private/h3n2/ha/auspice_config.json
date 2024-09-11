@@ -142,6 +142,45 @@
       ]
     },
     {
+      "key": "emerging_subclade",
+      "title": "Emerging subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "J",
+          "#4068CF"
+        ],
+        [
+          "J.1",
+          "#5098B9"
+        ],
+        [
+          "J.1.1",
+          "#6CB28C"
+        ],
+        [
+          "J.2",
+          "#94BD62"
+        ],
+        [
+          "J.2.1",
+          "#BFBB47"
+        ],
+        [
+          "J.2.2",
+          "#DFA53B"
+        ],
+        [
+          "J.3",
+          "#E67131"
+        ],
+        [
+          "J.4",
+          "#DB2823"
+        ]
+      ]
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"

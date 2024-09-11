@@ -23,6 +23,9 @@ def _get_node_data_by_wildcards(wildcards):
     if config["builds"][wildcards.build_name].get('subclades', False):
         inputs.append(rules.subclades.output.node_data)
 
+    if config["builds"][wildcards.build_name].get('emerging_subclades', False):
+        inputs.append(rules.emerging_subclades.output.node_data)
+
     if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:
             inputs.append(rules.titers_sub.output.titers_model.format(titer_collection=collection["name"], **wildcards_dict))
