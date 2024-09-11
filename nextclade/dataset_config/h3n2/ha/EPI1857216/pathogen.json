@@ -25,13 +25,13 @@
           "name": "differences",
           "weight": 1,
           "locations": {
-            "145": {"default":1},
+            "144": {"default":1},
+            "154": {"default":1},
             "155": {"default":1},
-            "156": {"default":1},
+            "157": {"default":1},
             "158": {"default":1},
-            "159": {"default":1},
-            "189": {"default":1},
-            "193": {"default":1}
+            "188": {"default":1},
+            "192": {"default":1}
           }
         }
       ]
