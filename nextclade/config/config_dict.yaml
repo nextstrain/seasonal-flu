@@ -51,6 +51,9 @@ builds:
         short-clade:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv"
           key: "short-clade"
+        emerging_subclade:
+          url: "seasonal_A-H3N2_HA/emerging/.auto-generated/subclades.tsv"
+          key: "emerging_subclade"
       refs:
         EPI1857216:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1500 --subsample-max-sequences 2000"
