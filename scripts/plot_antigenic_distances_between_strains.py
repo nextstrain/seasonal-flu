@@ -188,7 +188,7 @@ if __name__ == '__main__':
         order=reference_order,
         hue_order=clade_order,
         data=filtered_df,
-        dodge=0.55,
+        dodge=0.75,
         linestyle='none',
         palette=color_by_clade,
         markers="d",
