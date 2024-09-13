@@ -14,4 +14,4 @@ A/Victoria/4897/2022 # D
 A/WestVirginia/30/2022 # D
 
 A/Victoria/4897/2022-egg # D, vaccine strain
-A/Darwin/7/2023-egg # C.1.6
+A/Sydney/44/2023-egg # C.1.3
