@@ -205,6 +205,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      emerging_subclades: "config/h3n2/{{segment}}/emerging_subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
