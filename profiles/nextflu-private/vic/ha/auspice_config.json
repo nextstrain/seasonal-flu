@@ -80,6 +80,41 @@
       ]
     },
     {
+      "key": "emerging_subclade",
+      "title": "Emerging subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "C.2",
+          "#4272CE"
+        ],
+        [
+          "C.3",
+          "#58A2AC"
+        ],
+        [
+          "C.5",
+          "#7DB877"
+        ],
+        [
+          "C.5.1",
+          "#AEBD50"
+        ],
+        [
+          "C.5.4",
+          "#D8AE3E"
+        ],
+        [
+          "C.5.6",
+          "#E67A32"
+        ],
+        [
+          "C.5.7",
+          "#DB2823"
+        ]
+      ]
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"

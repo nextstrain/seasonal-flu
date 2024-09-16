@@ -380,6 +380,8 @@ rule forecast_tips:
         "benchmarks/forecast_tips_{build_name}_{segment}_{model}.txt"
     log:
         "logs/forecast_tips_{build_name}_{segment}_{model}.txt"
+    resources:
+        mem_mb=8000,
     shell:
         """
         python3 flu-forecasting/src/forecast_model.py \

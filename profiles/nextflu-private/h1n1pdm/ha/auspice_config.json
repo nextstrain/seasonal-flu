@@ -130,6 +130,69 @@
       ]
     },
     {
+      "key": "emerging_subclade",
+      "title": "Emerging subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "C.1",
+          "#492AB5"
+        ],
+        [
+          "C.1.1",
+          "#3F4CCB"
+        ],
+        [
+          "C.1.2",
+          "#4271CE"
+        ],
+        [
+          "C.1.5",
+          "#4C8FC0"
+        ],
+        [
+          "C.1.7",
+          "#5AA5A8"
+        ],
+        [
+          "C.1.7.1",
+          "#6DB38A"
+        ],
+        [
+          "C.1.7.2",
+          "#85BA6F"
+        ],
+        [
+          "C.1.8",
+          "#A0BE59"
+        ],
+        [
+          "C.1.9",
+          "#BBBC49"
+        ],
+        [
+          "D",
+          "#D2B340"
+        ],
+        [
+          "D.1",
+          "#E19F3A"
+        ],
+        [
+          "D.2",
+          "#E68033"
+        ],
+        [
+          "D.3",
+          "#E2562B"
+        ],
+        [
+          "D.4",
+          "#DB2823"
+        ]
+      ]
+    },
+    {
       "key": "haplotype",
       "title": "Derived haplotype",
       "type": "categorical"

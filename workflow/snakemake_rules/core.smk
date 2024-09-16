@@ -420,6 +420,43 @@ rule import_clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
+rule download_emerging_subclades:
+    output:
+        subclades="config/{lineage}/{segment}/emerging_subclades.tsv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        url=lambda wildcards: emerging_subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+    shell:
+        """
+        curl -o {output.subclades} "{params.url}"
+        """
+
+rule emerging_subclades:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        muts = build_dir + "/{build_name}/{segment}/muts.json",
+        clades = lambda wildcards: config["builds"][wildcards.build_name].get("emerging_subclades"),
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/emerging_subclades.json",
+    params:
+        membership_name = "emerging_subclade",
+        label_name = "Emerging subclade",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/emerging_subclades_{build_name}_{segment}.txt"
+    log:
+        "logs/emerging_subclades_{build_name}_{segment}.txt"
+    shell:
+        """
+        augur clades \
+            --tree {input.tree} \
+            --mutations {input.muts} \
+            --clades {input.clades} \
+            --membership-name {params.membership_name} \
+            --label-name {params.label_name:q} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
 rule annotate_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
