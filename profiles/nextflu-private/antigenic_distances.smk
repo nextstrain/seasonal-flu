@@ -18,7 +18,7 @@ rule plot_antigenic_distances_between_strains:
     input:
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         clades=lambda wildcards: f"config/subclades_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
-        references=lambda wildcards: f"config/references_for_titer_plots_{config['builds'][wildcards.build_name]['lineage']}.txt",
+        references=lambda wildcards: f"config/references_for_titer_plots/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.titer_collection}.txt",
         auspice_config=lambda wildcards: f"profiles/nextflu-private/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.segment}/auspice_config.json",
     output:
         plot="figures/antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.png",

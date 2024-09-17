@@ -1,0 +1,8 @@
+A/Massachusetts/18/2022 # J, vaccine strain
+A/Nevada/32/2023 # J.2, FRA and HI
+A/Perth/722/2024 # J.2:124N,145N, HI
+A/Victoria/979/2024 # J.2:65K,124N,145N,262N in HI
+A/Colorado/6/2024 # J.2:79L,239S, FRA and HI
+A/DistrictOfColumbia/27/2023 # J.2:145N, FRA and HI
+A/Oklahoma/5/2024 # J.2:158K, FRA
+A/Slovenia/49/2024 # J.2:158K, FRA and HI

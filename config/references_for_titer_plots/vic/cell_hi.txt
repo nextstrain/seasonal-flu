@@ -7,9 +7,3 @@ B/Kanagawa/IC2360/2024 # C.5.6
 B/Utah/11/2023 # C.5.1
 B/Massachusetts/1/2021 # C.5
 B/Nepal/21FL2507/2021 # C.5
-
-B/Austria/1359417/2021-egg # C, vaccine strain
-B/Tokyo/23150/2023-egg # C.5.7
-B/Kanagawa/IC2360/2024-egg # C.5.6
-B/Catalonia/2279261NS/2023-egg # C.5.1:128E
-B/Connecticut/1/2021-egg # C.5
