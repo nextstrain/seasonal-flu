@@ -151,7 +151,7 @@ builds:
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
     clades: "profiles/nextflu-private/vic/ha/clades.tsv"
     subclades: "config/vic/{segment}/subclades.tsv"
-    emerging_subclades: "config/h3n2/{segment}/emerging_subclades.tsv"
+    emerging_subclades: "config/vic/{segment}/emerging_subclades.tsv"
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "6Y"
