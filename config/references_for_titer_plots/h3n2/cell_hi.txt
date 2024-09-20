@@ -2,6 +2,7 @@ A/Massachusetts/18/2022 # J, vaccine strain
 A/Thailand/8/2022 # J for HI
 A/Sydney/878/2023 # J.2, FRA and HI
 A/Lao/F4672/2023 # J.2, HI
+A/Netherlands/10563/2023 # J.2 with 124N
 A/Perth/722/2024 # J.2:124N,145N, HI
 A/Victoria/979/2024 # J.2:65K,124N,145N,262N in HI
 A/Croatia/10136/RV/2023 # J.2:145N, HI
