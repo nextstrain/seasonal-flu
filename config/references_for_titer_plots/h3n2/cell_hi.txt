@@ -11,3 +11,4 @@ A/Victoria/2997/2023 # J.2:145N, HI
 A/Oklahoma/5/2024 # J.2:158K, FRA
 A/Slovenia/49/2024 # J.2:158K, FRA and HI
 A/Sydney/856/2023 # J.1
+A/Canberra/327/2023 # J.1.1
