@@ -333,13 +333,14 @@ A/Michigan/UOM10045655748/2020
 A/Michigan/UOM10045667760/2020
 A/Michigan/UOM10045676784/2020
 A/Michigan/UOM10047284024/2022
+A/Minnesota/9/2010
 A/Minnesota/11/2010
 A/Minnesota/11/2010-egg
 A/Minnesota/11/2012
 A/Minnesota/15/2012
 A/Minnesota/18/2012
 A/Minnesota/38/2015
-A/Minnesota/9/2010
+A/Minnesota/101/2024
 A/Montpellier/F_004_107_MF/2020
 A/Moscow/CRIE/415/2019
 A/Myanmar/18M090/2018
