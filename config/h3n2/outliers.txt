@@ -340,6 +340,7 @@ A/Minnesota/11/2012
 A/Minnesota/15/2012
 A/Minnesota/18/2012
 A/Minnesota/38/2015
+A/Minnesota/100/2024
 A/Minnesota/101/2024
 A/Montpellier/F_004_107_MF/2020
 A/Moscow/CRIE/415/2019
