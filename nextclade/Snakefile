@@ -415,7 +415,7 @@ rule export:
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
-        tsv-select -H -f {params.select_fields} {input.metadata} > {input.metadata}.tmp 
+        tsv-select -H -f {params.select_fields} {input.metadata} > {input.metadata}.tmp
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata}.tmp \
@@ -494,4 +494,3 @@ rule clean_all:
         rm -rf datasets
         rm -rf data/
         """
-
