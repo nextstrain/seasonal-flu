@@ -410,8 +410,8 @@ rule export:
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields="strain region country date isolate_id accession_{segment}",
-        select_fields = ','.join(["strain", "region", "country", "date", "isolate_id", "accession_{segment}"]),
+        fields="strain region country date gisaid_epi_isl accession_{segment}",
+        select_fields = ','.join(["strain", "region", "country", "date", "gisaid_epi_isl", "accession_{segment}"]),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
