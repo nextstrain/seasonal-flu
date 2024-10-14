@@ -172,6 +172,7 @@ rule export_private:
         node_data = _get_node_data_by_wildcards,
         private_node_data = get_private_node_data,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
+        description = lambda w: config['builds'][w.build_name].get("description", "config/description.md"),
         lat_longs = config['lat-longs']
     output:
         auspice_json = "auspice/{build_name}_{segment}.json"
@@ -189,6 +190,7 @@ rule export_private:
             --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
+            --description {input.description} \
             --minify-json \
             --output {output.auspice_json} 2>&1 | tee {log}
         """
