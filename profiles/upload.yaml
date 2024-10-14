@@ -51,6 +51,12 @@ lat-longs: "config/lat_longs.tsv"
 segments:
   - ha
   - na
+  - pb2
+  - pb1
+  - pa
+  - np
+  - mp
+  - ns
 
 tree:
   method: iqtree
