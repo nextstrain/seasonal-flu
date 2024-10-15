@@ -7,6 +7,12 @@ s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu"
 segments:
   - ha
   - na
+  - pb2
+  - pb1
+  - pa
+  - np
+  - mp
+  - ns
 
 builds:
   h1n1pdm:
@@ -15,3 +21,6 @@ builds:
     lineage: h3n2
   vic:
     lineage: vic
+    segments:
+      - ha
+      - na

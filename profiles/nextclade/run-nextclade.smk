@@ -4,7 +4,7 @@ rule upload_all_nextclade_files:
             "data/upload/s3/{filetype}_{lineage}_{segment}.done".format(filetype=filetype, lineage=build["lineage"], segment=segment)
             for filetype in ("alignment", "nextclade")
             for build in config["builds"].values()
-            for segment in config["segments"]
+            for segment in build.get("segments", config["segments"])
         ]
 
 rule get_nextclade_dataset_for_lineage_and_segment:
