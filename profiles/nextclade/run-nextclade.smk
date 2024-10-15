@@ -13,7 +13,7 @@ rule get_nextclade_dataset_for_lineage_and_segment:
     shell:
         """
         nextclade3 dataset get \
-            -n flu_{wildcards.lineage}_{wildcards.segment} \
+            -n 'nextstrain/flu/{wildcards.lineage}/{wildcards.segment}' \
             --output-dir {output.nextclade_dir}
         """
 
