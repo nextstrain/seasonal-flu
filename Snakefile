@@ -78,8 +78,6 @@ include:  "workflow/snakemake_rules/titer_models.smk"
 
 include:  "workflow/snakemake_rules/fitness.smk"
 
-include:  "workflow/snakemake_rules/report.smk"
-
 def _get_build_outputs():
     outputs = []
     for build_name, build_params in config["builds"].items():
