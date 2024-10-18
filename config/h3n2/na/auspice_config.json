@@ -181,7 +181,6 @@
     "frequencies"
   ],
   "metadata_columns": [
-    "gisaid_epi_isl",
     "accession_ha",
     "accession_na"
   ]
