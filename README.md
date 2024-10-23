@@ -99,6 +99,14 @@ Try changing the number of maximum sequences retained from subsampling from `100
 Rerun your analysis by adding the `--forceall` flag to the end of the `nextstrain build` command you ran above.
 How did those changes to the configuration file change the tree?
 
+To skip subsampling and use all records that you downloaded from GISAID, set `filters` string in the build configuration file to an empty string as shown in the following subsection of the YAML file.
+
+```yaml
+      subsamples:
+        global:
+            filters: ""
+```
+
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
 
 ## History
