@@ -21,6 +21,7 @@ fauna_fasta_fields:
   - submitting_lab
   - age
   - gender
+  - gisaid_strain
 fasta_fields:
   - strain
   - virus
@@ -38,6 +39,7 @@ fasta_fields:
   - submitting_lab
   - age
   - gender
+  - gisaid_strain
 prettify_fields:
   - region
   - country
