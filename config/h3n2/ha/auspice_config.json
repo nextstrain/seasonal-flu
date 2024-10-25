@@ -248,6 +248,7 @@
     "frequencies"
   ],
   "metadata_columns": [
+    "gisaid_strain",
     "accession_ha",
     "accession_na"
   ]
