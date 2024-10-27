@@ -1,3 +1,4 @@
+A/Bangladesh/3002/2015
 A/Lao/1632/2023
 A/NorthCarolina/6/2023
 A/Victoria/114/2023
@@ -52,3 +53,9 @@ A/Ghana/FS-11-206/2011
 A/Ghana/ARI1181/2011
 A/BurkinaFaso/26/2012
 A/Yopougon/GR276/2012
+A/Perth/103/2015
+A/Fiji/3/2016
+A/Helsinki/2430/2012
+A/Gansu-Ganzhou/SWL34/2012
+A/Brisbane/96/2012
+A/Minnesota/23/2014

@@ -15,3 +15,13 @@ A/Macau/9901287/2023
 A/California/70/2023
 A/Norway/9164/2023
 A/Bahrain/1899/2023
+
+A/Texas/50/2012
+A/Hawaii/22/2012
+A/Southauckland/7/2012
+A/Victoria/361/2011
+A/Brisbane/297/2014
+A/Austria/93/2014
+A/Southaustralia/2/2013
+A/SouthAfrica/R06488/2017
+A/Bangladesh/3039/2017
