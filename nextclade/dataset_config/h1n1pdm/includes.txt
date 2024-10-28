@@ -59,3 +59,4 @@ A/Helsinki/2430/2012
 A/Gansu-Ganzhou/SWL34/2012
 A/Brisbane/96/2012
 A/Minnesota/23/2014
+A/Nagano/2649/2018
