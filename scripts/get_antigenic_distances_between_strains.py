@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
     parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
     parser.add_argument("--subclades", required=True, help="subclade annotations in a node data JSON")
+    parser.add_argument("--emerging-subclades", required=True, help="emerging subclade annotations in a node data JSON")
     parser.add_argument("--haplotypes", required=True, help="haplotype annotations in a node data JSON")
     parser.add_argument("--branch-lengths", required=True, help="branch length annotations including `numdate` calculated by TreeTime")
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON from augur frequencies")
@@ -116,6 +117,7 @@ if __name__ == '__main__':
     node_data = read_node_data([
         args.clades,
         args.subclades,
+        args.emerging_subclades,
         args.haplotypes,
     ])
 
@@ -141,6 +143,7 @@ if __name__ == '__main__':
             "strain": strain,
             "clade": strain_data["clade_membership"],
             "subclade": strain_data["subclade"],
+            "emerging_subclade": strain_data["emerging_subclade"],
             "haplotype": strain_data["haplotype"],
             "clade_frequency": frequency_by_clade[strain_data["clade_membership"]],
         }
