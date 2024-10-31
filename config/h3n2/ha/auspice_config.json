@@ -227,7 +227,8 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "clade_membership"
+    "color_by": "clade_membership",
+    "tip_label": "gisaid_strain"
   },
   "filters": [
     "clade_membership",
@@ -248,6 +249,7 @@
     "frequencies"
   ],
   "metadata_columns": [
+    "gisaid_strain",
     "accession_ha",
     "accession_na"
   ]

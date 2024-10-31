@@ -4,30 +4,6 @@ custom_rules:
   - profiles/nextflu-private-forecasts/zoltar.smk
   - profiles/nextflu-private-forecasts/rename.smk
 
-fasta_fields:
-  - strain
-  - virus
-  - segment
-  - accession
-  - date
-  - date_submitted
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
-prettify_fields:
-  - region
-  - country
-  - division
-  - location
-  - originating_lab
-  - submitting_lab
-
 lat-longs: "config/lat_longs.tsv"
 
 segments:
