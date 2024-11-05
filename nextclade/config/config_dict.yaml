@@ -14,9 +14,9 @@ builds:
         subclade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
-        proposed_subclade:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         CY121680: # exclude South Korean genomes because of sequencing artifacts close to the start of HA
           filter: "--min-date 2009 --probabilistic-sampling  --exclude-where country='south_korea' qc.overallStatus='bad' --group-by year --min-length 1500  --subsample-max-sequences 1500"
@@ -35,9 +35,9 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
-        proposed_subclade:
-          url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         MW626056:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
@@ -57,9 +57,9 @@ builds:
         short-clade:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv"
           key: "short-clade"
-        proposed_subclade:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         EPI1857216:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1500 --subsample-max-sequences 2000"
@@ -78,9 +78,9 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
-        proposed_subclade:
-          url: "seasonal_A-H3N2_NA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_A-H3N2_NA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         EPI1857215:
           filter: "--min-date 2019 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
@@ -97,9 +97,9 @@ builds:
         subclade:
           url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
-        proposed_subclade:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         KX058884:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
@@ -112,9 +112,9 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
-        proposed_subclade:
-          url: "seasonal_B-Vic_NA/main/.auto-generated/subclade_proposals.tsv"
-          key: "proposed_subclade"
+        proposedSubclade:
+          url: "seasonal_B-Vic_NA/main/.auto-generated/subclade-proposals.tsv"
+          key: "proposedSubclade"
       refs:
         CY073894:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
@@ -122,16 +122,16 @@ builds:
           hardmin_date: 2007
           reference_EPI_ISL: CY073894
           reference_strain: B/Brisbane/60/2008
-  yam:
-    ha:
-      changelog: "seasonal_B-Yam_HA/main/CHANGELOG.md"
-      clade_systems:
-        clade:
-          url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/yam/ha/clades.tsv"
-      refs:
-        JN993010:
-          filter: "--min-date 2005 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1000"
-          clade_offset: 0
-          hardmin_date: 2003
-          reference_EPI_ISL: EPI271600
-          reference_strain: B/Wisconsin/01/2010
+  # yam:
+  #   ha:
+  #     changelog: "seasonal_B-Yam_HA/main/CHANGELOG.md"
+  #     clade_systems:
+  #       clade:
+  #         url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/yam/ha/clades.tsv"
+  #     refs:
+  #       JN993010:
+  #         filter: "--min-date 2005 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 1000"
+  #         clade_offset: 0
+  #         hardmin_date: 2003
+  #         reference_EPI_ISL: EPI271600
+  #         reference_strain: B/Wisconsin/01/2010

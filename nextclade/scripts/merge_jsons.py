@@ -18,9 +18,9 @@ def get_clade_configs(name):
         "displayName": "Subclade",
         "description": "Experimental fine-grained subclade annotation."
     },
-    "proposed_clade": {
-        "name": "proposed_clade",
-        "displayName": "Subclade proposal",
+    "proposedSubclade": {
+        "name": "proposedSubclade",
+        "displayName": "Proposed subclade",
         "description": "Includes proposals of new subclades. These can change anytime.",
         "hideInWeb": True
     }}.get(name, {'name':name, "displayName":name, "description":""})
