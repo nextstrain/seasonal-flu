@@ -18,13 +18,12 @@ def get_clade_configs(name):
         "displayName": "Subclade",
         "description": "Experimental fine-grained subclade annotation."
     },
-    "proposed_clade": {
-        "name": "Subclade proposal",
-        "displayName": "Subclade proposal",
+    "proposedSubclade": {
+        "name": "proposedSubclade",
+        "displayName": "Proposed subclade",
         "description": "Includes proposals of new subclades. These can change anytime.",
         "hideInWeb": True
-        }
-    }.get(name, {'name':name, "displayName":name, "description":""})
+    }}.get(name, {'name':name, "displayName":name, "description":""})
 
 
 if __name__=="__main__":
@@ -73,4 +72,3 @@ if __name__=="__main__":
 
     with open(args.output_auspice, 'w') as fh:
         json.dump(auspice_json, fh, indent=2)
-

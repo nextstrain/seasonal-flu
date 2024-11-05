@@ -25,7 +25,7 @@
       "type": "categorical"
     },
     {
-      "key": "proposed_clade",
+      "key": "proposedSubclade",
       "title": "Subclade proposals",
       "type": "categorical"
     },
