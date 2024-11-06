@@ -80,8 +80,8 @@
       ]
     },
     {
-      "key": "emerging_subclade",
-      "title": "Emerging subclade",
+      "key": "proposed_subclade",
+      "title": "Proposed subclade",
       "type": "categorical",
       "scale": [
         [
@@ -277,8 +277,8 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "subclade",
-    "branch_label": "Subclade"
+    "color_by": "proposed_subclade",
+    "branch_label": "Proposed subclade"
   },
   "filters": [
     "clade_membership",

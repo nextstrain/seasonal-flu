@@ -12,7 +12,7 @@ def annotate_clades_for_tree(tree):
     # Track all clade memberships in a new attribute to properly handle nested
     # clades.
     for node in tree.find_clades():
-        node.node_attrs["clades"] = set([node.node_attrs["emerging_subclade"]["value"]])
+        node.node_attrs["clades"] = set([node.node_attrs["proposed_subclade"]["value"]])
         if node.parent is not None:
             node.node_attrs["clades"].update(node.parent.node_attrs["clades"])
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Zoom into the root clade of the tree.
     if args.root_clade is not None:
         for node in tree.find_clades(terminal=False):
-            if node.node_attrs["emerging_subclade"]["value"] == args.root_clade:
+            if node.node_attrs["proposed_subclade"]["value"] == args.root_clade:
                 tree = node
                 print(f"Zoom into {args.root_clade} at node {node.name}")
                 break
