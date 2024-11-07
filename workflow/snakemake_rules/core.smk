@@ -440,7 +440,7 @@ rule proposed_subclades:
         node_data = build_dir + "/{build_name}/{segment}/proposed_subclades.json",
     params:
         membership_name = "proposed_subclade",
-        label_name = "Proposed subclade",
+        label_name = "proposed_subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/proposed_subclades_{build_name}_{segment}.txt"
