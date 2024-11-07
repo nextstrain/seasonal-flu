@@ -29,8 +29,8 @@ rule plot_antigenic_distances_between_strains:
     params:
         min_test_date=2024.0833,
         title=get_titer_collection_title,
-        clade_color_field="subclade_test",
-        auspice_config_color_field="subclade",
+        clade_color_field="proposed_subclade_test",
+        auspice_config_color_field="proposed_subclade",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """

@@ -44,9 +44,44 @@
       "title": "Clade",
       "type": "categorical"
     },
-    {
+        {
       "key": "subclade",
       "title": "Subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "C.2",
+          "#4272CE"
+        ],
+        [
+          "C.3",
+          "#58A2AC"
+        ],
+        [
+          "C.5",
+          "#7DB877"
+        ],
+        [
+          "C.5.1",
+          "#AEBD50"
+        ],
+        [
+          "C.5.4",
+          "#D8AE3E"
+        ],
+        [
+          "C.5.6",
+          "#E67A32"
+        ],
+        [
+          "C.5.7",
+          "#DB2823"
+        ]
+      ]
+    },
+    {
+      "key": "proposed_subclade",
+      "title": "Proposed subclade",
       "type": "categorical",
       "scale": [
         [
@@ -167,7 +202,8 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "clade_membership",
+    "color_by": "subclade",
+    "branch_label": "Subclade",
     "tip_label": "gisaid_strain"
   },
   "filters": [

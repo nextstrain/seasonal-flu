@@ -134,6 +134,29 @@
       ]
     },
     {
+      "key": "proposed_subclade",
+      "title": "Proposed subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "B.4",
+          "#4A8CC2"
+        ],
+        [
+          "B.4.1",
+          "#71B486"
+        ],
+        [
+          "B.4.2",
+          "#ABBD52"
+        ],
+        [
+          "B.4.3",
+          "#DEA73C"
+        ]
+      ]
+    },
+    {
       "key": "lbi",
       "title": "Local branching index",
       "type": "continuous"
@@ -216,7 +239,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "subclade",
+    "color_by": "proposed_subclade",
     "branch_label": "Subclade"
   },
   "filters": [

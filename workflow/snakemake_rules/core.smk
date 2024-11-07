@@ -420,32 +420,32 @@ rule import_clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-rule download_emerging_subclades:
+rule download_proposed_subclades:
     output:
-        subclades="config/{lineage}/{segment}/emerging_subclades.tsv",
+        subclades="config/{lineage}/{segment}/proposed_subclades.tsv",
     conda: "../envs/nextstrain.yaml"
     params:
-        url=lambda wildcards: emerging_subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+        url=lambda wildcards: proposed_subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
     shell:
         """
         curl -o {output.subclades} "{params.url}"
         """
 
-rule emerging_subclades:
+rule proposed_subclades:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name].get("emerging_subclades"),
+        clades = lambda wildcards: config["builds"][wildcards.build_name].get("proposed_subclades"),
     output:
-        node_data = build_dir + "/{build_name}/{segment}/emerging_subclades.json",
+        node_data = build_dir + "/{build_name}/{segment}/proposed_subclades.json",
     params:
-        membership_name = "emerging_subclade",
-        label_name = "Emerging subclade",
+        membership_name = "proposed_subclade",
+        label_name = "proposed_subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/emerging_subclades_{build_name}_{segment}.txt"
+        "benchmarks/proposed_subclades_{build_name}_{segment}.txt"
     log:
-        "logs/emerging_subclades_{build_name}_{segment}.txt"
+        "logs/proposed_subclades_{build_name}_{segment}.txt"
     shell:
         """
         augur clades \

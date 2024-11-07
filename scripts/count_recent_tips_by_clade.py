@@ -31,7 +31,7 @@ if __name__ == '__main__':
     clades = pd.read_csv(
         args.clades,
         sep="\t",
-        usecols=["seqName", "subclade"],
+        usecols=["seqName", "proposedSubclade"],
     )
 
 
@@ -40,11 +40,11 @@ if __name__ == '__main__':
     count_by_clade = clades[
         (clades["seqName"].isin(recent_tips))
     ].groupby(
-        "subclade"
+        "proposedSubclade"
     )["seqName"].count().reset_index(
         name="count"
     ).rename(
-        columns={"subclade": "clade"},
+        columns={"proposedSubclade": "clade"},
     )
     count_by_clade["count"] = count_by_clade["count"].astype(int)
 

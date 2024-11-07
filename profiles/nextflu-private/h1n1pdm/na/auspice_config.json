@@ -72,40 +72,35 @@
       "type": "categorical",
       "scale": [
         [
-          "C",
-          "#3E5DD0"
-        ],
-        [
-          "C.3",
-          "#4A8CC2"
-        ],
-        [
           "C.4",
-          "#60AA9E"
-        ],
-        [
-          "C.5.1.1",
-          "#80B974"
-        ],
-        [
-          "C.5.2",
-          "#A6BE55"
+          "#4E94BD"
         ],
         [
           "C.5.3",
-          "#CBB742"
+          "#81BA72"
         ],
         [
           "C.5.3.1",
-          "#E29D39"
+          "#C8B944"
+        ]
+      ]
+    },
+    {
+      "key": "proposed_subclade",
+      "title": "Proposed subclade",
+      "type": "categorical",
+      "scale": [
+        [
+          "C.4",
+          "#4E94BD"
         ],
         [
-          "C.5.3.2",
-          "#E56A2F"
+          "C.5.3",
+          "#81BA72"
         ],
         [
-          "C.5.3.3",
-          "#DB2823"
+          "C.5.3.1",
+          "#C8B944"
         ]
       ]
     },
@@ -182,7 +177,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "subclade",
+    "color_by": "proposed_subclade",
     "branch_label": "Subclade"
   },
   "filters": [
