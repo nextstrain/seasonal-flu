@@ -127,7 +127,7 @@ rule concat_titers_for_build:
         "logs/concat_titers_for_build_{build_name}.txt"
     shell:
         """
-        tsv-append -H {input.titers} > {output.titers} 2> {log}
+        tsv-append -H {input.titers} | tsv-select -H -f virus_strain > {output.titers} 2> {log}
         """
 
 rule titer_priorities:
