@@ -196,7 +196,7 @@
   "display_defaults": {
     "map_triplicate": true,
     "color_by": "proposed_subclade",
-    "branch_label": "subclade"
+    "branch_label": "Subclade"
   },
   "filters": [
     "clade_membership",
