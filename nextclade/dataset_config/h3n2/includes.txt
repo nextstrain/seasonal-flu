@@ -25,3 +25,24 @@ A/Austria/93/2014
 A/Southaustralia/2/2013
 A/SouthAfrica/R06488/2017
 A/Bangladesh/3039/2017
+
+# B.4
+A/Singapore/TT0189/2017
+A/Yokohama/84/2017
+A/Victoria/521/2017
+
+# B.1.1
+A/NewYork/5689/2016
+A/Sydney/57/2017
+A/Victoria/628/2017
+A/Basel/USB0033684/2017
+
+# A.2
+A/Bangladesh/2006/2014
+A/Bangladesh/1079/2014
+
+
+# B.1.2
+A/Bangladesh/3039/2017
+A/SouthAfrica/R06488/2017
+A/Ehime/21/2017
