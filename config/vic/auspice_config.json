@@ -33,6 +33,11 @@
       "type": "categorical"
     },
     {
+      "key": "proposed_subclade",
+      "title": "Proposed subclade",
+      "type": "categorical"
+    },
+    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
