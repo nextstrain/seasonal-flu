@@ -163,5 +163,16 @@
   "metadata_columns": [
     "accession_ha",
     "accession_na"
-  ]
+  ],
+  "extensions": {
+    "nextclade": {
+      "clade_node_attrs": [
+        {
+          "name": "subclade",
+          "displayName": "Subclade",
+          "description": "Experimental fine-grained subclade annotation."
+        }
+      ]
+    }
+  }
 }
