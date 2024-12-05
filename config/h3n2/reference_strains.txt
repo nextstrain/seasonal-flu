@@ -50,6 +50,7 @@ A/England/214191723/2021
 A/Fiji/2/2015
 A/Florida/23/2017
 A/Greece/4/2017-egg
+A/Guatemala/667/2023
 A/Hawaii/22/2012
 A/Hawaii/42/2019
 A/Hawaii/47/2014
@@ -78,7 +79,9 @@ A/Massachusetts/18/2022
 A/Michigan/15/2014
 A/Michigan/173/2020
 A/Michigan/173/2020-egg
+A/Mississippi/40/2022
 A/Montana/28/2015
+A/MountLebanon/65/2023
 A/Nagano/2731/2017
 A/Nebraska/19/2015
 A/Nebraska/2/2017
@@ -110,13 +113,19 @@ A/Peru/3817/2017
 A/Qatar/16-VI-19-0049409/2019
 A/Saitama/103/2014
 A/Saitama/103/2014-egg
+A/Santiago/133908/2022
+A/Santiago/133909/2022
 A/Sapporo/71/2015
+A/Shizuoka/20/2023
 A/Sidney/7/2014
+A/Sidon/S0212/2022
+A/Sidon/S0213/2022
 A/Singapore/22/2012
 A/Singapore/Infimh-16-0019/2016
 A/Singapore/Infimh-16-0019/2016-egg
 A/Singapore/TT0555/2017
 A/Singapore/TT1374/2016
+A/SouthAfrica/PET28078/2023
 A/SouthAustralia/135/2016
 A/SouthAustralia/34/2019
 A/SouthAustralia/55/2014
@@ -140,6 +149,9 @@ A/Texas/88/2016
 A/Thailand/8/2022
 A/Thailand/8/2022-egg
 A/Togo/771/2020
+A/Trnava/97/2022
+A/Utah/15/2023
+A/Victoria/164/2023
 A/Victoria/223/2019
 A/Victoria/361/2011
 A/Victoria/653/2017
