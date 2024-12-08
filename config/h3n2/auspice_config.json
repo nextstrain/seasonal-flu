@@ -150,7 +150,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "clade_membership"
+    "color_by": "subclade"
   },
   "filters": [
     "clade_membership",
