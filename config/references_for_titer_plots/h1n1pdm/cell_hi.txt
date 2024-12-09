@@ -1,13 +1,10 @@
 A/Wisconsin/67/2022 # C.1.1, vaccine strain
+A/Victoria/4897/2022 # D
+A/Illinois/18/2023 # D.1
+A/Alaska/14/2023 # D.2
+A/Connecticut/17/2023 # C.1.8
+A/Canberra/4/2024 # C.1.8
+A/Darwin/370/2024 # C.1.8:I47V-E66K-A141E-T241R
 A/Michigan/59/2023 # C.1.9
 A/Victoria/376/2024 # C.1.9
 A/Lisbon/188/2023 # C.1.9:216A
-A/Connecticut/17/2023 # C.1.8:96T
-A/Canberra/4/2024 # C.1.8:96T
-A/Darwin/370/2024 # C.1.8:I47V-E66K-I96T-A141E-T241R
-A/Darwin/463/2023 # C.1.7.1
-A/Darwin/7/2023 # C.1.6
-A/Alaska/14/2023 # D.2
-A/Illinois/18/2023 # D.1
-A/Victoria/4897/2022 # D
-A/WestVirginia/30/2022 # D
