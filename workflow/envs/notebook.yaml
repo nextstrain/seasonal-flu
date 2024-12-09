@@ -1,7 +1,6 @@
 name: notebook
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - altair=5.0.1
   - jupyter=1.0
