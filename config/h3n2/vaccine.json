@@ -89,6 +89,16 @@
             "vaccine": {
                 "selection_date": "2023-09-29"
             }
+        },
+        "A/Croatia/10136/RV/2023": {
+            "vaccine": {
+                "seleection_date": "2024-09-27"
+            }
+        },
+        "A/Croatia/10136/RV/2023-egg": {
+            "vaccine": {
+                "seleection_date": "2024-09-27"
+            }
         }
     }
 }

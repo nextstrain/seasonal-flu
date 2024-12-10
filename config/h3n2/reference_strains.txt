@@ -34,6 +34,8 @@ A/Cambodia/e0826360/2020-egg
 A/Canberra/7/2016
 A/Christchurch/515/2019-egg
 A/Christchurch/516/2012
+A/Croatia/10136/RV/2023
+A/Croatia/10136/RV/2023-egg
 A/Darwin/11/2021
 A/Darwin/24/2021
 A/Darwin/24/2021-egg
