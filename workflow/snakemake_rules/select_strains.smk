@@ -77,7 +77,7 @@ rule annotate_metadata_with_gihsn:
     input:
         metadata="data/{lineage}/metadata_joined.tsv",
     output:
-        metadata="data/{lineage}/metadata_with_gihsn.tsv",
+        metadata=temp("data/{lineage}/metadata_with_gihsn.tsv"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/annotate_metadata_with_gihsn_{lineage}.txt"
