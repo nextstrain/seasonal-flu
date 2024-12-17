@@ -70,6 +70,27 @@ rule join_metadata:
             --output {output.metadata:q} 2>&1 | tee {log}
         """
 
+# Annotate strains in the metadata that have "GIHSN" in the strain name to
+# indicate whether it was collected as part of the Global Influenza Hospital
+# Surveillance Network (GIHSN)
+rule annotate_metadata_with_gihsn:
+    input:
+        metadata="data/{lineage}/metadata_joined.tsv",
+    output:
+        metadata="data/{lineage}/metadata_with_gihsn.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_metadata_with_gihsn_{lineage}.txt"
+    log:
+        "logs/annotate_metadata_with_gihsn_{lineage}.txt"
+    shell:
+        """
+        csvtk --tabs mutate2 \
+            --expression '${{strain}}=~"(GIHSN)" ? "True" : "False"' \
+            --name gihsn_sample \
+            {input.metadata} > {output.metadata}
+        """
+
 rule build_reference_strains_table:
     input:
         references="config/{lineage}/reference_strains.txt",
@@ -96,7 +117,7 @@ rule build_reference_strains_table:
 # later.
 rule annotate_metadata_with_reference_strains:
     input:
-        metadata="data/{lineage}/metadata_joined.tsv",
+        metadata="data/{lineage}/metadata_with_gihsn.tsv",
         references="data/{lineage}/reference_strains.tsv",
     output:
         metadata="data/{lineage}/metadata.tsv",
