@@ -94,8 +94,10 @@ array-builds:
           filters: --group-by region year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab!=Crick Worldwide Influenza Centre'
           priorities: "titers"
       other:
-          filters: --group-by country year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab=Crick Worldwide Influenza Centre'
+          filters: --group-by country year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab=Crick Worldwide Influenza Centre'
           priorities: "titers"
+      gishn:
+          filters: --group-by country year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'submitting_lab=Crick Worldwide Influenza Centre' 'gishn_sample=False'
   europe:
     patterns:
       lineage:
@@ -131,6 +133,8 @@ array-builds:
       global:
           filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
+      gishn:
+          filters: --group-by country year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'gishn_sample=False'
       country:
           filters: "--group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
           priorities: "titers"
