@@ -46,3 +46,17 @@ A/Bangladesh/1079/2014
 A/Bangladesh/3039/2017
 A/SouthAfrica/R06488/2017
 A/Ehime/21/2017
+
+
+# J.2 proposals
+A/Croatia/10136RV/2023-egg
+A/DistrictOfColumbia/27/2023
+A/Colorado/142/2024
+A/Guyane/318/2024
+A/Ohio/253/2024
+A/India/Pune-NIV234429/2023
+A/Shanghai-Jingan/11698/2024
+A/VinaDelMar/44363/2024
+A/Bangladesh/4002/2024
+A/HongKong/2468/2024
+A/Ghana/FS-24-3952/2024

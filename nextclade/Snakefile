@@ -236,7 +236,7 @@ rule tree:
             --alignment {input.alignment} \
             --output {output.tree} \
             --nthreads {threads} \
-            --tree-builder-args '-ninit 10 -n 4 -czb' \
+            --tree-builder-args '-ninit 10 -n 4 -czb --pathogen-force' \
             > /dev/null
         """
 
