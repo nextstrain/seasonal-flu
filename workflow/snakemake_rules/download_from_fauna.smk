@@ -48,7 +48,6 @@ def _get_virus_passage_category(wildcards):
         return ""
 
 rule download_sequences:
-    message: "Downloading sequences from fauna"
     output:
         sequences = "data/{lineage}/raw_{segment}.fasta"
     params:
