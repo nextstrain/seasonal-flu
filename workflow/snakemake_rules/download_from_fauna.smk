@@ -9,6 +9,12 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
 
+# Limit the number of concurrent fauna connections so that we are less likely
+# to overwhelm the rethinkdb server.
+# Inspired by the ncov's limit on concurrent deploy jobs
+# <https://github.com/nextstrain/ncov/blob/20f5fc3c7032f4575a99745cee3238ecbeebb6e0/workflow/snakemake_rules/export_for_nextstrain.smk#L340-L362>
+workflow.global_resources.setdefault("concurrent_fauna", 2)
+
 # fields that will be canonicized by augur parse (upper/lower casing etc)
 
 path_to_fauna = '../fauna'
@@ -42,11 +48,12 @@ def _get_virus_passage_category(wildcards):
         return ""
 
 rule download_sequences:
-    message: "Downloading sequences from fauna"
     output:
         sequences = "data/{lineage}/raw_{segment}.fasta"
     params:
         fasta_fields = config["fauna_fasta_fields"],
+    resources:
+        concurrent_fauna = 1
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/download_sequences_{lineage}_{segment}.txt"
@@ -71,6 +78,8 @@ rule download_titers:
         dbs = _get_tdb_databases,
         assays = _get_tdb_assays,
         virus_passage_category=_get_virus_passage_category,
+    resources:
+        concurrent_fauna = 1
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/download_titers_{lineage}_{center}_{passage}_{assay}.txt"
