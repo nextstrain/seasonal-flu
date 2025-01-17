@@ -27,7 +27,7 @@ rule plot_antigenic_distances_between_strains:
     log:
         "logs/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        min_test_date=2024.4167,
+        min_test_date=2024.3333,
         title=get_titer_collection_title,
         clade_color_field="proposed_subclade_test",
         auspice_config_color_field="proposed_subclade",

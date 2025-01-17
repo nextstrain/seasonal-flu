@@ -17,7 +17,7 @@ rule plot_lineage_counts:
     conda: "../../workflow/envs/notebook.yaml"
     params:
         lineages=["H1N1pdm", "H3N2", "Vic"],
-        min_date="2023-04-01",
+        min_date="2024-01-01",
     shell:
         """
         python3 scripts/plot_counts_per_lineage.py \
