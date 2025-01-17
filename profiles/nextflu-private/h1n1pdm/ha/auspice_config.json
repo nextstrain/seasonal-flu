@@ -117,7 +117,7 @@
       "key": "proposed_subclade",
       "title": "Proposed subclade",
       "type": "categorical",
-      "scale": [
+            "scale": [
         [
           "C.1",
           "#3F52CD"
@@ -133,6 +133,22 @@
         [
           "C.1.9",
           "#70B487"
+        ],
+        [
+          "C.1.9.a",
+          "#9E9AC8"
+        ],
+        [
+          "C.1.9.b",
+          "#CBC9E2"
+        ],
+        [
+          "C.1.9.c",
+          "#54278F"
+        ],
+        [
+          "C.1.9.d",
+          "#6A51A3"
         ],
         [
           "D",
