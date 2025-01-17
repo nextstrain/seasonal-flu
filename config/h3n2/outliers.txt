@@ -461,6 +461,7 @@ A/Rennes/F_006_101_LG/2020
 A/Rennes/F_006_107_CA/2020
 A/Rennes/F_006_116_PN/2020
 A/Rennes/F_006_118_JF/2020
+A/RiodeJaneiro/12944/2024
 A/RioGrandedoSul/12650/2024
 A/RioGrandedoSul/12662/2024
 A/SantaHelena/Parana_51528/2021
