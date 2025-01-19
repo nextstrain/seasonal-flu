@@ -87,3 +87,8 @@ A/Victoria/18/2023
 A/Netherlands/11889/2022
 A/Timor-Leste/12/2023
 A/Madagascar/807/2023
+
+# C.1.9.4
+A/Vietnam/4030/2024
+A/Wisconsin/143/2024
+A/Bahrain/9301/2024

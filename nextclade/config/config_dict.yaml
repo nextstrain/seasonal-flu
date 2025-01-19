@@ -1,5 +1,5 @@
 clade_repo: "https://raw.githubusercontent.com/influenza-clade-nomenclature/"
-dataset_repo: "https://raw.githubusercontent.com/nextstrain/nextclade_data/master/data/nextstrain/flu"
+dataset_repo: "https://raw.githubusercontent.com/nextstrain/nextclade_data/release/data/nextstrain/flu"
 
 builds:
   h1n1pdm:
