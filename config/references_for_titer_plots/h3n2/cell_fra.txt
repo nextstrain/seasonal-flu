@@ -7,7 +7,6 @@ A/Nevada/32/2023 # J.2
 A/Croatia/10136/RV/2023 # J.2:145N, vaccine strain
 A/Croatia/10136RV/2023 # J.2:145N, vaccine strain
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
-A/DistrictofColumbia/27/2023 # J.2:145N, vaccine strain
 A/Victoria/2997/2023 # J.2:145N
 A/Oklahoma/5/2024 # J.2:158K
 A/Victoria/488/2024 # J.2:158K,207R,227S
