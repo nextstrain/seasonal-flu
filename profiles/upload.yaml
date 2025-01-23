@@ -74,7 +74,7 @@ recency:
 builds:
   h1n1pdm_2y:
     lineage: h1n1pdm
-    prioritized_seqs_file: "profiles/upload/h1n1pdm/{segment}/prioritized_seqs_file.tsv"
+    prioritized_seqs_file: "config/h1n1pdm/{segment}/prioritized_seqs_file.tsv"
     reference: "config/h1n1pdm/{segment}/reference.fasta"
     annotation: "config/h1n1pdm/{segment}/genemap.gff"
     tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
@@ -123,7 +123,7 @@ builds:
           filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date}
   h3n2_2y:
     lineage: "h3n2"
-    prioritized_seqs_file: "profiles/upload/h3n2/{segment}/prioritized_seqs_file.tsv"
+    prioritized_seqs_file: "config/h3n2/{segment}/prioritized_seqs_file.tsv"
     reference: "config/h3n2/{segment}/reference.fasta"
     annotation: "config/h3n2/{segment}/genemap.gff"
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
@@ -182,7 +182,7 @@ builds:
     subsamples: *representative-subsampling-scheme
   vic_2y:
     lineage: vic
-    prioritized_seqs_file: "profiles/upload/vic/{segment}/prioritized_seqs_file.tsv"
+    prioritized_seqs_file: "config/vic/{segment}/prioritized_seqs_file.tsv"
     reference: "config/vic/{segment}/reference.fasta"
     annotation: "config/vic/{segment}/genemap.gff"
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
