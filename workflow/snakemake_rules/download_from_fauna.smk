@@ -48,16 +48,12 @@ def _get_virus_passage_category(wildcards):
         return ""
 
 def _get_prioritized_seqs_file(wildcards):
-    prioritized_seqs_file = None
+    prioritized_seqs_file = []
     for build_name, build_params in config["builds"].items():
         if build_params["lineage"] == wildcards.lineage:
-            prioritized_seqs_file = build_params.get('prioritized_seqs_file')
+            prioritized_seqs_file = build_params.get('prioritized_seqs_file', prioritized_seqs_file)
             break
-
-    if prioritized_seqs_file is not None:
-        return prioritized_seqs_file
-
-    return []
+    return prioritized_seqs_file
 
 rule download_sequences:
     input:
