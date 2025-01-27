@@ -1,9 +1,11 @@
 A/Thailand/8/2022-egg # J, vaccine strain
 A/Canberra/331/2023-egg # J.1.1:9N,138S,225G,275D
+A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
+A/Kanagawa/IC2346/2023-egg # J.2:145N,190I
 A/Victoria/2997/2023-egg # J.2:145N,246K
 A/Canberra/309/2023-egg # J.2:140R,186N
-A/Croatia/10136/RV/2023-egg # J.2:145N, vaccine strain
-A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
 A/Switzerland/8649/2023-egg # J.2:94K
+A/Canberra/302/2023-egg # J.2:140R,195Y
+A/Canberra/309/2023-egg # J.2:140R,186N
 A/Lisbon/216/2023-egg # J.2.2:228T
 A/Canberra/373/2023-egg # J.2.2:145R,207R,228T

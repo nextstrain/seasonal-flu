@@ -1,7 +1,4 @@
 A/Thailand/8/2022-egg # J, vaccine strain
-A/Wisconsin/90/2023-egg # J.2, HI
-A/Croatia/10136/RV/2023-egg # J.2:145N, vaccine strain
 A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
-A/Canberra/302/2023-egg # J.2:140R,195Y
 A/Victoria/2997/2023-egg # J.2:145N,246K HI
-A/Lisbon/216/2023-egg # J.2:124N, HI
+A/Lisbon/216/2023-egg # J.2.2
