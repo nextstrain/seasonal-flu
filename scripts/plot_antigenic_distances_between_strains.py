@@ -193,7 +193,8 @@ if __name__ == '__main__':
         palette=color_by_clade,
         markers="d",
         markersize=8,
-        errorbar=("ci", 89),
+        errorbar="sd",
+        err_kws={"alpha": 0.5,}
     )
 
     # Draw a line at the origin to show where we expect effectively inhibited
