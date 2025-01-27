@@ -37,6 +37,11 @@ on:
         required: false
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}
+  # Only cancel in progress workflow if the workflow is running on the default branch
+  cancel-in-progress: ${{ github.ref_name == github.event.repository.default_branch }}
+
 jobs:
   upload:
     permissions:
