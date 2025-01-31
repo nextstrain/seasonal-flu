@@ -148,7 +148,7 @@ rule concat_titers_for_build:
         "logs/concat_titers_for_build_{build_name}.txt"
     shell:
         """
-        tsv-append -H {input.titers} | tsv-select -H -f virus_strain > {output.titers} 2> {log}
+        tsv-append -H {input.titers} | tsv-select -H -f virus_strain,serum_strain > {output.titers} 2> {log}
         """
 
 rule titer_priorities:
@@ -190,12 +190,37 @@ rule build_titer_strains_table:
                 --expression "'True'" > {output.titer_strains}
         """
 
+rule build_titer_reference_strains_table:
+    input:
+        titers="builds/{build_name}/all_titers.tsv",
+    output:
+        titer_strains=build_dir + "/{build_name}/titer_reference_strains.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/build_titer_reference_strains_table_{build_name}.txt"
+    log:
+        "logs/build_titer_reference_strains_table_{build_name}.txt"
+    shell:
+        """
+        csvtk --tabs cut \
+            --fields serum_strain \
+            {input.titers} \
+            | csvtk rename \
+              --fields serum_strain \
+              --names strain \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name is_titer_reference_strain \
+                --expression "'True'" > {output.titer_strains}
+        """
+
 # Annotate strains in the metadata based on whether they have titer data or not,
 # so we can include these strains by attribute from augur filter later.
 rule annotate_metadata_with_titer_strains:
     input:
         metadata=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv",
-        references=build_dir + "/{build_name}/titer_strains.tsv",
+        titer_strains=build_dir + "/{build_name}/titer_strains.tsv",
+        titer_reference_strains=build_dir + "/{build_name}/titer_reference_strains.tsv",
     output:
         metadata=build_dir + "/{build_name}/full_metadata_with_titer_annotations.tsv",
     conda: "../envs/nextstrain.yaml"
@@ -205,12 +230,8 @@ rule annotate_metadata_with_titer_strains:
         "logs/annotate_metadata_with_titer_strains_{build_name}.txt"
     shell:
         """
-        csvtk --tabs join \
-            --left-join \
-            --na "False" \
-            -f "strain" \
-            {input.metadata} \
-            {input.references} > {output.metadata}
+        csvtk --tabs join --left-join --na "False" -f "strain" {input.metadata} {input.titer_strains} \
+            | csvtk --tabs join --left-join --na "False" -f "strain" /dev/stdin {input.titer_reference_strains} > {output.metadata}
         """
 
 def get_metadata_for_subsampling(wildcards):
