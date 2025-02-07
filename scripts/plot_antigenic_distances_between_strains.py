@@ -5,7 +5,8 @@ matplotlib.use('agg')
 
 import argparse
 
-from augur.utils import read_colors, read_strains
+from augur.io import read_strains
+from augur.utils import read_colors
 import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
