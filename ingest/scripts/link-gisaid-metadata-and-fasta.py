@@ -78,16 +78,37 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
         linked_record = record.copy()
         record_id = linked_record[RECORD_ID_COLUMN]
         record_seqs = []
+        unmatched_accessions = {}
+        unmatched_sequences = {}
         for segment, segment_column in SEGMENT_COLUMNS.items():
             segment_id = linked_record.pop(segment_column)
             accession = parse_segment_accession(segment_id)
             sequence = get_segment_sequence(sequences, record_id,
                                             segment, accession)
+
+            if segment_id and accession == DEFAULT_UNKNOWN_VALUE:
+                unmatched_accessions[segment] = segment_id
+
+            if accession != DEFAULT_UNKNOWN_VALUE and sequence == DEFAULT_UNKNOWN_VALUE:
+                unmatched_sequences[segment] = accession
+
             record_seqs.append({
                 "segment": segment,
                 "accession": accession,
                 "sequence": sequence
             })
+
+        if len(unmatched_accessions):
+            print_err(
+                "WARNING: Could not match segment accessions for record",
+                f"{record_id!r} for the following segments: {unmatched_accessions!r}"
+            )
+
+        if len(unmatched_sequences):
+            print_err(
+                f"WARNING: Could not find sequences for record {record_id!r}",
+                f"for the following segment accessions: {unmatched_sequences}"
+            )
 
         linked_record["sequences"] = record_seqs
         yield linked_record
@@ -100,14 +121,9 @@ def parse_segment_accession(segment_id: str) -> str:
     """
     accession = DEFAULT_UNKNOWN_VALUE
 
-    if len(segment_id):
-        matches = re.search(SEGMENT_ACCESSION_PATTERN, segment_id)
-        if matches is not None:
-            accession = matches["accession"]
-        else:
-            print_err(
-                f"WARNING: Segment id {segment_id!r} failed to ",
-                f"match expected segment id pattern {SEGMENT_ACCESSION_PATTERN}")
+    matches = re.search(SEGMENT_ACCESSION_PATTERN, segment_id)
+    if matches is not None:
+        accession = matches["accession"]
 
     return accession
 
@@ -116,22 +132,19 @@ def get_segment_sequence(sequences: pyfastx.Fasta, record_id: str,
                          segment: str, accession: str) -> str:
     """
     Gets the sequence matching the provided *accession* from the indexed
-    *sequences. If there is not matching sequence, then outputs a warning to
-    stdout and returns a default value of `DEFAULT_UNKNOWN_VALUE`.
+    *sequences. If there is not matching sequence, returns the
+    `DEFAULT_UNKNOWN_VALUE`.
     """
     sequence = DEFAULT_UNKNOWN_VALUE
 
-    if accession and accession != DEFAULT_UNKNOWN_VALUE:
-        # try/except was consistently faster than checking accession is in sequences
-        #   -Jover, 11 February 2025
-        try:
-            sequence_record = sequences[accession]
-        except KeyError:
-            print_err(
-                f"WARNING: Could not find sequence for record {record_id!r}",
-                f"segment {segment!r} accession {accession!r}")
-        else:
-            sequence = str(sequence_record.seq).upper()
+    # try/except was consistently faster than checking accession is in sequences
+    #   -Jover, 11 February 2025
+    try:
+        sequence_record = sequences[accession]
+    except KeyError:
+        pass
+    else:
+        sequence = str(sequence_record.seq).upper()
 
     return sequence
 
