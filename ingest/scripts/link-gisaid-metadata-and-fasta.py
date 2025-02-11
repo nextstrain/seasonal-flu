@@ -74,9 +74,22 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
     provided *sequences*. Drops the segment fields and adds a "sequences"
     field, which is an array of all of the segments.
     """
+    records_without_accessions = 0
+    records_without_sequences = 0
+    total_records = 0
     for record in metadata:
         linked_record = record.copy()
         record_id = linked_record[RECORD_ID_COLUMN]
+
+        # Verify that all the expected segment columns are present in
+        # the first record since all records should have the same columns
+        if total_records == 0:
+            assert all(
+                column in linked_record
+                for column in SEGMENT_COLUMNS.values()), \
+                f"The metadata does not include all expected segment columns: {SEGMENT_COLUMNS.values()!r}.\n" + \
+                "The expected `SEGMENTS` or `SEGMENT_COLUMNS` might need to be updated."
+
         record_seqs = []
         unmatched_accessions = {}
         unmatched_sequences = {}
@@ -103,15 +116,26 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                 "WARNING: Could not match segment accessions for record",
                 f"{record_id!r} for the following segments: {unmatched_accessions!r}"
             )
+            records_without_accessions += 1
 
         if len(unmatched_sequences):
             print_err(
                 f"WARNING: Could not find sequences for record {record_id!r}",
                 f"for the following segment accessions: {unmatched_sequences}"
             )
+            records_without_sequences += 1
 
         linked_record["sequences"] = record_seqs
+        total_records += 1
         yield linked_record
+
+    assert total_records != records_without_accessions, \
+        "All records are missing segment accessions.\n" + \
+        "The `SEGMENT_ACCESSION_PATTERN` for matching accessions might need to be updated."
+
+    assert total_records != records_without_sequences, \
+        "All records are missing segment sequences.\n" + \
+        "Verify the provided GISAID Excel file and FASTA file contain the same records."
 
 
 def parse_segment_accession(segment_id: str) -> str:
