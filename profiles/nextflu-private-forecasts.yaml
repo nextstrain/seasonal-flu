@@ -72,7 +72,6 @@ array-builds:
 
 fitness_model:
   models:
-    - welsh_escape
     - cell_fra_cTiter_x-ne_star
     - human_cell_fra_cTiter_x-ne_star
     - human_cell_hi_cTiter_x-ne_star
