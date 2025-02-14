@@ -1,0 +1,6 @@
+# TSV file of geolocation rules with the format:
+# '<raw_geolocation><tab><annotated_geolocation>' where the raw and annotated geolocations
+# are formatted as '<region>/<country>/<division>/<location>'
+# If creating a general rule, then the raw field value can be substituted with '*'
+# Lines starting with '#' will be ignored as comments.
+# Trailing '#' will be ignored as comments.

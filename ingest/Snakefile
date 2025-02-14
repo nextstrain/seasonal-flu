@@ -1,0 +1,37 @@
+"""
+This is the main ingest Snakefile that orchestrates the full ingest workflow
+and defines its default outputs.
+"""
+# The workflow filepaths are written relative to this Snakefile's base directory
+workdir: workflow.current_basedir
+
+# Use default configuration values. Override with Snakemake's --configfile/--config options.
+configfile: "defaults/config.yaml"
+
+
+SEGMENTS = [
+    "pb2",
+    "pb1",
+    "pa",
+    "ha",
+    "np",
+    "na",
+    "mp",
+    "ns",
+]
+
+
+rule all:
+    input:
+        metadata = "results/metadata.tsv",
+        sequences = expand("results/{segment}/sequences.fasta", segment=SEGMENTS),
+
+
+include: "rules/prepare_ndjson.smk"
+include: "rules/curate.smk"
+
+
+if "custom_rules" in config:
+    for rule_file in config["custom_rules"]:
+
+        include: rule_file

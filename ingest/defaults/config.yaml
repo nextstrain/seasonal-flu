@@ -1,0 +1,86 @@
+# This configuration file should contain all required configuration parameters
+# for the ingest workflow to run to completion.
+#
+# Define optional config parameters with their default values here so that users
+# do not have to dig through the workflows to figure out the default values
+
+# Config parameters related to the curate pipeline
+curate:
+  # The path to the local geolocation rules within the pathogen repo
+  # The path should be relative to the ingest directory.
+  local_geolocation_rules: "defaults/geolocation_rules.tsv"
+  # List of field names to change where the key is the original field name and the value is the new field name
+  # This is the first step in the pipeline, so any references to field names in the configs below should use the new field names
+  field_map:
+    Isolate_Name: strain
+    Isolate_Id: gisaid_epi_isl
+    Collection_Date: date
+    Submission_Date: date_submitted
+    Subtype: subtype
+    Passage_History: passage
+    Location: location # This is <region>/<country>/<division>/<location>
+    Submitting_Lab: submitting_lab
+    Originating_Lab: originating_lab
+    Host: host
+    Host_Age: age
+    Host_Gender: gender
+  # List of date fields to standardize to ISO format YYYY-MM-DD
+  date_fields: ["date", "date_submitted"]
+  # List of expected date formats that are present in the date fields provided above
+  # These date formats should use directives expected by datetime
+  # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
+  expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
+  titlecase:
+    # List of string fields to titlecase
+    fields: ["region", "country", "division", "location"]
+    # List of abbreviations not cast to titlecase, keeps uppercase
+    abbreviations: ["USA"]
+    # Articles that should not be cast to titlecase
+    articles: [
+      "and", "d", "de", "del", "des", "di", "do", "en", "l", "la", "las", "le",
+      "los", "nad", "of", "op", "sur", "the", "y"
+    ]
+  # Path to the manual annotations file
+  # The path should be relative to the ingest directory
+  annotations: "defaults/annotations.tsv"
+  # The ID field in the metadata to use to merge the manual annotations
+  annotations_id: "strain"
+  # The ID field in the metadata to use as the sequence id in the output FASTA file
+  output_id_field: "strain"
+  # The list of metadata columns to keep in the final output of the curation pipeline.
+  metadata_columns:
+  # TODO: copied current columns from S3 metadata, need to ensure all columns exist
+  - strain
+  # - virus
+  # - segment
+  - gisaid_epi_isl
+  - accession_ha
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  # - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+  # - gisaid_strain
+  - ha
+  - na
+  - accession_na
+  - pb2
+  - accession_pb2
+  - pb1
+  - accession_pb1
+  - pa
+  - accession_pa
+  - np
+  - accession_np
+  - mp
+  - accession_mp
+  - ns
+  - accession_ns
+  # - gihsn_sample
+  # - is_reference
