@@ -40,7 +40,9 @@ A/Basel/USB0033684/2017
 # A.2
 A/Bangladesh/2006/2014
 A/Bangladesh/1079/2014
-
+A/Yamagata/186/2014
+A/Bangladesh/2021/2013
+A/Santiago/20181/2013
 
 # B.1.2
 A/Bangladesh/3039/2017
