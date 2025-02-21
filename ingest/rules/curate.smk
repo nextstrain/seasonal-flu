@@ -40,6 +40,8 @@ rule curate:
         articles=config["curate"]["titlecase"]["articles"],
         abbreviations=config["curate"]["titlecase"]["abbreviations"],
         titlecase_fields=config["curate"]["titlecase"]["fields"],
+        gisaid_strain_field=config["curate"]["gisaid_strain_field"],
+        gihsn_field=config["curate"]["gihsn_field"],
         annotations_id=config["curate"]["annotations_id"],
     shell:
         r"""
@@ -58,6 +60,9 @@ rule curate:
                 --abbreviations {params.abbreviations:q} \
             | augur curate apply-geolocation-rules \
                 --geolocation-rules {input.geolocation_rules:q} \
+            | ./scripts/annotate-with-gihsn \
+                --strain-field {params.gisaid_strain_field:q} \
+                --gihsn-field {params.gihsn_field:q} \
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \

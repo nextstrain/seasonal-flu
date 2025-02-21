@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""
+Annotates whether the GISAID record is part of the Global Influenza Hospital
+Surveillance Network (GIHSN) by checking for "GIHSN" in the strain name.
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+GIHSN_PATTERN = r"(GIHSN)"
+
+
+def annotate_records_with_gihsn(records: Iterable, strain_field: str, gihsn_field: str) -> Iterable:
+    """
+    Adds the *gihsn_field* to the *records*, with value "True" if it has the
+    "GIHSN" substring in the *strain_field*.
+
+    Yields the modified records.
+    """
+    for record in records:
+        record = record.copy()
+        strain = record.get(strain_field)
+
+        if strain is None:
+            raise Exception(f"Records must have the expected strain field: {strain_field!r}")
+
+        record[gihsn_field] = str(bool(re.search(GIHSN_PATTERN, strain)))
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--strain-field", default="strain",
+        help="The record field containing the GISAID strain name")
+    parser.add_argument("--gihsn-field", default="gihsn_sample",
+        help="The name of the new field to add to the record to indicate if it " + \
+             "is part of the Global Influenza Hospital Surveillance Network (GIHSN)")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = annotate_records_with_gihsn(records, args.strain_field, args.gihsn_field)
+    dump_ndjson(modified_records)
