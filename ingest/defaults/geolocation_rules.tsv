@@ -4,3 +4,9 @@
 # If creating a general rule, then the raw field value can be substituted with '*'
 # Lines starting with '#' will be ignored as comments.
 # Trailing '#' will be ignored as comments.
+Asia/Hong Kong (Sar)/*/*	Asia/Hong Kong/*/*
+Asia/Iran, Islamic Republic of/*/*	Asia/Iran/*/*
+Asia/Korea, Republic of/*/*	Asia/South Korea/*/*
+Asia/Lao, People'S Democratic Republic/*/*	Asia/Laos/*/*
+Europe/Russian Federation/*/*	Europe/Russia/*/*
+Sudan, South/*/*/*	Africa/South Sudan/*/*
