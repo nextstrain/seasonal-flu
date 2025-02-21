@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""
+Parses GISAID's location field into 4 separate fields: region, country, division, and location.
+
+Expects the GISAID location field to be formatted as
+
+    <region> / <country> / <division> / <location>
+
+The location values are not guaranteed across GISAID records, so they will
+default to "?" if not available.
+"""
+import argparse
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+DEFAULT_UNKNOWN_VALUE = "?"
+LOCATION_FIELDS = [
+    "region",
+    "country",
+    "division",
+    "location",
+]
+
+
+def parse_locations(records: Iterable, location_field: str) -> Iterable:
+    """
+    Parse the *location_field* in the *records* to split it into 4 separate
+    fields: region, country, division, and location.
+
+    Yields the modified records
+    """
+    expected_num_locations = len(LOCATION_FIELDS)
+    for record in records:
+        record = record.copy()
+        gisaid_location = record.get(location_field)
+
+        if gisaid_location is None:
+            raise Exception(f"Records must have the expected location field: {location_field!r}")
+
+        split_locations = [location.strip() for location in gisaid_location.split("/")]
+        if len(split_locations) > expected_num_locations:
+            print_err(
+                f"The GISAID location field has more values ({split_locations!r})",
+                f"than expected ({LOCATION_FIELDS!r}), the extra values will be ignored.")
+
+        for index, field in enumerate(LOCATION_FIELDS):
+            record[field] = split_locations[index] if len(split_locations) > index else DEFAULT_UNKNOWN_VALUE
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--location-field", default="location",
+        help="The record field containing the GISAID location")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = parse_locations(records, args.location_field)
+    dump_ndjson(modified_records)

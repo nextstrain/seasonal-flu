@@ -30,6 +30,7 @@ curate:
   # These date formats should use directives expected by datetime
   # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
   expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
+  gisaid_location_field: "location"
   titlecase:
     # List of string fields to titlecase
     fields: ["region", "country", "division", "location"]
