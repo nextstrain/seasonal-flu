@@ -41,6 +41,8 @@ curate:
       "and", "d", "de", "del", "des", "di", "do", "en", "l", "la", "las", "le",
       "los", "nad", "of", "op", "sur", "the", "y"
     ]
+  gisaid_strain_field: "strain"
+  gihsn_field: "gihsn_sample"
   # Path to the manual annotations file
   # The path should be relative to the ingest directory
   annotations: "defaults/annotations.tsv"
@@ -81,5 +83,5 @@ curate:
   - accession_mp
   - ns
   - accession_ns
-  # - gihsn_sample
+  - gihsn_sample
   # - is_reference
