@@ -36,6 +36,7 @@ rule curate:
         field_map=format_field_map(config["curate"]["field_map"]),
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
+        gisaid_location_field=config["curate"]["gisaid_location_field"],
         articles=config["curate"]["titlecase"]["articles"],
         abbreviations=config["curate"]["titlecase"]["abbreviations"],
         titlecase_fields=config["curate"]["titlecase"]["fields"],
@@ -49,6 +50,8 @@ rule curate:
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
+            | ./scripts/parse-gisaid-location \
+                --location-field {params.gisaid_location_field:q} \
             | augur curate titlecase \
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \
