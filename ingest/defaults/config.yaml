@@ -52,8 +52,6 @@ curate:
   metadata_columns:
   # TODO: copied current columns from S3 metadata, need to ensure all columns exist
   - strain
-  # - virus
-  # - segment
   - gisaid_epi_isl
   - accession_ha
   - date
