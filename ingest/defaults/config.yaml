@@ -41,6 +41,8 @@ curate:
       "and", "d", "de", "del", "des", "di", "do", "en", "l", "la", "las", "le",
       "los", "nad", "of", "op", "sur", "the", "y"
     ]
+  passage_field: "passage"
+  passage_category_field: "passage_category"
   gisaid_strain_field: "strain"
   gihsn_field: "gihsn_sample"
   # Path to the manual annotations file
@@ -62,7 +64,7 @@ curate:
   - country
   - division
   - location
-  # - passage_category
+  - passage_category
   - originating_lab
   - submitting_lab
   - age
