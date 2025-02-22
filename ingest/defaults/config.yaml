@@ -16,13 +16,15 @@ curate:
     Isolate_Id: gisaid_epi_isl
     Collection_Date: date
     Submission_Date: date_submitted
-    Subtype: subtype
+    Subtype: subtype # This is A/B + H<n>N<n>
+    Lineage: lineage # This is pdm09 or Victoria
     Passage_History: passage
     Location: location # This is <region>/<country>/<division>/<location>
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
-    Host_Age: age
+    Host_Age: age # This should be float
+    Host_Age_Unit: age_unit # This should be unit of age (Y or M)
     Host_Gender: gender
   # List of date fields to standardize to ISO format YYYY-MM-DD
   date_fields: ["date", "date_submitted"]
@@ -87,4 +89,4 @@ curate:
   - ns
   - accession_ns
   - gihsn_sample
-  # - is_reference
+  # - is_reference # TODO: Need to split by subtype/lineage to do this!
