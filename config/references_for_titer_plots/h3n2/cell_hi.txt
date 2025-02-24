@@ -4,7 +4,10 @@ A/Canberra/327/2023 # J.1.1:9N,275D
 A/Canberra/302/2023 # J.2:140R
 A/Croatia/10136RV/2023 # J.2:145N, vaccine strain
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
+A/Oklahoma/5/2024 # J.2:158K
 A/Norway/1952/2024 # J.2:145N,158K
+A/Idaho/69/2023 # J.2:145N,189R
+A/Pennsylvania/89/2023 # J.2:145G,223I
 A/Victoria/488/2024 # J.2:207R
 A/Switzerland/47775/2024 # J.2.1:309I,63K,189R,208I
 A/Netherlands/10563/2023 # J.2.2:51V
