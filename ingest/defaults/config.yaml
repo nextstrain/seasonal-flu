@@ -22,7 +22,6 @@ curate:
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
-    Host_Age: age
     Host_Gender: gender
   # List of date fields to standardize to ISO format YYYY-MM-DD
   date_fields: ["date", "date_submitted"]
@@ -45,6 +44,9 @@ curate:
   passage_category_field: "passage_category"
   gisaid_strain_field: "strain"
   gihsn_field: "gihsn_sample"
+  age_field: "Host_Age"
+  age_unit_field: "Host_Age_Unit"
+  new_age_field: "age"
   # Path to the manual annotations file
   # The path should be relative to the ingest directory
   annotations: "defaults/annotations.tsv"

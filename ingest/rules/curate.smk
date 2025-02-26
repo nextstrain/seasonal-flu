@@ -44,6 +44,9 @@ rule curate:
         passage_category_field=config["curate"]["passage_category_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
         gihsn_field=config["curate"]["gihsn_field"],
+        age_field=config["curate"]["age_field"],
+        age_unit_field=config["curate"]["age_unit_field"],
+        new_age_field=config["curate"]["new_age_field"],
         annotations_id=config["curate"]["annotations_id"],
     shell:
         r"""
@@ -68,6 +71,10 @@ rule curate:
             | ./scripts/annotate-with-gihsn \
                 --strain-field {params.gisaid_strain_field:q} \
                 --gihsn-field {params.gihsn_field:q} \
+            | ./scripts/curate-age \
+                --age-field {params.age_field:q} \
+                --age-unit-field {params.age_unit_field:q} \
+                --new-age-field {params.new_age_field:q} \
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \
