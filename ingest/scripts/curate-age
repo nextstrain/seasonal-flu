@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""
+Combines GISAID age information (number + units) into one field.
+"""
+import argparse
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+DEFAULT_UNKNOWN_VALUE = "?"
+DEFAULT_AGE_UNIT = "y"
+
+
+def combine_age_and_unit(records: Iterable,
+                         age_field: str,
+                         age_unit_field: str,
+                         new_age_field: str) -> Iterable:
+    """
+    Combines the *age_field* and *age_unit_field* to create the *new_age_field*.
+
+    Yields the modified records.
+    """
+    for record in records:
+        record = record.copy()
+        age_number = record.get(age_field)
+        age_unit = record.get(age_unit_field)
+
+        if age_number is None:
+            raise Exception(f"Records must have the expected GISAID age field: {age_field!r}")
+
+        if age_unit is None:
+            raise Exception(f"Records must have the expected GISAID age unit field: {age_unit_field!r}")
+
+        try:
+            age_number = str(int(age_number))
+            age_unit = age_unit.lower() if age_unit else DEFAULT_AGE_UNIT
+            age = age_number + age_unit
+        except ValueError:
+            age = DEFAULT_UNKNOWN_VALUE
+
+        record[new_age_field] = age
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--age-field", default="Host_Age",
+        help="The record field that contains the GISAID age number.")
+    parser.add_argument("--age-unit-field", default="Host_Age_Unit",
+        help="The record field that contains the GISAID age unit. " + \
+             f"If the unit is empty, then will default to {DEFAULT_AGE_UNIT!r}.")
+    parser.add_argument("--new-age-field", default="age",
+        help="The name of the new field to add to the record with the " + \
+             f"age value. If age is unknown, will default to {DEFAULT_UNKNOWN_VALUE!r}")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = combine_age_and_unit(records,
+                                            args.age_field,
+                                            args.age_unit_field,
+                                            args.new_age_field)
+    dump_ndjson(modified_records)
