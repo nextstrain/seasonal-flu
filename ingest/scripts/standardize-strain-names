@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""
+Standardizes GISAID strain names to our expected patterns.
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+def standardize_record_strains(records: Iterable,
+                               gisaid_strain_field: str,
+                               new_strain_field: str) -> Iterable:
+    """
+    Adds the *new_strain_field* to the *records*, with standardized strain name
+    that was created from the *gisaid_strain_field*.
+
+    Yields the modified records.
+    """
+    for record in records:
+        record = record.copy()
+        gisaid_strain = record.get(gisaid_strain_field)
+
+        if gisaid_strain is None:
+            raise Exception(f"Records must have the expected GISAID strain field: {gisaid_strain_field!r}")
+
+        # TODO flu_upload/fix_name
+        # TODO download/resolve_duplicates -egg suffixes
+        record[new_strain_field] = gisaid_strain
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--strain-field", default="gisaid_strain",
+        help="The record field containing the GISAID strain name")
+    parser.add_argument("--new-strain-field", default="strain",
+        help="The name of the new field to add to the record with the standardized strain name")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = standardize_record_strains(records, args.strain_field, args.new_strain_field)
+    dump_ndjson(modified_records)
