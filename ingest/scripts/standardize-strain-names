@@ -3,22 +3,32 @@
 Standardizes GISAID strain names to our expected patterns.
 """
 import argparse
+import csv
 import re
 from sys import stdin
-from typing import Iterable
+from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
 
 
 def standardize_record_strains(records: Iterable,
                                gisaid_strain_field: str,
-                               new_strain_field: str) -> Iterable:
+                               new_strain_field: str,
+                               strain_replacements_file: Optional[str],
+                               location_replacements_file: Optional[str]) -> Iterable:
     """
     Adds the *new_strain_field* to the *records*, with standardized strain name
     that was created from the *gisaid_strain_field*.
 
     Yields the modified records.
     """
+    strain_replacements = {}
+    location_replacements = {}
+    if strain_replacements_file:
+        strain_replacements = define_strain_fixes(strain_replacements_file)
+    if location_replacements_file:
+        location_replacements = define_location_label_fixes(location_replacements_file)
+
     for record in records:
         record = record.copy()
         gisaid_strain = record.get(gisaid_strain_field)
@@ -26,20 +36,20 @@ def standardize_record_strains(records: Iterable,
         if gisaid_strain is None:
             raise Exception(f"Records must have the expected GISAID strain field: {gisaid_strain_field!r}")
 
-        # TODO flu_upload/fix_name
+        new_strain = fix_name(gisaid_strain, strain_replacements, location_replacements)
         # TODO download/resolve_duplicates -egg suffixes
-        record[new_strain_field] = gisaid_strain
+        record[new_strain_field] = new_strain
 
         yield record
 
 
-def define_strain_fixes(self, fname):
-    '''
+def define_strain_fixes(fname: str) -> dict:
+    """
     Open strain name fixing files and define corresponding dictionaries
 
-    Copied from nextstrain/fauna/vdb/upload.py
+    Modified from nextstrain/fauna/vdb/upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L142-L150>
-    '''
+    """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
     fix_whole_name = {}
     for line in reader:
@@ -47,38 +57,42 @@ def define_strain_fixes(self, fname):
     return fix_whole_name
 
 
-def define_location_label_fixes(self, fname):
+def define_location_label_fixes(fname: str) -> dict:
     """
-    Copied from nextstrain/fauna/vdb/flu_upload.py
+    Open strain name location label fixing file and return dict of
+    location label fixes.
+
+    Modified from nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L240-L244>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    self.label_to_fix = {}
+    label_to_fix = {}
     for line in reader:
-        self.label_to_fix[line['label'].encode().decode('unicode-escape').replace(' ', '').lower()] = line['fix']
+        label_to_fix[line['label'].encode().decode('unicode-escape').replace(' ', '').lower()] = line['fix']
+    return label_to_fix
 
 
-def fix_name(self, name):
-    '''
+def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict) -> str:
+    """
     Fix strain names
 
-    Copied from nextstrain/fauna/vdb/flu_upload.py
+    Modified from nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L256-L283>
-    '''
+    """
     # replace all accents with ? mark
     original_name = name.encode('ascii', 'replace').decode('unicode-escape')
     # Replace whole strain names
-    name = self.replace_strain_name(original_name, self.fix_whole_name)
+    name = replace_strain_name(original_name, fix_whole_name)
     name = name.replace('H1N1', '').replace('H5N6', '').replace('H3N2', '').replace('Human', '')\
         .replace('human', '').replace('//', '/').replace('.', '').replace(',', '').replace('&', '').replace(' ', '')\
         .replace('\'', '').replace('>', '').replace('-like', '').replace('+', '')
     split_name = name.split('/')
     # check location labels in strain names for fixing
     for index, label in enumerate(split_name):
-        if label.replace(' ', '').lower() in self.label_to_fix:
-            split_name[index] = self.label_to_fix[label.replace(' ', '').lower()]
+        if label.replace(' ', '').lower() in label_to_fix:
+            split_name[index] = label_to_fix[label.replace(' ', '').lower()]
     name = '/'.join(split_name)
-    name = self.flu_fix_patterns(name)
+    name = flu_fix_patterns(name)
 
     # Strip leading zeroes, change all capitalization location field to title case
     split_name = name.split('/')
@@ -88,27 +102,27 @@ def fix_name(self, name):
         split_name[2] = split_name[2].lstrip('0')  # A/Mali/013MOP/2015 becomes A/Mali/13MOP/2015
         split_name[3] = split_name[3].lstrip('0')  # A/Cologne/Germany/01/2009 becomes A/Cologne/Germany/1/2009
     result_name = '/'.join(split_name).strip()
-    return result_name, original_name
+    return result_name
 
 
-def replace_strain_name(self, original_name, fixes={}):
-    '''
+def replace_strain_name(original_name: str, fixes: dict = {}) -> str:
+    """
     return the new strain name that will replace the original
 
-    Copied from nextstrain/fauna/vdb/upload.py
+    Modified from nextstrain/fauna/vdb/upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L172-L179>
-    '''
+    """
     if original_name in fixes:
         return fixes[original_name]
     else:
         return original_name
 
 
-def flu_fix_patterns(self, name):
-    '''
-    Copied from nextstrain/fauna/vdb/flu_upload.py
+def flu_fix_patterns(name: str) -> str:
+    """
+    Modified from nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L285-L368>
-    '''
+    """
     # various name patterns that need to be fixed
     # capitalization of virus type
     if re.match(r'([a|b])([\w\s\-/]+)', name):  #b/sydney/508/2008    B/sydney/508/2008
@@ -201,9 +215,20 @@ if __name__ == '__main__':
         help="The record field containing the GISAID strain name")
     parser.add_argument("--new-strain-field", default="strain",
         help="The name of the new field to add to the record with the standardized strain name")
+    parser.add_argument("--strain-replacements",
+        help="A TSV file of full strain name replacements. " + \
+             "Strains in the 'label' column are replaced with the strains in the 'fix' column.")
+    parser.add_argument("--location-replacements",
+        help="A TSV file of location label replacements in strain names. " + \
+             "Location labels in the 'label' column are placed with the location in the 'fix' column. ")
 
     args = parser.parse_args()
 
     records = load_ndjson(stdin)
-    modified_records = standardize_record_strains(records, args.strain_field, args.new_strain_field)
+    modified_records = standardize_record_strains(
+        records,
+        args.strain_field,
+        args.new_strain_field,
+        args.strain_replacements,
+        args.location_replacements)
     dump_ndjson(modified_records)
