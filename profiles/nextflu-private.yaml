@@ -17,6 +17,10 @@ tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb -nt AUTO'"
   override_default_args: true
 
+refine:
+  # Disable the clock filter.
+  clock_filter_iqd: 0
+
 submission_date_field: date_submitted
 recency:
   date_bins: [7, 30, 90]

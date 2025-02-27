@@ -232,7 +232,7 @@ rule refine:
     params:
         coalescent = "const",
         date_inference = "marginal",
-        clock_filter_iqd = 4,
+        clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev
     conda: "../envs/nextstrain.yaml"
