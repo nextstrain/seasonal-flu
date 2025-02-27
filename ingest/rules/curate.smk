@@ -43,6 +43,7 @@ rule curate:
         passage_field=config["curate"]["passage_field"],
         passage_category_field=config["curate"]["passage_category_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
+        new_strain_field=config["curate"]["new_strain_field"],
         gihsn_field=config["curate"]["gihsn_field"],
         age_field=config["curate"]["age_field"],
         age_unit_field=config["curate"]["age_unit_field"],
@@ -68,6 +69,9 @@ rule curate:
             | ./scripts/annotate-with-passage-category \
                 --passage-field {params.passage_field:q} \
                 --passage-category-field {params.passage_category_field:q} \
+            | ./scripts/standardize-strain-names \
+                --strain-field {params.gisaid_strain_field:q} \
+                --new-strain-field {params.new_strain_field:q} \
             | ./scripts/annotate-with-gihsn \
                 --strain-field {params.gisaid_strain_field:q} \
                 --gihsn-field {params.gihsn_field:q} \

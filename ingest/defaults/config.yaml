@@ -12,7 +12,7 @@ curate:
   # List of field names to change where the key is the original field name and the value is the new field name
   # This is the first step in the pipeline, so any references to field names in the configs below should use the new field names
   field_map:
-    Isolate_Name: strain
+    Isolate_Name: gisaid_strain
     Isolate_Id: gisaid_epi_isl
     Collection_Date: date
     Submission_Date: date_submitted
@@ -42,7 +42,8 @@ curate:
     ]
   passage_field: "passage"
   passage_category_field: "passage_category"
-  gisaid_strain_field: "strain"
+  gisaid_strain_field: "gisaid_strain"
+  new_strain_field: "strain"
   gihsn_field: "gihsn_sample"
   age_field: "Host_Age"
   age_unit_field: "Host_Age_Unit"
@@ -71,7 +72,7 @@ curate:
   - submitting_lab
   - age
   - gender
-  # - gisaid_strain
+  - gisaid_strain
   - ha
   - na
   - accession_na
