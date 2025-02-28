@@ -14,6 +14,24 @@ OUTPUTS:
 """
 
 
+rule fetch_from_fauna:
+    """
+    Fetch files from nextstrain/fauna/source-data that we need to ensure the
+    strain names of the sequences are in-sync with strain names in titer data.
+
+    Currently used to fetch the following files for rule curate:
+    - flu_strain_name_fix.tsv
+    - flu_fix_location_label.tsv
+    """
+    output: "data/fauna-source-data/{source_data_file}",
+    params:
+        url=lambda w: f"https://github.com/nextstrain/fauna/raw/@/source-data/{w.source_data_file}",
+    shell:
+        """
+        curl -fsSL {params.url} > {output}
+        """
+
+
 def format_field_map(field_map: dict[str, str]) -> str:
     """
     Format dict to `"key1"="value1" "key2"="value2"...` for use in shell commands.
@@ -24,6 +42,8 @@ def format_field_map(field_map: dict[str, str]) -> str:
 rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson",
+        strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         annotations=config["curate"]["annotations"],
     output:
@@ -72,6 +92,8 @@ rule curate:
             | ./scripts/standardize-strain-names \
                 --strain-field {params.gisaid_strain_field:q} \
                 --new-strain-field {params.new_strain_field:q} \
+                --strain-replacements {input.strain_replacements:q} \
+                --location-replacements {input.strain_location_replacements:q} \
             | ./scripts/annotate-with-gihsn \
                 --strain-field {params.gisaid_strain_field:q} \
                 --gihsn-field {params.gihsn_field:q} \
