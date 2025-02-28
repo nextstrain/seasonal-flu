@@ -11,8 +11,13 @@ from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
 
 
+EGG_PASSAGE = "egg"
+EGG_SUFFIX = "-egg"
+
+
 def standardize_record_strains(records: Iterable,
                                gisaid_strain_field: str,
+                               passage_field: str,
                                new_strain_field: str,
                                strain_replacements_file: Optional[str],
                                location_replacements_file: Optional[str]) -> Iterable:
@@ -32,12 +37,21 @@ def standardize_record_strains(records: Iterable,
     for record in records:
         record = record.copy()
         gisaid_strain = record.get(gisaid_strain_field)
+        passage_category = record.get(passage_field)
 
         if gisaid_strain is None:
             raise Exception(f"Records must have the expected GISAID strain field: {gisaid_strain_field!r}")
 
+        if passage_category is None:
+            raise Exception(f"Records must have the expected passage category field: {passage_field!r}")
+
         new_strain = fix_name(gisaid_strain, strain_replacements, location_replacements)
-        # TODO download/resolve_duplicates -egg suffixes
+
+        # Mirrors the changes to the strain name in nextstrain/fauna/vdb/download.py
+        # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/download.py#L326-L327>
+        if passage_category == EGG_PASSAGE:
+            new_strain += EGG_SUFFIX
+
         record[new_strain_field] = new_strain
 
         yield record
@@ -213,6 +227,9 @@ if __name__ == '__main__':
 
     parser.add_argument("--strain-field", default="gisaid_strain",
         help="The record field containing the GISAID strain name")
+    parser.add_argument("--passage-field", default="passage_category",
+        help="The record field containing the passage category of the sample. " + \
+             f"If the passage category is {EGG_PASSAGE!r}, then {EGG_SUFFIX!r} will be appended to the strain.")
     parser.add_argument("--new-strain-field", default="strain",
         help="The name of the new field to add to the record with the standardized strain name")
     parser.add_argument("--strain-replacements",
@@ -228,6 +245,7 @@ if __name__ == '__main__':
     modified_records = standardize_record_strains(
         records,
         args.strain_field,
+        args.passage_field,
         args.new_strain_field,
         args.strain_replacements,
         args.location_replacements)
