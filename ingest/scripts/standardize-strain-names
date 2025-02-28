@@ -25,9 +25,9 @@ def standardize_record_strains(records: Iterable,
     strain_replacements = {}
     location_replacements = {}
     if strain_replacements_file:
-        strain_replacements = define_strain_fixes(strain_replacements_file)
+        strain_replacements = load_replacements(strain_replacements_file)
     if location_replacements_file:
-        location_replacements = define_location_fixes(location_replacements_file)
+        location_replacements = load_replacements(location_replacements_file)
 
     for record in records:
         record = record.copy()
@@ -43,32 +43,21 @@ def standardize_record_strains(records: Iterable,
         yield record
 
 
-def define_strain_fixes(fname: str) -> dict:
+def load_replacements(fname: str) -> dict:
     """
-    Open strain name fixing files and define corresponding dictionaries
+    Load replacements from a TSV *fname* and returns a replacement dict where
+    the keys are the 'label' and the values are the 'fix'.
+
+    Skips rows that start with '#'.
 
     Modified from nextstrain/fauna/vdb/upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L142-L150>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    fix_whole_name = {}
+    replacements = {}
     for line in reader:
-        fix_whole_name[line['label'].encode().decode('unicode-escape')] = line['fix']
-    return fix_whole_name
-
-
-def define_location_fixes(fname: str) -> dict:
-    """
-    Open location fix file and define corresponding dictionaries
-
-    Modified from nextstrain/fauna/vdb/upload.py
-    <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L152-L160>
-    """
-    reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    fix_location = {}
-    for line in reader:
-        fix_location[line['label'].encode().decode('unicode-escape')] = line['fix']
-    return fix_location
+        replacements[line['label'].encode().decode('unicode-escape')] = line['fix']
+    return replacements
 
 
 def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict) -> str:
