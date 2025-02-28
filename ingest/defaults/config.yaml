@@ -16,7 +16,6 @@ curate:
     Isolate_Id: gisaid_epi_isl
     Collection_Date: date
     Submission_Date: date_submitted
-    Subtype: subtype
     Passage_History: passage
     Location: location # This is <region>/<country>/<division>/<location>
     Submitting_Lab: submitting_lab
@@ -42,6 +41,11 @@ curate:
     ]
   passage_field: "passage"
   passage_category_field: "passage_category"
+  gisaid_subtype_field: "Subtype"
+  gisaid_lineage_field: "Lineage"
+  new_type_field: "vtype"
+  new_subtype_field: "subtype"
+  new_lineage_field: "lineage"
   gisaid_strain_field: "gisaid_strain"
   new_strain_field: "strain"
   gihsn_field: "gihsn_sample"

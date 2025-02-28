@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""
+Standardize lineage based on GISAID's subtype and lineage.
+"""
+import argparse
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+# GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
+# <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+GISAID_LINEAGE_MAP = {
+    ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'seasonal_h1n1pdm'),
+    ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
+    ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'seasonal_h1n2'),
+    ('a / h2n2',      ''):                ('a',    'h2n2',    'n/a'),
+    ('a / h3n2',      ''):                ('a',    'h3n2',    'seasonal_h3n2'),
+    ('a / h3n2',      'seasonal'):        ('a',    'h3n2',    'seasonal_h3n2'),
+    ('a / h3n3',      ''):                ('a',    'h3n3',    'n/a'),
+    ('a / h5n1',      ''):                ('a',    'h5n1',    'n/a'),
+    ('a / h5n6',      ''):                ('a',    'h5n6',    'n/a'),
+    ('a / h6n1',      ''):                ('a',    'h6n1',    'n/a'),
+    ('a / h7n1',      ''):                ('a',    'h7n1',    'n/a'),
+    ('a / h7n2',      ''):                ('a',    'h7n2',    'n/a'),
+    ('a / h7n3',      ''):                ('a',    'h7n3',    'n/a'),
+    ('a / h7n7',      ''):                ('a',    'h7n7',    'n/a'),
+    ('a / h7n9',      ''):                ('a',    'h7n9',    'n/a'),
+    ('a / h9n2',      ''):                ('a',    'h9n2',    'n/a'),
+    ('a / h10n7',     ''):                ('a',    'h10n7',   'n/a'),
+    ('a / h10n8',     ''):                ('a',    'h10n8',   'n/a'),
+    ('a / h11',       ''):                ('a',    'h11',     'n/a'),
+    ('b / h0n0',      'victoria'):        ('b',    'n/a',     'seasonal_vic'),
+    ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'seasonal_yam'),
+    ('b',             'victoria'):        ('b',    'n/a',     'seasonal_vic'),
+    ('b',             'yamagata'):        ('b',    'n/a',     'seasonal_yam'),
+}
+
+TBD_TYPE = "tbd"
+
+
+def standardize_record_lineage(records: Iterable[dict],
+                               subtype_field: str,
+                               lineage_field: str,
+                               new_type_field: str,
+                               new_subtype_field: str,
+                               new_lineage_field: str) -> Iterable:
+    """
+    Match the GISAID *subtype_field* and *lineage_field* to the
+    GISAID_LINEAGE_MAP to add standardized fields for type, subtype, and
+    lineage to the *records*.
+
+    Yields the modified records.
+
+    Based on nextstrain/fauna/vdb/flu_upload.py
+    <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L462-L484>
+    """
+    unknown_gisaid_types = set()
+    for record in records:
+        gisaid_subtype = record.get(subtype_field)
+        gisaid_lineage = record.get(lineage_field)
+
+        if gisaid_subtype is None:
+            raise Exception(f"Records must have the expected GISAID subtype field: {subtype_field!r}")
+
+        if gisaid_lineage is None:
+            raise Exception(f"Records must have the expected GISAID lineage field: {lineage_field!r}")
+
+        gisaid_types = (gisaid_subtype.lower(), gisaid_lineage.lower())
+        lineage_match = GISAID_LINEAGE_MAP.get(gisaid_types)
+
+        # Records without clear subtype/lineage are marked as "tbd"
+        # e.g. sequences submitted with _only_ the HA segment
+        if lineage_match is None:
+            unknown_gisaid_types.add(gisaid_types)
+            lineage_match = (TBD_TYPE, TBD_TYPE, TBD_TYPE)
+
+        record[new_type_field]    = lineage_match[0]
+        record[new_subtype_field] = lineage_match[1]
+        record[new_lineage_field] = lineage_match[2]
+
+        yield record
+
+    if len(unknown_gisaid_types):
+        print_err(
+            "WARNING: Records with the following GISAID subtype and lineages",
+            f"were marked as {TBD_TYPE!r}: {unknown_gisaid_types!r}"
+        )
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--subtype-field", default="Subtype",
+        help="The record field containing the GISAID subtype")
+    parser.add_argument("--lineage-field", default="Lineage",
+        help="The record field containing the GISAID lineage")
+    parser.add_argument("--new-type-field", default="vtype",
+        help="The name of the new field to add to the record with the type, " + \
+             f"e.g. a or b. If type is undetermined, will default to {TBD_TYPE!r}")
+    parser.add_argument("--new-subtype-field", default="subtype",
+        help="The name of the new field to add to the record with the subtype, " + \
+             f"e.g. h1n1. If subtype is unknown, will default to {TBD_TYPE!r}")
+    parser.add_argument("--new-lineage-field", default="lineage",
+        help="The name of the new field to add to the record with the lineage, " + \
+             f"e.g. seasonal_h1n1pdm. If subtype is unknown, will default to {TBD_TYPE!r}")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = standardize_record_lineage(
+        records,
+        args.subtype_field,
+        args.lineage_field,
+        args.new_type_field,
+        args.new_subtype_field,
+        args.new_lineage_field)
+    dump_ndjson(modified_records)
