@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""
+Splits GISAID NDJSON multiple NDJSON files by the "lineage" field
+"""
+import argparse
+import json
+import os
+from pathlib import Path
+from sys import stdin
+from typing import Iterable
+from augur.io.json import load_ndjson
+from augur.io.metadata import write_records_to_tsv
+from augur.io.print import print_err
+
+
+EXPECTED_LINEAGES = {
+    "seasonal_h1n1pdm",
+    "seasonal_h3n2",
+    "seasonal_vic",
+    "seasonal_yam",
+}
+
+
+def remove_lineage_files():
+    """
+    Remove the expected lineage files.
+    """
+    pass
+
+
+def dump_records_by_lineage(records: Iterable[dict],
+                            output_dir: str,
+                            lineage_field: str):
+    """
+    """
+    for record in records:
+        lineage = record.get(lineage_field)
+
+        if lineage is None:
+            raise Exception(f"Records must have the expected lineage field: {lineage_field!r}")
+
+        if lineage in EXPECTED_LINEAGES:
+            # Append record to lineage file
+            pass
+        else:
+            # Append record to the "other" file
+            pass
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--output-directory",
+        help="Output directory for new NDJSON files.")
+    parser.add_argument("--lineage-field", default="lineage",
+        help="The record field containing the lineage.")
+
+    args = parser.parse_args()
+
+    # Remove lineage files before processing records since we will be appending to them
+    remove_lineage_files()
+
+    records = load_ndjson(stdin)
+    dump_records_by_lineage(records, args.output_directory, args.lineage_field)
