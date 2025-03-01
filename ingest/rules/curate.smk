@@ -103,6 +103,7 @@ rule curate:
             | ./scripts/standardize-strain-names \
                 --strain-field {params.gisaid_strain_field:q} \
                 --passage-field {params.passage_category_field:q} \
+                --type-field {params.new_type_field:q} \
                 --new-strain-field {params.new_strain_field:q} \
                 --strain-replacements {input.strain_replacements:q} \
                 --location-replacements {input.strain_location_replacements:q} \
