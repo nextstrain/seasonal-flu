@@ -9,6 +9,14 @@ workdir: workflow.current_basedir
 configfile: "defaults/config.yaml"
 
 
+# Expected lineages that should match the standardized output lineages
+# in scripts/standardized-lineage
+LINEAGES= [
+    "seasonal_h1n1pdm",
+    "seasonal_h3n2",
+    "seasonal_vic",
+    "seasonal_yam",
+]
 SEGMENTS = [
     "pb2",
     "pb1",
@@ -23,8 +31,8 @@ SEGMENTS = [
 
 rule all:
     input:
-        metadata = "results/metadata.tsv",
-        sequences = expand("results/{segment}/sequences.fasta", segment=SEGMENTS),
+        metadata = expand("results/{lineage}/metadata.tsv", lineage=LINEAGES),
+        sequences = expand("results/{lineage}/{segment}/sequences.fasta", lineage=LINEAGES, segment=SEGMENTS),
 
 
 include: "rules/prepare_ndjson.smk"

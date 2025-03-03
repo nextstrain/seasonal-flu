@@ -59,6 +59,7 @@ curate:
   annotations_id: "strain"
   # The ID field in the metadata to use as the sequence id in the output FASTA file
   output_id_field: "strain"
+  gisaid_id_field: "gisaid_epi_isl"
   # The list of metadata columns to keep in the final output of the curation pipeline.
   metadata_columns:
   # TODO: copied current columns from S3 metadata, need to ensure all columns exist
