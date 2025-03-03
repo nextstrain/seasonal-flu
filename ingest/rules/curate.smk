@@ -1,6 +1,6 @@
 """
 This part of the workflow handles the curation of data from GISAID.
-Requires the `SEGMENTS` variable to be set upstream in the workflow.
+Requires the `LINEAGES` and `SEGMENTS` variables to be set upstream in the workflow.
 
 REQUIRED INPUTS:
 
@@ -8,10 +8,11 @@ REQUIRED INPUTS:
 
 OUTPUTS:
 
-    metadata    = data/subset_metadata.tsv
-    sequences   = results/sequences.fasta
+    metadata    = results/{lineage}/metadata.tsv
+    sequences   = results/{lineage}/{segment}/sequences.fasta
 
 """
+from pathlib import Path
 
 
 rule fetch_from_fauna:
@@ -121,16 +122,40 @@ rule curate:
         """
 
 
-# TODO: Split ndjson by subtype before splitting into metadata + FASTAs
-rule split_ndjson_by_segment:
+rule split_ndjson_by_lineage:
     input:
         curated_ndjson="data/curated_gisaid.ndjson",
     output:
-        metadata="data/all_metadata.tsv",
-        sequences=expand("results/{segment}/sequences.fasta", segment=SEGMENTS),
+        lineage_ndjsons=expand("data/{lineage}/curated_gisaid.ndjson", lineage=LINEAGES)
+    log:
+        "logs/split_ndjson_by_lineage.txt"
+    params:
+        lineages=LINEAGES,
+        lineage_output_dir=lambda w, output: Path(output.lineage_ndjsons[0]).parents[1],
+        lineage_field=config["curate"]["new_lineage_field"],
+        id_field=config["curate"]["gisaid_id_field"],
+    shell:
+        r"""
+        cat {input.curated_ndjson:q} \
+            | ./scripts/split-gisaid-ndjson-by-lineage \
+                --output-directory {params.lineage_output_dir:q} \
+                --lineages {params.lineages:q} \
+                --lineage-field {params.lineage_field:q} \
+                --id-field {params.id_field:q} 2>> {log:q}
+        """
+
+
+rule split_ndjson_by_segment:
+    input:
+        curated_ndjson="data/{lineage}/curated_gisaid.ndjson",
+    output:
+        metadata="data/{lineage}/all_metadata.tsv",
+        sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=SEGMENTS),
+    log:
+        "logs/{lineage}/split_ndjson_by_segment.txt"
     params:
         segments=SEGMENTS,
-        seq_output_dir=lambda w, output: output.sequences[0].split("/")[0],
+        seq_output_dir=lambda w, output: Path(output.sequences[0]).parents[1],
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""
@@ -139,15 +164,15 @@ rule split_ndjson_by_segment:
                 --segments {params.segments:q} \
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
-                --output-id-field {params.id_field:q}
+                --output-id-field {params.id_field:q} 2>> {log}
         """
 
 
 rule subset_metadata:
     input:
-        metadata="data/all_metadata.tsv",
+        metadata="data/{lineage}/all_metadata.tsv",
     output:
-        subset_metadata="results/metadata.tsv",
+        subset_metadata="results/{lineage}/metadata.tsv",
     params:
         metadata_fields=",".join(config["curate"]["metadata_columns"]),
     shell:
