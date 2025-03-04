@@ -12,12 +12,12 @@ from augur.io.print import print_err
 # GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
 # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
 GISAID_LINEAGE_MAP = {
-    ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'seasonal_h1n1pdm'),
+    ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'h1n1pdm'),
     ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
-    ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'seasonal_h1n2'),
+    ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'h1n2'),
     ('a / h2n2',      ''):                ('a',    'h2n2',    'n/a'),
-    ('a / h3n2',      ''):                ('a',    'h3n2',    'seasonal_h3n2'),
-    ('a / h3n2',      'seasonal'):        ('a',    'h3n2',    'seasonal_h3n2'),
+    ('a / h3n2',      ''):                ('a',    'h3n2',    'h3n2'),
+    ('a / h3n2',      'seasonal'):        ('a',    'h3n2',    'h3n2'),
     ('a / h3n3',      ''):                ('a',    'h3n3',    'n/a'),
     ('a / h5n1',      ''):                ('a',    'h5n1',    'n/a'),
     ('a / h5n6',      ''):                ('a',    'h5n6',    'n/a'),
@@ -31,10 +31,10 @@ GISAID_LINEAGE_MAP = {
     ('a / h10n7',     ''):                ('a',    'h10n7',   'n/a'),
     ('a / h10n8',     ''):                ('a',    'h10n8',   'n/a'),
     ('a / h11',       ''):                ('a',    'h11',     'n/a'),
-    ('b / h0n0',      'victoria'):        ('b',    'n/a',     'seasonal_vic'),
-    ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'seasonal_yam'),
-    ('b',             'victoria'):        ('b',    'n/a',     'seasonal_vic'),
-    ('b',             'yamagata'):        ('b',    'n/a',     'seasonal_yam'),
+    ('b / h0n0',      'victoria'):        ('b',    'n/a',     'vic'),
+    ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'yam'),
+    ('b',             'victoria'):        ('b',    'n/a',     'vic'),
+    ('b',             'yamagata'):        ('b',    'n/a',     'yam'),
 }
 
 TBD_TYPE = "tbd"
@@ -104,7 +104,7 @@ if __name__ == '__main__':
              f"e.g. h1n1. If subtype is unknown, will default to {TBD_TYPE!r}")
     parser.add_argument("--new-lineage-field", default="lineage",
         help="The name of the new field to add to the record with the lineage, " + \
-             f"e.g. seasonal_h1n1pdm. If subtype is unknown, will default to {TBD_TYPE!r}")
+             f"e.g. h1n1pdm. If subtype is unknown, will default to {TBD_TYPE!r}")
 
     args = parser.parse_args()
 
