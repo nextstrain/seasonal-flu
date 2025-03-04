@@ -12,10 +12,10 @@ configfile: "defaults/config.yaml"
 # Expected lineages that should match the standardized output lineages
 # in scripts/standardized-lineage
 LINEAGES= [
-    "seasonal_h1n1pdm",
-    "seasonal_h3n2",
-    "seasonal_vic",
-    "seasonal_yam",
+    "h1n1pdm",
+    "h3n2",
+    "vic",
+    "yam",
 ]
 SEGMENTS = [
     "pb2",

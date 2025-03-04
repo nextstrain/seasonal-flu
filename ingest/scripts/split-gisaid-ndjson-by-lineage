@@ -12,10 +12,10 @@ from augur.io.print import print_err
 
 
 LINEAGES = [
-    "seasonal_h1n1pdm",
-    "seasonal_h3n2",
-    "seasonal_vic",
-    "seasonal_yam",
+    "h1n1pdm",
+    "h3n2",
+    "vic",
+    "yam",
 ]
 
 LINEAGE_FILE_NAME = "curated_gisaid.ndjson"
