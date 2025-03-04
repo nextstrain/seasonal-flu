@@ -145,9 +145,31 @@ rule split_ndjson_by_lineage:
         """
 
 
-rule split_ndjson_by_segment:
+rule deduplicate_ndjson_by_strain:
     input:
         curated_ndjson="data/{lineage}/curated_gisaid.ndjson",
+        prioritized_strain_ids=config["curate"]["prioritized_strain_ids"],
+    output:
+        deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
+    log:
+        "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
+    params:
+        strain_field=config["curate"]["new_strain_field"],
+        id_field=config["curate"]["gisaid_id_field"],
+    shell:
+        r"""
+         cat {input.curated_ndjson:q} \
+            | ./scripts/dedup-by-strain \
+                --strain-field {params.strain_field:q} \
+                --id-field {params.id_field:q} \
+                --prioritized-ids {input.prioritized_strain_ids:q} \
+                > {output.deduped_ndjson:q} 2>> {log:q}
+        """
+
+
+rule split_ndjson_by_segment:
+    input:
+        deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
     output:
         metadata="data/{lineage}/all_metadata.tsv",
         sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=SEGMENTS),
@@ -159,7 +181,7 @@ rule split_ndjson_by_segment:
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""
-        cat {input.curated_ndjson:q} \
+        cat {input.deduped_ndjson:q} \
             | ./scripts/split-gisaid-ndjson-by-segment \
                 --segments {params.segments:q} \
                 --output-metadata {output.metadata:q} \
