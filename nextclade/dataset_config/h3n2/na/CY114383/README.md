@@ -6,7 +6,7 @@
 | name                 | Influenza A H3N2 NA                      |
 | reference            | A/Wisconsin/67/2005                     |
 | dataset path         | flu/h3n2/na/CY114383                     |
-| reference accession  | CY114383   |
+| reference accession  | EPI115646   |
 | clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/)  |
 
 
