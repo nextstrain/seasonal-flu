@@ -171,7 +171,7 @@ rule split_ndjson_by_segment:
     input:
         deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
     output:
-        metadata="data/{lineage}/all_metadata.tsv",
+        metadata="data/{lineage}/curated_metadata.tsv",
         sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=SEGMENTS),
     log:
         "logs/{lineage}/split_ndjson_by_segment.txt"
@@ -187,6 +187,49 @@ rule split_ndjson_by_segment:
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
                 --output-id-field {params.id_field:q} 2>> {log}
+        """
+
+
+# Modified from top level rule
+# <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L94-L113>
+rule build_reference_strains_table:
+    input:
+        references="../config/{lineage}/reference_strains.txt",
+    output:
+        references="data/{lineage}/reference_strains.tsv",
+    params:
+        reference_column=config["curate"]["reference_column"],
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        csvtk add-header \
+            --names {params.id_field:q} \
+            {input.references:q} \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name {params.reference_column:q} \
+                --expression "'True'" > {output.references:q}
+        """
+
+
+# Modified from top level rule
+# https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L115-L137
+rule annotate_metadata_with_reference_strains:
+    input:
+        references="data/{lineage}/reference_strains.tsv",
+        metadata="data/{lineage}/curated_metadata.tsv",
+    output:
+        metadata="data/{lineage}/all_metadata.tsv",
+    params:
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        csvtk -t join \
+            --left-join \
+            --na "False" \
+            -f {params.id_field:q} \
+            {input.metadata:q} \
+            {input.references:q} > {output.metadata:q}
         """
 
 
