@@ -64,10 +64,10 @@ curate:
   # The prioritized strain ids for strain deduplication.
   # The {lineage} is a wildcard that will be filled by Snakemake
   prioritized_strain_ids: "defaults/{lineage}/prioritized_strain_ids.tsv"
-
+  # Column added to metadata to annotate which strains are reference strains
+  reference_column: "is_reference"
   # The list of metadata columns to keep in the final output of the curation pipeline.
   metadata_columns:
-  # TODO: copied current columns from S3 metadata, need to ensure all columns exist
   - strain
   - gisaid_epi_isl
   - accession_ha
@@ -99,4 +99,4 @@ curate:
   - ns
   - accession_ns
   - gihsn_sample
-  # - is_reference
+  - is_reference
