@@ -1,0 +1,5 @@
+# This is currently an empty file to indicate the top level pathogen repo.
+# The inclusion of this file allows the Nextstrain CLI to run the
+# `nextstrain build` from any directory regardless of runtime.
+#
+# See https://github.com/nextstrain/cli/releases/tag/8.2.0 for more details.
