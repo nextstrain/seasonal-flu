@@ -93,9 +93,10 @@ if __name__=="__main__":
     parser.add_argument('--keep-strains', type=str, nargs='+', help='a list of strains to keep in the output tree regardless of outlier status (i.e., reference strains that need to be retained in the build)')
     parser.add_argument('--output-outliers', type=str, help='file for outliers')
     parser.add_argument('--output-tree', type=str, help='file for pruned tree')
+    parser.add_argument('--date-column', type=str, default='date', help='column name for dates in the dates file')
 
     args = parser.parse_args()
-    dates = parse_dates(args.dates)
+    dates = parse_dates(args.dates, date_col=args.date_column)
     tt = TreeTime(gtr='JC69', tree=args.tree, aln=args.aln, verbose=1, dates=dates)
     tt.clock_filter(n_iqd=4, reroot='least-squares' if args.reroot else None)
     if args.aln:

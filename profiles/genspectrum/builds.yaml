@@ -1,0 +1,53 @@
+custom_rules:
+  - profiles/genspectrum/download_data.smk
+
+metadata_fields:
+  - accessionVersion
+  - Originating_Lab
+  - sampleCollectionDate
+  - ncbiReleaseDate
+  - country 
+renamed_metadata_fields:
+  - strain
+  - originating_lab
+  - date
+  - date_submitted
+  - region
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+  - na
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  nextstrain:
+    patterns:
+      lineage:
+        - h3n2
+      resolution:
+        - 12
+    build_name: "{lineage}_{resolution}y"
+    build_params:
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      auspice_config: "config/{lineage}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+    subsampling_parameters:
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+    subsamples:
+      global:
+          filters: "--group-by region year month --subsample-max-sequences 3000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
