@@ -1,6 +1,5 @@
 """
 This part of the workflow handles the curation of data from GISAID.
-Requires the `LINEAGES` and `SEGMENTS` variables to be set upstream in the workflow.
 
 REQUIRED INPUTS:
 
@@ -126,11 +125,11 @@ rule split_ndjson_by_lineage:
     input:
         curated_ndjson="data/curated_gisaid.ndjson",
     output:
-        lineage_ndjsons=expand("data/{lineage}/curated_gisaid.ndjson", lineage=LINEAGES)
+        lineage_ndjsons=expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])
     log:
         "logs/split_ndjson_by_lineage.txt"
     params:
-        lineages=LINEAGES,
+        lineages=config["lineages"],
         lineage_output_dir=lambda w, output: Path(output.lineage_ndjsons[0]).parents[1],
         lineage_field=config["curate"]["new_lineage_field"],
         id_field=config["curate"]["gisaid_id_field"],
@@ -172,11 +171,11 @@ rule split_ndjson_by_segment:
         deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
     output:
         metadata="data/{lineage}/curated_metadata.tsv",
-        sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=SEGMENTS),
+        sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=config["segments"]),
     log:
         "logs/{lineage}/split_ndjson_by_segment.txt"
     params:
-        segments=SEGMENTS,
+        segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parents[1],
         id_field=config["curate"]["output_id_field"],
     shell:
@@ -233,13 +232,27 @@ rule annotate_metadata_with_reference_strains:
         """
 
 
+def metadata_fields(wildcards) -> str:
+    """
+    Returns config["curate"]["metadata_columns"] and any additional segment
+    columns added by ./scripts/split-gisaid-ndjson-by-segment
+    """
+    metadata_columns = config["curate"]["metadata_columns"].copy()
+    for segment in config["segments"]:
+        metadata_columns.extend([
+            segment,
+            f"accession_{segment}",
+        ])
+    return ",".join(metadata_columns)
+
+
 rule subset_metadata:
     input:
         metadata="data/{lineage}/all_metadata.tsv",
     output:
         subset_metadata="results/{lineage}/metadata.tsv",
     params:
-        metadata_fields=",".join(config["curate"]["metadata_columns"]),
+        metadata_fields=metadata_fields,
     shell:
         r"""
         csvtk cut -t -f {params.metadata_fields:q} \
