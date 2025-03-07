@@ -8,31 +8,17 @@ workdir: workflow.current_basedir
 # Use default configuration values. Override with Snakemake's --configfile/--config options.
 configfile: "defaults/config.yaml"
 
-
-# Expected lineages that should match the standardized output lineages
-# in scripts/standardized-lineage
-LINEAGES= [
-    "h1n1pdm",
-    "h3n2",
-    "vic",
-    "yam",
-]
-SEGMENTS = [
-    "pb2",
-    "pb1",
-    "pa",
-    "ha",
-    "np",
-    "na",
-    "mp",
-    "ns",
-]
+wildcard_constraints:
+    # Expected lineages that should match the standardized output lineages
+    # in scripts/standardized-lineage
+    lineage = r'h1n1pdm|h3n2|vic|yam',
+    segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
 
 
 rule all:
     input:
-        metadata = expand("results/{lineage}/metadata.tsv", lineage=LINEAGES),
-        sequences = expand("results/{lineage}/{segment}/sequences.fasta", lineage=LINEAGES, segment=SEGMENTS),
+        metadata = expand("results/{lineage}/metadata.tsv", lineage=config["lineages"]),
+        sequences = expand("results/{lineage}/{segment}/sequences.fasta", lineage=config["lineages"], segment=config["segments"]),
 
 
 include: "rules/prepare_ndjson.smk"
