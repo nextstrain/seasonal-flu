@@ -73,6 +73,8 @@ rule curate:
         age_field=config["curate"]["age_field"],
         age_unit_field=config["curate"]["age_unit_field"],
         new_age_field=config["curate"]["new_age_field"],
+        gender_field=config["curate"]["gender_field"],
+        new_gender_field=config["curate"]["new_gender_field"],
         annotations_id=config["curate"]["annotations_id"],
     shell:
         r"""
@@ -114,6 +116,9 @@ rule curate:
                 --age-field {params.age_field:q} \
                 --age-unit-field {params.age_unit_field:q} \
                 --new-age-field {params.new_age_field:q} \
+            | ./scripts/curate-gender \
+                --gender-field {params.gender_field:q} \
+                --new-gender-field {params.new_gender_field:q} \
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \

@@ -39,7 +39,6 @@ curate:
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
-    Host_Gender: gender
   # List of date fields to standardize to ISO format YYYY-MM-DD
   date_fields: ["date", "date_submitted"]
   # List of expected date formats that are present in the date fields provided above
@@ -70,6 +69,8 @@ curate:
   age_field: "Host_Age"
   age_unit_field: "Host_Age_Unit"
   new_age_field: "age"
+  gender_field: "Host_Gender"
+  new_gender_field: "gender"
   # Path to the manual annotations file
   # The path should be relative to the ingest directory
   annotations: "defaults/annotations.tsv"
