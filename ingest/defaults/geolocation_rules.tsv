@@ -4,9 +4,77 @@
 # If creating a general rule, then the raw field value can be substituted with '*'
 # Lines starting with '#' will be ignored as comments.
 # Trailing '#' will be ignored as comments.
-Asia/Hong Kong (Sar)/*/*	Asia/Hong Kong/*/*
-Asia/Iran, Islamic Republic of/*/*	Asia/Iran/*/*
-Asia/Korea, Republic of/*/*	Asia/South Korea/*/*
-Asia/Lao, People'S Democratic Republic/*/*	Asia/Laos/*/*
-Europe/Russian Federation/*/*	Europe/Russia/*/*
+
+# Annotate specific regions to match FREQUENCY_REGIONS
+# <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/profiles/private.nextflu.org/export.smk#L1>
+# Countries copied from nextstrain/fauna/source-data/geo_regions.tsv
+# <https://github.com/nextstrain/fauna/blob/42991d3f8e3074e3544cca6b5fa77f1006f220d1/source-data/geo_regions.tsv>
+
+# China region
+*/China/*/*	China/China/*/*
+*/Hong Kong/*/*	China/Hong Kong/*/*
+*/Macau/*/*	China/Macau/*/*
+*/Taiwan/*/*	China/Taiwan/*/*
+*/Tibet/*/*	China/Tibet/*/*
+
+# South Asia region
+*/Bangladesh/*/*	South Asia/Bangladesh/*/*
+*/Bhutan/*/*	South Asia/Bhutan/*/*
+*/India/*/*	South Asia/India/*/*
+*/Maldives/*/*	South Asia/Maldives/*/*
+*/Nepal/*/*	South Asia/Nepal/*/*
+*/Sri Lanka/*/*	South Asia/Sri Lanka/*/*
+
+# Japan Korea region
+*/Japan/*/*	Japan Korea/Japan/*/*
+*/South Korea/*/*	Japan Korea/South Korea/*/*
+
+# Southeast Asia region
+*/Brunei/*/*	Southeast Asia/Brunei/*/*
+*/Cambodia/*/*	Southeast Asia/Cambodia/*/*
+*/East Timor/*/*	Southeast Asia/East Timor/*/*
+*/Indonesia/*/*	Southeast Asia/Indonesia/*/*
+*/Laos/*/*	Southeast Asia/Laos/*/*
+*/Malaysia/*/*	Southeast Asia/Malaysia/*/*
+*/Myanmar/*/*	Southeast Asia/Myanmar/*/*
+*/Philippines/*/*	Southeast Asia/Philippines/*/*
+*/Singapore/*/*	Southeast Asia/Singapore/*/*
+*/Thailand/*/*	Southeast Asia/Thailand/*/*
+*/Vietnam/*/*	Southeast Asia/Vietnam/*/*
+
+# West Asia region
+*/Afghanistan/*/*	West Asia/Afghanistan/*/*
+*/Armenia/*/*	West Asia/Armenia/*/*
+*/Azerbaijan/*/*	West Asia/Azerbaijan/*/*
+*/Bahrain/*/*	West Asia/Bahrain/*/*
+*/Cyprus/*/*	West Asia/Cyprus/*/*
+*/Georgia Country/*/*	West Asia/Georgia Country/*/*
+*/Iran/*/*	West Asia/Iran/*/*
+*/Iraq/*/*	West Asia/Iraq/*/*
+*/Israel/*/*	West Asia/Israel/*/*
+*/Jordan/*/*	West Asia/Jordan/*/*
+*/Kuwait/*/*	West Asia/Kuwait/*/*
+*/Lebanon/*/*	West Asia/Lebanon/*/*
+*/Oman/*/*	West Asia/Oman/*/*
+*/Pakistan/*/*	West Asia/Pakistan/*/*
+*/Palestine/*/*	West Asia/Palestine/*/*
+*/Qatar/*/*	West Asia/Qatar/*/*
+*/Saudi Arabia/*/*	West Asia/Saudi Arabia/*/*
+*/Syria/*/*	West Asia/Syria/*/*
+*/Turkey/*/*	West Asia/Turkey/*/*
+*/Turkmenistan/*/*	West Asia/Turkmenistan/*/*
+*/Russia/*/*	West Asia/Russia/*/*
+*/Mongolia/*/*	West Asia/Mongolia/*/*
+*/Kyrgyzstan/*/*	West Asia/Kyrgyzstan/*/*
+*/Kazakhstan/*/*	West Asia/Kazakhstan/*/*
+*/Tajikistan/*/*	West Asia/Tajikistan/*/*
+*/United Arab Emirates/*/*	West Asia/United Arab Emirates/*/*
+*/Uzbekistan/*/*	West Asia/Uzbekistan/*/*
+*/Yemen/*/*	West Asia/Yemen/*/*
+
+Asia/Hong Kong (Sar)/*/*	China/Hong Kong/*/*
+Asia/Iran, Islamic Republic of/*/*	West Asia/Iran/*/*
+Asia/Korea, Republic of/*/*	Japan Korea/South Korea/*/*
+Asia/Lao, People'S Democratic Republic/*/*	Southeast Asia/Laos/*/*
+Europe/Russian Federation/*/*	West Asia/Russia/*/*
 Sudan, South/*/*/*	Africa/South Sudan/*/*
