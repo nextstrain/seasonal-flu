@@ -8,10 +8,38 @@ Expects the GISAID location field to be formatted as
 
 The location values are not guaranteed across GISAID records, so they will
 default to "?" if not available.
+
+If the location field does not include all geolocation values, then try to parse
+the optional strain field for additional location information. Strain names are
+expected to be formatted as
+
+    <subtype>/<location>/<sample_id>/<year>
+
+The strain location will only be used if it is not already included in the
+geolocation values from the location field. The strain location will be used as
+the next missing geolocation value.
+
+For example, the following record only has region and country in the location field:
+
+    {
+        "location": "North America / United States",
+        "strain": "A/Baltimore/123/2025"
+    }
+
+Then the strain location "Baltimore" will be returned as the division:
+
+    {
+        "region": "North America",
+        "country": "United States",
+        "division": "Baltimore",
+        "location": "?"
+    }
+
 """
 import argparse
+import re
 from sys import stdin
-from typing import Iterable
+from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
 
@@ -23,12 +51,19 @@ LOCATION_FIELDS = [
     "division",
     "location",
 ]
+# <subtype>/<location>/<sample_id>/<year>
+STRAIN_LOCATION_PATTERN = r".+\/(?P<location>.+)\/.+\/.+"
 
 
-def parse_locations(records: Iterable, location_field: str) -> Iterable:
+def parse_locations(records: Iterable,
+                    location_field: str,
+                    strain_field: str) -> Iterable:
     """
     Parse the *location_field* in the *records* to split it into 4 separate
     fields: region, country, division, and location.
+
+    If the *location_field* does not include all expected values, then try to
+    parse the optional *strain_field* to get more location info.
 
     Yields the modified records
     """
@@ -46,10 +81,42 @@ def parse_locations(records: Iterable, location_field: str) -> Iterable:
                 f"The GISAID location field has more values ({split_locations!r})",
                 f"than expected ({LOCATION_FIELDS!r}), the extra values will be ignored.")
 
+        if ((strain := record.get(strain_field)) is not None and
+           (strain_location := parse_location_from_strain(strain)) is not None):
+            # TODO: need better fuzzy matching because the strain_location
+            # can have various spellings that don't match the metadata location
+            if not any([strain_location.lower() in location.lower() for location in split_locations]):
+                # If the strain_location is not found in the metadata location values
+                # then assume that it is more specific than the metadata locations
+                # and append it to the location values to output
+                if len(split_locations) < expected_num_locations:
+                    split_locations.append(strain_location)
+                else:
+                    # Otherwise warn that the strain_location does not match
+                    # the metadata location values.
+                    print_err(
+                        f"Strain location {strain_location!r} does not match",
+                        f"any of the geolocation values {split_locations!r}"
+                    )
+
         for index, field in enumerate(LOCATION_FIELDS):
             record[field] = split_locations[index] if len(split_locations) > index else DEFAULT_UNKNOWN_VALUE
 
         yield record
+
+
+def parse_location_from_strain(strain: str) -> Optional[str]:
+    """
+    Parse the location information from the given *strain*
+    Expects *strain* to be formatted as
+
+        <subtype>/<location>/<sample_id>/<year>
+    """
+    location = None
+    matches = re.search(STRAIN_LOCATION_PATTERN, strain)
+    if matches is not None:
+        location = matches["location"].strip()
+    return location
 
 
 if __name__ == '__main__':
@@ -57,9 +124,14 @@ if __name__ == '__main__':
 
     parser.add_argument("--location-field", default="location",
         help="The record field containing the GISAID location")
+    parser.add_argument("--strain-field",
+        help="Optional record field with strain name that includes location info.")
 
     args = parser.parse_args()
 
     records = load_ndjson(stdin)
-    modified_records = parse_locations(records, args.location_field)
+    modified_records = parse_locations(
+        records,
+        args.location_field,
+        args.strain_field)
     dump_ndjson(modified_records)

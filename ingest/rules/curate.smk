@@ -87,6 +87,7 @@ rule curate:
                 --expected-date-formats {params.expected_date_formats:q} \
             | ./scripts/parse-gisaid-location \
                 --location-field {params.gisaid_location_field:q} \
+                --strain-field {params.gisaid_strain_field:q} \
             | augur curate titlecase \
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \
