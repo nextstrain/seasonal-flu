@@ -250,13 +250,15 @@ def _get_node_data_for_report_export(wildcards):
     # Define inputs shared by all builds.
     inputs = [
         rules.annotate_epiweeks.output.node_data,
-        rules.annotate_recency_of_submissions.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
         rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.scores.output.node_data,
     ]
+
+    if "recency" in config:
+        inputs.append(rules.annotate_recency_of_submissions.output.node_data)
 
     # Only request a distance file for builds that have mask configurations
     # defined.
