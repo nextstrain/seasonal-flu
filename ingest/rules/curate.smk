@@ -8,7 +8,7 @@ REQUIRED INPUTS:
 OUTPUTS:
 
     metadata    = results/{lineage}/metadata.tsv
-    sequences   = results/{lineage}/{segment}/sequences.fasta
+    sequences   = results/{lineage}/{segment}.fasta
 
 """
 from pathlib import Path
@@ -177,12 +177,12 @@ rule split_ndjson_by_segment:
         deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
     output:
         metadata="data/{lineage}/curated_metadata.tsv",
-        sequences=expand("results/{{lineage}}/{segment}/sequences.fasta", segment=config["segments"]),
+        sequences=expand("results/{{lineage}}/{segment}.fasta", segment=config["segments"]),
     log:
         "logs/{lineage}/split_ndjson_by_segment.txt"
     params:
         segments=config["segments"],
-        seq_output_dir=lambda w, output: Path(output.sequences[0]).parents[1],
+        seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""

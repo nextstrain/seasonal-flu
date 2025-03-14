@@ -22,7 +22,7 @@ nextstrain build ingest
 This produces the default outputs of the ingest workflow:
 
 - metadata      = results/<lineage>/metadata.tsv
-- sequences     = results/<lineage>/<segment>/sequences.fasta
+- sequences     = results/<lineage>/<segment>.fasta
 
 
 If your downloaded data only includes a subset of lineages, e.g. no "yam" lineages,

@@ -46,16 +46,14 @@ def create_segment_fasta_files(output_dir: str, segments: list) -> dict:
     """
     Create empty FASTA files for all segments as
 
-        <output_dir>/<segment>/sequences.fasta
+        <output_dir>/<segment>.fasta
 
     Removes any old files that already exists since we will be
     appending to the FASTA files as we loop through the NDJSON.
     """
     segment_fasta_files = {}
     for segment in segments:
-        segment_dir = Path(output_dir, segment.lower())
-        segment_dir.mkdir(parents=False, exist_ok=True)
-        segment_fasta = Path(segment_dir, "sequences.fasta")
+        segment_fasta = Path(output_dir, f"{segment.lower()}.fasta")
         # Remove any old FASTA files as we will be appending to the FASTAs
         if segment_fasta.exists():
             os.remove(segment_fasta)
@@ -130,7 +128,7 @@ if __name__ == '__main__':
     parser.add_argument("--sequences-output-dir",
         help=dedent(f"""\
             Output directory for sequence FASTAs.
-            Segments will be output to separate FASTAs <output_dir>/<segment>/sequences.fasta.
+            Segments will be output to separate FASTAs <output_dir>/<segment>.fasta.
             """))
     parser.add_argument("--segments", nargs="*", default=SEGMENTS,
         help="Segments to include in output directory.")
