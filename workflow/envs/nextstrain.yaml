@@ -18,5 +18,6 @@ dependencies:
   - xlrd=1.*
   - pip=23.0.1
   - pathogen-embed=3.1.0
+  - jinja2=3.1.2
   - pip:
     - rethinkdb==2.3.0.post6
