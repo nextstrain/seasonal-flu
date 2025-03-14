@@ -9,21 +9,28 @@ own data.
 
 ## Workflow Usage
 
+Manually download the metadata and sequences from GISAID.
+Save the XLS metadata file as `ingest/data/gisaid_epiflu_isolates.xls`.
+Make sure the sequences includes all segments and the FASTA header is set to “DNA Accession no.”.
+Save the FASTA file as `ingest/data/gisaid_epiflu_sequence.fasta`.
+
 The workflow can be run from the top level pathogen repo directory:
 ```
 nextstrain build ingest
 ```
 
-Alternatively, the workflow can also be run from within the ingest directory:
-```
-cd ingest
-nextstrain build .
-```
-
 This produces the default outputs of the ingest workflow:
 
-- metadata      = results/metadata.tsv
-- sequences     = results/<segment>/sequences.fasta
+- metadata      = results/<lineage>/metadata.tsv
+- sequences     = results/<lineage>/<segment>/sequences.fasta
+
+
+If your downloaded data only includes a subset of lineages, e.g. no "yam" lineages,
+then you can override the default with:
+
+```
+nextstrain build ingest --config 'lineages=["h1n1pdm", "h3n2", "vic"]'
+```
 
 
 ## Defaults
