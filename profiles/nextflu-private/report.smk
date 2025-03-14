@@ -3,6 +3,7 @@ rule all_report_outputs:
         derived_haplotypes=expand("tables/{lineage}/derived_haplotypes.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         counts_by_clade=expand("tables/{lineage}/counts_of_recent_sequences_by_clade.md", lineage=["h1n1pdm", "h3n2", "vic"]),
         total_sample_count_by_lineage="figures/total-sample-count-by-lineage.png",
+        narrative="narratives/nextstrain-cdc.md",
 
 rule plot_lineage_counts:
     input:
@@ -175,4 +176,35 @@ rule summarize_derived_haplotypes:
             --titer-names {params.titer_names:q} \
             --output-table {output.table} \
             --output-markdown-table {output.markdown_table}
+        """
+
+rule create_narrative:
+    input:
+        template="narratives_template/nextstrain-cdc.md.jinja",
+        h1n1pdm_clade_counts="tables/h1n1pdm/counts_of_recent_sequences_by_clade.md",
+        h1n1pdm_haplotypes="tables/h1n1pdm/derived_haplotypes.md",
+        h3n2_clade_counts="tables/h3n2/counts_of_recent_sequences_by_clade.md",
+        h3n2_haplotypes="tables/h3n2/derived_haplotypes.md",
+        vic_clade_counts="tables/vic/counts_of_recent_sequences_by_clade.md",
+        vic_haplotypes="tables/vic/derived_haplotypes.md",
+    output:
+        narrative="narratives/nextstrain-cdc.md",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        date=config.get("build_date", datetime.date.today().strftime("%Y-%m-%d")),
+        earliest_date_arg=lambda wildcards: f"--earliest-date '{config['earliest_reporting_date']}'" if "earliest_reporting_date" in config else "",
+    shell:
+        r"""
+        python3 scripts/create_narrative.py \
+            --template {input.template} \
+            --date {params.date:q} \
+            {params.earliest_date_arg} \
+            --markdown-includes \
+                h1n1pdm_clade_counts={input.h1n1pdm_clade_counts} \
+                h1n1pdm_haplotypes={input.h1n1pdm_haplotypes} \
+                h3n2_clade_counts={input.h3n2_clade_counts} \
+                h3n2_haplotypes={input.h3n2_haplotypes} \
+                vic_clade_counts={input.vic_clade_counts} \
+                vic_haplotypes={input.vic_haplotypes} \
+            --output {output.narrative}
         """
