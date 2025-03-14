@@ -18,7 +18,7 @@ wildcard_constraints:
 rule all:
     input:
         metadata = expand("results/{lineage}/metadata.tsv", lineage=config["lineages"]),
-        sequences = expand("results/{lineage}/{segment}/sequences.fasta", lineage=config["lineages"], segment=config["segments"]),
+        sequences = expand("results/{lineage}/{segment}.fasta", lineage=config["lineages"], segment=config["segments"]),
 
 
 include: "rules/prepare_ndjson.smk"
