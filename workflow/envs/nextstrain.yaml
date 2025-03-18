@@ -3,12 +3,10 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - augur=26.0.0
+  - augur=29.0.0
   - awscli=1.27.9
   - epiweeks=2.1.2
-  - iqtree=2.2.0_beta
-  - mafft=7.526
-  - nextclade=3.8.2
+  - nextclade=3.10.2
   - python=3.11.*
   - seaborn>=0.11*
   - seqkit=2.2.0
