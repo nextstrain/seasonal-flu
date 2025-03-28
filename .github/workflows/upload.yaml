@@ -58,7 +58,7 @@ jobs:
     needs: [upload]
     permissions:
       id-token: write
-    uses: nextstrain/seasonal-flu/.github/workflows/run-nextclade.yaml
+    uses: nextstrain/seasonal-flu/.github/workflows/run-nextclade.yaml@master
     secrets: inherit
 
   trigger:
