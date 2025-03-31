@@ -8,6 +8,11 @@ on:
         required: false
         type: string
   workflow_call:
+    inputs:
+      artifact-name:
+        description: "Name to use for final artifact uploaded by this action"
+        required: false
+        type: string
 
 jobs:
   run-build:
@@ -16,6 +21,7 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
+      artifact-name: ${{ inputs.artifact-name }}
       runtime: aws-batch
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
