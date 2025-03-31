@@ -41,6 +41,7 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
+      artifact-name: build-outputs-upload
       runtime: docker
       run: |
         nextstrain build \
@@ -59,6 +60,8 @@ jobs:
     permissions:
       id-token: write
     uses: ./.github/workflows/run-nextclade.yaml
+    with:
+      artifact-name: build-outputs-nextclade
     secrets: inherit
 
   trigger:
