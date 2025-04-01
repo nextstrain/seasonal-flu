@@ -1,0 +1,6 @@
+# Manually curated annotations TSV file
+# The TSV should not have a header and should have exactly three columns:
+# id to match existing metadata, field name, and field value
+# If there are multiple annotations for the same id and field, then the last value is used
+# Lines starting with '#' are treated as comments
+# Any '#' after the field value are treated as comments.

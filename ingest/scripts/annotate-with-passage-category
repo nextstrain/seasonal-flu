@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+"""
+Annotates GISAID records with the general passage category based on the
+detailed passage field.
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+DEFAULT_PASSAGE_CATEGORY = "undetermined"
+EXPECTED_PASSAGE_CATEGORIES = [
+    DEFAULT_PASSAGE_CATEGORY,
+    "unpassaged",
+    "cell",
+    "egg"
+]
+
+
+def annotate_records_with_passage_category(records: Iterable,
+                                           passage_field: str,
+                                           passage_category_field: str) -> Iterable:
+    """
+    Adds the *passage_category_field* to the *records*, with general passage
+    categories (none, cell, egg) based on the *passage_field*.
+
+    Yields the modified records.
+    """
+    for record in records:
+        record = record.copy()
+        passage = record.get(passage_field)
+
+        if passage is None:
+            raise Exception(f"Records must have the expected passage field: {passage_field!r}")
+
+        record[passage_category_field] = get_passage_category(passage)
+
+        yield record
+
+
+def get_passage_category(passage: str) -> str:
+    """
+    Returns the passage category for the given *passage*.
+
+    Regex patterns copied from the nextstrain/fauna/vdb/flu_upload.py
+    <https://github.com/nextstrain/fauna/blob/803125b807d8b9cfc05f6a35ef989c547e015ed5/vdb/flu_upload.py#L419-L438>
+
+    Patterns with the comment "# McWhite" seem to have been taken from
+    McWhite et al. 2016 <https://doi.org/10.1093/ve/vew026>
+    """
+    passage_category = DEFAULT_PASSAGE_CATEGORY
+    if re.search(r'AM[1-9]|E[1-9]|AMNIOTIC|EGG|EX|AM_[1-9]', passage):   # McWhite
+        passage_category = "egg"
+    elif re.search(r'AM-[1-9]|EMBRYO|^E$', passage):
+        passage_category = "egg"
+    elif re.search(r'LUNG|P0|OR_|ORIGINAL|CLINICAL|DIRECT', passage):    # McWhite
+        passage_category = "unpassaged"
+    elif re.search(r'ORGINAL|ORIGNAL|CLINCAL|THROAT|PRIMARY|NASO|AUTOPSY|BRONCHIAL|INITIAL|NASAL|NOSE|ORIG|SWAB|NO PASSAGE', passage):
+        passage_category = "unpassaged"
+    elif re.search(r'TMK|RMK|RHMK|RII|PMK|R[1-9]|RX|RHESUS', passage):    # McWhite
+        passage_category = "cell"
+    elif re.search(r'S[1-9]|SX|SIAT|MDCK|MDCK[1-9]|C[1-9]|CX|M[1-9]|MX|X[1-9]|HCK|^X_$', passage):  # McWhite
+        passage_category = "cell"
+    elif re.search(r'C_[1-9]|C [1-9]|MD[1-9]|MK[1-9]|MEK[1-9]', passage):
+        passage_category = "cell"
+    elif re.search(r'[Cc][Ee][Ll][Ll]', passage):
+        passage_category = "cell"
+    elif re.search(r'^S[1-9]_$| ^SX_$|SIAT2_SIAT1|SIAT3_SIAT1', passage):    # McWhite
+        passage_category = "cell"
+    elif re.search(r'UNKNOWN|UNDEFINED|NOT SPECIFIED|DIFFERENT ISOLATION SOURCES', passage):
+        pass
+
+    assert passage_category in EXPECTED_PASSAGE_CATEGORIES, \
+        f"Encountered unexpected passage category {passage_category!r}"
+
+    return passage_category
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--passage-field", default="passage",
+        help="The record field containing the passage details")
+    parser.add_argument("--passage-category-field", default="passage_category",
+        help="The name of the new field to add to the record with one of the " + \
+             f"general passage categories: {EXPECTED_PASSAGE_CATEGORIES!r}")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = annotate_records_with_passage_category(records, args.passage_field, args.passage_category_field)
+    dump_ndjson(modified_records)

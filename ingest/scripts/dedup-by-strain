@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""
+Deduplicate records by strain name.
+Only keeps the first record of duplicates.
+"""
+import argparse
+from csv import DictReader
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+def load_prioritized_ids(prioritized_ids_file: str) -> dict:
+    """
+    Parse *prioritized_ids_file* to return a dict with the
+    `strain` as the key and `id` as the value.
+
+    Raises an Exception if there are duplicate strains in the file.
+    """
+    prioritized_ids = {}
+    with open(prioritized_ids_file, "r", newline="") as fh:
+        reader = DictReader(fh, delimiter="\t")
+        for row in reader:
+            strain = row["strain"]
+            record_id = row["id"]
+
+            if strain in prioritized_ids:
+                raise Exception(f"Found duplicate strain {strain!r} in {prioritized_ids_file!r}.")
+
+            prioritized_ids[strain] = record_id
+
+    return prioritized_ids
+
+
+def deduplicate_records(records: Iterable[dict],
+                        strain_field: str,
+                        id_field: str,
+                        prioritized_ids: dict) -> Iterable:
+    """
+    Deduplicate *records* by *strain_field*.
+    By default, will only keeping the first record of duplicate strains.
+    If the strain has a prioritized id in *prioritized_ids*, then will only keep
+    the record with the matching *id_field*.
+
+    Yields records with unique strain names.
+    """
+    seen_strain = set()
+    for record in records:
+        strain = record.get(strain_field)
+        record_id = record.get(id_field)
+
+        if strain is None:
+            raise Exception(f"Records must have the expected strain field {strain_field!r}")
+
+        if record_id is None:
+            raise Exception(f"Records must have the expected id field {id_field!r}")
+
+        prioritized_record_id = prioritized_ids.get(strain)
+        if prioritized_record_id is not None and prioritized_record_id != record_id:
+            print_err(
+                f"Dropping record {record_id!r} because it is not the prioritized id {prioritized_record_id!r} for the strain {strain!r}"
+            )
+            continue
+
+        if strain in seen_strain:
+            print_err(
+                f"Dropping record {record_id!r} because it has a duplicate strain name {strain!r}"
+            )
+            continue
+
+        seen_strain.add(strain)
+        yield record
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--strain-field", default="strain",
+        help="The record field containing the strain name.")
+    parser.add_argument("--id-field", default="gisaid_epi_isl",
+        help="The record field containing a record id. " + \
+             "If providing the `--prioritized-ids` file, then this id field " + \
+             "will be used to match the prioritized ids. " + \
+             "Also included in the warning logs for records with duplicate strains.")
+    parser.add_argument("--prioritized-ids",
+        help="An optional TSV file with prioritized ids for specific strains. " + \
+             "The file is expected to have the columns `strain` and `id` " + \
+             "and the `strain` column is expected to have unique strains. " + \
+             "Any records with a strain that is included in this file " + \
+             "will be dropped if the record id does not match the prioritized id. ")
+
+    args = parser.parse_args()
+
+    prioritized_ids = {}
+    if args.prioritized_ids:
+        prioritized_ids = load_prioritized_ids(args.prioritized_ids)
+
+    records = load_ndjson(stdin)
+    deduped_records = deduplicate_records(
+        records,
+        args.strain_field,
+        args.id_field,
+        prioritized_ids)
+    dump_ndjson(deduped_records)
