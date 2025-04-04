@@ -73,7 +73,7 @@ rule annotate_titer_counts_for_reference_viruses:
 
 rule summarize_haplotype_titer_coverage:
     input:
-        haplotypes="builds/{build_name}/{segment}/haplotypes.json",
+        haplotypes="builds/{build_name}/{segment}/derived_haplotypes.json",
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         frequencies="builds/{build_name}/{segment}/tip-frequencies.json",
     output:
