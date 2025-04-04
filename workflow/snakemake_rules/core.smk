@@ -51,6 +51,7 @@ checkpoint align:
         reference =  lambda w: config['builds'][w.build_name]['reference'],
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
+        annotations = build_dir + "/{build_name}/{segment}/nextclade.tsv",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = directory(build_dir + "/{build_name}/{segment}/translations"),
     conda: "../envs/nextstrain.yaml"
@@ -74,6 +75,7 @@ checkpoint align:
             --cds-selection {params.genes} \
             --jobs {threads} \
             --include-reference \
+            --output-tsv {output.annotations} \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
         """
@@ -431,44 +433,44 @@ rule download_proposed_subclades:
         curl -o {output.subclades} "{params.url}"
         """
 
-rule proposed_subclades:
+rule emerging_haplotypes:
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
-        muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name].get("proposed_subclades"),
+        nextclade=build_dir + "/{build_name}/{segment}/nextclade.tsv",
+        haplotypes=lambda wildcards: config["builds"][wildcards.build_name].get("emerging_haplotypes"),
     output:
-        node_data = build_dir + "/{build_name}/{segment}/proposed_subclades.json",
+        haplotypes_table=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
+        node_data=build_dir + "/{build_name}/{segment}/emerging_haplotypes.json",
     params:
-        membership_name = "proposed_subclade",
-        label_name = "proposed_subclade",
+        clade_column="subclade",
+        membership_name="emerging_haplotype",
+        label_name="emerging_haplotype",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/proposed_subclades_{build_name}_{segment}.txt"
+        "benchmarks/emerging_haplotypes_{build_name}_{segment}.txt"
     log:
-        "logs/proposed_subclades_{build_name}_{segment}.txt"
+        "logs/emerging_haplotypes_{build_name}_{segment}.txt"
     shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --membership-name {params.membership_name} \
-            --label-name {params.label_name:q} \
-            --output {output.node_data} 2>&1 | tee {log}
+        r"""
+        python scripts/assign_haplotypes.py \
+            --substitutions {input.nextclade:q} \
+            --haplotypes {input.haplotypes:q} \
+            --clade-column {params.clade_column:q} \
+            --output-table {output.haplotypes_table:q} \
+            --output-node-data {output.node_data:q} 2>&1 | tee {log}
         """
 
-rule annotate_haplotypes:
+rule annotate_derived_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
         translations=build_dir + "/{build_name}/ha/translations.done",
         clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json" if "subclades" in config["builds"][wildcards.build_name] else build_dir + "/{build_name}/ha/clades.json",
     output:
-        haplotypes=build_dir + "/{build_name}/ha/haplotypes.json",
+        haplotypes=build_dir + "/{build_name}/ha/derived_haplotypes.json",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/annotate_haplotypes_{build_name}_ha.txt"
+        "benchmarks/annotate_derived_haplotypes_{build_name}_ha.txt"
     log:
-        "logs/annotate_haplotypes_{build_name}_ha.txt"
+        "logs/annotate_derived_haplotypes_{build_name}_ha.txt"
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
         alignment=build_dir + "/{build_name}/ha/translations/HA1_withInternalNodes.fasta",
@@ -476,7 +478,7 @@ rule annotate_haplotypes:
         clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
     shell:
         """
-        python3 scripts/annotate_haplotypes.py \
+        python3 scripts/annotate_derived_haplotypes.py \
             --tree {input.tree} \
             --alignment {params.alignment} \
             --clades {input.clades} \

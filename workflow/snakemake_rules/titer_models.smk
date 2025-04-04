@@ -79,8 +79,8 @@ rule antigenic_distances_between_strains:
         tree="builds/{build_name}/{segment}/tree.nwk",
         clades="builds/{build_name}/{segment}/clades.json",
         subclades="builds/{build_name}/{segment}/subclades.json",
-        proposed_subclades="builds/{build_name}/{segment}/proposed_subclades.json",
-        haplotypes="builds/{build_name}/{segment}/haplotypes.json",
+        emerging_haplotypes="builds/{build_name}/{segment}/emerging_haplotypes.json",
+        derived_haplotypes="builds/{build_name}/{segment}/derived_haplotypes.json",
         titer_model="builds/{build_name}/{segment}/titers-sub-model/{titer_collection}.json",
         titers="builds/{build_name}/titers/{titer_collection}.tsv",
         branch_lengths="builds/{build_name}/{segment}/branch-lengths.json",
@@ -100,8 +100,8 @@ rule antigenic_distances_between_strains:
             --tree {input.tree} \
             --clades {input.clades} \
             --subclades {input.subclades} \
-            --proposed-subclades {input.proposed_subclades} \
-            --haplotypes {input.haplotypes} \
+            --emerging-haplotypes {input.emerging_haplotypes} \
+            --derived-haplotypes {input.derived_haplotypes} \
             --titer-model {input.titer_model} \
             --titers {input.titers} \
             --branch-lengths {input.branch_lengths} \
