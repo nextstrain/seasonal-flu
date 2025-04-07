@@ -1,0 +1,7 @@
+# Custom rules to run as part of the Nextstrain automated workflow
+# The paths should be relative to the ingest directory.
+custom_rules:
+  - build-configs/nextstrain-automation/upload.smk
+
+# TODO: remove `/trials/ingest` after we switch to the ingest workflow
+s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest"
