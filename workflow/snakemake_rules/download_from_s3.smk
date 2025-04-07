@@ -44,3 +44,14 @@ rule download_parsed_metadata:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.metadata}
         """
+
+rule download_nextclade:
+    output:
+        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+    params:
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/nextclade.tsv.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        aws s3 cp {params.s3_path} {output.nextclade}
+        """
