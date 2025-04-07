@@ -10,43 +10,72 @@ from augur.utils import write_json
 import pandas as pd
 
 
-def nucleotide_substitutions_match(substitutions_string, substitutions_list):
+def nucleotide_substitutions_match(record_substitutions, required_substitutions):
     """Returns True/False based on whether the given comma-delimited string of
     nucleotide substitutions matches all substitutions in the given list.
 
-    substitutions_string looks like T291C,A566C,G615A,A1011G,A1257G
-    substitutions_list looks like ['291C', '566C']
-    """
-    if len(substitutions_string) == 0 or len(substitutions_list) == 0:
-        return True
+    record_substitutions looks like T291C,A566C,G615A,A1011G,A1257G
+    required_substitutions looks like ['291C', '566C']
 
-    substitutions_string_list = [
-        sub[1:]
-        for sub in substitutions_string.split(",")
-    ]
+    When required substitutions don't exist in the record's substitution list,
+    there can't be a match.
+
+    >>> nucleotide_substitutions_match("", ['291C', '566C'])
+    False
+
+    When there aren't any required substitutions, we call this a match.
+
+    >>> nucleotide_substitutions_match("T291C,A566C,G615A,A1011G,A1257G", [])
+    True
+
+    When both record and required substitutions exist, all required
+    substitutions must be in the record substitutions list.
+
+    >>> nucleotide_substitutions_match("T291C,A566C,G615A,A1011G,A1257G", ['291C', '566C'])
+    True
+    >>> nucleotide_substitutions_match("T291C,A566C,G615A,A1011G,A1257G", ['291C', '566C', '123C'])
+    False
+
+    """
+    if len(record_substitutions) > 0:
+        record_substitutions = [
+            sub[1:]
+            for sub in record_substitutions.split(",")
+        ]
+    else:
+        record_substitutions = []
+
     return all(
-        sub in substitutions_string_list
-        for sub in substitutions_list
+        sub in record_substitutions
+        for sub in required_substitutions
     )
 
 
-def aa_substitutions_match(substitutions_string, substitutions_list):
+def aa_substitutions_match(record_substitutions, required_substitutions):
     """Returns True/False based on whether the given comma-delimited string of
     amino acid substitutions matches all substitutions in the given list.
 
-    substitutions_string looks like HA1:G78S,HA1:T135A,HA1:R150K,HA1:V223I
-    substitutions_list looks like [('HA1', '122D'), ('HA1', '276E')]
-    """
-    if len(substitutions_string) == 0 or len(substitutions_list) == 0:
-        return True
+    >>> aa_substitutions_match("", [('HA1', '122D'), ('HA1', '276E')])
+    False
+    >>> aa_substitutions_match("HA1:G78S,HA1:T135A,HA1:R150K,HA1:V223I", [])
+    True
+    >>> aa_substitutions_match("HA1:G78S,HA1:T135A,HA1:R150K,HA1:V223I", [('HA1', '122D'), ('HA1', '276E')])
+    False
+    >>> aa_substitutions_match("HA1:G78S,HA1:T135A,HA1:R150K,HA1:V223I", [('HA1', '135A'), ('HA1', '223I')])
+    True
 
-    substitutions_string_list = [
-        (sub.split(":")[0], sub.split(":")[1][1:])
-        for sub in substitutions_string.split(",")
-    ]
+    """
+    if len(record_substitutions) > 0:
+        record_substitutions = [
+            (sub.split(":")[0], sub.split(":")[1][1:])
+            for sub in record_substitutions.split(",")
+        ]
+    else:
+        record_substitutions = []
+
     return all(
-        sub in substitutions_string_list
-        for sub in substitutions_list
+        sub in record_substitutions
+        for sub in required_substitutions
     )
 
 
@@ -54,15 +83,18 @@ def assign_haplotype(record, haplotype_definitions, clade_column, default_haplot
     """Assign the most precise haplotype to the given record based on the given
     haplotype definitions.
 
-    # subclade
-    # substitutions
-    # aaSubstitutions
-    # founderMuts['subclade'].substitutions
-    # founderMuts['subclade'].aaSubstitutions
+    >>> haplotype_definitions = {'J.2:135A': {'aa': [('HA1', '135A')], 'clade': 'J.2'}, 'J.3': {'clade': 'J.3'}, 'J.1': {'nuc': ['135C'], 'aa': [('HA1', '123R')]}}
+    >>> assign_haplotype({'subclade': 'J.2', "founderMuts['subclade'].aaSubstitutions": "HA1:A135T"}, haplotype_definitions, "subclade", "unassigned")
+    'unassigned'
+    >>> assign_haplotype({'subclade': 'J.2', "founderMuts['subclade'].aaSubstitutions": "HA1:A135T"}, haplotype_definitions, "subclade", "unassigned", use_clade_as_default_haplotype=True)
+    'J.2'
+    >>> assign_haplotype({'subclade': 'J.2', "founderMuts['subclade'].aaSubstitutions": "HA1:T135A"}, haplotype_definitions, "subclade", "unassigned")
+    'J.2:135A'
+    >>> assign_haplotype({'subclade': 'J', 'aaSubstitutions': 'HA1:K123R,HA1:T135A', 'substitutions': 'A100T,T110C,G135C,T200G'}, haplotype_definitions, "subclade", "unassigned")
+    'J.1'
+    >>> assign_haplotype({'subclade': 'J.3'}, haplotype_definitions, "subclade", "unassigned")
+    'J.3'
 
-    Example haplotype definitions with a single haplotype:
-
-    {'J.2:135A': {'aa': [('HA1', '135A')], 'clade': 'J.2'}}
     """
     assigned_name = default_haplotype
     for name, definition in haplotype_definitions.items():
@@ -80,8 +112,8 @@ def assign_haplotype(record, haplotype_definitions, clade_column, default_haplot
 
         if (
             clade_match and
-            nucleotide_substitutions_match(record[nucleotide_column], definition.get("nuc", [])) and
-            aa_substitutions_match(record[aa_column], definition.get("aa", []))
+            nucleotide_substitutions_match(record.get(nucleotide_column, ""), definition.get("nuc", [])) and
+            aa_substitutions_match(record.get(aa_column, ""), definition.get("aa", []))
         ):
             assigned_name = name
 
@@ -190,6 +222,6 @@ if __name__ == '__main__':
     if args.output_node_data:
         node_data = {
             strain: {args.haplotype_column_name: haplotype}
-            for strain, haplotype in substitutions["haplotype"].to_dict().items()
+            for strain, haplotype in substitutions[args.haplotype_column_name].to_dict().items()
         }
         write_json({"nodes": node_data}, args.output_node_data)
