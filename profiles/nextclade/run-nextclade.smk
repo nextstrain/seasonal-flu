@@ -48,7 +48,7 @@ rule upload_alignment:
         "logs/upload_alignment_{lineage}_{segment}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.alignment:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/aligned.fasta.xz 2>&1 | tee {output.flag}
@@ -65,7 +65,7 @@ rule upload_nextclade_annotations:
         "logs/upload_nextclade_annotations_{lineage}_{segment}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.annotations:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/nextclade.tsv.xz 2>&1 | tee {output.flag}
