@@ -51,7 +51,6 @@ checkpoint align:
         reference =  lambda w: config['builds'][w.build_name]['reference'],
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
-        annotations = build_dir + "/{build_name}/{segment}/nextclade.tsv",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = directory(build_dir + "/{build_name}/{segment}/translations"),
     conda: "../envs/nextstrain.yaml"
@@ -75,7 +74,6 @@ checkpoint align:
             --cds-selection {params.genes} \
             --jobs {threads} \
             --include-reference \
-            --output-tsv {output.annotations} \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
         """
