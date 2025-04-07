@@ -441,7 +441,6 @@ rule emerging_haplotypes:
     params:
         clade_column="subclade",
         membership_name="emerging_haplotype",
-        label_name="emerging_haplotype",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/emerging_haplotypes_{build_name}_{segment}.txt"
@@ -453,7 +452,7 @@ rule emerging_haplotypes:
             --substitutions {input.nextclade:q} \
             --haplotypes {input.haplotypes:q} \
             --clade-column {params.clade_column:q} \
-            --use-clade-as-default-haplotype \
+            --haplotype-column-name {params.membership_name:q} \
             --output-table {output.haplotypes_table:q} \
             --output-node-data {output.node_data:q} 2>&1 | tee {log}
         """
