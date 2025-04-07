@@ -50,7 +50,7 @@ def aa_substitutions_match(substitutions_string, substitutions_list):
     )
 
 
-def assign_haplotype(record, haplotype_definitions, clade_column, default_haplotype):
+def assign_haplotype(record, haplotype_definitions, clade_column, default_haplotype, use_clade_as_default_haplotype=False):
     """Assign the most precise haplotype to the given record based on the given
     haplotype definitions.
 
@@ -85,6 +85,11 @@ def assign_haplotype(record, haplotype_definitions, clade_column, default_haplot
         ):
             assigned_name = name
 
+    # Allow unassigned records to default to their original clade annotation
+    # instead of a hardcoded default value.
+    if assigned_name == default_haplotype and use_clade_as_default_haplotype:
+        assigned_name = record[clade_column]
+
     return assigned_name
 
 
@@ -96,6 +101,7 @@ if __name__ == '__main__':
     parser.add_argument("--clade-column", default="subclade", help="name of the column in the substitutions table corresponding to clades used in the haplotype definitions")
     parser.add_argument("--haplotype-column-name", default="haplotype", help="name of the column or attribute to store the annotated haplotype in the output")
     parser.add_argument("--default-haplotype", default="unassigned", help="value to assign to records without any match to the given haplotypes")
+    parser.add_argument("--use-clade-as-default-haplotype", action="store_true", help="use the existing clade annotation for records without assigned haplotypes instead of using the hardcoded default value")
     parser.add_argument("--output-table", required=True, help="TSV file of substitutions annotated by haplotype")
     parser.add_argument("--output-node-data", help="JSON in Nextstrain's node data format with haplotypes annotated per record id")
 
@@ -165,6 +171,7 @@ if __name__ == '__main__':
         haplotype_definitions=haplotype_definition_by_name,
         clade_column=args.clade_column,
         default_haplotype=args.default_haplotype,
+        use_clade_as_default_haplotype=args.use_clade_as_default_haplotype,
     )
 
     # Assign haplotypes to each row.

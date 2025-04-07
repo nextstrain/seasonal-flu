@@ -453,6 +453,7 @@ rule emerging_haplotypes:
             --substitutions {input.nextclade:q} \
             --haplotypes {input.haplotypes:q} \
             --clade-column {params.clade_column:q} \
+            --use-clade-as-default-haplotype \
             --output-table {output.haplotypes_table:q} \
             --output-node-data {output.node_data:q} 2>&1 | tee {log}
         """
