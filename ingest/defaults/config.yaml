@@ -11,9 +11,14 @@
 # where <YYYY-MM-DD> is the date the files were downloaded from GISAID
 # and <N> is the number of the download since GISAID limits the number of records per download
 # List the pair name, <YYYY-MM-DD-N>, to only include specific pairs
+# Note the records are deduplicated by the `gisaid_id_field` and only the first
+# record is kept, so list the prioritized pairs first.
 # If left empty, workflow will glob for all `data/<YYYY-MM-DD-N>-metadata.xls`
-# to include all pairs as input.
+# to include all pairs as input. These will be sorted in reverse order to
+# prioritize the later downloads during deduplication.
 gisaid_pairs: []
+# GISAID EPI ISL field to deduplicate the GISAID records by id prior to curation
+gisaid_id_field: Isolate_Id
 
 # Expected lineages that should match the standardized output lineages
 # in scripts/standardized-lineage

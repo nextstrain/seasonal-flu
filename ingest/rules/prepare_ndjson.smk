@@ -44,19 +44,26 @@ def aggregate_gisaid_ndjsons(wildcards):
     else:
         # Create wildcards for pairs of GISAID downloads
         GISAID_PAIRS, = glob_wildcards("data/{gisaid_pair}-metadata.xls")
+        # Reverse sort to list latest downloads first
+        GISAID_PAIRS.sort(reverse=True)
 
     assert len(GISAID_PAIRS), "No GISAID metadata and sequences inputs were found"
 
     return expand("data/{gisaid_pair}.ndjson", gisaid_pair=GISAID_PAIRS)
 
 
-# TODO: Dedup by GISAID ID
 rule concatenate_gisaid_ndjsons:
     input:
         ndjsons=aggregate_gisaid_ndjsons,
     output:
         ndjson="data/gisaid.ndjson",
+    params:
+        gisaid_id_field=config["gisaid_id_field"],
+    log: "logs/concatenate_gisaid_ndjsons.txt"
     shell:
         r"""
-        cat {input.ndjsons:q} > {output.ndjson:q}
+        (cat {input.ndjsons:q} \
+            | ./scripts/dedup-by-gisaid-id \
+                --id-field {params.gisaid_id_field:q} \
+            > {output.ndjson:q}) 2>> {log:q}
         """
