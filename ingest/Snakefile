@@ -13,6 +13,8 @@ wildcard_constraints:
     # in scripts/standardized-lineage
     lineage = r'h1n1pdm|h3n2|vic|yam',
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
+    # Constrain GISAID pair names to YYYY-MM-DD-N
+    gisaid_pair = r'\d{4}-\d{2}-\d{2}(-\d+)?'
 
 
 rule all:

@@ -4,6 +4,17 @@
 # Define optional config parameters with their default values here so that users
 # do not have to dig through the workflows to figure out the default values
 
+# Expected pairs of metadata.xls and sequences.fasta to use as input
+# The pairs of files are expected to be named as
+#   - data/<YYYY-MM-DD-N>-metadata.xls
+#   - data/<YYYY-MM-DD-N>-sequences.fasta
+# where <YYYY-MM-DD> is the date the files were downloaded from GISAID
+# and <N> is the number of the download since GISAID limits the number of records per download
+# List the pair name, <YYYY-MM-DD-N>, to only include specific pairs
+# If left empty, workflow will glob for all `data/<YYYY-MM-DD-N>-metadata.xls`
+# to include all pairs as input.
+gisaid_pairs: []
+
 # Expected lineages that should match the standardized output lineages
 # in scripts/standardized-lineage
 lineages:

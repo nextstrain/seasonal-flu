@@ -4,8 +4,11 @@ curation pipeline.
 
 INPUTS:
 
-    metadata    = data/gisaid_epiflu_isolates.xls
-    sequences   = data/gisaid_epiflu_sequence.fasta
+    metadata    = data/<YYYY-MM-DD-N>-metadata.xls
+    sequences   = data/<YYYY-MM-DD-N>-sequences.fasta
+
+<YYYY-MM-DD> is the date the files were downloaded from GISAID
+<N> is the number of the download since GISAID limits the number of records per download
 
 OUTPUTS:
 
@@ -13,24 +16,14 @@ OUTPUTS:
 
 """
 
-# TODO: Semi-automated workflow
-# 1. rule to download the gisaid.ndjson.zst file from S3
-# 2. rule to download raw GISAID download files that have not been processed from S3 (gisaid/downloads/unprocessed/*).
-# 3. rule with wildcards to link multiple GISAID Excel/FASTA pairs -> NDJSON
-# 4. rule to concat all NDJSON, latest downloads _first_
-# 5. rule to dedup concatenated gisaid.ndjson by GISAID EPI ISL (Isolate_Id),
-#    keep the first record because the latest downloads are _first_
-
-
-# ------------- For local single GISAID download only ------------------- #
 
 rule link_gisaid_metadata_and_fasta:
     input:
-        metadata="data/gisaid_epiflu_isolates.xls",
-        sequences="data/gisaid_epiflu_sequence.fasta",
+        metadata="data/{gisaid_pair}-metadata.xls",
+        sequences="data/{gisaid_pair}-sequences.fasta",
     output:
-        ndjson="data/gisaid.ndjson",
-    log: "logs/link_gisaid_metadata_and_fasta.txt"
+        ndjson="data/{gisaid_pair}.ndjson",
+    log: "logs/link_gisaid_metadata_and_fasta/{gisaid_pair}.txt"
     shell:
         r"""
         ./scripts/link-gisaid-metadata-and-fasta \
@@ -38,4 +31,32 @@ rule link_gisaid_metadata_and_fasta:
             --sequences {input.sequences:q} \
             > {output.ndjson:q} \
             2> {log}
+        """
+
+
+def aggregate_gisaid_ndjsons(wildcards):
+    """
+    Input function for rule concatenate_gisaid_ndjsons to check which
+    GISAID pairs to include the output.
+    """
+    if len(config.get("gisaid_pairs", [])):
+        GISAID_PAIRS = config["gisaid_pairs"]
+    else:
+        # Create wildcards for pairs of GISAID downloads
+        GISAID_PAIRS, = glob_wildcards("data/{gisaid_pair}-metadata.xls")
+
+    assert len(GISAID_PAIRS), "No GISAID metadata and sequences inputs were found"
+
+    return expand("data/{gisaid_pair}.ndjson", gisaid_pair=GISAID_PAIRS)
+
+
+# TODO: Dedup by GISAID ID
+rule concatenate_gisaid_ndjsons:
+    input:
+        ndjsons=aggregate_gisaid_ndjsons,
+    output:
+        ndjson="data/gisaid.ndjson",
+    shell:
+        r"""
+        cat {input.ndjsons:q} > {output.ndjson:q}
         """
