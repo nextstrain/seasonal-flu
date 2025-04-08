@@ -139,6 +139,8 @@ A/StPetersburg/RII-22/2023
 A/StPetersburg/RII-23/2023
 A/Tasmania/8/2017
 A/Texas/14/2008
+A/Toledo/Parana_10835/2021
+A/Toledo/Parana_20675/2022
 A/Tomsk/273-MA1/2010
 A/Tyumen/1V/2018
 A/Vietnam/102/2015
