@@ -118,8 +118,8 @@ rule get_derived_haplotypes:
     conda: "../../workflow/envs/nextstrain.yaml"
     params:
         genes=["HA1"],
-        clade_column="proposedSubclade",
-        mutations_column="founderMuts['proposedSubclade'].aaSubstitutions",
+        clade_column="subclade",
+        mutations_column="founderMuts['subclade'].aaSubstitutions",
     shell:
         """
         python3 scripts/add_derived_haplotypes.py \
