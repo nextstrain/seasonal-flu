@@ -25,7 +25,7 @@ def _get_node_data_by_wildcards(wildcards):
     if config["builds"][wildcards.build_name].get('subclades', False):
         inputs.append(rules.subclades.output.node_data)
 
-    if wildcards.segment == "ha" and config["builds"][wildcards.build_name].get('emerging_haplotypes', False):
+    if config["builds"][wildcards.build_name].get('emerging_haplotypes', False):
         inputs.append(rules.emerging_haplotypes.output.node_data)
 
     if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
