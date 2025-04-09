@@ -76,11 +76,14 @@ rule count_recent_tips_by_clade:
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        clade_column="subclade",
     shell:
         """
         python3 scripts/count_recent_tips_by_clade.py \
             --recency {input.recency} \
             --clades {input.clades} \
+            --clade-column {params.clade_column:q} \
             --output {output.counts}
         """
 
