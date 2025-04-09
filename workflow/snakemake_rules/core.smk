@@ -420,17 +420,6 @@ rule import_clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-rule download_proposed_subclades:
-    output:
-        subclades="config/{lineage}/{segment}/proposed_subclades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: proposed_subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.subclades} "{params.url}"
-        """
-
 rule emerging_haplotypes:
     input:
         nextclade=build_dir + "/{build_name}/{segment}/nextclade.tsv",
