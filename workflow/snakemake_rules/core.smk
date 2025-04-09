@@ -442,8 +442,6 @@ rule emerging_haplotypes:
         clade_column="subclade",
         membership_name="emerging_haplotype",
     conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/emerging_haplotypes_{build_name}_{segment}.txt"
     log:
         "logs/emerging_haplotypes_{build_name}_{segment}.txt"
     shell:
