@@ -150,37 +150,53 @@
       ]
     },
     {
-      "key": "proposed_subclade",
-      "title": "Proposed subclade",
+      "key": "emerging_haplotype",
+      "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [
         [
           "J.2",
-          "#4068CF"
+          "#403CC5"
         ],
         [
           "J.2.1",
-          "#5098B9"
+          "#4067CF"
         ],
         [
           "J.2.2",
-          "#6CB28C"
+          "#4A8BC3"
         ],
         [
           "J.2:124R-145N",
-          "#94BD62"
+          "#5AA4A9"
+        ],
+        [
+          "J.2:135A-145N",
+          "#6FB488"
         ],
         [
           "J.2:135K",
-          "#BFBB47"
+          "#8BBB69"
+        ],
+        [
+          "J.2:135K-189R",
+          "#A9BD53"
         ],
         [
           "J.2:145N",
-          "#DFA53B"
+          "#C7B944"
+        ],
+        [
+          "J.2:145N-158K",
+          "#DDA93C"
+        ],
+        [
+          "J.2:158K-189R",
+          "#E68A35"
         ],
         [
           "J.2:223I",
-          "#E67131"
+          "#E35C2C"
         ],
         [
           "J.2:8D",
@@ -571,7 +587,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "proposed_subclade",
+    "color_by": "emerging_haplotype",
     "branch_label": "Subclade"
   },
   "filters": [
