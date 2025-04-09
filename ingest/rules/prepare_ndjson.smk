@@ -41,6 +41,14 @@ def aggregate_gisaid_ndjsons(wildcards):
     """
     if len(config.get("gisaid_pairs", [])):
         GISAID_PAIRS = config["gisaid_pairs"]
+    elif config.get('s3_src') and hasattr(checkpoints, "fetch_unprocessed_files"):
+        # Use checkpoint for the Nextstrain automation
+        checkpoint_output = checkpoints.fetch_unprocessed_files.get(**wildcards).output[0]
+        GISAID_PAIRS, = glob_wildcards(os.path.join(checkpoint_output, "{gisaid_pair}-metadata.xls.zst"))
+        # Reverse sort to list latest downloads first
+        GISAID_PAIRS.sort(reverse=True)
+        # Add the GISAID cache last to prioritize the latest downloads
+        GISAID_PAIRS.append("gisaid_cache")
     else:
         # Create wildcards for pairs of GISAID downloads
         GISAID_PAIRS, = glob_wildcards("data/{gisaid_pair}-metadata.xls")
