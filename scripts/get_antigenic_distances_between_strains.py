@@ -117,8 +117,8 @@ if __name__ == '__main__':
     node_data = read_node_data([
         args.clades,
         args.subclades,
-        args.proposed_subclades,
-        args.haplotypes,
+        args.emerging_haplotypes,
+        args.derived_haplotypes,
     ])
 
     # Track all clade memberships in a new attribute to properly handle nested
@@ -141,11 +141,11 @@ if __name__ == '__main__':
     clade_table = pd.DataFrame([
         {
             "strain": strain,
-            "clade": strain_data["clade_membership"],
-            "subclade": strain_data["subclade"],
-            "proposed_subclade": strain_data["proposed_subclade"],
-            "haplotype": strain_data["haplotype"],
-            "clade_frequency": frequency_by_clade[strain_data["clade_membership"]],
+            "clade": strain_data.get("clade_membership", "unassigned"),
+            "subclade": strain_data.get("subclade", "unassigned"),
+            "emerging_haplotype": strain_data.get("emerging_haplotype", "unassigned"),
+            "derived_haplotype": strain_data.get("haplotype", "unassigned"),
+            "clade_frequency": frequency_by_clade[strain_data["clade_membership"]] if strain_data.get("clade_membership") else 0.0,
         }
         for strain, strain_data in node_data["nodes"].items()
         if not strain.startswith("NODE")
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     # haplotype, so users can group on this column and visualize how data differ
     # between sources for the same strains.
     titer_table["reference_strain_source"] = titer_table.apply(
-        lambda row: f"{row['reference_strain']} ({row['source']}, {row['haplotype_reference']})",
+        lambda row: f"{row['reference_strain']} ({row['source']}, {row['derived_haplotype_reference']})",
         axis=1
     )
 
