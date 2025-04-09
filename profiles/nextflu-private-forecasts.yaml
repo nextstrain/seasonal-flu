@@ -33,7 +33,7 @@ array-builds:
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/ha/subclades.tsv"
-      proposed_subclades: "config/h3n2/ha/proposed_subclades.tsv"
+      emerging_haplotypes: "config/h3n2/ha/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/ha/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_titer_models: true
