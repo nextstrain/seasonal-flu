@@ -277,7 +277,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "proposed_subclade",
+    "color_by": "emerging_haplotype",
     "branch_label": "Subclade"
   },
   "filters": [
