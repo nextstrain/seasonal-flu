@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""
+Splits GISAID NDJSON into 1 metadata TSV and 8 segment sequence FASTAs.
+
+Reads NDJSON from stdin and expects each record to be formatted as:
+
+    {
+        "<id_field>": "...",
+        "<sequences_field>": [
+            {
+                "segment": "HA",
+                "accession": "...",
+                "sequence": "...",
+            },
+            [...other segments...]
+        ]
+    }
+"""
+import argparse
+import os
+from itertools import chain
+from pathlib import Path
+from sys import stdin
+from textwrap import dedent
+from typing import Iterable
+from augur.io.json import load_ndjson
+from augur.io.metadata import write_records_to_tsv
+from augur.io.print import print_err
+
+
+SEGMENTS = [
+    "pb2",
+    "pb1",
+    "pa",
+    "ha",
+    "np",
+    "na",
+    "mp",
+    "ns",
+]
+
+UNKNOWN_VALUE = "?"
+
+
+def create_segment_fasta_files(output_dir: str, segments: list) -> dict:
+    """
+    Create empty FASTA files for all segments as
+
+        <output_dir>/<segment>.fasta
+
+    Removes any old files that already exists since we will be
+    appending to the FASTA files as we loop through the NDJSON.
+    """
+    segment_fasta_files = {}
+    for segment in segments:
+        segment_fasta = Path(output_dir, f"{segment.lower()}.fasta")
+        # Remove any old FASTA files as we will be appending to the FASTAs
+        if segment_fasta.exists():
+            os.remove(segment_fasta)
+        Path.touch(segment_fasta)
+        segment_fasta_files[segment] = segment_fasta
+    return segment_fasta_files
+
+
+def update_records_and_output_sequences(records: Iterable,
+                                        segment_fasta_files: dict,
+                                        output_id_field: str) -> Iterable:
+    """
+    Updates the records with the expected segment metadata fields, where
+    the <segment> field will be "True" if the sequence exists and
+    `accession_<segment>` field will have the segment accession or "N/A" if
+    the sequence does not exist.
+
+    Outputs the segment sequences to their corresponding FASTA files and yields
+    the modified records if they have at least one segment sequence.
+    """
+    for record in records:
+        record_id = record[output_id_field]
+
+        output_sequences = 0
+        # Remove the `sequences` since we will be outputting them to FASTAs
+        # and keeping relevant metadata fields as new fields
+        for seq in record.pop("sequences"):
+            segment = seq["segment"].lower()
+
+            # Skip segments that are not expected in output
+            if segment not in segment_fasta_files:
+                continue
+
+            record[segment] = "False"
+            accession = seq["accession"]
+            sequence = seq["sequence"]
+            accession_field = f"accession_{segment}"
+            record[accession_field] = "N/A"
+
+            if accession != UNKNOWN_VALUE and sequence != UNKNOWN_VALUE:
+                record[segment] = "True"
+                record[accession_field] = accession
+                output_sequences += 1
+                with segment_fasta_files[segment].open("a") as fh:
+                    fh.writelines([
+                        f">{record_id}\n",
+                        f"{sequence}\n"
+                    ])
+
+        # Only keep metadata for records that have at least one segment sequence
+        if output_sequences >= 1:
+            yield record
+        else:
+            print_err(f"WARNING: Dropping record {record_id} because it doesn't have any segment sequences")
+            continue
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--output-metadata",
+        help=dedent("""\
+            Output metadata TSV file.
+            The TSV will include all original metadata fields except the
+            `sequences` field. New columns will be added to track the segments.
+            The `<segment>` columns will be "True" if the sequence exists.
+            The `accession_<segment>` columns will have the segment accessions
+            or "N/A" if the sequence does not exist.
+            """))
+    parser.add_argument("--output-id-field",
+        help="The record field to use as the sequence identifier in the FASTA output")
+    parser.add_argument("--sequences-output-dir",
+        help=dedent(f"""\
+            Output directory for sequence FASTAs.
+            Segments will be output to separate FASTAs <output_dir>/<segment>.fasta.
+            """))
+    parser.add_argument("--segments", nargs="*", default=SEGMENTS,
+        help="Segments to include in output directory.")
+    parser.add_argument("--sequences-field", default="sequences",
+        help="The record field that contains the segment sequences array.")
+
+
+    args = parser.parse_args()
+
+    segment_fasta_files = create_segment_fasta_files(args.sequences_output_dir, args.segments)
+    records = load_ndjson(stdin)
+    modified_records = update_records_and_output_sequences(records, segment_fasta_files, args.output_id_field)
+
+    try:
+        first_record = next(modified_records)
+    except StopIteration:
+        print_err("WARNING: No records provided, outputting empty TSV and FASTAs.")
+        Path(args.output_metadata).touch()
+    else:
+        write_records_to_tsv(chain([first_record], modified_records), args.output_metadata)
