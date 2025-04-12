@@ -25,8 +25,8 @@ def _get_node_data_by_wildcards(wildcards):
     if config["builds"][wildcards.build_name].get('subclades', False):
         inputs.append(rules.subclades.output.node_data)
 
-    if config["builds"][wildcards.build_name].get('proposed_subclades', False):
-        inputs.append(rules.proposed_subclades.output.node_data)
+    if wildcards.segment == "ha" and config["builds"][wildcards.build_name].get('emerging_haplotypes', False):
+        inputs.append(rules.emerging_haplotypes.output.node_data)
 
     if config["builds"][wildcards.build_name].get('enable_titer_models', False) and wildcards.segment == 'ha':
         for collection in config["builds"][wildcards.build_name]["titer_collections"]:
@@ -54,7 +54,7 @@ def _get_node_data_by_wildcards(wildcards):
         inputs.append(rules.convert_embedding_clusters_to_node_data.output.node_data)
 
     if wildcards.segment == "ha":
-        inputs.append(rules.annotate_haplotypes.output.haplotypes)
+        inputs.append(rules.annotate_derived_haplotypes.output.haplotypes)
 
     # Convert input files from wildcard strings to real file names.
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]

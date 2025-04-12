@@ -343,3 +343,24 @@ rule select_titers:
             --filter-file {input.strains} \
             {input.titers} >> {output.titers} 2> {log}
         """
+
+rule select_nextclade:
+    input:
+        nextclade=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.segment}/nextclade.tsv.xz",
+        strains=build_dir + "/{build_name}/strains.txt",
+    output:
+        nextclade=build_dir + "/{build_name}/{segment}/nextclade.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/select_nextclade_{build_name}_{segment}.txt"
+    log:
+        "logs/select_nextclade_{build_name}_{segment}.txt"
+    shell:
+        """
+        augur filter \
+            --metadata {input.nextclade} \
+            --metadata-id-columns seqName \
+            --exclude-all \
+            --include {input.strains} \
+            --output-metadata {output.nextclade} 2>&1 | tee {log}
+        """

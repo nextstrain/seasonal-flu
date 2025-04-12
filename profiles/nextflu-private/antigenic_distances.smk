@@ -29,8 +29,8 @@ rule plot_antigenic_distances_between_strains:
     params:
         min_test_date=2024.3333,
         title=get_titer_collection_title,
-        clade_color_field="proposed_subclade_test",
-        auspice_config_color_field="proposed_subclade",
+        clade_color_field="emerging_haplotype_test",
+        auspice_config_color_field="emerging_haplotype",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
@@ -73,7 +73,7 @@ rule annotate_titer_counts_for_reference_viruses:
 
 rule summarize_haplotype_titer_coverage:
     input:
-        haplotypes="builds/{build_name}/{segment}/haplotypes.json",
+        haplotypes="builds/{build_name}/{segment}/derived_haplotypes.json",
         distances="builds/{build_name}/{segment}/antigenic_distances_between_strains/{titer_collection}.tsv",
         frequencies="builds/{build_name}/{segment}/tip-frequencies.json",
     output:
