@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${PAT_GITHUB_DISPATCH:?The PAT_GITHUB_DISPATCH environment variable is required.}"
+
+bin="$(dirname "$0")"
+
+github_repo="${1:?A GitHub repository with owner and repository name is required as the first argument.}"
+event_type="${2:?An event type is required as the second argument.}"
+metadata="${3:?A metadata upload output file is required as the third argument.}"
+sequences="${4:?An sequence FASTA upload output file is required as the fourth argument.}"
+identical_file_message="${5:-files are identical}"
+
+new_metadata=$(grep "$identical_file_message" "$metadata" >/dev/null; echo $?)
+new_sequences=$(grep "$identical_file_message" "$sequences" >/dev/null; echo $?)
+
+slack_message=""
+
+# grep exit status 0 for found match, 1 for no match, 2 if an error occurred
+if [[ $new_metadata -eq 1 || $new_sequences -eq 1 ]]; then
+    slack_message="Triggering new builds due to updated metadata and/or sequences"
+    "$bin"/trigger "$github_repo" "$event_type"
+elif [[ $new_metadata -eq 0 && $new_sequences -eq 0 ]]; then
+    slack_message="Skipping trigger of rebuild: Both metadata TSV and sequences FASTA are identical to S3 files."
+else
+    slack_message="Skipping trigger of rebuild: Unable to determine if data has been updated."
+fi
+
+
+if ! "$bin"/notify-slack "$slack_message"; then
+    echo "Notifying Slack failed, but exiting with success anyway."
+fi

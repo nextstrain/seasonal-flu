@@ -1,0 +1,55 @@
+"""
+This handles uploads of files downloaded from GISAID to AWS S3.
+"""
+import os.path
+
+
+# Use default configuration values. Extend with Snakemake's --configfile/--config options.
+configfile: os.path.join(workflow.basedir, "config.yaml")
+
+
+wildcard_constraints:
+    # Constrain GISAID pair names to YYYY-MM-DD-N
+    gisaid_pair = r'\d{4}-\d{2}-\d{2}(-\d+)?'
+
+
+rule upload_gisaid_pairs:
+    input:
+        upload_flags=expand([
+            "data/{gisaid_pair}-metadata.upload",
+            "data/{gisaid_pair}-sequences.upload",
+        ], gisaid_pair=config["gisaid_pairs"]),
+
+
+rule upload_gisaid_metadata:
+    input:
+        metadata="data/{gisaid_pair}-metadata.xls",
+    output:
+        flag="data/{gisaid_pair}-metadata.upload",
+    params:
+        s3_dst=config["s3_dst"],
+    shell:
+        r"""
+        {workflow.basedir}/../../vendored/upload-to-s3 \
+            --quiet \
+            {input.metadata:q} \
+            {params.s3_dst:q}/{wildcards.gisaid_pair}-metadata.xls.zst \
+            2>&1 | tee {output.flag:q}
+        """
+
+
+rule upload_gisaid_sequences:
+    input:
+        sequences="data/{gisaid_pair}-sequences.fasta",
+    output:
+        flag="data/{gisaid_pair}-sequences.upload",
+    params:
+        s3_dst=config["s3_dst"],
+    shell:
+        r"""
+        {workflow.basedir}/../../vendored/upload-to-s3 \
+            --quiet \
+            {input.sequences:q} \
+            {params.s3_dst:q}/{wildcards.gisaid_pair}-sequences.fasta.zst \
+            2>&1 | tee {output.flag:q}
+        """
