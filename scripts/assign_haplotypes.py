@@ -181,7 +181,7 @@ if __name__ == '__main__':
                 if "nuc" not in definition:
                     definition["nuc"] = []
 
-                definition["nuc"].append(record["site"] + record["alt"])
+                definition["nuc"].append(str(record["site"]) + record["alt"])
             else:
                 # Amino acid substitutions look like "HA1:Q173P", so we need to
                 # compare each haplotype defining substitution's gene and
@@ -192,7 +192,7 @@ if __name__ == '__main__':
                 definition["aa"].append(
                     (
                         record["gene"],
-                        record["site"] + record["alt"],
+                        str(record["site"]) + record["alt"],
                     ),
                 )
 
