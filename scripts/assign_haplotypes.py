@@ -112,8 +112,8 @@ def assign_haplotype(record, haplotype_definitions, clade_column, default_haplot
 
         if (
             clade_match and
-            nucleotide_substitutions_match(record.get(nucleotide_column, ""), definition.get("nuc", [])) and
-            aa_substitutions_match(record.get(aa_column, ""), definition.get("aa", []))
+            nucleotide_substitutions_match(record[nucleotide_column], definition.get("nuc", [])) and
+            aa_substitutions_match(record[aa_column], definition.get("aa", []))
         ):
             assigned_name = name
 
