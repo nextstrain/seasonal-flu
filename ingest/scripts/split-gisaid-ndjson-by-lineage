@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""
+Splits GISAID NDJSON multiple NDJSON files by the "lineage" field
+"""
+import argparse
+import os
+from pathlib import Path
+from sys import stdin
+from typing import Iterable
+from augur.io.json import load_ndjson, as_json
+from augur.io.print import print_err
+
+
+LINEAGES = [
+    "h1n1pdm",
+    "h3n2",
+    "vic",
+    "yam",
+]
+
+LINEAGE_FILE_NAME = "curated_gisaid.ndjson"
+
+
+def create_lineage_files(output_dir: str, lineages: list) -> dict:
+    """
+    Create empty NDJSON files for all lineages as
+
+        <output_dir>/<lineage>/LINEAGE_FILE_NAME
+
+    Removes any old files that already exist since we will be
+    appending to the NDJSON files as we loop through main NDJSON.
+    """
+    lineage_ndjson_files = {}
+    for lineage in lineages:
+        lineage_dir = Path(output_dir, lineage.lower())
+        lineage_dir.mkdir(parents=False, exist_ok=True)
+        lineage_ndjson = Path(lineage_dir, LINEAGE_FILE_NAME)
+        # Remove any old NDJSON files as we will be appending to them
+        if lineage_ndjson.exists():
+            os.remove(lineage_ndjson)
+        Path.touch(lineage_ndjson)
+        lineage_ndjson_files[lineage] = lineage_ndjson
+    return lineage_ndjson_files
+
+
+def dump_records_by_lineage(records: Iterable[dict],
+                            lineage_ndjson_files: dict,
+                            record_id_field: str,
+                            lineage_field: str):
+    """
+    Dump *records* in their respective *lineage_ndjson_files* based on the
+    lineage in the *lineage_field*.
+
+    Records that do not have a matching lineage will be skipped.
+    """
+    for record in records:
+        record_id = record.get(record_id_field, "")
+        lineage = record.get(lineage_field)
+
+        if lineage is None:
+            raise Exception(f"Records must have the expected lineage field: {lineage_field!r}")
+
+        if lineage in lineage_ndjson_files:
+            with lineage_ndjson_files[lineage].open("a") as fh:
+                print(as_json(record), file=fh)
+        else:
+            print_err(
+                f"WARNING: Skipping record {record_id!r} because it's " + \
+                f"lineage {lineage!r} doesn't match any of the expected lineages.")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--output-directory",
+        help="Output directory for new lineage NDJSON files. " + \
+             "Lineage records will be output to separate NDJSONs " + \
+             f"<output_dir>/<lineage>/{LINEAGE_FILE_NAME}")
+    parser.add_argument("--lineages", nargs="*", default=LINEAGES,
+        help="Lineages to include in the output directory.")
+    parser.add_argument("--id-field", default="gisaid_epi_isl",
+        help="The record field containing the record id.")
+    parser.add_argument("--lineage-field", default="lineage",
+        help="The record field containing the lineage.")
+
+    args = parser.parse_args()
+
+    lineage_ndjson_files = create_lineage_files(args.output_directory, args.lineages)
+    records = load_ndjson(stdin)
+    dump_records_by_lineage(records, lineage_ndjson_files, args.id_field, args.lineage_field)

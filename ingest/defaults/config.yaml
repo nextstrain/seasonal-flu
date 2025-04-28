@@ -1,0 +1,121 @@
+# This configuration file should contain all required configuration parameters
+# for the ingest workflow to run to completion.
+#
+# Define optional config parameters with their default values here so that users
+# do not have to dig through the workflows to figure out the default values
+
+# Expected pairs of metadata.xls and sequences.fasta to use as input
+# The pairs of files are expected to be named as
+#   - data/<YYYY-MM-DD-N>-metadata.xls
+#   - data/<YYYY-MM-DD-N>-sequences.fasta
+# where <YYYY-MM-DD> is the date the files were downloaded from GISAID
+# and <N> is the number of the download since GISAID limits the number of records per download
+# List the pair name, <YYYY-MM-DD-N>, to only include specific pairs
+# Note the records are deduplicated by the `gisaid_id_field` and only the first
+# record is kept, so list the prioritized pairs first.
+# If left empty, workflow will glob for all `data/<YYYY-MM-DD-N>-metadata.xls`
+# to include all pairs as input. These will be sorted in reverse order to
+# prioritize the later downloads during deduplication.
+gisaid_pairs: []
+# GISAID EPI ISL field to deduplicate the GISAID records by id prior to curation
+gisaid_id_field: Isolate_Id
+
+# Expected lineages that should match the standardized output lineages
+# in scripts/standardized-lineage
+lineages:
+  - h1n1pdm
+  - h3n2
+  - vic
+  - yam
+
+segments:
+  - pb2
+  - pb1
+  - pa
+  - ha
+  - np
+  - na
+  - mp
+  - ns
+
+# Config parameters related to the curate pipeline
+curate:
+  # The path to the local geolocation rules within the pathogen repo
+  # The path should be relative to the ingest directory.
+  local_geolocation_rules: "defaults/geolocation_rules.tsv"
+  # List of field names to change where the key is the original field name and the value is the new field name
+  # This is the first step in the pipeline, so any references to field names in the configs below should use the new field names
+  field_map:
+    Isolate_Name: gisaid_strain
+    Isolate_Id: gisaid_epi_isl
+    Collection_Date: date
+    Submission_Date: date_submitted
+    Passage_History: passage
+    Location: location # This is <region>/<country>/<division>/<location>
+    Submitting_Lab: submitting_lab
+    Originating_Lab: originating_lab
+    Host: host
+  # List of date fields to standardize to ISO format YYYY-MM-DD
+  date_fields: ["date", "date_submitted"]
+  # List of expected date formats that are present in the date fields provided above
+  # These date formats should use directives expected by datetime
+  # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
+  expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
+  gisaid_location_field: "location"
+  titlecase:
+    # List of string fields to titlecase
+    fields: ["region", "country", "division", "location"]
+    # List of abbreviations not cast to titlecase, keeps uppercase
+    abbreviations: ["USA"]
+    # Articles that should not be cast to titlecase
+    articles: [
+      "and", "d", "de", "del", "des", "di", "do", "en", "l", "la", "las", "le",
+      "los", "nad", "of", "op", "sur", "the", "y"
+    ]
+  passage_field: "passage"
+  passage_category_field: "passage_category"
+  gisaid_subtype_field: "Subtype"
+  gisaid_lineage_field: "Lineage"
+  new_type_field: "vtype"
+  new_subtype_field: "subtype"
+  new_lineage_field: "lineage"
+  gisaid_strain_field: "gisaid_strain"
+  new_strain_field: "strain"
+  gihsn_field: "gihsn_sample"
+  age_field: "Host_Age"
+  age_unit_field: "Host_Age_Unit"
+  new_age_field: "age"
+  gender_field: "Host_Gender"
+  new_gender_field: "gender"
+  # Path to the manual annotations file
+  # The path should be relative to the ingest directory
+  annotations: "defaults/annotations.tsv"
+  # The ID field in the metadata to use to merge the manual annotations
+  annotations_id: "strain"
+  # The ID field in the metadata to use as the sequence id in the output FASTA file
+  output_id_field: "strain"
+  # The GISAID ID field used to prioritize records during strain deduplication
+  gisaid_id_field: "gisaid_epi_isl"
+  # The prioritized strain ids for strain deduplication.
+  # The {lineage} is a wildcard that will be filled by Snakemake
+  prioritized_strain_ids: "defaults/{lineage}/prioritized_strain_ids.tsv"
+  # Column added to metadata to annotate which strains are reference strains
+  reference_column: "is_reference"
+  # The list of metadata columns to keep in the final output of the curation pipeline.
+  metadata_columns:
+  - strain
+  - gisaid_epi_isl
+  - date
+  - date_submitted
+  - region
+  - country
+  - division
+  - location
+  - passage_category
+  - originating_lab
+  - submitting_lab
+  - age
+  - gender
+  - gisaid_strain
+  - gihsn_sample
+  - is_reference

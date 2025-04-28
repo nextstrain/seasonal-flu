@@ -17,7 +17,7 @@ benchmarks/
 environment*
 
 # Snakemake state dir
-/.snakemake
+.snakemake
 
 # Local config overrides
 /config_local.yaml
