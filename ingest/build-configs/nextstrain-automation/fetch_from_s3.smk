@@ -10,7 +10,7 @@ rule fetch_gisaid_ndjson:
     If it doesn't exist, then just create an empty file.
     """
     output:
-        ndjson="data/gisaid_cache.ndjson",
+        ndjson=temp("data/gisaid_cache.ndjson"),
     params:
         s3_file=f"{config['s3_src']}/gisaid.ndjson.zst",
     shell:
@@ -51,8 +51,8 @@ rule decompress_unprocessed_files:
         metadata="data/unprocessed-gisaid-downloads/{gisaid_pair}-metadata.xls.zst",
         sequences="data/unprocessed-gisaid-downloads/{gisaid_pair}-sequences.fasta.zst",
     output:
-        metadata="data/{gisaid_pair}-metadata.xls",
-        sequences="data/{gisaid_pair}-sequences.fasta",
+        metadata=temp("data/{gisaid_pair}-metadata.xls"),
+        sequences=temp("data/{gisaid_pair}-sequences.fasta"),
     shell:
         r"""
         zstd --decompress --stdout {input.metadata:q} > {output.metadata:q}

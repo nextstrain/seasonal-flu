@@ -22,7 +22,7 @@ rule link_gisaid_metadata_and_fasta:
         metadata="data/{gisaid_pair}-metadata.xls",
         sequences="data/{gisaid_pair}-sequences.fasta",
     output:
-        ndjson="data/{gisaid_pair}.ndjson",
+        ndjson=temp("data/{gisaid_pair}.ndjson"),
     log: "logs/link_gisaid_metadata_and_fasta/{gisaid_pair}.txt"
     shell:
         r"""
@@ -64,7 +64,7 @@ rule concatenate_gisaid_ndjsons:
     input:
         ndjsons=aggregate_gisaid_ndjsons,
     output:
-        ndjson="data/gisaid.ndjson",
+        ndjson=temp("data/gisaid.ndjson"),
     params:
         gisaid_id_field=config["gisaid_id_field"],
     log: "logs/concatenate_gisaid_ndjsons.txt"

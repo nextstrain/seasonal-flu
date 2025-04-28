@@ -47,7 +47,7 @@ rule curate:
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         annotations=config["curate"]["annotations"],
     output:
-        curated_ndjson="data/curated_gisaid.ndjson",
+        curated_ndjson=temp("data/curated_gisaid.ndjson"),
     log:
         "logs/curate.txt",
     benchmark:
@@ -131,7 +131,7 @@ rule split_ndjson_by_lineage:
     input:
         curated_ndjson="data/curated_gisaid.ndjson",
     output:
-        lineage_ndjsons=expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])
+        lineage_ndjsons=temp(expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])),
     log:
         "logs/split_ndjson_by_lineage.txt"
     params:
@@ -155,7 +155,7 @@ rule deduplicate_ndjson_by_strain:
         curated_ndjson="data/{lineage}/curated_gisaid.ndjson",
         prioritized_strain_ids=config["curate"]["prioritized_strain_ids"],
     output:
-        deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
+        deduped_ndjson=temp("data/{lineage}/deduped_curated.ndjson"),
     log:
         "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
     params:
