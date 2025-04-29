@@ -13,8 +13,8 @@ Save the downloaded GISAID metadata and sequences as:
 - `ingest/build-configs/manual-upload/data/<YYYY-MM-DD-N>-metadata.xls`
 - `ingest/build-configs/manual-upload/data/<YYYY-MM-DD-N>-sequences.fasta`
 
-<YYYY-MM-DD> is the date the files were downloaded from GISAID.
-<N> is the number of the download since GISAID limits the number of records per download.
+`<YYYY-MM-DD>` is the date the files were downloaded from GISAID.
+`<N>` is the number of the download since GISAID limits the number of records per download.
 
 For example, if you had to split the data between two downloads on 2025-04-11,
 then save the files as

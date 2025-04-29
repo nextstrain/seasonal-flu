@@ -5,8 +5,19 @@
 > This build config/customization is tailored for the internal Nextstrain team
 > to extend the core ingest workflow for automated workflows.
 
-
 ## Run the workflow
+
+### Via GitHub Actions
+
+Go to the [ingest workflow](https://github.com/nextstrain/seasonal-flu/actions/workflows/ingest.yaml)
+and trigger manually via the "Run workflow" dropdown.
+
+You can also trigger the workflow via the [GitHub CLI](https://cli.github.com/):
+```
+gh workflow run ingest.yaml --repo nextstrain/seasonal-flu
+```
+
+### Via Nextstrain CLI
 
 Provide the additional config file to the Snakemake options in order to
 include the custom rules from [upload.smk](upload.smk) in the workflow.
