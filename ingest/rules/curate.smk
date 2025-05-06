@@ -54,6 +54,15 @@ rule curate:
         "benchmarks/curate.txt"
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
+        gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
+        gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
+        new_type_field=config["curate"]["new_type_field"],
+        new_subtype_field=config["curate"]["new_subtype_field"],
+        new_lineage_field=config["curate"]["new_lineage_field"],
+        host_field=config["curate"]["host_field"],
+        lineages_to_include=config["lineages"],
+        hosts_to_include=config["curate"]["hosts_to_include"],
+        gisaid_id_field=config["curate"]["gisaid_id_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         gisaid_location_field=config["curate"]["gisaid_location_field"],
@@ -62,11 +71,6 @@ rule curate:
         titlecase_fields=config["curate"]["titlecase"]["fields"],
         passage_field=config["curate"]["passage_field"],
         passage_category_field=config["curate"]["passage_category_field"],
-        gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
-        gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
-        new_type_field=config["curate"]["new_type_field"],
-        new_subtype_field=config["curate"]["new_subtype_field"],
-        new_lineage_field=config["curate"]["new_lineage_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
         new_strain_field=config["curate"]["new_strain_field"],
         gihsn_field=config["curate"]["gihsn_field"],
@@ -82,6 +86,18 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
+            | ./scripts/standardize-lineage \
+                --subtype-field {params.gisaid_subtype_field:q} \
+                --lineage-field {params.gisaid_lineage_field:q} \
+                --new-type-field {params.new_type_field:q} \
+                --new-subtype-field {params.new_subtype_field:q} \
+                --new-lineage-field {params.new_lineage_field:q} \
+            | ./scripts/filter-for-seasonal-flu \
+                --id-field {params.gisaid_id_field:q} \
+                --lineage-field {params.new_lineage_field:q} \
+                --host-field {params.host_field:q} \
+                --lineages {params.lineages_to_include:q} \
+                --hosts {params.hosts_to_include:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -97,12 +113,6 @@ rule curate:
             | ./scripts/annotate-with-passage-category \
                 --passage-field {params.passage_field:q} \
                 --passage-category-field {params.passage_category_field:q} \
-            | ./scripts/standardize-lineage \
-                --subtype-field {params.gisaid_subtype_field:q} \
-                --lineage-field {params.gisaid_lineage_field:q} \
-                --new-type-field {params.new_type_field:q} \
-                --new-subtype-field {params.new_subtype_field:q} \
-                --new-lineage-field {params.new_lineage_field:q} \
             | ./scripts/standardize-strain-names \
                 --strain-field {params.gisaid_strain_field:q} \
                 --passage-field {params.passage_category_field:q} \

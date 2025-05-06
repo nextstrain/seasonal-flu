@@ -55,6 +55,13 @@ curate:
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
+  gisaid_subtype_field: "Subtype"
+  gisaid_lineage_field: "Lineage"
+  new_type_field: "vtype"
+  new_subtype_field: "subtype"
+  new_lineage_field: "lineage"
+  host_field: "host"
+  hosts_to_include: ["Human"]
   # List of date fields to standardize to ISO format YYYY-MM-DD
   date_fields: ["date", "date_submitted"]
   # List of expected date formats that are present in the date fields provided above
@@ -74,11 +81,6 @@ curate:
     ]
   passage_field: "passage"
   passage_category_field: "passage_category"
-  gisaid_subtype_field: "Subtype"
-  gisaid_lineage_field: "Lineage"
-  new_type_field: "vtype"
-  new_subtype_field: "subtype"
-  new_lineage_field: "lineage"
   gisaid_strain_field: "gisaid_strain"
   new_strain_field: "strain"
   gihsn_field: "gihsn_sample"
