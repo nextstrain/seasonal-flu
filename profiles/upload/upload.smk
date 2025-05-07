@@ -40,7 +40,7 @@ rule upload_raw_sequences:
         "logs/upload_raw_sequences_{lineage}_{segment}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/raw_sequences.fasta.xz 2>&1 | tee {output.flag}
@@ -57,7 +57,7 @@ rule upload_sequences:
         "logs/upload_sequences_{lineage}_{segment}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/sequences.fasta.xz 2>&1 | tee {output.flag}
@@ -74,7 +74,7 @@ rule upload_metadata:
         "logs/upload_metadata_{lineage}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
             {params.s3_dst:q}/{wildcards.lineage}/metadata.tsv.xz 2>&1 | tee {output.flag}
@@ -97,7 +97,7 @@ rule upload_titers:
         "logs/upload_titers_{build_name}_{titer_collection}.txt"
     shell:
         """
-        ./scripts/upload-to-s3 \
+        ./ingest/vendored/upload-to-s3 \
             --quiet \
             {input.titers:q} \
             {params.s3_dst:q}/{params.lineage}/{wildcards.titer_collection}_titers.tsv.gz 2>&1 | tee {output.flag}

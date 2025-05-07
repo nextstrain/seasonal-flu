@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/nextstrain/ingest
+	branch = main
+	commit = cd6d31a3b35cd1bb7eddf830c565be6d6e69f27a
+	parent = eed11b63f5b662da6e7400bc65cc7c618d3ef4b8
+	method = merge
+	cmdver = 0.4.6

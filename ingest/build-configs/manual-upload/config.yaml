@@ -1,0 +1,3 @@
+# TODO: remove `trials/ingest/` after we switch to the ingest workflow
+# AWS S3 destination for the downloaded GISAID files
+s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest/gisaid-downloads/unprocessed"

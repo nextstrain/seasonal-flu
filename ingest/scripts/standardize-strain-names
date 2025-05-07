@@ -61,7 +61,7 @@ def standardize_record_strains(records: Iterable,
         if influenza_type is not None and str(influenza_type).lower() in EXPECTED_TYPES:
             strain_type = new_strain.split("/")[0]
             if strain_type.lower() != influenza_type.lower():
-                new_strain = re.sub(strain_type, influenza_type.upper(), new_strain)
+                new_strain = re.sub(re.escape(strain_type), influenza_type.upper(), new_strain)
 
         record[new_strain_field] = new_strain
 

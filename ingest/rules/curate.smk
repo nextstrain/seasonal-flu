@@ -47,13 +47,22 @@ rule curate:
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         annotations=config["curate"]["annotations"],
     output:
-        curated_ndjson="data/curated_gisaid.ndjson",
+        curated_ndjson=temp("data/curated_gisaid.ndjson"),
     log:
         "logs/curate.txt",
     benchmark:
         "benchmarks/curate.txt"
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
+        gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
+        gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
+        new_type_field=config["curate"]["new_type_field"],
+        new_subtype_field=config["curate"]["new_subtype_field"],
+        new_lineage_field=config["curate"]["new_lineage_field"],
+        host_field=config["curate"]["host_field"],
+        lineages_to_include=config["lineages"],
+        hosts_to_include=config["curate"]["hosts_to_include"],
+        gisaid_id_field=config["curate"]["gisaid_id_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         gisaid_location_field=config["curate"]["gisaid_location_field"],
@@ -62,11 +71,6 @@ rule curate:
         titlecase_fields=config["curate"]["titlecase"]["fields"],
         passage_field=config["curate"]["passage_field"],
         passage_category_field=config["curate"]["passage_category_field"],
-        gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
-        gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
-        new_type_field=config["curate"]["new_type_field"],
-        new_subtype_field=config["curate"]["new_subtype_field"],
-        new_lineage_field=config["curate"]["new_lineage_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
         new_strain_field=config["curate"]["new_strain_field"],
         gihsn_field=config["curate"]["gihsn_field"],
@@ -82,6 +86,18 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
+            | ./scripts/standardize-lineage \
+                --subtype-field {params.gisaid_subtype_field:q} \
+                --lineage-field {params.gisaid_lineage_field:q} \
+                --new-type-field {params.new_type_field:q} \
+                --new-subtype-field {params.new_subtype_field:q} \
+                --new-lineage-field {params.new_lineage_field:q} \
+            | ./scripts/filter-for-seasonal-flu \
+                --id-field {params.gisaid_id_field:q} \
+                --lineage-field {params.new_lineage_field:q} \
+                --host-field {params.host_field:q} \
+                --lineages {params.lineages_to_include:q} \
+                --hosts {params.hosts_to_include:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -97,12 +113,6 @@ rule curate:
             | ./scripts/annotate-with-passage-category \
                 --passage-field {params.passage_field:q} \
                 --passage-category-field {params.passage_category_field:q} \
-            | ./scripts/standardize-lineage \
-                --subtype-field {params.gisaid_subtype_field:q} \
-                --lineage-field {params.gisaid_lineage_field:q} \
-                --new-type-field {params.new_type_field:q} \
-                --new-subtype-field {params.new_subtype_field:q} \
-                --new-lineage-field {params.new_lineage_field:q} \
             | ./scripts/standardize-strain-names \
                 --strain-field {params.gisaid_strain_field:q} \
                 --passage-field {params.passage_category_field:q} \
@@ -131,7 +141,7 @@ rule split_ndjson_by_lineage:
     input:
         curated_ndjson="data/curated_gisaid.ndjson",
     output:
-        lineage_ndjsons=expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])
+        lineage_ndjsons=temp(expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])),
     log:
         "logs/split_ndjson_by_lineage.txt"
     params:
@@ -155,7 +165,7 @@ rule deduplicate_ndjson_by_strain:
         curated_ndjson="data/{lineage}/curated_gisaid.ndjson",
         prioritized_strain_ids=config["curate"]["prioritized_strain_ids"],
     output:
-        deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
+        deduped_ndjson=temp("data/{lineage}/deduped_curated.ndjson"),
     log:
         "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
     params:
