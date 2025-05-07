@@ -51,6 +51,7 @@ def get_passage_category(passage: str) -> str:
     Patterns with the comment "# McWhite" seem to have been taken from
     McWhite et al. 2016 <https://doi.org/10.1093/ve/vew026>
     """
+    passage = passage.upper()
     passage_category = DEFAULT_PASSAGE_CATEGORY
     if re.search(r'AM[1-9]|E[1-9]|AMNIOTIC|EGG|EX|AM_[1-9]', passage):   # McWhite
         passage_category = "egg"
