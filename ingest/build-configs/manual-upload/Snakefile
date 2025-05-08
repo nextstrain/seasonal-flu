@@ -7,6 +7,10 @@ import os.path
 # Use default configuration values. Extend with Snakemake's --configfile/--config options.
 configfile: os.path.join(workflow.basedir, "config.yaml")
 
+# Use custom configuration from analysis directory (i.e. working dir), if any.
+if os.path.exists("config.yaml"):
+    configfile: "config.yaml"
+
 
 wildcard_constraints:
     # Constrain GISAID pair names to YYYY-MM-DD-N
