@@ -7,6 +7,13 @@ on:
         description: "Specific container image to use for build (will override the default of `nextstrain build`)"
         required: false
         type: string
+      trial_name:
+        description: |
+          Trial name for deploying builds.
+          If not set, builds will overwrite existing builds at s3://nextstrain-data/seasonal_flu*
+          If set, builds will be deployed to s3://nextstrain-staging/seasonal-flu_trials_<trial_name>_*
+        required: false
+        type: string
 
 jobs:
   run-build:
@@ -18,7 +25,14 @@ jobs:
       runtime: aws-batch
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+        TRIAL_NAME: ${{ inputs.trial_name }}
       run: |
+        declare -a config
+
+        if [[ "$TRIAL_NAME" ]]; then
+          config+=("deploy_url=s3://nextstrain-staging/seasonal-flu_trials_${TRIAL_NAME}_")
+        fi
+
         nextstrain build \
           --detach \
           --cpus 36 \
@@ -26,4 +40,5 @@ jobs:
           . \
           deploy_all \
           -p \
-          --configfile profiles/nextstrain-public.yaml
+          --configfile profiles/nextstrain-public.yaml \
+          --config "${config[@]}"
