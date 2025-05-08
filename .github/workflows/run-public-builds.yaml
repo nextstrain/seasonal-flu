@@ -14,6 +14,14 @@ on:
           If set, builds will be deployed to s3://nextstrain-staging/seasonal-flu_trials_<trial_name>_*
         required: false
         type: string
+      sequences_url:
+        description: "S3 URL for sequences.fasta.xz, must contain the {lineage} and {segment} wildcards."
+        required: false
+        type: string
+      metadata_url:
+        description: "S3 URL for metadata.tsv.xz, must contain the {lineage} wildcard."
+        required: false
+        type: string
 
 jobs:
   run-build:
@@ -26,11 +34,21 @@ jobs:
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
         TRIAL_NAME: ${{ inputs.trial_name }}
+        METADATA_URL: ${{ inputs.metadata_url }}
+        SEQUENCES_URL: ${{ inputs.sequences_url }}
       run: |
         declare -a config
 
         if [[ "$TRIAL_NAME" ]]; then
           config+=("deploy_url=s3://nextstrain-staging/seasonal-flu_trials_${TRIAL_NAME}_")
+        fi
+
+        if [[ "$METADATA_URL" ]]; then
+          config+=("metadata_url=${METADATA_URL}")
+        fi
+
+        if [[ "$SEQUENCES_URL" ]]; then
+          config+=("sequences_url=${SEQUENCES_URL}")
         fi
 
         nextstrain build \
