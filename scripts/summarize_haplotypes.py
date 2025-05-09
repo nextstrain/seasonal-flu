@@ -85,7 +85,7 @@ if __name__ == '__main__':
         )
         reference_counts["haplotype"] = reference_counts["serum_strain"].map(haplotype_by_strain)
 
-        haplotype_references = reference_counts.groupby("haplotype").aggregate(
+        haplotype_references = reference_counts.groupby("derived_haplotype").aggregate(
             total_references=("reference", "count"),
             distinct_references=("reference", "unique"),
         ).rename(columns={
@@ -97,11 +97,11 @@ if __name__ == '__main__':
         # number of titer test strains.
         annotated_haplotypes = annotated_haplotypes.merge(
             haplotype_references,
-            on="haplotype",
+            on="derived_haplotype",
             how="left",
         )
 
-    annotated_haplotypes = annotated_haplotypes.set_index("haplotype")
+    annotated_haplotypes = annotated_haplotypes.set_index("derived_haplotype")
     annotated_haplotypes = annotated_haplotypes.query("frequency > 0").copy()
     annotated_haplotypes = annotated_haplotypes.sort_values("frequency", ascending=False)
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     # Use spaces instead of commas, allowing Markdown to wrap
     # lines.
-    annotated_haplotypes["haplotype"] = annotated_haplotypes["haplotype"].str.replace(",", " ")
+    annotated_haplotypes["derived_haplotype"] = annotated_haplotypes["derived_haplotype"].str.replace(",", " ")
 
     # Round frequencies prior to writing out the markdown table.
     annotated_haplotypes["frequency"] = (annotated_haplotypes["frequency"] * 100).round(2).astype(float)

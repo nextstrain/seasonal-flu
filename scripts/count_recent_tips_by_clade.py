@@ -12,7 +12,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument("--recency", help="recency annotations in node data JSON format based on submission date of all sequences", required=True)
-    parser.add_argument("--clades", help="subclade annotations from a Nextclade TSV", required=True)
+    parser.add_argument("--clades", help="clade annotations from a Nextclade TSV", required=True)
+    parser.add_argument("--clade-column", default="subclade", help="name of the column to use for clade annotations in the given Nextclade TSV")
     parser.add_argument("--recency-values", nargs="+", default=["last week", "last month"], help="values in the 'recency' annotation to use for counting recent sequences")
     parser.add_argument("--output", help="Markdown file with list of recent sequence counts per clade", required=True)
     args = parser.parse_args()
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     clades = pd.read_csv(
         args.clades,
         sep="\t",
-        usecols=["seqName", "proposedSubclade"],
+        usecols=["seqName", args.clade_column],
     )
 
 
@@ -40,11 +41,11 @@ if __name__ == '__main__':
     count_by_clade = clades[
         (clades["seqName"].isin(recent_tips))
     ].groupby(
-        "proposedSubclade"
+        args.clade_column
     )["seqName"].count().reset_index(
         name="count"
     ).rename(
-        columns={"proposedSubclade": "clade"},
+        columns={args.clade_column: "clade"},
     )
     count_by_clade["count"] = count_by_clade["count"].astype(int)
 

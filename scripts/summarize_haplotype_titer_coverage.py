@@ -26,9 +26,9 @@ if __name__ == '__main__':
     distances = pd.read_csv(args.antigenic_distances, sep="\t")
     references_by_haplotype = distances.loc[
         :,
-        ["reference_strain", "haplotype_reference"]
+        ["reference_strain", "derived_haplotype_reference"]
     ].drop_duplicates().groupby(
-        "haplotype_reference",
+        "derived_haplotype_reference",
     ).aggregate(
         total_references=("reference_strain", "count"),
         distinct_references=("reference_strain", "unique"),
