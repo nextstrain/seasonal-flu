@@ -120,6 +120,7 @@ rule get_derived_haplotypes:
         genes=["HA1"],
         clade_column="subclade",
         mutations_column="founderMuts['subclade'].aaSubstitutions",
+        derived_haplotype_column="derived_haplotype",
     shell:
         """
         python3 scripts/add_derived_haplotypes.py \
@@ -128,6 +129,7 @@ rule get_derived_haplotypes:
             --strip-genes \
             --clade-column {params.clade_column:q} \
             --mutations-column {params.mutations_column:q} \
+            --attribute-name {params.derived_haplotype_column:q} \
             --output {output.haplotypes}
         """
 
@@ -140,7 +142,7 @@ rule join_metadata_and_nextclade:
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.metadata}
+        tsv-join -H -f {input.nextclade} -a derived_haplotype -k seqName -d strain {input.metadata} > {output.metadata}
         """
 
 rule estimate_derived_haplotype_frequencies:
@@ -182,6 +184,7 @@ rule summarize_derived_haplotypes:
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
             if "ferret" in collection["data"]
         ],
+        haplotype_column="derived_haplotype",
     shell:
         """
         python3 scripts/summarize_haplotypes.py \
@@ -189,6 +192,7 @@ rule summarize_derived_haplotypes:
             --frequencies {input.frequencies} \
             --titers {input.titers:q} \
             --titer-names {params.titer_names:q} \
+            --haplotype-column {params.haplotype_column:q} \
             --output-table {output.table} \
             --output-markdown-table {output.markdown_table}
         """
