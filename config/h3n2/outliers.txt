@@ -135,6 +135,7 @@ A/HongKong/HKMA20D/2008
 A/HongKong/HKMA20E/2008
 A/HuNan/01/2014
 A/HuNan/1/2014
+A/Hungary/11/2025
 A/Illinois/3/2013
 A/Illinois/9/2012
 A/Illinois/11/2012
