@@ -159,8 +159,15 @@ if __name__ == '__main__':
         **PANDAS_READ_CSV_OPTIONS,
     )
 
+    if "haplotype" not in haplotype_definitions.columns:
+        print(
+            f"ERROR: The column 'haplotype' is missing from the given haplotype definitions file, '{args.haplotypes}'.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     haplotype_definition_by_name = {}
-    for haplotype_name, haplotype_definition in haplotype_definitions.groupby("clade", sort=False):
+    for haplotype_name, haplotype_definition in haplotype_definitions.groupby("haplotype", sort=False):
         definition = {}
         for record in haplotype_definition.to_dict(orient="records"):
             if record["gene"] == "clade":
