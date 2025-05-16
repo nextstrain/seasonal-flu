@@ -96,8 +96,8 @@
       ]
     },
     {
-      "key": "proposed_subclade",
-      "title": "Proposed subclade",
+      "key": "emerging_haplotype",
+      "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [
         [

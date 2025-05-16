@@ -57,17 +57,6 @@ rule annotate_recency_of_all_submissions:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-rule download_nextclade:
-    output:
-        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
-    params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/nextclade.tsv.xz"
-    conda: "../../workflow/envs/nextstrain.yaml"
-    shell:
-        """
-        aws s3 cp {params.s3_path} {output.nextclade}
-        """
-
 rule filter_nextclade_by_qc:
     input:
         nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
@@ -80,18 +69,44 @@ rule filter_nextclade_by_qc:
             | tsv-filter -H --str-ne "qc.overallStatus:bad" > {output.nextclade}
         """
 
+rule annotate_haplotypes_for_all_nextclade_data:
+    input:
+        nextclade="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
+        haplotypes="config/{lineage}/ha/emerging_haplotypes.tsv",
+    output:
+        haplotypes="data/{lineage}/ha/nextclade_with_haplotypes.tsv",
+    params:
+        clade_column="subclade",
+        membership_name="emerging_haplotype",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    log:
+        "logs/annotate_haplotypes_for_all_nextclade_data_{lineage}_ha.txt"
+    shell:
+        r"""
+        python scripts/assign_haplotypes.py \
+            --substitutions {input.nextclade:q} \
+            --haplotypes {input.haplotypes:q} \
+            --clade-column {params.clade_column:q} \
+            --haplotype-column-name {params.membership_name:q} \
+            --use-clade-as-default-haplotype \
+            --output-table {output.haplotypes:q} 2>&1 | tee {log}
+        """
+
 rule count_recent_tips_by_clade:
     input:
         recency="tables/{lineage}/recency.json",
-        clades="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
+        clades="data/{lineage}/ha/nextclade_with_haplotypes.tsv",
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
+    params:
+        clade_column="emerging_haplotype",
     shell:
         """
         python3 scripts/count_recent_tips_by_clade.py \
             --recency {input.recency} \
             --clades {input.clades} \
+            --clade-column {params.clade_column:q} \
             --output {output.counts}
         """
 
@@ -103,8 +118,9 @@ rule get_derived_haplotypes:
     conda: "../../workflow/envs/nextstrain.yaml"
     params:
         genes=["HA1"],
-        clade_column="proposedSubclade",
-        mutations_column="founderMuts['proposedSubclade'].aaSubstitutions",
+        clade_column="subclade",
+        mutations_column="founderMuts['subclade'].aaSubstitutions",
+        derived_haplotype_column="derived_haplotype",
     shell:
         """
         python3 scripts/add_derived_haplotypes.py \
@@ -113,6 +129,7 @@ rule get_derived_haplotypes:
             --strip-genes \
             --clade-column {params.clade_column:q} \
             --mutations-column {params.mutations_column:q} \
+            --attribute-name {params.derived_haplotype_column:q} \
             --output {output.haplotypes}
         """
 
@@ -125,7 +142,7 @@ rule join_metadata_and_nextclade:
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        tsv-join -H -f {input.nextclade} -a haplotype -k seqName -d strain {input.metadata} > {output.metadata}
+        tsv-join -H -f {input.nextclade} -a derived_haplotype -k seqName -d strain {input.metadata} > {output.metadata}
         """
 
 rule estimate_derived_haplotype_frequencies:
@@ -167,6 +184,7 @@ rule summarize_derived_haplotypes:
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
             if "ferret" in collection["data"]
         ],
+        haplotype_column="derived_haplotype",
     shell:
         """
         python3 scripts/summarize_haplotypes.py \
@@ -174,6 +192,7 @@ rule summarize_derived_haplotypes:
             --frequencies {input.frequencies} \
             --titers {input.titers:q} \
             --titer-names {params.titer_names:q} \
+            --haplotype-column {params.haplotype_column:q} \
             --output-table {output.table} \
             --output-markdown-table {output.markdown_table}
         """

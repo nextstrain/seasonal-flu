@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # Annotate reference names with clade.
     df["reference_name"] = df.apply(
-        lambda row: f"{row['reference_strain']}\n({row['haplotype_reference']})",
+        lambda row: f"{row['reference_strain']}\n({row['derived_haplotype_reference']})",
         axis=1
     )
 

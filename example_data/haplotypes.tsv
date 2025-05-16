@@ -1,0 +1,10 @@
+haplotype	gene	site	alt
+Brisbane10	nuc	63	A
+Brisbane10	nuc	920	C
+Brisbane10	nuc	1313	C
+
+Perth16	HA1	144	K
+
+clade	HA1	312	S
+
+recurrent_AA	HA1	94	H

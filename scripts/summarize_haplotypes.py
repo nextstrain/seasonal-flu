@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument("--frequencies", required=True, help="tip frequencies JSON")
     parser.add_argument("--titers", nargs="+", help="titers TSV files with columns named 'virus_strain' and 'serum_strain' representing test and reference strains, respectively")
     parser.add_argument("--titer-names", nargs="+", help="names of the titer collections provided to the `--titers` argument to use in the table output")
+    parser.add_argument("--haplotype-column", default="haplotype", help="name of column containing haplotype definitions per record")
     parser.add_argument("--output-table", required=True, help="TSV of haplotypes along with number of reference viruses, distinct reference viruses, number of test viruses, current frequency, and delta frequency from the last month.")
     parser.add_argument("--output-markdown-table", required=True, help="Markdown table of the TSV table above for use in narratives.")
 
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     haplotype_frequencies = {}
     haplotype_by_strain = {}
     for strain, record in metadata.iterrows():
-        haplotype = record["haplotype"]
+        haplotype = record[args.haplotype_column]
         haplotype_by_strain[strain] = haplotype
 
         if strain not in current_frequency_by_strain:
