@@ -128,7 +128,14 @@ def assign_haplotype(record, haplotype_definitions, clade_column, default_haplot
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--substitutions", required=True, help="TSV file with clades and substitutions from Nextclade")
-    parser.add_argument("--haplotypes", required=True, help="TSV file of haplotype definitions in 'augur clades' format")
+    parser.add_argument("--haplotypes", required=True, help="""
+    TSV file of haplotype definitions in 'augur clades' format except with the 'clade' column name replaced with 'haplotype'.
+    Haplotypes will be assigned to each input record in the order they appear in this file.
+    Records matching multiple haplotypes will receive the haplotype that appears latest in the file.
+    Define haplotypes that derive from existing clades by specifying 'clade' in the 'gene' field and the clade name in the 'site' field.
+    All defining substitutions for derived haplotypes will be checked against the column specified with the `--clade-column` argument and corresponding 'founderMuts' column of the Nextclade annotations.
+    For example, if a haplotype is defined relative the 'subclade' column, its amino acid substitutions will be checked against the "founderMuts['subclade'].aaSubstitutions" column.
+    """)
     parser.add_argument("--metadata-id-columns", default=["strain", "seqName"], help="names of possible columns in the substitutions table to use as the record id")
     parser.add_argument("--clade-column", default="subclade", help="name of the column in the substitutions table corresponding to clades used in the haplotype definitions")
     parser.add_argument("--haplotype-column-name", default="haplotype", help="name of the column or attribute to store the annotated haplotype in the output")
