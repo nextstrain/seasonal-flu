@@ -29,9 +29,9 @@ using to run the workflow.
 
 ### With `nextstrain run`
 
-When running with `nextstrain run`, you can save the GISAID files in any
-arbitrary analysis directory. However, you must also create a `config.yaml` within
-the analysis directory to specify the `gisaid_pairs` to upload.
+When running with `nextstrain run`, you can save the GISAID files in the `data`
+directory within any arbitrary analysis directory. However, you must also create
+a `config.yaml` within the analysis directory to specify the `gisaid_pairs` to upload.
 
 Continuing the example above, your analysis directory should look like
 ```
@@ -54,8 +54,18 @@ gisaid_pairs:
 
 Make sure you have the latest seasonal flu pathogen setup.
 
-```
-nextstrain update seasonal-flu@master
+```shell
+$ nextstrain update seasonal-flu@master
+Checking for newer versions of Nextstrain CLI…
+
+nextstrain-cli is up to date!
+
+Updating seasonal-flu@master pathogen version…
+'seasonal-flu@master' already up-to-date.
+
+Updated seasonal-flu@master pathogen version!
+
+All updates successful!
 ```
 
 Then run the workflow
