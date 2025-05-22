@@ -1,6 +1,11 @@
 name: Run the private Nextflu builds
 
 on:
+  schedule:
+    # Scheduled to run at 5pm UTC (9am PST/10am PDT) on the first Friday of the month
+    # cron hack based on <https://blog.healthchecks.io/2022/09/schedule-cron-job-the-funky-way/>
+    - cron: '0 17 */100,1-7 * FRI'
+
   workflow_dispatch:
     inputs:
       dockerImage:
