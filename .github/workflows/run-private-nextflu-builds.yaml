@@ -27,3 +27,17 @@ jobs:
           all_who \
           -p \
           --configfile profiles/private.nextflu.org.yaml
+
+  deploy-private-nextflu:
+    needs: [run-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deploy-private-nextflu
+        run: |
+          gh workflow run \
+            deploy-private-nextflu.yaml \
+            --repo nextstrain/seasonal-flu \
+            -f aws_batch_job_id=${{ needs.run-build.outputs.aws-batch-job-id }} \
+            -f deploy_to_staging=false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
