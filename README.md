@@ -109,6 +109,18 @@ To skip subsampling and use all records that you downloaded from GISAID, set `fi
 
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
 
+> [!IMPORTANT]
+> The workflow is optimized for HA and NA segments and requires additional files if you are building other segments!
+
+- The following files are required for different lineage and segment builds:
+  - reference: "config/{lineage}/{segment}/reference.fasta"
+  - annotation: "config/{lineage}/{segment}/genemap.gff"
+  - tree_exclude_sites: "config/{lineage}/{segment}/exclude-sites.txt"
+- The workflow assigns clade annotations to non-HA segments from HA, so the
+`clades` configuration should always point to the HA clade definition TSV.
+- The workflow only has subclade annotations for HA and NA segments, so remove
+the `subclades` configuration for other segments builds.
+
 ## History
 
  - Prior to March 31, 2023, we selected strains for each build using a custom Python script called [select_strains.py](https://github.com/nextstrain/seasonal-flu/blob/64b5204d23c0b95e4b06f943e4efb8db005759c0/scripts/select_strains.py). With the merge of [the refactored workflow](https://github.com/nextstrain/seasonal-flu/pull/76), we have since used a configuration file to define the `augur filter` query logic we want for strain selection per build.
