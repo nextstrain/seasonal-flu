@@ -57,6 +57,7 @@ curate:
     Host: host
   gisaid_subtype_field: "Subtype"
   gisaid_lineage_field: "Lineage"
+  gisaid_note_field: "Note"
   new_type_field: "vtype"
   new_subtype_field: "subtype"
   new_lineage_field: "lineage"
