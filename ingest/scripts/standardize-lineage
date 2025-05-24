@@ -3,6 +3,7 @@
 Standardize lineage based on GISAID's subtype and lineage.
 """
 import argparse
+import re
 from sys import stdin
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
@@ -43,6 +44,7 @@ TBD_TYPE = "tbd"
 def standardize_record_lineage(records: Iterable[dict],
                                subtype_field: str,
                                lineage_field: str,
+                               note_field: str,
                                new_type_field: str,
                                new_subtype_field: str,
                                new_lineage_field: str) -> Iterable:
@@ -60,12 +62,16 @@ def standardize_record_lineage(records: Iterable[dict],
     for record in records:
         gisaid_subtype = record.get(subtype_field)
         gisaid_lineage = record.get(lineage_field)
+        gisaid_note = record.get(note_field)
 
         if gisaid_subtype is None:
             raise Exception(f"Records must have the expected GISAID subtype field: {subtype_field!r}")
 
         if gisaid_lineage is None:
             raise Exception(f"Records must have the expected GISAID lineage field: {lineage_field!r}")
+
+        if not gisaid_lineage.strip() and gisaid_note:
+            gisaid_lineage = parse_lineage_from_note(gisaid_note)
 
         gisaid_types = (gisaid_subtype.lower(), gisaid_lineage.lower())
         lineage_match = GISAID_LINEAGE_MAP.get(gisaid_types)
@@ -89,6 +95,30 @@ def standardize_record_lineage(records: Iterable[dict],
         )
 
 
+def parse_lineage_from_note(note: str) -> str:
+    """
+    Parse known patterns in the *note* value that are used to annotate lineages.
+
+    If the *note* matches a pattern, then returns the expected lineage from GISAID,
+    i.e. the key in the `GISAID_LINEAGE_MAP`.
+    """
+    note = note.strip()
+    H1N1PDM_PATTERNS = re.compile(r"^H1N1pdm09$|lineage: A\(H1N1\)pdm09|Influenza A\(H1N1\) pandemic", re.IGNORECASE)
+    VIC_PATTERNS = re.compile(r"^Victoria$|B/Vic|type: Vic|Victoria lineage|lineage: Victoria", re.IGNORECASE)
+    YAM_PATTERNS = re.compile(r"^Yamagata$|B/Yam|type: Yam|Yamagata lineage|lineage: Yamagata", re.IGNORECASE)
+
+    if re.match(H1N1PDM_PATTERNS, note):
+        return "pdm09"
+
+    if re.match(VIC_PATTERNS, note):
+        return "victoria"
+
+    if re.match(YAM_PATTERNS, note):
+        return "yamagata"
+
+    return ""
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
 
@@ -96,6 +126,8 @@ if __name__ == '__main__':
         help="The record field containing the GISAID subtype")
     parser.add_argument("--lineage-field", default="Lineage",
         help="The record field containing the GISAID lineage")
+    parser.add_argument("--note-field", default="Note",
+        help="The record field containing free text note that could be the lineage")
     parser.add_argument("--new-type-field", default="vtype",
         help="The name of the new field to add to the record with the type, " + \
              f"e.g. a or b. If type is undetermined, will default to {TBD_TYPE!r}")
@@ -113,6 +145,7 @@ if __name__ == '__main__':
         records,
         args.subtype_field,
         args.lineage_field,
+        args.note_field,
         args.new_type_field,
         args.new_subtype_field,
         args.new_lineage_field)
