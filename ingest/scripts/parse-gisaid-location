@@ -91,13 +91,6 @@ def parse_locations(records: Iterable,
                 # and append it to the location values to output
                 if len(split_locations) < expected_num_locations:
                     split_locations.append(strain_location)
-                else:
-                    # Otherwise warn that the strain_location does not match
-                    # the metadata location values.
-                    print_err(
-                        f"Strain location {strain_location!r} does not match",
-                        f"any of the geolocation values {split_locations!r}"
-                    )
 
         for index, field in enumerate(LOCATION_FIELDS):
             record[field] = split_locations[index] if len(split_locations) > index else DEFAULT_UNKNOWN_VALUE
