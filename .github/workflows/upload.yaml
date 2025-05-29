@@ -12,14 +12,6 @@ on:
         description: "Specific container image to use for Nextstrain public builds"
         required: false
         type: string
-      triggerPrivateNextflu:
-        description: "Trigger private Nextflu builds"
-        required: true
-        type: boolean
-      privateNextfluDockerImage:
-        description: "Specific container image to use for private Nextflu builds"
-        required: false
-        type: string
       triggerNextfluPrivate:
         description: "Trigger nextflu-private group builds"
         required: true
@@ -72,9 +64,6 @@ jobs:
           - trigger: ${{ inputs.triggerPublic }}
             workflow: run-public-builds.yaml
             image: ${{ inputs.publicDockerImage }}
-          - trigger: ${{ inputs.triggerPrivateNextflu }}
-            workflow: run-private-nextflu-builds.yaml
-            image: ${{ inputs.privateNextfluDockerImage }}
           - trigger: ${{ inputs.triggerNextfluPrivate }}
             workflow: run-nextflu-private-builds.yaml
             image: ${{ inputs.nextfluPrivateDockerImage }}
