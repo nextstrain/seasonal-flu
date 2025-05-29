@@ -56,6 +56,7 @@ rule curate:
         field_map=format_field_map(config["curate"]["field_map"]),
         gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
         gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
+        gisaid_note_field=config["curate"]["gisaid_note_field"],
         new_type_field=config["curate"]["new_type_field"],
         new_subtype_field=config["curate"]["new_subtype_field"],
         new_lineage_field=config["curate"]["new_lineage_field"],
@@ -89,6 +90,7 @@ rule curate:
             | ./scripts/standardize-lineage \
                 --subtype-field {params.gisaid_subtype_field:q} \
                 --lineage-field {params.gisaid_lineage_field:q} \
+                --note-field {params.gisaid_note_field:q} \
                 --new-type-field {params.new_type_field:q} \
                 --new-subtype-field {params.new_subtype_field:q} \
                 --new-lineage-field {params.new_lineage_field:q} \
