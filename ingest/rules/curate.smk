@@ -94,12 +94,6 @@ rule curate:
                 --new-type-field {params.new_type_field:q} \
                 --new-subtype-field {params.new_subtype_field:q} \
                 --new-lineage-field {params.new_lineage_field:q} \
-            | ./scripts/filter-for-seasonal-flu \
-                --id-field {params.gisaid_id_field:q} \
-                --lineage-field {params.new_lineage_field:q} \
-                --host-field {params.host_field:q} \
-                --lineages {params.lineages_to_include:q} \
-                --hosts {params.hosts_to_include:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -135,6 +129,12 @@ rule curate:
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \
+            | ./scripts/filter-for-seasonal-flu \
+                --id-field {params.gisaid_id_field:q} \
+                --lineage-field {params.new_lineage_field:q} \
+                --host-field {params.host_field:q} \
+                --lineages {params.lineages_to_include:q} \
+                --hosts {params.hosts_to_include:q} \
                 > {output.curated_ndjson}) 2>> {log}
         """
 
