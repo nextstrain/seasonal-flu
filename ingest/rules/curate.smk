@@ -60,10 +60,6 @@ rule curate:
         new_type_field=config["curate"]["new_type_field"],
         new_subtype_field=config["curate"]["new_subtype_field"],
         new_lineage_field=config["curate"]["new_lineage_field"],
-        host_field=config["curate"]["host_field"],
-        lineages_to_include=config["lineages"],
-        hosts_to_include=config["curate"]["hosts_to_include"],
-        gisaid_id_field=config["curate"]["gisaid_id_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         gisaid_location_field=config["curate"]["gisaid_location_field"],
@@ -129,19 +125,41 @@ rule curate:
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \
+                > {output.curated_ndjson:q}) 2>> {log}
+        """
+
+
+rule filter_for_seasonal_flu:
+    input:
+        curated_ndjson="data/curated_gisaid.ndjson",
+    output:
+        seasonal_flu_ndjson=temp("data/seasonal_flu.ndjson"),
+    log:
+        "logs/filter_for_seasonal_flu.txt",
+    benchmark:
+        "benchmarks/filter_for_seasonal_flu.txt"
+    params:
+        gisaid_id_field=config["curate"]["gisaid_id_field"],
+        new_lineage_field=config["curate"]["new_lineage_field"],
+        host_field=config["curate"]["host_field"],
+        lineages_to_include=config["lineages"],
+        hosts_to_include=config["curate"]["hosts_to_include"],
+    shell:
+        r"""
+        cat {input.curated_ndjson:q} \
             | ./scripts/filter-for-seasonal-flu \
                 --id-field {params.gisaid_id_field:q} \
                 --lineage-field {params.new_lineage_field:q} \
                 --host-field {params.host_field:q} \
                 --lineages {params.lineages_to_include:q} \
                 --hosts {params.hosts_to_include:q} \
-                > {output.curated_ndjson}) 2>> {log}
+                > {output.seasonal_flu_ndjson:q} 2>> {log:q}
         """
 
 
 rule split_ndjson_by_lineage:
     input:
-        curated_ndjson="data/curated_gisaid.ndjson",
+        seasonal_flu_ndjson="data/seasonal_flu.ndjson",
     output:
         lineage_ndjsons=temp(expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])),
     log:
@@ -153,7 +171,7 @@ rule split_ndjson_by_lineage:
         id_field=config["curate"]["gisaid_id_field"],
     shell:
         r"""
-        cat {input.curated_ndjson:q} \
+        cat {input.seasonal_flu_ndjson:q} \
             | ./scripts/split-gisaid-ndjson-by-lineage \
                 --output-directory {params.lineage_output_dir:q} \
                 --lineages {params.lineages:q} \
