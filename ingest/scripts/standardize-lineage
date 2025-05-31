@@ -13,6 +13,7 @@ from augur.io.print import print_err
 # GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
 # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
 GISAID_LINEAGE_MAP = {
+    ('a',             ''):                ('a',    'n/a',     'n/a'),
     ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'h1n1pdm'),
     ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
     ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'h1n2'),
@@ -32,6 +33,7 @@ GISAID_LINEAGE_MAP = {
     ('a / h10n7',     ''):                ('a',    'h10n7',   'n/a'),
     ('a / h10n8',     ''):                ('a',    'h10n8',   'n/a'),
     ('a / h11',       ''):                ('a',    'h11',     'n/a'),
+    ('b',             ''):                ('b',    'n/a',     'n/a'),
     ('b / h0n0',      'victoria'):        ('b',    'n/a',     'vic'),
     ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'yam'),
     ('b',             'victoria'):        ('b',    'n/a',     'vic'),
