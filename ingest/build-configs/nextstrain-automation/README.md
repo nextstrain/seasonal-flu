@@ -5,6 +5,12 @@
 > This build config/customization is tailored for the internal Nextstrain team
 > to extend the core ingest workflow for automated workflows.
 
+This workflow modifies the base workflow to use different starting files and to upload the results when finished.
+
+We start by downloading a cache (`gisaid.ndjson`) of previously concatenated, uncurated data as well as unprocessed XLS & FASTA pairs.
+The base workflow then runs, which will combine these data into a new `gisaid.ndjson` and curate it as normal.
+Finally we upload to S3 the curated sequences & metadata, the new `gisaid.ndjson` (which becomes the cache), and move the previously unprocessed XLS & FASTA pairs to a new location on S3 to indicate they have been processed.
+
 ## Run the workflow
 
 ### Via GitHub Actions

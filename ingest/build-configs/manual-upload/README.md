@@ -5,6 +5,7 @@
 > This build is tailored for the internal Nextstrain team to
 > run manually to upload GISAID files to our private AWS S3 bucket.
 
+This workflow uploads files which have been manually downloaded from GISAID to S3, storing them as "unprocessed" pairs of files.
 
 ## Run the workflow
 
