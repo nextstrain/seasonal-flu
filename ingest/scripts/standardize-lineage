@@ -12,7 +12,12 @@ from augur.io.print import print_err
 
 # GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
 # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+# Maps GISAID "Subtype" and "Lineage" fields to the standardized type, subtype, and lineage.
+# type    = virus type (i.e. A or B)
+# subtype = HxNx subtype
+# lineage = standardized lineages used in our builds
 GISAID_LINEAGE_MAP = {
+#   (GISAID Subtype,  GISAID Lineage):    (type,   subtype,   lineage)
     ('a',             ''):                ('a',    'n/a',     'n/a'),
     ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'h1n1pdm'),
     ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
