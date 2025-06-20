@@ -1,11 +1,15 @@
 # Ingest
 
-This workflow ingests manually downloaded data from GISAID and outputs curated
+The base ingest workflow ingests manually downloaded data from GISAID and outputs curated
 metadata and sequences that can be used as input for the phylogenetic workflow.
 
 If you have another data source or private data that needs to be formatted for
 the phylogenetic workflow, then you can use a similar workflow to curate your
 own data.
+
+> There are additional ingest workflows which Nextstrain uses to manage seasonal-flu
+> builds. See the READMEs in `build-configs/{manual-upload,nextstrain-automation}`
+> for more details.
 
 ## Workflow Usage
 
