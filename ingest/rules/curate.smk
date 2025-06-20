@@ -125,7 +125,7 @@ rule curate:
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \
-                > {output.curated_ndjson:q}) 2>> {log}
+                > {output.curated_ndjson:q}) 2> {log:q}
         """
 
 
@@ -153,7 +153,7 @@ rule filter_for_seasonal_flu:
                 --host-field {params.host_field:q} \
                 --lineages {params.lineages_to_include:q} \
                 --hosts {params.hosts_to_include:q} \
-                > {output.seasonal_flu_ndjson:q} 2>> {log:q}
+                > {output.seasonal_flu_ndjson:q} 2> {log:q}
         """
 
 
@@ -176,7 +176,7 @@ rule split_ndjson_by_lineage:
                 --output-directory {params.lineage_output_dir:q} \
                 --lineages {params.lineages:q} \
                 --lineage-field {params.lineage_field:q} \
-                --id-field {params.id_field:q} 2>> {log:q}
+                --id-field {params.id_field:q} 2> {log:q}
         """
 
 
@@ -198,7 +198,7 @@ rule deduplicate_ndjson_by_strain:
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
                 --prioritized-ids {input.prioritized_strain_ids:q} \
-                > {output.deduped_ndjson:q} 2>> {log:q}
+                > {output.deduped_ndjson:q} 2> {log:q}
         """
 
 
@@ -221,7 +221,7 @@ rule split_ndjson_by_segment:
                 --segments {params.segments:q} \
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
-                --output-id-field {params.id_field:q} 2>> {log}
+                --output-id-field {params.id_field:q} 2> {log:q}
         """
 
 
