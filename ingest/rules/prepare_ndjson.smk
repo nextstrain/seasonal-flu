@@ -30,7 +30,7 @@ rule link_gisaid_metadata_and_fasta:
             --metadata {input.metadata:q} \
             --sequences {input.sequences:q} \
             > {output.ndjson:q} \
-            2> {log}
+            2> {log:q}
         """
 
 
@@ -73,5 +73,5 @@ rule concatenate_gisaid_ndjsons:
         (cat {input.ndjsons:q} \
             | ./scripts/dedup-by-gisaid-id \
                 --id-field {params.gisaid_id_field:q} \
-            > {output.ndjson:q}) 2>> {log:q}
+            > {output.ndjson:q}) 2> {log:q}
         """
