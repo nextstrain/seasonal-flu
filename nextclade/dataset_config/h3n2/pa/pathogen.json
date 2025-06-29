@@ -1,0 +1,35 @@
+{
+    "shortcuts": [
+      "flu_h3n2_pa",
+      "nextstrain/flu/h3n2/pa"
+    ],
+"phenotypeData":[
+    {
+      "name": "PAI",
+      "nameFriendly": "PAI",
+      "description": "This column displays a score associated with reduced susceptibility to polymerase inhibitors. The score is a weighted sum of known substitutions (x1) or major substitutions (x2), while substitutions at positions that confer resistance but are to amino acids not previously described to confer resistance count x0.5.",
+      "cds": "PA",
+      "aaRange": {
+        "begin":0,
+        "end": 460
+      },
+      "data": [
+        {
+          "name": "PAI_markers",
+          "weight": 1,
+          "locations": {
+            "27": {"P":1, "default":0.5},
+            "22": {"G":1, "K":2, "R": 2, "default":0.5},
+            "33": {"R":1, "default":0.5},
+            "35": {"V":2, "default":0.5},
+            "36": {"T":2, "default":0.5},
+            "37": {"F":2, "L":1, "M":2, "N":2, "S":1, "T":2,  "V":1, "default":0.5},
+            "118": {"D":1, "default":0.5},
+            "197": {"K":1, "default":0.5},
+            "199": {"G":1, "default":0.5}
+          }
+        }
+      ]
+    }
+  ]
+}
