@@ -19,6 +19,11 @@ This dataset supports
  * Sequence QC
  * Phylogenetic placement
 
+### Resistance mutations
+Resistance markers are taken from the [summary of by the WHO/GISRS](https://www.who.int/teams/global-influenza-programme/laboratory-network/quality-assurance/antiviral-susceptibility-influenza/neuraminidase-inhibitor).
+
+
+
 ## Clades of seasonal influenza viruses
 
 The WHO Collaborating centers **do not** define "clades" for the neuraminidase segment.

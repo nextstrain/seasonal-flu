@@ -1,6 +1,4 @@
 {
-    "nucMutLabelMap": {},
-    "nucMutLabelMapReverse": {},
     "shortcuts": [
       "flu_h3n2_na",
       "nextstrain/flu/h3n2/na",
@@ -20,6 +18,42 @@
         ],
         "motifs": [
           "N[^P][ST]"
+        ]
+      }
+    ],
+  "phenotypeData":[
+      {
+        "name": "NAI",
+        "nameFriendly": "NAI",
+        "description": "This column displays a score associated with reduced susceptibility to neuraminidase inhibitors. The score is a weighted sum of known substitutions (x1) or major substitutions (x2), while substitutions at positions that confer resistance but are to amino acids not previously described to confer resistance count x0.5.",
+        "cds": "NA",
+        "aaRange": {
+          "begin":0,
+          "end": 460
+        },
+        "data": [
+          {
+            "name": "NAI_markers",
+            "weight": 1,
+            "locations": {
+              "118": {"D":1, "I": 2, "V":2, "default":0.5},
+              "135": {"K":1, "default":0.5},
+              "141": {"S":2, "default":0.5},
+              "150": {"A":1, "E":1, "G":1, "default":0.5},
+              "221": {"L":1, "default":0.5},
+              "223": {"K":2, "default":0.5},
+              "244": {"Y":1, "-":1, "default":0.5},
+              "245": {"-":1, "default":0.5},
+              "246": {"-":1, "default":0.5},
+              "247": {"-":1, "default":0.5},
+              "248": {"E":1, "-":1, "default":0.5},
+              "249": {"-":1, "default":0.5},
+              "275": {"D":1, "default":0.5},
+              "291": {"K":2, "default":0.5},
+              "293": {"K":2, "default":0.5},
+              "371": {"K":1, "default":0.5}
+            }
+          }
         ]
       }
     ]

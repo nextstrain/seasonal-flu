@@ -22,5 +22,60 @@
           "N[^P][ST]"
         ]
       }
+    ],
+    "phenotypeData":[
+      {
+        "name": "NAI",
+        "nameFriendly": "NAI",
+        "description": "This column displays a score associated with reduced susceptibility to neuraminidase inhibitors. The score is a weighted sum of known substitutions (x1) or major substitutions (x2), while substitutions at positions that confer resistance but are to amino acids not previously described to confer resistance count x0.5.",
+        "cds": "NA",
+        "aaRange": {
+          "begin":0,
+          "end": 460
+        },
+        "data": [
+          {
+            "name": "NAI_markers",
+            "weight": 1,
+            "locations": {
+              "100": {"L":1, "default":0.5},
+              "103": {"E":2, "default":0.5},
+              "104": {"K":1, "default":0.5},
+              "107": {"E":2, "default":0.5},
+              "116": {"A":2, "D":2, "G": 2, "V":2, "default":0.5},
+              "133": {"N":1, "Q":1, "Y":1, "default":0.5},
+              "137": {"R":1, "default":0.5},
+              "138": {"S":1, "default":0.5},
+              "139": {"R":1, "default":0.5},
+              "141": {"H":1, "default":0.5},
+              "144": {"E":1, "R":1, "default":0.5},
+              "145": {"I":1, "K":1, "P":1, "default":0.5},
+              "149": {"K":1, "default":0.5},
+              "150": {"S":1, "default":0.5},
+              "151": {"M":1, "N":1, "default":0.5},
+              "168": {"S":1, "default":0.5},
+              "196": {"E":1, "G":1, "N":1, "Y":2, "default":0.5},
+              "199": {"T":1, "default":0.5},
+              "220": {"L":2, "N":2, "T":1, "V":1, "default":0.5},
+              "242": {"D":1, "S":1, "default":0.5},
+              "244": {"G":1, "T":1, "default":0.5},
+              "245": {"P":1, "default":0.5},
+              "246": {"D":1, "default":0.5},
+              "272": {"Y":1, "default":0.5},
+              "291": {"K":2, "default":0.5},
+              "293": {"S":1, "default":0.5},
+              "359": {"E":1, "default":0.5},
+              "360": {"V":1, "default":0.5},
+              "373": {"K":2, "default":0.5},
+              "394": {"E":1, "default":0.5},
+              "395": {"H":1, "default":0.5},
+              "406": {"S":1, "default":0.5},
+              "431": {"G":1, "N":1, "default":0.5},
+              "438": {"P":1, "R":1, "default":0.5},
+              "463": {"T":1, "default":0.5}
+            }
+          }
+        ]
+      }
     ]
 }
