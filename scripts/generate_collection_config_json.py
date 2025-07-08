@@ -78,14 +78,14 @@ if __name__ == '__main__':
 
     # Find minimum y-axis position for reference strains within each clade. This
     # position represents the earliest instance of the clade in the tree.
-    min_y_axis_position_by_reference_clade = collection_df.groupby("clade_reference")["y_axis_position_in_phylogeny"].min().reset_index().rename(
+    min_y_axis_position_by_reference_clade = collection_df.groupby("subclade_reference")["y_axis_position_in_phylogeny"].min().reset_index().rename(
         columns={"y_axis_position_in_phylogeny": "min_y_axis_position_in_phylogeny"}
     )
 
     # Annotate min y-axis position per clade to collection.
     collection_df = collection_df.merge(
         min_y_axis_position_by_reference_clade,
-        on="clade_reference",
+        on="subclade_reference",
         how="left",
     )
 
