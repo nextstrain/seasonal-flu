@@ -26,6 +26,8 @@ This folder contains auxillary files for distance maps. Key positions were pulle
 | [bush_epitope_C](./h3n2/ha/bush_epitope_C.json) | [Bush et al. 1999](https://doi.org/10.1126/science.286.5446.1921) supplemental table S2 |
 | [bush_epitope_D](./h3n2/ha/bush_epitope_D.json) | [Bush et al. 1999](https://doi.org/10.1126/science.286.5446.1921) supplemental table S2 |
 | [bush_epitope_E](./h3n2/ha/bush_epitope_E.json) | [Bush et al. 1999](https://doi.org/10.1126/science.286.5446.1921) supplemental table S2 |
+| [Yu_et_al_2025_cell_entry](./h3n2/ha/Yu_et_al_2025_cell_entry.json) | [Yu et al. 2025](https://doi.org/10.1101/2025.05.24.655919) |
+| [Yu_et_al_2025_ph_stability](./h3n2/ha/Yu_et_al_2025_ph_stability.json) | [Yu et al. 2025](https://doi.org/10.1101/2025.05.24.655919) |
 
 ### NA
 

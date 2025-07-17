@@ -189,6 +189,16 @@
       "type": "continuous"
     },
     {
+      "key": "cell_entry",
+      "title": "cell entry (Yu et al. 2025)",
+      "type": "continuous"
+    },
+    {
+      "key": "ph_stability",
+      "title": "pH stability (Yu et al. 2025)",
+      "type": "continuous"
+    },
+    {
       "key": "region",
       "title": "Region",
       "type": "categorical"
