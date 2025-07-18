@@ -1,12 +1,7 @@
-A/Massachusetts/18/2022 # J, vaccine strain
-A/Nevada/32/2023 # J.2
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
-A/Canberra/302/2023 # J.2:140R
-A/Oklahoma/5/2024 # J.2:158K
-A/Idaho/69/2023 # J.2:145N,189R
+A/Wisconsin/154/2024 # J.2:135K
+A/Michigan/32/2024 # J.2:145N
+A/Kentucky/29/2024 # J.2:145N,158K
+A/Colorado/209/2024 # J.2:223I
 A/Colorado/6/2024 # J.2.1
-A/Switzerland/47775/2024 # J.2.1:309I,63K,189R,208I
-A/Netherlands/10563/2023 # J.2.2
-A/Perth/722/2024 # J.2.2:145N
-A/Canberra/373/2023 # J.2.2:145R,207R
-A/Victoria/979/2024 # J.2.2:65K,145N,262N
+A/Minnesota/97/2024 # J.2.2:65K,145N
