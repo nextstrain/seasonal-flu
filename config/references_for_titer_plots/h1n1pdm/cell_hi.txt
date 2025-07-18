@@ -1,11 +1,9 @@
 A/Wisconsin/67/2022 # C.1.1, vaccine strain
 A/Victoria/4897/2022 # D
-A/Illinois/18/2023 # D.1
-A/Alaska/14/2023 # D.2
+A/Massachusetts/76/2024 # D:152I,308K
+A/Missouri/11/2025 # D.3
 A/Delaware/83/2024 # D.5
-A/Connecticut/17/2023 # C.1.8
-A/Michigan/59/2023 # C.1.9
-A/Missouri/124/2024 # C.1.9:113K,155E
+A/Victoria/376/2024 # C.1.9
 A/Tennessee/77/2024 # C.1.9:P137S
-A/Lisbon/188/2023 # C.1.9:216A
-A/Tokyo/EIS10-381/2024 # C.1.9.3
+A/Iowa/110/2024 # C.1.9.3:166V
+A/Victoria/42/2025 # C.1.9.3:137S,155E,166V
