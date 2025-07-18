@@ -1,7 +1,9 @@
 B/Austria/1359417/2021 # C, vaccine strain
-B/Utah/11/2023 # C.5.1
+B/Victoria/16/2023 # C.3:208P
+B/Utah/11/2023 # C.5.1:128K
+B/Kansas/5/2024 # C.5.1:128K,202V
 B/Ghana/3778/2024 # C.5.1:202V
+B/Missouri/3/2024 # C.5.6:199A
 B/Alabama/7/2023 # C.5.6
-B/Kanagawa/IC2360/2024 # C.5.6
 B/Ranong/373/2023 # C.5.7
 B/Tokyo/23150/2023 # C.5.7
