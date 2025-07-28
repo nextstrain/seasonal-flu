@@ -234,13 +234,70 @@ rule annotate_metadata_with_titer_strains:
             | csvtk --tabs join --left-join --na "False" -f "strain" /dev/stdin {input.titer_reference_strains} > {output.metadata}
         """
 
+rule merge_nextclade_with_metadata:
+    """
+    Case 1 of 2: Nextclade data is either merged with regular metadata (1) or titered metadata (2)
+    """
+    input:
+        metadata="data/{lineage}/metadata.tsv",
+        nextclade="data/{lineage}/ha/nextclade.tsv.xz",
+    output:
+        merged = "data/{lineage}/metadata_with_nextclade.tsv"
+    params:
+        metadata_id="strain",
+        nextclade_id="seqName",
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/{lineage}/merge_nextclade_with_metadata.txt"
+    shell:
+        r"""
+        augur merge \
+           --metadata \
+             metadata={input.metadata} \
+             nextclade={input.nextclade} \
+           --metadata-id-columns \
+             metadata={params.metadata_id} \
+             nextclade={params.nextclade_id} \
+           --output-metadata {output.merged} 2>&1 | tee {log}
+        """
+
+def get_nextclade_for_subsampling(wildcards):
+    return f"data/{config['builds'][wildcards.build_name]['lineage']}/ha/nextclade.tsv.xz"
+
+rule merge_nextclade_with_metadata_titers:
+    """
+    Case 2 of 2: Nextclade data is either merged with regular metadata (1) or titered metadata (2)
+    """
+    input:
+        metadata="{build_dir}/{build_name}/full_metadata_with_titer_annotations.tsv",
+        nextclade=get_nextclade_for_subsampling,
+    output:
+        merged = "{build_dir}/{build_name}/full_metadata_with_titer_annotations_with_nextclade.tsv"
+    params:
+        metadata_id="strain",
+        nextclade_id="seqName",
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/{build_dir}/{build_name}/merge_nextclade_with_metadata_titers.txt"
+    shell:
+        r"""
+        augur merge \
+           --metadata \
+             metadata={input.metadata} \
+             nextclade={input.nextclade} \
+           --metadata-id-columns \
+             metadata={params.metadata_id} \
+             nextclade={params.nextclade_id} \
+           --output-metadata {output.merged} 2>&1 | tee {log}
+        """
+
 def get_metadata_for_subsampling(wildcards):
     # Use metadata annotated with a given build's titer strains, if we are
     # building the measurements panel or running titer models.
     if config['builds'][wildcards.build_name].get("enable_measurements") or config['builds'][wildcards.build_name].get("enable_titer_models"):
-        return f"{build_dir}/{wildcards.build_name}/full_metadata_with_titer_annotations.tsv"
+        return f"{build_dir}/{wildcards.build_name}/full_metadata_with_titer_annotations_with_nextclade.tsv"
     else:
-        return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv"
+        return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata_with_nextclade.tsv"
 
 def get_subsample_input(w):
     files = {"metadata": get_metadata_for_subsampling(w)}
@@ -264,7 +321,7 @@ rule subsample:
     log:
         "logs/subsample_{build_name}_{subsample}.txt"
     shell:
-        """
+        r"""
         augur filter \
             --metadata {input.metadata} \
             {params.filters} \
