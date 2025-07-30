@@ -61,9 +61,9 @@ array-builds:
           title: "Cell-passaged HI titers from pooled human sera"
     subsamples:
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by region year month --subsample-max-sequences 1350 --min-date {min_date} --exclude {exclude}
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by country year month --subsample-max-sequences 150 --min-date {min_date} --exclude {exclude}
       references:
           filters: --query "(passage_category != 'egg') & (is_reference == True)" --min-date {reference_min_date}
       titer_strains:
