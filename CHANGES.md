@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 31 July 2025
+
+ - Generate a Nextclade annotations TSV as part of the standard phylogenetic workflow and merge those annotations with the complete input metadata prior to subsampling. With this change, users can now define subsampling filters on Nextclade columns and refer to these columns in other parts of the workflow (e.g., in Auspice config JSONs as colorings). For example, to keep only sequences with a Nextclade overall quality status of "good", users can define a filter query like ```--query "\`qc.overallStatus\` == 'good'"``` (note the use of backticks to escape the QC column name with a `.` in it and the use of backward slashes to escape those backticks in the shell). We also now provide the Nextclade QC status as a coloring for HA trees. [#240](https://github.com/nextstrain/seasonal-flu/pull/240)
+
 # 16 May 2025
 
  - Added the ability to annotate haplotype labels for viruses based on the specific combination of nucleotide or amino acid substitutions that appear in their sequences. [See the pull request for more details](https://github.com/nextstrain/seasonal-flu/pull/221).
