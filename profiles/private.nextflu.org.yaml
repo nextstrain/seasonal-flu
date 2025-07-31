@@ -59,10 +59,10 @@ array-builds:
           data: "data/{lineage}/{center}_ferret_{passage}_{assay}_titers.tsv"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
+          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region != 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
           priorities: "titers"
       europe:
-          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
+          filters: --query "(passage_category in ['{passage}', 'cell', 'unpassaged', 'undetermined', 'N/A']) & (region == 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude} --exclude-where country=? region=?
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date}

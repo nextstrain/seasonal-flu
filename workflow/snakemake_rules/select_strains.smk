@@ -234,7 +234,37 @@ rule annotate_metadata_with_titer_strains:
             | csvtk --tabs join --left-join --na "False" -f "strain" /dev/stdin {input.titer_reference_strains} > {output.metadata}
         """
 
-def get_metadata_for_subsampling(wildcards):
+# Run Nextclade, if we don't already have access to Nextclade annotations from
+# elsewhere (e.g., S3).
+rule get_nextclade_dataset_for_lineage_and_segment:
+    output:
+        nextclade_dir=directory("nextclade_dataset/{lineage}_{segment}/"),
+    shell:
+        r"""
+        nextclade3 dataset get \
+            -n 'nextstrain/flu/{wildcards.lineage}/{wildcards.segment}' \
+            --output-dir {output.nextclade_dir}
+        """
+
+rule run_nextclade:
+    input:
+        nextclade_dir="nextclade_dataset/{lineage}_{segment}/",
+        sequences="data/{lineage}/{segment}.fasta",
+    output:
+        annotations="data/{lineage}/{segment}/nextclade.tsv.xz",
+    log:
+        "logs/run_nextclade_{lineage}_{segment}.txt"
+    threads: 8
+    shell:
+        r"""
+        nextclade3 run \
+            -j {threads} \
+            -D {input.nextclade_dir} \
+            --output-tsv {output.annotations} \
+            {input.sequences}
+        """
+
+def get_metadata_for_nextclade_merge(wildcards):
     # Use metadata annotated with a given build's titer strains, if we are
     # building the measurements panel or running titer models.
     if config['builds'][wildcards.build_name].get("enable_measurements") or config['builds'][wildcards.build_name].get("enable_titer_models"):
@@ -242,8 +272,38 @@ def get_metadata_for_subsampling(wildcards):
     else:
         return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv"
 
+def get_nextclade_for_subsampling(wildcards):
+    return f"data/{config['builds'][wildcards.build_name]['lineage']}/ha/nextclade.tsv.xz"
+
+rule merge_nextclade_with_metadata:
+    """
+    Nextclade data is either merged with regular metadata (1) or titered metadata (2), see functions above
+    """
+    input:
+        metadata=get_metadata_for_nextclade_merge,
+        nextclade=get_nextclade_for_subsampling,
+    output:
+        merged = "{build_dir}/{build_name}/metadata_with_nextclade.tsv"
+    params:
+        metadata_id="strain",
+        nextclade_id="seqName",
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/{build_dir}/{build_name}/merge_nextclade_with_metadata.txt"
+    shell:
+        r"""
+        augur merge \
+           --metadata \
+             metadata={input.metadata} \
+             nextclade={input.nextclade} \
+           --metadata-id-columns \
+             metadata={params.metadata_id} \
+             nextclade={params.nextclade_id} \
+           --output-metadata {output.merged} 2>&1 | tee {log}
+        """
+
 def get_subsample_input(w):
-    files = {"metadata": get_metadata_for_subsampling(w)}
+    files = {"metadata": f"{build_dir}/{w.build_name}/metadata_with_nextclade.tsv"}
     if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers':
         files['titers']=build_dir + f"/{w.build_name}/titer_priorities.tsv"
     return files
@@ -264,7 +324,7 @@ rule subsample:
     log:
         "logs/subsample_{build_name}_{subsample}.txt"
     shell:
-        """
+        r"""
         augur filter \
             --metadata {input.metadata} \
             {params.filters} \
@@ -275,7 +335,7 @@ rule subsample:
 
 rule select_strains:
     input:
-        metadata = get_metadata_for_subsampling,
+        metadata = build_dir + "/{build_name}/metadata_with_nextclade.tsv",
         subsamples = lambda w: [f"{build_dir}/{w.build_name}/strains_{s}.txt" for s in config['builds'][w.build_name]['subsamples']],
     output:
         metadata = build_dir + "/{build_name}/metadata.tsv",
@@ -342,25 +402,4 @@ rule select_titers:
             --key-fields 1 \
             --filter-file {input.strains} \
             {input.titers} >> {output.titers} 2> {log}
-        """
-
-rule select_nextclade:
-    input:
-        nextclade=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.segment}/nextclade.tsv.xz",
-        strains=build_dir + "/{build_name}/strains.txt",
-    output:
-        nextclade=build_dir + "/{build_name}/{segment}/nextclade.tsv",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/select_nextclade_{build_name}_{segment}.txt"
-    log:
-        "logs/select_nextclade_{build_name}_{segment}.txt"
-    shell:
-        """
-        augur filter \
-            --metadata {input.nextclade} \
-            --metadata-id-columns seqName \
-            --exclude-all \
-            --include {input.strains} \
-            --output-metadata {output.nextclade} 2>&1 | tee {log}
         """

@@ -7,17 +7,7 @@ rule upload_all_nextclade_files:
             for segment in build.get("segments", config["segments"])
         ]
 
-rule get_nextclade_dataset_for_lineage_and_segment:
-    output:
-        nextclade_dir=directory("nextclade_dataset/{lineage}_{segment}/"),
-    shell:
-        """
-        nextclade3 dataset get \
-            -n 'nextstrain/flu/{wildcards.lineage}/{wildcards.segment}' \
-            --output-dir {output.nextclade_dir}
-        """
-
-rule run_nextclade:
+rule run_nextclade_for_upload:
     input:
         nextclade_dir="nextclade_dataset/{lineage}_{segment}/",
         sequences="data/{lineage}/{segment}.fasta",

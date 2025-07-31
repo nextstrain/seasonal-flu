@@ -422,7 +422,7 @@ rule import_clades:
 
 rule emerging_haplotypes:
     input:
-        nextclade=build_dir + "/{build_name}/{segment}/nextclade.tsv",
+        nextclade=build_dir + "/{build_name}/metadata_with_nextclade.tsv",
         haplotypes=lambda wildcards: config["builds"][wildcards.build_name].get("emerging_haplotypes"),
     output:
         haplotypes_table=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
