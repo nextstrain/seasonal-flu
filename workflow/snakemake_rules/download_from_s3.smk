@@ -1,5 +1,6 @@
 ruleorder: download_parsed_sequences > parse
 ruleorder: download_parsed_metadata > annotate_metadata_with_reference_strains
+ruleorder: download_nextclade > run_nextclade
 
 rule download_sequences:
     output:
