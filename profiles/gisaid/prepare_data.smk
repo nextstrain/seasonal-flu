@@ -25,7 +25,7 @@ rule prepare_metadata:
         python3 scripts/xls2csv.py --xls {input.metadata} --output /dev/stdout \
             | csvtk cut -f {params.old_fields} \
             | csvtk rename -f {params.old_fields} -n {params.new_fields} \
-            | csvtk sep -f location --na "N/A" --names region,country,division,location --merge --num-cols 4 --sep " / " \
+            | csvtk sep -f full_location --na "N/A" --names region,country,division,location --merge --num-cols 4 --sep " / " \
             | csvtk replace -f strain -p " " -r "" \
             | csvtk sort -k strain,accession:r \
             | csvtk uniq -T -f strain > {output.metadata}
