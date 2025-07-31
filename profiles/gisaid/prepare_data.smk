@@ -25,7 +25,7 @@ rule prepare_metadata:
         python3 scripts/xls2csv.py --xls {input.metadata} --output /dev/stdout \
             | csvtk cut -f {params.old_fields} \
             | csvtk rename -f {params.old_fields} -n {params.new_fields} \
-            | csvtk sep -f location --na "N/A" --names region,country,division,location --merge --num-cols 4 --sep " / " \
+            | csvtk sep -f full_location --na "N/A" --names region,country,division,location --merge --num-cols 4 --sep " / " \
             | csvtk replace -f strain -p " " -r "" \
             | csvtk sort -k strain,accession:r \
             | csvtk uniq -T -f strain > {output.metadata}
@@ -38,7 +38,7 @@ rule prepare_metadata:
 # 1. Remove spaces from strain names.
 # 2. Add unique id to duplicate strain name and accession pairs.
 # 3. Sort sequences in descending order by strain and accession (latest accession comes first).
-# 4. Replace "|" character with space, changing record name to strain name only.
+# 4. Remove "|" character and the accession that follows, keeping only the strain name.
 # 5. Keep the first sequence for a given strain name, keeping the sequence for the most recent accession.
 rule prepare_sequences:
     input:
@@ -51,6 +51,6 @@ rule prepare_sequences:
         seqkit replace -p " " -r "" {input.sequences} \
             | seqkit rename \
             | seqkit sort -n -r \
-            | seqkit replace -p "\|" -r " " \
+            | seqkit replace -p "\|.*" -r "" \
             | seqkit rmdup > {output.sequences}
         """

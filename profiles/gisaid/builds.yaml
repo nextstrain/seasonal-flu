@@ -14,7 +14,7 @@ renamed_metadata_fields:
   - strain
   - accession
   - passage
-  - location
+  - full_location
   - authors
   - originating_lab
   - date

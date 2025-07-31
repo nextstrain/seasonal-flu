@@ -21,4 +21,16 @@ if __name__ == '__main__':
         writer.writerow(field_names)
 
         for row_index in range(1, sheet.nrows):
-            writer.writerow([field.value for field in sheet.row(row_index)])
+            row = []
+            for field in sheet.row(row_index):
+                value = field.value
+                if isinstance(value, str):
+                    # Handle the case where cells can contain newline-delimited
+                    # values which will appear as new lines in our CSV output
+                    # unless we remove those characters. For example, see H3N2
+                    # record EPI_ISL_18856352.
+                    value = value.replace("\n", "")
+
+                row.append(value)
+
+            writer.writerow(row)
