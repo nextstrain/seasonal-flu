@@ -44,17 +44,17 @@
       "title": "Clade",
       "type": "categorical"
     },
-        {
+    {
       "key": "subclade",
       "title": "Subclade",
       "type": "categorical",
       "scale": [
         [
-          "C.2",
+          "C.3",
           "#4272CE"
         ],
         [
-          "C.3",
+          "C.3.1",
           "#58A2AC"
         ],
         [
@@ -66,11 +66,11 @@
           "#AEBD50"
         ],
         [
-          "C.5.4",
+          "C.5.6",
           "#D8AE3E"
         ],
         [
-          "C.5.6",
+          "C.5.6.1",
           "#E67A32"
         ],
         [
@@ -149,7 +149,7 @@
       "title": "Country",
       "type": "categorical"
     },
-     {
+    {
       "key": "division",
       "title": "Division",
       "type": "categorical"
