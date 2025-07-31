@@ -92,3 +92,20 @@ A/Madagascar/807/2023
 A/Vietnam/4030/2024
 A/Wisconsin/143/2024
 A/Bahrain/9301/2024
+
+# D.3.1
+A/Malaysia/MKAI_CL30633/2025
+A/Victoria/67/2025
+A/Wisconsin/201/2024
+
+# D.2
+A/Vermont/32/2024
+A/Japan/USAFSAM-14204/2023
+A/Yamanashi/2390/2023
+
+
+ # D.4
+ A/California/144/2023
+ A/Tennessee/3/2024
+ A/Iowa/96/2023
+

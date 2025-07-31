@@ -171,10 +171,10 @@ rule subsample:
             --metadata {input.metadata} \
             --exclude {input.exclude} \
             --include {input.include_strains} {input.nextclade_include} \
-            --include-where EPI_ISL={params.reference_EPI_ISL} \
+            --include-where gisaid_epi_isl={params.reference_EPI_ISL} \
             --exclude-where qc.overallStatus='bad' \
             {params.filter_arguments} \
-            --output {output.sampled_sequences} \
+            --output-sequences {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
         """
 
@@ -195,7 +195,7 @@ rule subsample_harddate:
             --sequences {input.sequences} \
             --metadata {input.metadata} \
             --min-date {params.hardmin} \
-            --output {output.sampled_sequences} \
+            --output-sequences {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
         """
 
@@ -236,7 +236,7 @@ rule tree:
             --alignment {input.alignment} \
             --output {output.tree} \
             --nthreads {threads} \
-            --tree-builder-args '-ninit 10 -n 4 -czb --pathogen-force' \
+            --tree-builder-args '-ninit 10 -n 4 -czb' \
             > /dev/null
         """
 
@@ -422,6 +422,7 @@ rule export:
             --node-data {input.node_data}\
             --auspice-config {input.auspice_config} \
             --color-by-metadata {params.fields} \
+            --include-root-sequence-inline \
             --minify-json \
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
@@ -443,7 +444,7 @@ rule generate_sample_sequences:
             --exclude-ambiguous-dates-by year \
             --exclude-where 'country!=Usa' 'submitting_lab!=Centers For Disease Control And Prevention' \
             --probabilistic-sampling \
-            --output {output.sequences}
+            --output-sequences {output.sequences}
         """
 
 rule make_dataset:

@@ -57,5 +57,16 @@
         "N[^P][ST]"
       ]
     }
-  ]
+  ],
+  "mutLabels": {
+    "aaMutLabelMap": {
+      "HA1:145": ["RBD"],
+      "HA1:155": ["RBD"],
+      "HA1:156": ["RBD"],
+      "HA1:158": ["RBD"],
+      "HA1:159": ["RBD"],
+      "HA1:189": ["RBD"],
+      "HA1:193": ["RBD"]
+    }
+  }
 }

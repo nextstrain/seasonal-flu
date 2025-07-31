@@ -62,3 +62,14 @@ A/VinaDelMar/44363/2024
 A/Bangladesh/4002/2024
 A/HongKong/2468/2024
 A/Ghana/FS-24-3952/2024
+
+
+# J.2.3
+A/Netherlands/00077/2025
+A/Colombia/1851/2024
+A/Colorado/90/2025
+
+#J.2.4
+A/Tokyo/24238/2024
+A/Darwin/172/2025
+A/India/PUN_NIVCOV2512/2025
