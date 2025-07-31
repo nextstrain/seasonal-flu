@@ -402,6 +402,11 @@
       "key": "tsne_cluster",
       "title": "t-SNE cluster",
       "type": "categorical"
+    },
+    {
+      "key": "qc.overallStatus",
+      "title": "Nextclade QC(overallStatus)",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
