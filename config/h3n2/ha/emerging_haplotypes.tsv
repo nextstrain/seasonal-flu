@@ -2,8 +2,6 @@ haplotype	gene	site	alt
 J.2	clade	J.2
 J.2.1	clade	J.2.1
 J.2.2	clade	J.2.2
-J.2.3	clade	J.2.3
-J.2.4	clade	J.2.4
 
 J.2:8D	clade	J.2
 J.2:8D	HA1	8	D
@@ -21,6 +19,14 @@ J.2:135A-145N	clade	J.2
 J.2:135A-145N	HA1	135	A
 J.2:135A-145N	HA1	145	N
 
+J.2.4	clade	J.2
+J.2.4	HA1	135	K
+J.2.4	HA1	189	R
+
 J.2:145N-158K	clade	J.2
 J.2:145N-158K	HA1	145	N
 J.2:145N-158K	HA1	158	K
+
+J.2.3	clade	J.2
+J.2.3	HA1	158	K
+J.2.3	HA1	189	R
