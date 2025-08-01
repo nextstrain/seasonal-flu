@@ -1,7 +1,9 @@
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
 A/Wisconsin/154/2024 # J.2:135K
+A/Catalonia/NSVH102423723/2024 # J.2:135K, Crick
 A/Michigan/32/2024 # J.2:145N
 A/Kentucky/29/2024 # J.2:145N,158K
 A/Colorado/209/2024 # J.2:223I
 A/Colorado/6/2024 # J.2.1
 A/Minnesota/97/2024 # J.2.2:65K,145N
+A/Valladolid/1187/2025 # J.2.4 (189R + 135K), Crick

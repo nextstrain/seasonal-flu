@@ -1,3 +1,3 @@
 A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
-A/Nepal/N042/2025-egg # J.2:135K,189R
-A/Netherlands/2093/2024-egg # J.2:158K,189R
+A/Netherlands/2093/2024-egg # J.2.3
+A/Nepal/N042/2025-egg # J.2.4

@@ -2,12 +2,15 @@ A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
 A/Croatia/10136RV/2023 # J.2:145N, vaccine strain
 A/Victoria/488/2024 # J.2:207R
 A/Tokyo/EIS11-171/2024 # J.2:135K
-A/Valladolid/1187/2025 # J.2:135K-189R
-A/Sydney/1359/2024 # J.2:135K-189R
+A/Catalonia/NSVH102423723/2024 # J.2:135K
 A/Kanagawa/AC2413/2025 # J.2:135K,189R
 A/Slovenia/49/2024 # J.2:158K
-A/Netherlands/10685/2024 # J.2:158K,189R
 A/Perth/815/2024 # J.2:63D,189R,309I
 A/Perth/722/2024 # J.2:145N
 A/Perth/836/2024 # J.2.2:65K,145N
 A/Victoria/979/2024 # J.2.2:5E,65K,145N,262N
+A/Kanagawa/IC2405/2024 # J.2.2:65K,160K
+A/Netherlands/10685/2024 # J.2.3
+A/Sydney/1359/2024 # J.2.4
+A/Valladolid/1187/2025 # J.2.4, Crick
+A/Kanagawa/AC2413/2025 # J.2.4, NIID

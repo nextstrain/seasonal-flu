@@ -2,8 +2,14 @@ A/Wisconsin/67/2022 # C.1.1, vaccine strain
 A/Victoria/4897/2022 # D
 A/Massachusetts/76/2024 # D:152I,308K
 A/Missouri/11/2025 # D.3
+# A/Perth/456/2025 # D.3.1, VIDRL
+A/Colorado/218/2024 # D.3.1, CDC
+# A/Norway/8388/2024 # D.3.1, Crick
+# A/Tokyo/EIS10-554/2024 # D.3.1, NIID
 A/Delaware/83/2024 # D.5
+A/Tajikistan/2-1057/2024 # D.5, Crick
 A/Victoria/376/2024 # C.1.9
 A/Tennessee/77/2024 # C.1.9:P137S
 A/Iowa/110/2024 # C.1.9.3:166V
+# A/Norway/7606/2024 # C.1.9.3:166V
 A/Victoria/42/2025 # C.1.9.3:137S,155E,166V
