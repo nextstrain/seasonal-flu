@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 1 August 2025
+
+- Update emerging haplotype definitions to match new clade definitions (e.g., replaces H3N2 HA haplotype J.2:158K-189R with the new clade J.2.3). See [#241](https://github.com/nextstrain/seasonal-flu/pull/241) for details.
+
 # 31 July 2025
 
  - Fix parsing of GISAID metadata and sequences for the quickstart guide including removing newlines that appear within Excel cells of the metadata. See [#242](https://github.com/nextstrain/seasonal-flu/pull/242) for details.
