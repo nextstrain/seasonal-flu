@@ -9,6 +9,7 @@ The "__NEXT__" heading below describes changes in the unreleased development sou
 
 # 1 August 2025
 
+- Add optional configuration parameter, `nextclade_server`, to specify a Nextclade dataset server to download Nextclade datasets. This parameter allows users to run Nextclade from GitHub branches where new clades are being defined or other URLs with custom datasets. For example, to run the GISAID quickstart workflow with the July 2025 proposed subclades, run the following command: `nextstrain build . --configfile profiles/gisaid/builds.yaml -np --config nextclade_server="https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/flu-update-2025-07/data_output"`.
 - Update emerging haplotype definitions to match new clade definitions (e.g., replaces H3N2 HA haplotype J.2:158K-189R with the new clade J.2.3). See [#241](https://github.com/nextstrain/seasonal-flu/pull/241) for details.
 
 # 31 July 2025
