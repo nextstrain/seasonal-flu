@@ -37,6 +37,11 @@ A/Sydney/57/2017
 A/Victoria/628/2017
 A/Basel/USB0033684/2017
 
+# B.1.2
+A/Hiroshima/54/2017
+A/Ehime/21/2017
+A/SouthAfrica/R06488/2017
+
 # A.2
 A/Bangladesh/2006/2014
 A/Bangladesh/1079/2014
