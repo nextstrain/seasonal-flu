@@ -7,6 +7,10 @@ on:
         description: "Specific container image to use for build (will override the default of `nextstrain build`)"
         required: false
         type: string
+      nextcladeServer:
+        description: "URL for a Nextclade server from which Nextclade datasets should be downloaded instead of the default public server"
+        required: false
+        type: string
   workflow_call:
     inputs:
       artifact-name:
@@ -34,4 +38,5 @@ jobs:
           upload_all_nextclade_files \
           -p \
           --configfile profiles/nextclade.yaml \
+          --config nextclade_server="${{ inputs.nextcladeServer }}" \
           --set-threads run_nextclade=12
