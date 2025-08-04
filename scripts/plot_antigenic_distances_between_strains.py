@@ -161,7 +161,14 @@ if __name__ == '__main__':
     }
 
     # Initialize the figure
-    fig, ax = plt.subplots(1, 1, figsize=(14, 12))
+    if len(reference_order) == 1:
+        height = 4
+    elif len(reference_order) < 5:
+        height = 8
+    else:
+        height = 12
+
+    fig, ax = plt.subplots(1, 1, figsize=(14, height))
     sns.despine()
 
     if args.plot_raw_data:
