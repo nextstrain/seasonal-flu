@@ -17,6 +17,7 @@ on:
         description: "Name to use for final artifact uploaded by this action"
         required: false
         type: string
+        default: "build-outputs-nextclade"
 
 jobs:
   run-build:
