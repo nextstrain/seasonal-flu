@@ -240,7 +240,7 @@ rule get_nextclade_dataset_for_lineage_and_segment:
     output:
         nextclade_dir=directory("nextclade_dataset/{lineage}_{segment}/"),
     params:
-        nextclade_server_arg=lambda wildcards: f"--server={config['nextclade_server']}" if config.get("nextclade_server") else "",
+        nextclade_server_arg=lambda wildcards: f"--server={shquotewords(config['nextclade_server'])}" if config.get("nextclade_server") else "",
     shell:
         r"""
         nextclade3 dataset get \
