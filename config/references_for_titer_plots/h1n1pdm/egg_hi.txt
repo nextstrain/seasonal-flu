@@ -1,1 +1,2 @@
 A/Victoria/4897/2022-egg # D, vaccine strain
+A/Victoria/42/2025-egg # C.1.9.3
