@@ -21,12 +21,30 @@
             "22":  {"G":1, "K":1, "R":1, "default":0.5},
             "33":  {"R":1, "default":0.5},
             "36":  {"T":1, "default":0.5},
-            "37":  {"S":2, "T":2, "F":2, "L":2, "M":2, "V":1, "default":0.5},
+            "37":  {"F":2, "L":2, "M":2, "S":2, "T":2, "V":1, "default":0.5},
             "197": {"K":1, "default":0.5},
             "198": {"D":1, "G":1, "default":0.5}
           }
         }
       ]
     }
-  ]
+  ],
+  "mutLabels": {
+    "aaMutLabelMap": {
+      "PA:23G":["Baloxavir"],
+      "PA:23K":["Baloxavir"],
+      "PA:23R":["Baloxavir"],
+      "PA:34R":["Baloxavir"],
+      "PA:37T":["Baloxavir"],
+      "PA:38F":["Baloxavir"],
+      "PA:38L":["Baloxavir"],
+      "PA:38M":["Baloxavir"],
+      "PA:38S":["Baloxavir"],
+      "PA:38T":["Baloxavir"],
+      "PA:38V":["Baloxavir"],
+      "PA:198K":["Baloxavir"],
+      "PA:199D":["Baloxavir"],
+      "PA:199G":["Baloxavir"]
+    }
+  }
 }

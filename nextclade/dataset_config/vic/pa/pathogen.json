@@ -29,5 +29,18 @@
         }
       ]
     }
-  ]
+  ],
+  "mutLabels": {
+    "aaMutLabelMap": {
+      "PA:23K":["Baloxavir"],
+      "PA:34I":["Baloxavir"],
+      "PA:36V":["Baloxavir"],
+      "PA:38F":["Baloxavir"],
+      "PA:38M":["Baloxavir"],
+      "PA:38T":["Baloxavir"],
+      "PA:38V":["Baloxavir"],
+      "PA:120D":["Baloxavir"],
+      "PA:199R":["Baloxavir"]
+    }
+  }
 }

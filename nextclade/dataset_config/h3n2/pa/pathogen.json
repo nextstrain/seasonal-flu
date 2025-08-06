@@ -31,5 +31,26 @@
         }
       ]
     }
-  ]
+  ],
+  "mutLabels": {
+    "aaMutLabelMap": {
+      "PA:23G":["Baloxavir"],
+      "PA:23K":["Baloxavir"],
+      "PA:23R":["Baloxavir"],
+      "PA:28P":["Baloxavir"],
+      "PA:34R":["Baloxavir"],
+      "PA:36V":["Baloxavir"],
+      "PA:37T":["Baloxavir"],
+      "PA:38F":["Baloxavir"],
+      "PA:38L":["Baloxavir"],
+      "PA:38M":["Baloxavir"],
+      "PA:38N":["Baloxavir"],
+      "PA:38S":["Baloxavir"],
+      "PA:38T":["Baloxavir"],
+      "PA:38V":["Baloxavir"],
+      "PA:119D":["Baloxavir"],
+      "PA:198K":["Baloxavir"],
+      "PA:200G":["Baloxavir"]
+    }
+  }
 }
