@@ -26,7 +26,7 @@
             "37": {"F":2, "L":1, "M":2, "N":2, "S":1, "T":2,  "V":1, "default":0.5},
             "118": {"D":1, "default":0.5},
             "197": {"K":1, "default":0.5},
-            "199": {"G":1, "default":0.5}
+            "198": {"G":1, "default":0.5}
           }
         }
       ]
@@ -50,7 +50,7 @@
       "PA:38V":["Baloxavir"],
       "PA:119D":["Baloxavir"],
       "PA:198K":["Baloxavir"],
-      "PA:200G":["Baloxavir"]
+      "PA:199G":["Baloxavir"]
     }
   }
 }
