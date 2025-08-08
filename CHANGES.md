@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 8 August 2025
+
+- Parameterize frequencies options by adding a new build-level config parameter section `frequencies` which allows users to override parameters including `narrow_bandwidth`, `wide_bandwidth`, `proportion_wide`, `pivot_interval`, and `pivot_interval_units`. These parameters map to the corresponding command line arguments for `augur frequencies`. See [#243](https://github.com/nextstrain/seasonal-flu/pull/243) for details.
+
 # 1 August 2025
 
 - Add optional configuration parameter, `nextclade_server`, to specify a Nextclade dataset server to download Nextclade datasets. This parameter allows users to run Nextclade from GitHub branches where new clades are being defined or other URLs with custom datasets. For example, to run the GISAID quickstart workflow with the July 2025 proposed subclades, run the following command: `nextstrain build . --configfile profiles/gisaid/builds.yaml -np --config nextclade_server="https://raw.githubusercontent.com/nextstrain/nextclade_data/refs/heads/flu-update-2025-07/data_output"`.
