@@ -32,6 +32,7 @@ if __name__ == '__main__':
         T = Phylo.read(args.tree, "newick")
         references = [c for c in T.find_clades(terminal=True) if c.name == reference_name]
         if references:
+            T.root_with_outgroup(references[0])
             T.prune(references[0])
 
         Phylo.write(T, args.output, "newick")
