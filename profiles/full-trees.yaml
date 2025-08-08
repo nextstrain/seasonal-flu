@@ -17,6 +17,10 @@ tree:
   tree-builder-args: "'--pathogen-force -ninit 2 -n 2 --epsilon 0.05 -czb -T AUTO --redo'"
   override_default_args: true
 
+# Set a very high z-score cutoff for the local clock outlier pruning logic to
+# effectively disable filtering of outliers.
+prune_outliers_z_score_cutoff: 1000.0
+
 refine:
   # Disable the clock filter.
   clock_filter_iqd: 0

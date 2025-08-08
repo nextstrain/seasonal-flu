@@ -149,13 +149,14 @@ rule prune_outliers:
         outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
     params:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
+        cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
     shell:
         """
         python3 scripts/flag_outliers.py \
             --tree {input.tree:q} \
             --aln {input.aln} \
             --dates {input.metadata} \
-            --cutoff 4.0 \
+            --cutoff {params.cutoff} \
             {params.keep_strains_argument} \
             --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
         """
