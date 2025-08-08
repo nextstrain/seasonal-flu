@@ -1,3 +1,9 @@
+# Define the earliest date to select all available sequences per subtype. This
+# date corresponds to the reporting period of the upcoming vaccine composition
+# meeting. For the VCM in September, we tend to report on data from February of
+# that year.
+min_date: &min_date 2025-02-01
+
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
 
@@ -35,11 +41,11 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
-      min_date: 2025-02-01
+      min_date: *min_date
       reference_min_date: "6Y"
       subsamples: &subsampling
         all_good_sequences:
-            filters: --min-date 2025-02-01 --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
         titer_reference_strains:
           # We allow egg-passage strains when they have titer measurements,
           # enabling titer models to be fit to egg-passaged data.
@@ -74,7 +80,7 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
-      min_date: 2025-02-01
+      min_date: *min_date
       reference_min_date: "6Y"
       subsamples: *subsampling
       titer_collections:
@@ -100,7 +106,7 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
-      min_date: 2025-02-01
+      min_date: *min_date
       reference_min_date: "6Y"
       subsamples: *subsampling
       titer_collections:
