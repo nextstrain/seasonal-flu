@@ -9,7 +9,7 @@ The "__NEXT__" heading below describes changes in the unreleased development sou
 
 # 8 August 2025
 
-- Parameterize frequencies options by adding a new top-level config parameter section `frequencies` which allows users to override parameters including `narrow_bandwidth`, `wide_bandwidth`, `proportion_wide`, `pivot_interval`, and `pivot_interval_units`. These parameters map to the corresponding command line arguments for `augur frequencies`. See [#243](https://github.com/nextstrain/seasonal-flu/pull/243) for details.
+- Parameterize frequencies options by adding a new build-level config parameter section `frequencies` which allows users to override parameters including `narrow_bandwidth`, `wide_bandwidth`, `proportion_wide`, `pivot_interval`, and `pivot_interval_units`. These parameters map to the corresponding command line arguments for `augur frequencies`. See [#243](https://github.com/nextstrain/seasonal-flu/pull/243) for details.
 
 # 1 August 2025
 
