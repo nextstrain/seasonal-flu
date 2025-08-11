@@ -478,12 +478,13 @@ rule tip_frequencies:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
     params:
-        narrow_bandwidth = 1 / 12.0,
-        wide_bandwidth = 3 / 12.0,
-        proportion_wide = 0.0,
+        narrow_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("narrow_bandwidth", 1 / 12.0),
+        wide_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("wide_bandwidth", 3 / 12.0),
+        proportion_wide=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("proportion_wide", 0.0),
         min_date_arg = lambda w: f"--min-date {config['builds'][w.build_name]['min_date']}" if "min_date" in config["builds"].get(w.build_name, {}) else "",
         max_date = lambda w: config['builds'][w.build_name]['max_date'] if "max_date" in config["builds"].get(w.build_name, {}) else "0D",
-        pivot_interval = 1
+        pivot_interval=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("pivot_interval", 1),
+        pivot_interval_units=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("pivot_interval_units", "months"),
     output:
         tip_freq = "builds/{build_name}/{segment}/tip-frequencies.json"
     conda: "../envs/nextstrain.yaml"
@@ -501,6 +502,7 @@ rule tip_frequencies:
             --wide-bandwidth {params.wide_bandwidth} \
             --proportion-wide {params.proportion_wide} \
             --pivot-interval {params.pivot_interval} \
+            --pivot-interval-units {params.pivot_interval_units} \
             {params.min_date_arg} \
             --max-date {params.max_date} \
             --output {output} 2>&1 | tee {log}
