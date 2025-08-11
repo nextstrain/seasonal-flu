@@ -101,6 +101,8 @@ rule curate:
                 --articles {params.articles:q} \
                 --abbreviations {params.abbreviations:q} \
             | augur curate apply-geolocation-rules \
+            | augur curate apply-geolocation-rules \
+                --no-default-rules \
                 --geolocation-rules {input.geolocation_rules:q} \
             | ./scripts/annotate-with-passage-category \
                 --passage-field {params.passage_field:q} \
