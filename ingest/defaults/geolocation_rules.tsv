@@ -13,7 +13,8 @@
 # China region
 */China/*/*	China/China/*/*
 */Hong Kong/*/*	China/Hong Kong/*/*
-*/Macau/*/*	China/Macau/*/*
+*/Macao/*/*	China/China/Macau/*
+*/Macau/*/*	China/China/Macau/*
 */Taiwan/*/*	China/Taiwan/*/*
 */Tibet/*/*	China/Tibet/*/*
 
@@ -26,8 +27,11 @@
 */Sri Lanka/*/*	South Asia/Sri Lanka/*/*
 
 # Japan Korea region
+*/Chiba/*/*	Japan Korea/Japan/Chiba/*
 */Japan/*/*	Japan Korea/Japan/*/*
+*/Niigata/*/*	Japan Korea/Japan/Niigata/*
 */South Korea/*/*	Japan Korea/South Korea/*/*
+*/Yokohama/*/*	Japan Korea/Japan/Yokohama/*
 
 # Southeast Asia region
 */Brunei/*/*	Southeast Asia/Brunei/*/*
@@ -48,6 +52,7 @@
 */Azerbaijan/*/*	West Asia/Azerbaijan/*/*
 */Bahrain/*/*	West Asia/Bahrain/*/*
 */Cyprus/*/*	West Asia/Cyprus/*/*
+*/Georgia/*/*	West Asia/Georgia Country/*/*
 */Georgia Country/*/*	West Asia/Georgia Country/*/*
 */Iran/*/*	West Asia/Iran/*/*
 */Iraq/*/*	West Asia/Iraq/*/*
@@ -58,6 +63,7 @@
 */Oman/*/*	West Asia/Oman/*/*
 */Pakistan/*/*	West Asia/Pakistan/*/*
 */Palestine/*/*	West Asia/Palestine/*/*
+*/Palestinian Territory/*/*	West Asia/Palestine/*/*
 */Qatar/*/*	West Asia/Qatar/*/*
 */Saudi Arabia/*/*	West Asia/Saudi Arabia/*/*
 */Syria/*/*	West Asia/Syria/*/*
@@ -78,3 +84,6 @@ Asia/Korea, Republic of/*/*	Japan Korea/South Korea/*/*
 Asia/Lao, People'S Democratic Republic/*/*	Southeast Asia/Laos/*/*
 Europe/Russian Federation/*/*	West Asia/Russia/*/*
 Sudan, South/*/*/*	Africa/South Sudan/*/*
+
+# General rules that should be migrated to the central geolocation rules in Augur
+South America/Brazil/Estado do Acre/*	South America/Brazil/Acre/*
