@@ -58,7 +58,11 @@ def standardize_record_strains(records: Iterable,
         # Correct type prefix in strain name if it doesn't match the optional type field
         # Similar to how nextstrain/fauna/tdb/download.py corrects strain names
         # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/tdb/download.py#L99-L129>
-        if influenza_type is not None and str(influenza_type).lower() in EXPECTED_TYPES:
+        if (
+            "/" in new_strain and
+            influenza_type is not None and
+            str(influenza_type).lower() in EXPECTED_TYPES
+        ):
             strain_type = new_strain.split("/")[0]
             if strain_type.lower() != influenza_type.lower():
                 new_strain = re.sub("^" + re.escape(strain_type), influenza_type.upper(), new_strain)
