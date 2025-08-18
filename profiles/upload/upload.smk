@@ -1,26 +1,3 @@
-rule upload_all_raw_sequences:
-    input:
-        sequences=lambda wildcards: [
-            "data/upload/s3/raw_sequences_{lineage}_{segment}.done".format(lineage=build_params["lineage"], segment=segment)
-            for build_name, build_params in config["builds"].items()
-            for segment in config["segments"]
-        ]
-
-rule upload_all_sequences:
-    input:
-        sequences=lambda wildcards: [
-            "data/upload/s3/sequences_{lineage}_{segment}.done".format(lineage=build_params["lineage"], segment=segment)
-            for build_name, build_params in config["builds"].items()
-            for segment in config["segments"]
-        ]
-
-rule upload_all_metadata:
-    input:
-        metadata=lambda wildcards: [
-            "data/upload/s3/metadata_{lineage}.done".format(lineage=build_params["lineage"])
-            for build_name, build_params in config["builds"].items()
-        ]
-
 rule upload_all_titers:
     input:
         titers=lambda wildcards: [
@@ -28,57 +5,6 @@ rule upload_all_titers:
             for build_name, build_params in config["builds"].items()
             for titer_collection in build_params["titer_collections"]
         ]
-
-rule upload_raw_sequences:
-    input:
-        sequences="data/{lineage}/raw_{segment}.fasta",
-    output:
-        flag="data/upload/s3/raw_sequences_{lineage}_{segment}.done",
-    params:
-        s3_dst=config["s3_dst"],
-    log:
-        "logs/upload_raw_sequences_{lineage}_{segment}.txt"
-    shell:
-        """
-        ./ingest/vendored/upload-to-s3 \
-            --quiet \
-            {input.sequences:q} \
-            {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/raw_sequences.fasta.xz 2>&1 | tee {output.flag}
-        """
-
-rule upload_sequences:
-    input:
-        sequences="data/{lineage}/{segment}.fasta",
-    output:
-        flag="data/upload/s3/sequences_{lineage}_{segment}.done",
-    params:
-        s3_dst=config["s3_dst"],
-    log:
-        "logs/upload_sequences_{lineage}_{segment}.txt"
-    shell:
-        """
-        ./ingest/vendored/upload-to-s3 \
-            --quiet \
-            {input.sequences:q} \
-            {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/sequences.fasta.xz 2>&1 | tee {output.flag}
-        """
-
-rule upload_metadata:
-    input:
-        metadata="data/{lineage}/metadata.tsv",
-    output:
-        flag="data/upload/s3/metadata_{lineage}.done",
-    params:
-        s3_dst=config["s3_dst"],
-    log:
-        "logs/upload_metadata_{lineage}.txt"
-    shell:
-        """
-        ./ingest/vendored/upload-to-s3 \
-            --quiet \
-            {input.metadata:q} \
-            {params.s3_dst:q}/{wildcards.lineage}/metadata.tsv.xz 2>&1 | tee {output.flag}
-        """
 
 def get_titer_collection_data(wildcards):
     for collection in config["builds"][wildcards.build_name]["titer_collections"]:
