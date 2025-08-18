@@ -4,6 +4,10 @@ name: Upload data from fauna to S3
 on:
   workflow_dispatch:
     inputs:
+      triggerAvianFlu:
+        description: "Trigger nextstrain/avian-flu GenoFLU workflow"
+        type: boolean
+        required: true
       triggerPublic:
         description: "Trigger Nextstrain public builds"
         required: true
@@ -35,7 +39,27 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name == github.event.repository.default_branch }}
 
 jobs:
-  upload:
+  ingest:
+    permissions:
+      id-token: write
+    uses: ./.github/workflows/ingest.yaml
+    with:
+      triggerAvianFlu: ${{ inputs.triggerAvianFlu }}
+      artifact-name: build-outputs-ingest
+    secrets: inherit
+
+  run-nextclade:
+    needs: [ingest]
+    permissions:
+      id-token: write
+    uses: ./.github/workflows/run-nextclade.yaml
+    with:
+      artifact-name: build-outputs-nextclade
+    secrets: inherit
+
+  upload_titers:
+    # Depends on ingest since titer should be checked against sequence strains
+    needs: [ingest]
     permissions:
       id-token: write
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
@@ -50,22 +74,10 @@ jobs:
           . \
           -j 4 \
           upload_all_titers \
-          upload_all_raw_sequences \
-          upload_all_sequences \
-          upload_all_metadata \
           --configfile profiles/upload.yaml
 
-  run-nextclade:
-    needs: [upload]
-    permissions:
-      id-token: write
-    uses: ./.github/workflows/run-nextclade.yaml
-    with:
-      artifact-name: build-outputs-nextclade
-    secrets: inherit
-
   trigger:
-    needs: [upload, run-nextclade]
+    needs: [run-nextclade, upload_titers]
     strategy:
       matrix:
         include:
