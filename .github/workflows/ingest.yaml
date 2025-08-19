@@ -16,6 +16,19 @@ on:
         description: "Specific container image to use for build (will override the default of `nextstrain build`)"
         required: false
         type: string
+      artifact-name:
+        description: "Name to use for final artifact uploaded by this action"
+        required: false
+        type: string
+        default: "build-outputs-ingest"
+
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: "Name to use for final artifact uploaded by this action"
+        required: false
+        type: string
+        default: "build-outputs-ingest"
 
 jobs:
   ingest:
@@ -32,6 +45,7 @@ jobs:
           ingest \
           upload_all \
           --configfile build-configs/nextstrain-automation/config.yaml
+      artifact-name: ${{ inputs.artifact-name }}
       # Explicitly excluding `ingest/data` and `ingest/fauna/data`
       # since this is private data and should not available through the public artifacts
       artifact-paths: |
