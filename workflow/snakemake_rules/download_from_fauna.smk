@@ -18,7 +18,7 @@ workflow.global_resources.setdefault("concurrent_fauna", 2)
 # fields that will be canonicized by augur parse (upper/lower casing etc)
 
 path_to_fauna = '../fauna'
-localrules: download_sequences, download_titers, parse
+localrules: download_titers, parse
 #
 # Define titer data sets to be used.
 #
@@ -47,44 +47,6 @@ def _get_virus_passage_category(wildcards):
     else:
         return ""
 
-def _get_prioritized_seqs_file(wildcards):
-    prioritized_seqs_file = []
-    for build_name, build_params in config["builds"].items():
-        if build_params["lineage"] == wildcards.lineage:
-            prioritized_seqs_file = build_params.get('prioritized_seqs_file', prioritized_seqs_file)
-            break
-    return prioritized_seqs_file
-
-rule download_sequences:
-    input:
-        prioritized_seqs_file = _get_prioritized_seqs_file,
-    output:
-        sequences = "data/{lineage}/raw_{segment}.fasta"
-    params:
-        fasta_fields = config["fauna_fasta_fields"],
-        prioritized_seqs_file = lambda wildcards, input:
-            f"--prioritized_seqs_file {input.prioritized_seqs_file!r}"
-            if input.prioritized_seqs_file
-            else ""
-    resources:
-        concurrent_fauna = 1
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/download_sequences_{lineage}_{segment}.txt"
-    log:
-        "logs/download_sequences_{lineage}_{segment}.txt"
-    shell:
-        r"""
-        python3 {path_to_fauna}/vdb/download.py \
-            --database vdb \
-            --virus flu \
-            --fasta_fields {params.fasta_fields} \
-            --resolve_method split_passage \
-            --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
-            {params.prioritized_seqs_file} \
-            --path data \
-            --fstem {wildcards.lineage}/raw_{wildcards.segment} 2>&1 | tee {log}
-        """
 
 rule download_titers:
     output:
