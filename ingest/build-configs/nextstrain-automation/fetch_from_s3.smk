@@ -13,10 +13,11 @@ rule fetch_gisaid_ndjson:
         ndjson=temp("data/gisaid_cache.ndjson"),
     params:
         s3_file=f"{config['s3_src']}/gisaid.ndjson.zst",
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        if $(./vendored/s3-object-exists {params.s3_file:q}); then
-            ./vendored/download-from-s3 {params.s3_file:q} {output.ndjson:q}
+        if $({params.vendored_scripts:q}/s3-object-exists {params.s3_file:q}); then
+            {params.vendored_scripts:q}/download-from-s3 {params.s3_file:q} {output.ndjson:q}
         else
             echo "{params.s3_file:q} does not exist, creating empty file."
             touch {output.ndjson:q}

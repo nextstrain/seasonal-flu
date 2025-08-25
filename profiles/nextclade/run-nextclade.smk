@@ -34,11 +34,12 @@ rule upload_alignment:
         flag="data/upload/s3/alignment_{lineage}_{segment}.done",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_alignment_{lineage}_{segment}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.alignment:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/aligned.fasta.xz 2>&1 | tee {output.flag}
@@ -51,11 +52,12 @@ rule upload_nextclade_annotations:
         flag="data/upload/s3/nextclade_{lineage}_{segment}.done",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_nextclade_annotations_{lineage}_{segment}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.annotations:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/nextclade.tsv.xz 2>&1 | tee {output.flag}
