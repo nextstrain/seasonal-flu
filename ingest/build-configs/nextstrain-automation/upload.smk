@@ -33,9 +33,10 @@ rule upload_gisaid_ndjson:
         flag="results/upload/gisaid.ndjson.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.ndjson:q} \
             {params.s3_dst:q}/gisaid.ndjson.zst \
@@ -78,9 +79,10 @@ rule upload_metadata:
         flag="results/upload/{lineage}/metadata.tsv.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
             {params.s3_dst:q}/{wildcards.lineage}/metadata.tsv.xz \
@@ -95,9 +97,10 @@ rule upload_sequences:
         flag="results/upload/{lineage}/{segment}.fasta.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/sequences.fasta.xz \

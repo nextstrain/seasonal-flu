@@ -32,9 +32,10 @@ rule upload_gisaid_metadata:
         flag="data/{gisaid_pair}-metadata.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        {workflow.basedir}/../../vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
             {params.s3_dst:q}/{wildcards.gisaid_pair}-metadata.xls.zst \
@@ -49,9 +50,10 @@ rule upload_gisaid_sequences:
         flag="data/{gisaid_pair}-sequences.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        {workflow.basedir}/../../vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3j \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.gisaid_pair}-sequences.fasta.zst \
