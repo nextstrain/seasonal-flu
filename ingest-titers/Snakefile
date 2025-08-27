@@ -1,0 +1,121 @@
+"""
+This is the main ingest Snakefile that orchestrates the full ingest-titers
+workflow and defines its default outputs.
+"""
+import os
+
+
+configfile: os.path.join(workflow.basedir, "defaults/config.yaml")
+
+
+include: "../shared/vendored/snakemake/config.smk"
+
+
+preprocess_columns = config["preprocess_columns"]
+preprocess_columns_set = set(preprocess_columns)
+
+if cdc_inputs:=config["inputs"].get("cdc"):
+    if not all(input.get("titers_tsv") for input in cdc_inputs):
+        raise InvalidConfigError("Each CDC input must define `titers_tsv`.")
+    if not all(isinstance(input.get("field_map"), dict) for input in cdc_inputs):
+        raise InvalidConfigError("Each CDC input must define `field_map` dict")
+
+    # If we ingesting CDC data, make sure fields are renamed to the preprocess_columns
+    for input in cdc_inputs:
+        new_field_names = set(input["field_map"].values())
+        if new_field_names != preprocess_columns_set:
+            raise InvalidConfigError(
+                f"`field_map` for {input['titers_tsv']!r}` does not map to all preprocess columns {preprocess_columns!r}")
+
+
+def format_field_map(field_map: dict[str, str]) -> str:
+    """
+    Format dict to `"key1"="value1" "key2"="value2"...` for use in shell commands.
+    """
+    return [f'{key}={value}' for key, value in field_map.items()]
+
+
+def get_cdc_field_map(titers_tsv):
+    """
+    Get the corresponding field_map for the provided CDC *titers_tsv* from the config
+    """
+    cdc_inputs = config["inputs"]["cdc"]
+    for input in cdc_inputs:
+        if input["titers_tsv"] == titers_tsv:
+            return input["field_map"]
+
+
+rule preprocess_cdc:
+    """
+    Preprocess CDC titer TSVs:
+    - adding source columns
+    - select the subset of standard columns
+    - rename columns to standard name
+    """
+    input:
+        titers="{titers_tsv}",
+    output:
+        titers="results/preprocess/cdc/{titers_tsv}",
+    log:
+        "logs/preprocess_cdc/{titers_tsv}.txt",
+    benchmark:
+        "benchmarks/preprocess_cdc/{titers_tsv}.txt",
+    params:
+        source_file = lambda _, input: input.titers,
+        fields_to_keep= lambda w: ",".join(get_cdc_field_map(w.titers_tsv).keys()),
+        field_map=lambda w: format_field_map(get_cdc_field_map(w.titers_tsv)),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        cat {input.titers:q} \
+            | csvtk mutate2 -t \
+                --name "source" \
+                --expression "'cdc'" \
+            | csvtk mutate2 -t \
+                --name "source_file" \
+                --expression "'{params.source_file:q}'" \
+            | csvtk mutate2 -t \
+                --name "source_column" \
+                --expression "'N/A'" \
+            | csvtk cut -t -F -f "*" \
+                --show-row-number \
+            | csvtk cut -t \
+                --fields {params.fields_to_keep:q} \
+            | augur curate rename \
+                --field-map {params.field_map:q} \
+                --duplicate-reporting silent \
+                --metadata - \
+                --output-metadata {output.titers:q}
+        """
+
+
+def _get_preprocessed_titers(wildcards):
+    """
+    Returns a list of expected preprocessed titers TSVs
+    """
+    preprocessed_titers = []
+    for source, source_inputs in config["inputs"].items():
+        for input in source_inputs:
+            titer_file = input["titers_tsv"]
+            preprocessed_titers.append(f"results/preprocess/{source}/{titer_file}")
+
+    return preprocessed_titers
+
+
+rule concatenate_preprocessed_titers:
+    input: _get_preprocessed_titers,
+    output:
+        titers="results/preprocessed_titers.tsv",
+    log:
+        "logs/concatenate_preprocessed_titers.txt",
+    benchmark:
+        "benchmarks/concatenate_preprocessed_titers.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        csvtk concat -t \
+            {input:q} \
+            > {output.titers:q}
+        """

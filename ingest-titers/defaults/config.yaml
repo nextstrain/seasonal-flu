@@ -1,0 +1,53 @@
+# Preprocess columns for all TSVs must have prior to curation
+preprocess_columns:
+  - subtype
+  - virus_strain
+  - serum_strain
+  - serum_id
+  - virus_passage
+  - serum_passage
+  - titer
+  - assay_type
+  - assay_date
+  - source
+  - source_file
+  - source_row
+  - source_column
+
+inputs:
+  # CDC titers must be TSVs within the `data` directory
+  # field_map values are <original_column>:<preprocess_column>
+  # where <preprocess_column> must match one of the preprocess_columns above
+  # Must lists all columns, even ones that are not renamed, since this is used to
+  # select columns from the titer TSVs.
+  cdc:
+    - titers_tsv: data/CDC_titers_pre_sept_2019.tsv
+      field_map:
+        subtype: subtype
+        original_virus_strain: virus_strain
+        original_serum_strain: serum_strain
+        serum_id: serum_id
+        virus_passage: virus_passage
+        serum_passage: serum_passage
+        titer: titer
+        assay_type: assay_type
+        assay_date: assay_date
+        source: source
+        source_file: source_file
+        row: source_row
+        source_column: source_column
+    - titers_tsv: data/CDC_titers_sept_2019_onwards.tsv
+      field_map:
+        test_subtype: subtype
+        ag_strain_name: virus_strain
+        sr_strain_name: serum_strain
+        sr_lot: serum_id
+        ag_passage: virus_passage
+        sr_passage: serum_passage
+        titer_value: titer
+        test_protocol: assay_type
+        test_date: assay_date
+        source: source
+        source_file: source_file
+        row: source_row
+        source_column: source_column
