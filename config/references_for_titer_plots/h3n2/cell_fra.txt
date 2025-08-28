@@ -5,5 +5,7 @@ A/Michigan/32/2024 # J.2:145N
 A/Colorado/209/2024 # J.2:223I
 A/Colorado/6/2024 # J.2.1
 A/Minnesota/97/2024 # J.2.2:65K,145N
+A/Alaska/8/2025 # J.2.3, CDC
 A/Valladolid/1187/2025 # J.2.4 (189R + 135K), Crick
+A/Mississippi/37/2025 # J.2.4, CDC
 A/Kentucky/29/2024 # J.2.5
