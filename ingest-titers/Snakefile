@@ -119,3 +119,24 @@ rule concatenate_preprocessed_titers:
             {input:q} \
             > {output.titers:q}
         """
+
+# Copied from the sequences ingest workflow
+# <https://github.com/nextstrain/seasonal-flu/blob/cd564882ed63cf1b791f8ac0651be69cd7cdd468/ingest/rules/curate.smk#L17-L32>
+# Once the fauna source files have been migrated to this repo
+# then we can directly use the local files and remove this rule.
+rule fetch_from_fauna:
+    """
+    Fetch files from nextstrain/fauna/source-data that we need to ensure the
+    strain names of the sequences are in-sync with strain names in titer data.
+
+    Currently used to fetch the following files for rule curate:
+    - flu_strain_name_fix.tsv
+    - flu_fix_location_label.tsv
+    """
+    output: "data/fauna-source-data/{source_data_file}",
+    params:
+        url=lambda w: f"https://github.com/nextstrain/fauna/raw/@/source-data/{w.source_data_file}",
+    shell:
+        """
+        curl -fsSL {params.url} > {output}
+        """
