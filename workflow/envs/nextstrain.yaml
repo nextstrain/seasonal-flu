@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - augur=31.3.0
+  - augur=31.4.0
   - awscli=1.27.9
   - epiweeks=2.1.2
   - nextclade=3.15.3
