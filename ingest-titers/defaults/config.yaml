@@ -51,3 +51,7 @@ inputs:
         source_file: source_file
         row: source_row
         source_column: source_column
+
+curate:
+  subtype_field: subtype
+  new_type_field: vtype
