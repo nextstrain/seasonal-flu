@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""
+Standardize subtypes and adds type field (A/B) to facilitate downstream
+strain name standardizations.
+"""
+import argparse
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+
+SUBTYPE_MAP = {
+    "H3": "h3n2",
+    "H1 swl": "h1n1pdm",
+    "B vic": "vic",
+    "B yam": "yam"
+}
+
+TYPE_MAP = {
+    "h1n1pdm": "a",
+    "h3n2": "a",
+    "vic": "b",
+    "yam": "b"
+}
+
+
+def standardize_record_subtype(records: Iterable[dict],
+                               subtype_field: str,
+                               new_type_field: str) -> Iterable:
+    """
+    Standardize the values of the *subtype_field* and add a *new_type_field*
+    based on the subtype of the record.
+    """
+    for record in records:
+        subtype = record.get(subtype_field)
+        if subtype is None:
+            raise Exception(f"Records must have the expected subtype field: {subtype_field!r}")
+
+        if subtype in SUBTYPE_MAP:
+            subtype = SUBTYPE_MAP[subtype]
+
+        mapped_type = TYPE_MAP.get(subtype)
+        if mapped_type is None:
+            raise Exception(f"Record subtype {subtype!r} is not one of the "
+                            f"expected subtypes {list(TYPE_MAP.keys())!r}. "
+                            "Please add it to the `SUBTYPE_MAP`.")
+
+        record[subtype_field] = subtype
+        record[new_type_field] = mapped_type
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--subtype-field", default="subtype",
+        help="The record field containing the subtype")
+    parser.add_argument("--new-type-field", default="vtype",
+        help="The name of the new field to add to the record with "
+             "the type, e.g. a or b, based on the subtype.")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = standardize_record_subtype(
+        records,
+        args.subtype_field,
+        args.new_type_field)
+    dump_ndjson(modified_records)

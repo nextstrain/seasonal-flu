@@ -154,6 +154,9 @@ rule curate_titers:
         "logs/curate_titers.txt",
     benchmark:
         "benchmarks/curate_titers.txt",
+    params:
+        subtype_field = config["curate"]["subtype_field"],
+        new_type_field = config["curate"]["new_type_field"],
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -162,10 +165,13 @@ rule curate_titers:
             | augur curate normalize-strings \
                 --duplicate-reporting silent \
                 --metadata - \
-                --output-metadata - \
-            > {output.titers:q}
+            | {workflow.basedir}/scripts/standardize-subtypes \
+                --subtype-field {params.subtype_field:q} \
+                --new-type-field {params.new_type_field:q} \
+            | augur curate passthru \
+                --duplicate-reporting silent \
+                --output-metadata {output.titers:q}
 
-        # standardize subtype
         # format titer - needs source
         # standardize assay_type
         # standardize assay_date
