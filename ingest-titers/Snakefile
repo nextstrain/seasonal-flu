@@ -140,3 +140,38 @@ rule fetch_from_fauna:
         """
         curl -fsSL {params.url} > {output}
         """
+
+
+rule curate_titers:
+    input:
+        titers="results/preprocessed_titers.tsv",
+        strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
+        ref_name_abbreviation_replacements="data/fauna-source-data/HI_ref_name_abbreviations.tsv",
+    output:
+        titers="results/curated_titers.tsv",
+    log:
+        "logs/curate_titers.txt",
+    benchmark:
+        "benchmarks/curate_titers.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        cat {input.titers:q} \
+            | augur curate normalize-strings \
+                --duplicate-reporting silent \
+                --metadata - \
+                --output-metadata - \
+            > {output.titers:q}
+
+        # standardize subtype
+        # format titer - needs source
+        # standardize assay_type
+        # standardize assay_date
+        # standardize serum host
+        # format passage category - needs serum_host
+        # standardize strain names - HI fixes first?
+        # standardize strain names - based on ingest? - needs passage category, type (A/B)
+        # create index?
+        """
