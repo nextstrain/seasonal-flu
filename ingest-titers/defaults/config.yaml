@@ -53,6 +53,10 @@ inputs:
         source_column: source_column
 
 curate:
+  date_fields:
+    - assay_date
+  expected_date_formats:
+    - "%Y-%m-%d"
   assay_type_field: assay_type
   subtype_field: subtype
   new_type_field: vtype
