@@ -160,6 +160,8 @@ rule curate_titers:
         assay_type_field = config["curate"]["assay_type_field"],
         subtype_field = config["curate"]["subtype_field"],
         new_type_field = config["curate"]["new_type_field"],
+        serum_id_field = config["curate"]["serum_id_field"],
+        new_serum_host_field = config["curate"]["new_serum_host_field"],
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -177,12 +179,14 @@ rule curate_titers:
             | {workflow.basedir}/scripts/standardize-subtypes \
                 --subtype-field {params.subtype_field:q} \
                 --new-type-field {params.new_type_field:q} \
+            | {workflow.basedir}/scripts/parse-serum-host \
+                --serum-id-field {params.serum_id_field:q} \
+                --new-serum-host-field {params.new_serum_host_field:q} \
             | augur curate passthru \
                 --duplicate-reporting silent \
                 --output-metadata {output.titers:q}
 
         # format titer - needs source
-        # standardize serum host
         # format passage category - needs serum_host
         # standardize strain names - HI fixes first?
         # standardize strain names - based on ingest? - needs passage category, type (A/B)

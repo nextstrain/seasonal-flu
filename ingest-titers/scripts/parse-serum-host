@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""
+Parse serum host from the serum id of each record, defaults to "ferret" if
+there are no other matching hosts in the serum id.
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+
+
+DEFAULT_HOST_VALUE = "ferret"
+EXPECTED_HOSTS = {
+    "ferret",
+    "human",
+    "mouse",
+}
+
+
+def parse_serum_host(records: Iterable[dict],
+                     serum_id_field: str,
+                     new_serum_host_field: str) -> Iterable:
+    """
+    Parses the serum host from the *serum_id_field* and adds it to the
+    records *new_serum_host_field*.
+    """
+    for record in records:
+        serum_id = record.get(serum_id_field)
+        if serum_id is None:
+            raise Exception(f"Records must have the expected serum_id field: {serum_id_field!r}")
+
+        serum_host = DEFAULT_HOST_VALUE
+
+        for host in EXPECTED_HOSTS:
+            if re.search(host, serum_id, re.IGNORECASE):
+                serum_host = host
+
+        # TODO: look into if "24/25 H1PDM09-CELL POOL" is a human pool
+
+        record[new_serum_host_field] = serum_host
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--serum-id-field", default="serum_id",
+        help="The record field containing the serum id.")
+    parser.add_argument("--new-serum-host-field", default="serum_host",
+        help="The name of the new field to add to the record with the parsed serum host.")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = parse_serum_host(
+        records,
+        args.serum_id_field,
+        args.new_serum_host_field)
+    dump_ndjson(modified_records)
