@@ -53,5 +53,6 @@ inputs:
         source_column: source_column
 
 curate:
+  assay_type_field: assay_type
   subtype_field: subtype
   new_type_field: vtype

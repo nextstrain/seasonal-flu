@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""
+Standardize assay types
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+
+
+EXPECTED_ASSAY_TYPES = {
+    "fra",
+    "hint",
+    "hi",
+    "hi_oseltamivir",
+}
+
+
+def standardize_record_assay_type(records: Iterable[dict],
+                                  assay_type_field: str) -> Iterable:
+    """
+    Standardize the values of the *assay_type_field* by
+    1. lowercasing
+    2. removing `_protocol` suffix
+    """
+    for record in records:
+        assay_type = record.get(assay_type_field)
+        if assay_type is None:
+            raise Exception(f"Records must have the expected assay_type field: {assay_type_field!r}")
+
+        assay_type = assay_type.lower()
+        assay_type = re.sub(r"_protocol$", "", assay_type)
+
+        if assay_type not in EXPECTED_ASSAY_TYPES:
+            raise Exception(f"Encountered unexpected assay type {assay_type!r}")
+
+        record[assay_type_field] = assay_type
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--assay-type-field", default="assay_type",
+        help="The record field containing the assay type")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = standardize_record_assay_type(
+        records,
+        args.assay_type_field)
+    dump_ndjson(modified_records)
