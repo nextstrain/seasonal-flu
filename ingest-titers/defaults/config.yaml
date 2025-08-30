@@ -60,3 +60,5 @@ curate:
   assay_type_field: assay_type
   subtype_field: subtype
   new_type_field: vtype
+  serum_id_field: serum_id
+  new_serum_host_field: serum_host
