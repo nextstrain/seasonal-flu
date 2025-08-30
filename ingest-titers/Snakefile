@@ -155,6 +155,8 @@ rule curate_titers:
     benchmark:
         "benchmarks/curate_titers.txt",
     params:
+        date_fields = config["curate"]["date_fields"],
+        expected_date_formats = config["curate"]["expected_date_formats"],
         assay_type_field = config["curate"]["assay_type_field"],
         subtype_field = config["curate"]["subtype_field"],
         new_type_field = config["curate"]["new_type_field"],
@@ -166,6 +168,10 @@ rule curate_titers:
             | augur curate normalize-strings \
                 --duplicate-reporting silent \
                 --metadata - \
+            | augur curate format-dates \
+                --date-fields {params.date_fields:q} \
+                --expected-date-format {params.expected_date_formats:q} \
+                --duplicate-reporting silent \
             | {workflow.basedir}/scripts/standardize-assay-types \
                 --assay-type-field {params.assay_type_field:q} \
             | {workflow.basedir}/scripts/standardize-subtypes \
@@ -176,7 +182,6 @@ rule curate_titers:
                 --output-metadata {output.titers:q}
 
         # format titer - needs source
-        # standardize assay_date
         # standardize serum host
         # format passage category - needs serum_host
         # standardize strain names - HI fixes first?
