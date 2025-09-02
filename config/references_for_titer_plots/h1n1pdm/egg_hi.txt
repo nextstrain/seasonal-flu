@@ -1,2 +1,4 @@
 A/Victoria/4897/2022-egg # D, vaccine strain
+A/France/BFC-IPP15052/2024-egg # D.3.1
 A/Victoria/42/2025-egg # C.1.9.3
+A/Caerphilly/5142/2024-egg # C.1.9.3:120T,137S,166V

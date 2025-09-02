@@ -11,3 +11,4 @@ A/Netherlands/10685/2024 # J.2.3
 A/Sydney/1359/2024 # J.2.4
 A/Valladolid/1187/2025 # J.2.4, Crick
 A/Kanagawa/AC2413/2025 # J.2.4, NIID
+A/Tokyo/EIS13-029/2025 # ?
