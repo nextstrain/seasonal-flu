@@ -131,11 +131,11 @@ if __name__ == '__main__':
                 clades_by_name[node.parent.name]
             )
 
-    # Calculate clade frequencies.
-    frequency_by_clade = defaultdict(float)
+    # Calculate haplotype frequencies.
+    frequency_by_haplotype = defaultdict(float)
     for node in tree.find_clades(terminal=True):
-        for clade in clades_by_name[node.name]:
-            frequency_by_clade[clade] += current_frequency_by_strain[node.name]
+        haplotype = node_data["nodes"][node.name].get("emerging_haplotype", "other")
+        frequency_by_haplotype[haplotype] += current_frequency_by_strain[node.name]
 
     # Convert clade data to a data frame.
     clade_table = pd.DataFrame([
@@ -143,9 +143,9 @@ if __name__ == '__main__':
             "strain": strain,
             "clade": strain_data.get("clade_membership", "unassigned"),
             "subclade": strain_data.get("subclade", "unassigned"),
-            "emerging_haplotype": strain_data.get("emerging_haplotype", "unassigned"),
+            "emerging_haplotype": strain_data.get("emerging_haplotype", "other"),
             "derived_haplotype": strain_data.get("haplotype", "unassigned"),
-            "clade_frequency": frequency_by_clade[strain_data["clade_membership"]] if strain_data.get("clade_membership") else 0.0,
+            "emerging_haplotype_frequency": frequency_by_haplotype[strain_data.get("emerging_haplotype", "other")],
         }
         for strain, strain_data in node_data["nodes"].items()
         if not strain.startswith("NODE")
