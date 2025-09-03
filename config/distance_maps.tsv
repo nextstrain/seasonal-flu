@@ -2,6 +2,7 @@ lineage	segment	compare_to	attribute	distance_map
 h3n2	ha	root	ep	wolf
 h3n2	ha	root	ne	wolf_nonepitope
 h3n2	ha	root	rb	koel
+h3n2	ha	root	ha_muts	ha
 h3n2	ha	ancestor	ne_star	luksza_nonepitope
 h3n2	ha	ancestor	cell_entry	Yu_et_al_2025_cell_entry
 h3n2	ha	ancestor	ph_stability	Yu_et_al_2025_ph_stability
@@ -9,3 +10,5 @@ h3n2	na	root	ep	bhatt
 h3n2	na	root	ne	bhatt_nonepitope
 h1n1pdm	ha	root	ep	canton
 h1n1pdm	ha	root	ne	canton_nonepitope
+h1n1pdm	ha	root	ha_muts	ha
+vic	ha	root	ha_muts	ha
