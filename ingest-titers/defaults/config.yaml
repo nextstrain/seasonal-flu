@@ -62,3 +62,7 @@ curate:
   new_type_field: vtype
   serum_id_field: serum_id
   new_serum_host_field: serum_host
+  virus_passage_field: virus_passage
+  virus_passage_category_field: virus_passage_category
+  serum_passage_field: serum_passage
+  serum_passage_category_field: serum_passage_category
