@@ -55,11 +55,12 @@ def get_passage_category(passage: str) -> str:
     passage_category = DEFAULT_PASSAGE_CATEGORY
     if re.search(r'AM[1-9]|E[1-9]|AMNIOTIC|EGG|EX|AM_[1-9]', passage):   # McWhite
         passage_category = "egg"
-    elif re.search(r'AM-[1-9]|EMBRYO|^E$', passage):
+    # SPF = Specified Pathogen Free eggs
+    elif re.search(r'AM-[1-9]|EMBRYO|^E$|SPF\d', passage):
         passage_category = "egg"
     elif re.search(r'LUNG|P0|OR_|ORIGINAL|CLINICAL|DIRECT', passage):    # McWhite
         passage_category = "unpassaged"
-    elif re.search(r'ORGINAL|ORIGNAL|CLINCAL|THROAT|PRIMARY|NASO|AUTOPSY|BRONCHIAL|INITIAL|NASAL|NOSE|ORIG|SWAB|NO PASSAGE', passage):
+    elif re.search(r'OR|ORGINAL|ORIGNAL|CLINCAL|THROAT|PRIMARY|NASO|AUTOPSY|BRONCHIAL|INITIAL|NASAL|NOSE|ORIG|SWAB|NO PASSAGE', passage):
         passage_category = "unpassaged"
     elif re.search(r'TMK|RMK|RHMK|RII|PMK|R[1-9]|RX|RHESUS', passage):    # McWhite
         passage_category = "cell"
