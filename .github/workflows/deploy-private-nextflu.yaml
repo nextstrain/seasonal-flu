@@ -80,7 +80,7 @@ jobs:
       - name: Build site
         run: bundle exec jekyll build
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # Minimum node version to install Netlify CLI
           # https://docs.netlify.com/cli/get-started/#installation
