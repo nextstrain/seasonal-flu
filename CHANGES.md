@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 15 September 2025
+
+- Add `s3_path` top-level configuration parameter to override the default path for builds.
+
 # 18 August 2025
 
 - Explicitly root divergence tree with reference node before pruning reference. See [#246](https://github.com/nextstrain/seasonal-flu/pull/246) for details.
