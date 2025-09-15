@@ -9,6 +9,7 @@ The "__NEXT__" heading below describes changes in the unreleased development sou
 
 # 15 September 2025
 
+- Add `force_run_nextclade` top-level configuration parameter to force the workflow to run Nextclade from scratch even when files already exist on S3.
 - Add `s3_path` top-level configuration parameter to override the default path for builds.
 
 # 18 August 2025
