@@ -1,3 +1,6 @@
+#s3_path: s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest
+force_run_nextclade: true
+
 # Define the earliest date to select all available sequences per subtype. This
 # date corresponds to the reporting period of the upcoming vaccine composition
 # meeting. For the VCM in September, we tend to report on data from February of
@@ -48,13 +51,15 @@ builds:
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/h3n2/reference_strains.txt"
-      subsamples: &subsampling
+      subsamples:
         all_good_sequences:
             filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
         titer_reference_strains:
           # We allow egg-passage strains when they have titer measurements,
           # enabling titer models to be fit to egg-passaged data.
           filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude config/{lineage}/outliers.txt
+        bloom_lab_strains:
+          filters: --exclude-all --include profiles/full-trees/h3n2_titer_strains.txt
       titer_collections:
         - name: cell_fra
           data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
@@ -68,6 +73,9 @@ builds:
           data: "data/h3n2/who_ferret_egg_hi_titers.tsv"
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
+        - name: kikawa_2025
+          data: "profiles/full-trees/h3n2_all_human_prevax_2025.tsv"
+          prefix: kikawa_2025_
       frequencies: &frequencies
         narrow_bandwidth: 0.02
         pivot_interval: 1
@@ -88,7 +96,15 @@ builds:
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/h1n1pdm/reference_strains.txt"
-      subsamples: *subsampling
+      subsamples:
+        all_good_sequences:
+            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+        titer_reference_strains:
+          # We allow egg-passage strains when they have titer measurements,
+          # enabling titer models to be fit to egg-passaged data.
+          filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude config/{lineage}/outliers.txt
+        bloom_lab_strains:
+          filters: --exclude-all --include profiles/full-trees/h1n1pdm_titer_strains.txt
       titer_collections:
         - name: cell_hi
           data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
@@ -98,6 +114,9 @@ builds:
           data: "data/h1n1pdm/who_ferret_egg_hi_titers.tsv"
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
+        - name: kikawa_2025
+          data: "profiles/full-trees/h1n1pdm_all_human_prevax_2025.tsv"
+          prefix: kikawa_2025_
       frequencies: *frequencies
     full-vic:
       lineage: vic
@@ -115,7 +134,13 @@ builds:
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/vic/reference_strains.txt"
-      subsamples: *subsampling
+      subsamples:
+        all_good_sequences:
+            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+        titer_reference_strains:
+          # We allow egg-passage strains when they have titer measurements,
+          # enabling titer models to be fit to egg-passaged data.
+          filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude config/{lineage}/outliers.txt
       titer_collections:
         - name: cell_hi
           data: "data/vic/who_ferret_cell_hi_titers.tsv"
