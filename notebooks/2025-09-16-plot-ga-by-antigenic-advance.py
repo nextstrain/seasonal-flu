@@ -48,6 +48,12 @@ def _(lineage):
 
 
 @app.cell
+def _(lineage):
+    output_path = f"{lineage}_ga_by_antigenic_advance.png"
+    return (output_path,)
+
+
+@app.cell
 def _(auspice_config_path, json):
     with open(auspice_config_path, "r", encoding="utf-8") as fh:
         colorings = json.load(fh).get("colorings")
@@ -299,6 +305,15 @@ def _(
         titleFontSize=12,
     ).configure_view(
         stroke=None,
+    )
+    return (plot,)
+
+
+@app.cell
+def _(output_path, plot):
+    plot.save(
+        output_path,
+        ppi=200,
     )
     return
 
