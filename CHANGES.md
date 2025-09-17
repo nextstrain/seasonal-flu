@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 17 September 2025
+
+- Allow titer collections to define their own list of `genes` which get used for fitting titer models. For example, setting `genes: ["HA1"]` in a titer collection limits the titer substitution model to use only HA1 substitutions.
+
 # 15 September 2025
 
 - Add `force_run_nextclade` top-level configuration parameter to force the workflow to run Nextclade from scratch even when files already exist on S3.

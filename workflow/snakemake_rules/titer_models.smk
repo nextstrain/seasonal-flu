@@ -23,14 +23,19 @@ def get_titer_collection_attribute_prefix_argument(wildcards):
     else:
         return ""
 
+def get_titer_collection_genes(wildcards):
+    for collection in config["builds"][wildcards.build_name]["titer_collections"]:
+        if collection["name"] == wildcards.titer_collection:
+            return collection.get("genes", GENES[wildcards.segment])
+
 rule titers_sub:
     input:
         titers = build_dir +"/{build_name}/titers/{titer_collection}.tsv",
         tree = rules.refine.output.tree,
         translations_done = build_dir + "/{build_name}/{segment}/translations.done"
     params:
-        translations = lambda w: [f"{build_dir}/{w.build_name}/{w.segment}/translations/{gene}_withInternalNodes.fasta" for gene in GENES[w.segment]],
-        genes = lambda w: GENES[w.segment],
+        genes = get_titer_collection_genes,
+        translations = lambda wildcards: [f"{build_dir}/{wildcards.build_name}/{wildcards.segment}/translations/{gene}_withInternalNodes.fasta" for gene in get_titer_collection_genes(wildcards)],
         attribute_prefix_argument = get_titer_collection_attribute_prefix_argument,
     output:
         titers_model = build_dir + "/{build_name}/{segment}/titers-sub-model/{titer_collection}.json",
