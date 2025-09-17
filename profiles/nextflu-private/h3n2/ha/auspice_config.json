@@ -571,6 +571,16 @@
       "key": "qc.overallStatus",
       "title": "Nextclade QC(overallStatus)",
       "type": "categorical"
+    },
+    {
+      "key": "antigenic_distance_to_future",
+      "title": "Antigenic distance to future",
+      "type": "continuous"
+    },
+    {
+      "key": "is_titer_reference",
+      "title": "is titer reference",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
