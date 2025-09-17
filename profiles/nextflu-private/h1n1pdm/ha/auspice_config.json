@@ -168,6 +168,11 @@
       "type": "continuous"
     },
     {
+      "key": "kikawa_2025_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025)",
+      "type": "continuous"
+    },
+    {
       "key": "cell_hi_cTiter_x",
       "title": "HI antigenic novelty",
       "type": "continuous"
