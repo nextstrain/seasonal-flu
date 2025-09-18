@@ -1,25 +1,27 @@
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
 A/Croatia/10136RV/2023 # J.2:145N, vaccine strain
-A/Wisconsin/154/2024 # J.2:135K
+A/Idaho/69/2023 # J.2:145N,189R
+#A/Wisconsin/154/2024 # J.2:135K
 A/Tokyo/EIS11-171/2024 # J.2:135K
 A/Catalonia/NSVH102423723/2024 # J.2:135K
-A/Slovenia/49/2024 # J.2:158K
-A/Oklahoma/5/2024 # J.2.:158K
+#A/Slovenia/49/2024 # J.2:158K
+#A/Oklahoma/5/2024 # J.2.:158K
 A/Michigan/32/2024 # J.2:104N,145N
 A/California/166/2024 # J.2:124R,145N
 A/Perth/815/2024 # J.2:63D,189R,309I
 A/Colorado/209/2024 # J.2:160M,204I,223I
-A/Pennsylvania/234/2024 # J.2.2:65K
-A/Minnesota/97/2024 # J.2.2:65K,145N
+A/Switzerland/47775/2024 # J.2.1
+#A/Pennsylvania/234/2024 # J.2.2:65K
+#A/Minnesota/97/2024 # J.2.2:65K,145N
 A/Perth/836/2024 # J.2.2:65K,145N
 A/Victoria/979/2024 # J.2.2:5E,65K,145N,262N
 A/Kanagawa/IC2405/2024 # J.2.2:65K,160K
 A/Alaska/8/2025 # J.2.3
 A/Netherlands/10685/2024 # J.2.3
 A/Tokyo/EIS13-029/2025 # J.2.3
-A/Mississippi/37/2025 # J.2.4
+#A/Mississippi/37/2025 # J.2.4
 A/Sydney/1359/2024 # J.2.4
 A/Valladolid/1187/2025 # J.2.4, Crick
 A/Kanagawa/AC2413/2025 # J.2.4, NIID
-A/Kentucky/29/2024 # J.2.5
-A/NewJersey/16/2025 # J.2.5
+#A/Kentucky/29/2024 # J.2.5
+#A/NewJersey/16/2025 # J.2.5

@@ -12,7 +12,7 @@ A/Nepal/N042/2025-egg # J.2.4
 A/Valladolid/1187/2025-egg # J.2.4
 A/Singapore/GP20238/2024-egg # J.2.4
 A/NewJersey/16/2025-egg # J.2.5
-A/Idaho/47/2023-egg # J.1.1:214T
+#A/Idaho/47/2023-egg # J.1.1:214T
 # A/Norway/423/2024-egg # Missing
 # A/Minnesota/117/2024-egg # Missing
 # A/Wisconsin/160/2024-egg # Missing

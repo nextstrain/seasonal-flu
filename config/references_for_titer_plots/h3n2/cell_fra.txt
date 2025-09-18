@@ -3,7 +3,7 @@ A/Wisconsin/154/2024 # J.2:135K
 A/Catalonia/NSVH102423723/2024 # J.2:135K, Crick
 A/Michigan/32/2024 # J.2:145N
 A/Colorado/209/2024 # J.2:223I
-A/Victoria/488/2024 # J.2:207R
+#A/Victoria/488/2024 # J.2:207R
 A/Colorado/6/2024 # J.2.1
 A/Minnesota/97/2024 # J.2.2:65K,145N
 A/Alaska/8/2025 # J.2.3, CDC
