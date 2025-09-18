@@ -1,6 +1,6 @@
 ruleorder: export_full_trees > export
 
-rule calculate_antigenic_distance_to_the_future:
+rule calculate_human_antigenic_distance_to_the_future:
     input:
         titer_model="builds/{build_name}/ha/titers-sub-model/kikawa_2025.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
@@ -8,11 +8,12 @@ rule calculate_antigenic_distance_to_the_future:
         tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
         ha1_sequences="builds/{build_name}/ha/translations/HA1.fasta",
     output:
-        node_data="builds/{build_name}/antigenic_distance_to_future.json",
-        table="builds/{build_name}/antigenic_distance_to_future.tsv",
+        node_data="builds/{build_name}/human_antigenic_distance_to_future.json",
+        table="builds/{build_name}/human_antigenic_distance_to_future.tsv",
     params:
         min_date="2025-02-01",
         min_reference_year=2022,
+        attribute_name="antigenic_distance_to_future_human",
     shell:
         r"""
         python scripts/calculate_titer_distance_from_candidates.py \
@@ -23,6 +24,36 @@ rule calculate_antigenic_distance_to_the_future:
             --ha1-sequences {input.ha1_sequences} \
             --min-date {params.min_date} \
             --min-reference-year {params.min_reference_year} \
+            --attribute-name {params.attribute_name} \
+            --output-node-data {output.node_data} \
+            --output-table {output.table}
+        """
+
+rule calculate_ferret_antigenic_distance_to_the_future:
+    input:
+        titer_model="builds/{build_name}/ha/titers-sub-model/cell_hi.json",
+        titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
+        forecasts=lambda wildcards: f"../forecasts-flu/results/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/freq_forecast.tsv",
+        tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
+        ha1_sequences="builds/{build_name}/ha/translations/HA1.fasta",
+    output:
+        node_data="builds/{build_name}/ferret_antigenic_distance_to_future.json",
+        table="builds/{build_name}/ferret_antigenic_distance_to_future.tsv",
+    params:
+        min_date="2025-02-01",
+        min_reference_year=2022,
+        attribute_name="antigenic_distance_to_future_ferret",
+    shell:
+        r"""
+        python scripts/calculate_titer_distance_from_candidates.py \
+            --titer-model {input.titer_model} \
+            --titers {input.titers} \
+            --tip-attributes {input.tip_attributes} \
+            --forecasts {input.forecasts} \
+            --ha1-sequences {input.ha1_sequences} \
+            --min-date {params.min_date} \
+            --min-reference-year {params.min_reference_year} \
+            --attribute-name {params.attribute_name} \
             --output-node-data {output.node_data} \
             --output-table {output.table}
         """
@@ -32,7 +63,10 @@ rule export_full_trees:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
-        antigenic_distance_to_future=build_dir + "/{build_name}/antigenic_distance_to_future.json",
+        antigenic_distance_to_future=[
+            build_dir + "/{build_name}/human_antigenic_distance_to_future.json",
+            build_dir + "/{build_name}/ferret_antigenic_distance_to_future.json",
+        ],
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         description = lambda w: config['builds'][w.build_name].get("description", "config/description.md"),
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),

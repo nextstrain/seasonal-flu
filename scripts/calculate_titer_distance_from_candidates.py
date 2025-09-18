@@ -16,6 +16,7 @@ if __name__ == '__main__':
     parser.add_argument("--ha1-sequences", required=True, help="FASTA with HA1 amino acid sequences per tip")
     parser.add_argument("--min-date", required=True, help="minimum date (YYYY-MM-DD) for tips to be included in analysis")
     parser.add_argument("--min-reference-year", type=int, required=True, help="minimum year for reference to be included in the analysis")
+    parser.add_argument("--attribute-name", required=True, help="attribute name in node data JSON for antigenic distance")
     parser.add_argument("--output-node-data", required=True, help="node data JSON of antigenic distances to the future by reference strain and boolean indicator `is_titer_reference` for filtering in Auspice")
     parser.add_argument("--output-table", required=True, help="TSV of antigenic distances to the future by reference strain")
 
@@ -148,8 +149,8 @@ if __name__ == '__main__':
 
     node_data = {
         reference: {
-            "antigenic_distance_to_future": distance,
-            "is_titer_reference": True,
+            args.attribute_name: distance,
+            "is_titer_reference": "yes",
         }
         for reference, distance in distance_by_reference.items()
     }

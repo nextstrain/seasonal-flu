@@ -578,8 +578,13 @@
       "type": "categorical"
     },
     {
-      "key": "antigenic_distance_to_future",
-      "title": "Antigenic distance to future",
+      "key": "antigenic_distance_to_future_human",
+      "title": "Human-based antigenic distance to future",
+      "type": "continuous"
+    },
+    {
+      "key": "antigenic_distance_to_future_ferret",
+      "title": "Ferret-based antigenic distance to future",
       "type": "continuous"
     },
     {
