@@ -102,6 +102,10 @@ if __name__ == '__main__':
             distance_for_region_haplotype = 0.0
             count_for_region_haplotype = tips_for_region_haplotype.shape[0]
 
+            if count_for_region_haplotype == 0:
+                print(f"Skipping {region_haplotype} since it has no recent tips")
+                continue
+
             for tip in tips_for_region_haplotype["strain"]:
                 if tip in ha1_sequences_by_strain:
                     tip_sequence = ha1_sequences_by_strain[tip]
