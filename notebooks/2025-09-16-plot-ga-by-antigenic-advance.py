@@ -16,7 +16,7 @@ def _():
 
 @app.cell
 def _():
-    lineage = "h1n1pdm"
+    lineage = "h3n2"
     return (lineage,)
 
 
@@ -296,16 +296,17 @@ def _(
 
     plot = human_plot | ferret_plot
 
-    plot.configure_axis(
+    plot = plot.configure_axis(
         grid=False,
         labelFontSize=12,
         titleFontSize=12,
     ).configure_legend(
-        labelFontSize=12,
-        titleFontSize=12,
+        disable=True,
     ).configure_view(
         stroke=None,
     )
+
+    plot
     return (plot,)
 
 
