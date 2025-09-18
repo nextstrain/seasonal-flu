@@ -25,7 +25,7 @@ A/StPetersburg/RII-04/2025
 A/Tambov/160-1V/2024
 A/Tennessee/4/2025
 A/Tokyo/EIS11-277/2024
-A/Ufa/47/2024
+A/Ufa/CRIE/47/2024
 A/Uganda/UVRI_KIS6850/2024
 A/Ulsan/492/2025
 A/Utah/39/2025
