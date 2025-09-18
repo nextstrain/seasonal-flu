@@ -1,5 +1,14 @@
 A/Victoria/4897/2022-egg # D, vaccine strain
 A/France/BFC-IPP15052/2024-egg # D.3.1
+A/Missouri/11/2025-egg # D.3.1
+A/Sydney/124/2025-egg # D.3.1
+A/California/177/2024-egg # C.1.9.1
 A/Victoria/42/2025-egg # C.1.9.3
+A/Washington/310/2024-egg # C.1.9.3:166V
 A/Caerphilly/5142/2024-egg # C.1.9.3:120T,137S,166V
-# A/Singapore/SAR3644/2024-egg # ?
+# A/Singapore/SAR3644/2024-egg # Missing?
+A/Iceland/34025/2024-egg # D.5
+# A/Norway/10655/2024-egg # Missing?
+# A/Switzerland/6849/2025-egg # Missing?
+# A/Tokyo/EIS10-381/2024-egg # Missing?
+# A/Tokyo/EIS10-554/2024-egg # Missing?
