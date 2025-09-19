@@ -162,6 +162,7 @@ rule curate_titers:
         new_type_field = config["curate"]["new_type_field"],
         serum_id_field = config["curate"]["serum_id_field"],
         new_serum_host_field = config["curate"]["new_serum_host_field"],
+        source_field = config["curate"]["source_field"],
         virus_passage_field = config["curate"]["virus_passage_field"],
         virus_passage_category_field = config["curate"]["virus_passage_category_field"],
         serum_passage_field = config["curate"]["serum_passage_field"],
@@ -186,6 +187,11 @@ rule curate_titers:
             | {workflow.basedir}/scripts/parse-serum-host \
                 --serum-id-field {params.serum_id_field:q} \
                 --new-serum-host-field {params.new_serum_host_field:q} \
+            | {workflow.basedir}/scripts/correct-cdc-human-serum-passage \
+                --source-field {params.source_field:q} \
+                --serum-host-field {params.new_serum_host_field:q} \
+                --serum-id-field {params.serum_id_field:q} \
+                --serum-passage-field {params.serum_passage_field:q} \
             | {workflow.basedir}/../ingest/scripts/annotate-with-passage-category \
                 --passage-field {params.virus_passage_field:q} \
                 --passage-category-field {params.virus_passage_category_field:q} \
@@ -197,7 +203,6 @@ rule curate_titers:
                 --output-metadata {output.titers:q}
 
         # format titer - needs source
-        # fix passage category for serum_host "human"
         # standardize strain names - HI fixes first?
         # standardize strain names - based on ingest? - needs passage category, type (A/B)
         # create index?

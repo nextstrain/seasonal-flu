@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""
+Correct the serum passage for titer records from the CDC with human serum host.
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+
+SOURCE = "cdc"
+SERUM_HOST = "human"
+
+# Simple cell or label in the CDC serum id
+# If we start seeing more complicated patterns in the future
+# then consider consolidating with patterns in `ingest/scripts/annotate-with-passage-category`
+CELL_PATTERN = re.compile(r"cell", re.IGNORECASE)
+EGG_PATTERN = re.compile(r"egg", re.IGNORECASE)
+
+# Default value for records that do not match cell or egg pattern
+DEFAULT_PASSAGE = "undetermined"
+
+
+def correct_serum_passage(records: Iterable[dict],
+                          source_field: str,
+                          serum_host_field: str,
+                          serum_id_field: str,
+                          serum_passage_field: str) -> Iterable:
+    """
+    Use the serum id to check for egg or cell serum passage if the source
+    matches SOURCE and the serum host matches SERUM_HOST.
+
+    If the serum id does not match either pattern, then set serum passage to
+    DEFAULT_PASSAGE.
+    """
+    unmatched_serum_ids = set()
+    for record in records:
+        source = record.get(source_field)
+        serum_host = record.get(serum_host_field)
+        serum_id = record.get(serum_id_field)
+        if any(value is None for value in (source, serum_host, serum_id)):
+            raise Exception(f"Records must have expected fields: {[source_field, serum_host_field, serum_id_field]!r}")
+
+        if source == SOURCE and serum_host == SERUM_HOST:
+            if EGG_PATTERN.search(serum_id):
+                record[serum_passage_field] = "egg"
+            elif CELL_PATTERN.search(serum_id):
+                record[serum_passage_field] = "cell"
+            else:
+                unmatched_serum_ids.add(serum_id)
+                record[serum_passage_field] = DEFAULT_PASSAGE
+
+        yield record
+
+    if unmatched_serum_ids:
+        print_err(f"Set serum passage to default values ({DEFAULT_PASSAGE!r}) ",
+                  "for records with the following serum ids that did not match ",
+                  f"cell or egg patterns: {unmatched_serum_ids!r}")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--source-field", default="source",
+        help="The record field containing the titer source. " \
+             f"Used to verify the record source is {SOURCE!r}.")
+    parser.add_argument("--serum-host-field", default="serum_host",
+        help="The record field containing the serum host. " \
+             f"Used to verify the record serum host is {SERUM_HOST!r}")
+    parser.add_argument("--serum-id-field", default="serum_id",
+        help="The record field containing the serum id. " \
+             "Used to parse the correct serum passage.")
+    parser.add_argument("--serum-passage-field", default="serum_passage",
+        help="The field to output the corrected serum passage. " \
+             "The script will always overwrite the field value.")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = correct_serum_passage(
+        records,
+        args.source_field,
+        args.serum_host_field,
+        args.serum_id_field,
+        args.serum_passage_field)
+    dump_ndjson(modified_records)
