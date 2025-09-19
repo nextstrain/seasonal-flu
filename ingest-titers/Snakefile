@@ -209,11 +209,24 @@ rule curate_titers:
                 --new-serum-strain-field {params.preprocessed_serum_strain_field:q} \
                 --strain-replacements {input.strain_replacements:q} \
                 --abbreviation-replacements {input.abbreviation_replacements:q} \
+            | {workflow.basedir}/../ingest/scripts/standardize-strain-names \
+                --strain-field {params.preprocessed_virus_strain_field:q} \
+                --passage-field {params.virus_passage_category_field:q} \
+                --type-field {params.new_type_field:q} \
+                --new-strain-field {params.virus_strain_field:q} \
+                --strain-replacement {input.strain_replacements:q} \
+                --location-replacements {input.strain_location_replacements:q} \
+            | {workflow.basedir}/../ingest/scripts/standardize-strain-names \
+                --strain-field {params.preprocessed_serum_strain_field:q} \
+                --passage-field {params.serum_passage_category_field:q} \
+                --type-field {params.new_type_field:q} \
+                --new-strain-field {params.serum_strain_field:q} \
+                --strain-replacement {input.strain_replacements:q} \
+                --location-replacements {input.strain_location_replacements:q} \
             | augur curate passthru \
                 --duplicate-reporting silent \
                 --output-metadata {output.titers:q}
 
         # format titer - needs source
-        # standardize strain names - based on ingest? - needs passage category, type (A/B)
         # create index?
         """
