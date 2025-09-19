@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""
+Preprocess the strain names in titer records to canonicalize strain names to
+match the strain name format used for sequences.
+
+Expects the strain names to be further standardized downstream to exactly match
+sequence strain names.
+"""
+import argparse
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+
+
+def preprocess_strain_names(records: Iterable[dict],
+                            virus_strain_field: str,
+                            serum_strain_field: str,
+                            new_virus_strain_field: str,
+                            new_serum_strain_field: str,
+                            strain_replacements_file: str,
+                            abbrevation_replacements_file: str) -> Iterable:
+    """
+    Preprocess the strain name fields to canonicalize strain names to match
+    the strain name format used for sequences
+    """
+    # TODO: load strain replacements and abbreviation replacements
+    for record in records:
+        virus_strain = record.get(virus_strain_field)
+        serum_strain = record.get(serum_strain_field)
+
+        if virus_strain is None:
+            raise Exception(f"Records must have the expected virus strain field: {virus_strain_field!r}")
+
+        if serum_strain is None:
+            raise Exception(f"Records must have the expected serum strain field: {serum_strain_field!r}")
+
+        # TODO: HI_fix_name
+        record[new_virus_strain_field] = virus_strain
+        record[new_serum_strain_field] = serum_strain
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--virus-strain-field", default="virus_strain",
+        help="The record field containing the original virus strain name.")
+    parser.add_argument("--serum-strain-field", default="serum_strain",
+        help="The record field containing the serum strain name.")
+    parser.add_argument("--new-virus-strain-field", default="preprocessed_virus_strain",
+        help="The new field for the preprocessed virus strain output.")
+    parser.add_argument("--new-serum-strain-field", default="preprocessed_serum_strain",
+        help="The new field for the preprocessed serum strain output.")
+    parser.add_argument("--strain-replacements",
+        help="A TSV file of full strain name replacements. " + \
+             "Strains in the 'label' column are replaced with the strains in the 'fix' column.")
+    parser.add_argument("--abbreviation-replacements",
+        help="A TSV file of abbreviation replacements. " \
+             "Abbreviations in the 'label' column are replaced with string in the 'fix' column.")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = preprocess_strain_names(
+        records,
+        args.virus_strain_field,
+        args.serum_strain_field,
+        args.new_virus_strain_field,
+        args.new_serum_strain_field,
+        args.strain_replacements,
+        args.abbreviation_replacements)
+    dump_ndjson(modified_records)

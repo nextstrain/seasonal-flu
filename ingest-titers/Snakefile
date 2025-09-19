@@ -147,7 +147,7 @@ rule curate_titers:
         titers="results/preprocessed_titers.tsv",
         strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
-        ref_name_abbreviation_replacements="data/fauna-source-data/HI_ref_name_abbreviations.tsv",
+        abbreviation_replacements="data/fauna-source-data/HI_ref_name_abbreviations.tsv",
     output:
         titers="results/curated_titers.tsv",
     log:
@@ -167,6 +167,10 @@ rule curate_titers:
         virus_passage_category_field = config["curate"]["virus_passage_category_field"],
         serum_passage_field = config["curate"]["serum_passage_field"],
         serum_passage_category_field = config["curate"]["serum_passage_category_field"],
+        virus_strain_field = config["curate"]["virus_strain_field"],
+        serum_strain_field = config["curate"]["serum_strain_field"],
+        preprocessed_virus_strain_field = config["curate"]["preprocessed_virus_strain_field"],
+        preprocessed_serum_strain_field = config["curate"]["preprocessed_serum_strain_field"],
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -198,12 +202,18 @@ rule curate_titers:
             | {workflow.basedir}/../ingest/scripts/annotate-with-passage-category \
                 --passage-field {params.serum_passage_field:q} \
                 --passage-category-field {params.serum_passage_category_field:q} \
+            | {workflow.basedir}/scripts/preprocess-strain-names \
+                --virus-strain-field {params.virus_strain_field:q} \
+                --serum-strain-field {params.serum_strain_field:q} \
+                --new-virus-strain-field {params.preprocessed_virus_strain_field:q} \
+                --new-serum-strain-field {params.preprocessed_serum_strain_field:q} \
+                --strain-replacements {input.strain_replacements:q} \
+                --abbreviation-replacements {input.abbreviation_replacements:q} \
             | augur curate passthru \
                 --duplicate-reporting silent \
                 --output-metadata {output.titers:q}
 
         # format titer - needs source
-        # standardize strain names - HI fixes first?
         # standardize strain names - based on ingest? - needs passage category, type (A/B)
         # create index?
         """

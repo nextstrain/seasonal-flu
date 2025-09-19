@@ -67,3 +67,7 @@ curate:
   virus_passage_category_field: virus_passage_category
   serum_passage_field: serum_passage
   serum_passage_category_field: serum_passage_category
+  virus_strain_field: virus_strain
+  serum_strain_field: serum_strain
+  preprocessed_virus_strain_field: preprocessed_virus_strain
+  preprocessed_serum_strain_field: preprocessed_serum_strain
