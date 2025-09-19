@@ -7,6 +7,8 @@ Expects the strain names to be further standardized downstream to exactly match
 sequence strain names.
 """
 import argparse
+import csv
+import re
 from sys import stdin
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
@@ -18,12 +20,14 @@ def preprocess_strain_names(records: Iterable[dict],
                             new_virus_strain_field: str,
                             new_serum_strain_field: str,
                             strain_replacements_file: str,
-                            abbrevation_replacements_file: str) -> Iterable:
+                            abbreviation_replacements_file: str) -> Iterable:
     """
     Preprocess the strain name fields to canonicalize strain names to match
     the strain name format used for sequences
     """
-    # TODO: load strain replacemen0ts and abbreviation replacements
+    strain_replacements = define_replacements(strain_replacements_file)
+    abbr_replacements = define_replacements(abbreviation_replacements_file)
+
     for record in records:
         virus_strain = record.get(virus_strain_field)
         serum_strain = record.get(serum_strain_field)
@@ -34,20 +38,19 @@ def preprocess_strain_names(records: Iterable[dict],
         if serum_strain is None:
             raise Exception(f"Records must have the expected serum strain field: {serum_strain_field!r}")
 
-        # TODO: HI_fix_name
-        record[new_virus_strain_field] = virus_strain
-        record[new_serum_strain_field] = serum_strain
+        record[new_virus_strain_field] = HI_fix_name(virus_strain, False, strain_replacements, abbr_replacements)
+        record[new_serum_strain_field] = HI_fix_name(serum_strain, True, strain_replacements, abbr_replacements)
 
         yield record
 
 
-def define_strain_fixes(self, fname):
-    '''
-    Open strain name fixing files and define corresponding dictionaries
+def define_replacements(fname: str) -> dict:
+    """
+    Open replacement file and return dict of replacements
 
-    Copied from nextstrain/fauna/vdb/upload.py
+    Modified from nextstrain/fauna/vdb/upload.py
     <https://github.com/nextstrain/fauna/blob/118aae93d08b0f7753f0d442e1665899fd6fd52b/vdb/upload.py#L142-L150>
-    '''
+    """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
     fix_whole_name = {}
     for line in reader:
@@ -55,17 +58,17 @@ def define_strain_fixes(self, fname):
     return fix_whole_name
 
 
-def HI_fix_name(self, name, serum):
-    '''
+def HI_fix_name(name: str, serum: bool, fix_whole_name: dict, HI_ref_name_abbrev: dict) -> str:
+    """
     Canonicalize strain names to match with vdb
 
-    Copied from nextstrain/fauna/tdb/upload.py
+    Modified from nextstrain/fauna/tdb/upload.py
     <https://github.com/nextstrain/fauna/blob/118aae93d08b0f7753f0d442e1665899fd6fd52b/tdb/upload.py#L146-L194>
-    '''
+    """
     # replace all accents with ? mark
     original_name = name.encode('ascii', 'replace').decode('unicode-escape')
     # Replace whole strain names
-    name = self.replace_strain_name(original_name, self.fix_whole_name)
+    name = replace_strain_name(original_name, fix_whole_name)
     lookup_month = {'Jan': '1', 'Feb': '2', 'Mar': '3', 'Apr': '4', 'May': '5', 'Jun': '6',
                         'Jul': '7', 'Aug': '8', 'Sep': '9', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
     name = name.replace('H1N1', '').replace('H5N6', '').replace('H3N2', '').replace('Human', '')\
@@ -104,16 +107,16 @@ def HI_fix_name(self, name, serum):
     if re.match(r'([A|B]/)([A-Za-z-]+)(/.+)', name):
         match = re.match(r'([A|B]/)([A-Za-z-]+)(/.+)', name)
         abbrev = match.group(2).upper()
-        if abbrev in self.HI_ref_name_abbrev:
-            name = match.group(1) + self.HI_ref_name_abbrev[abbrev] + match.group(3)
+        if abbrev in HI_ref_name_abbrev:
+            name = match.group(1) + HI_ref_name_abbrev[abbrev] + match.group(3)
     return name
 
 
-def replace_strain_name(self, original_name, fixes={}):
+def replace_strain_name(original_name, fixes={}):
     '''
     return the new strain name that will replace the original
 
-    Copied from nextstrain/fauna/tdb/upload.py
+    Modified from nextstrain/fauna/tdb/upload.py
     <https://github.com/nextstrain/fauna/blob/118aae93d08b0f7753f0d442e1665899fd6fd52b/tdb/upload.py#L196-L203>
     '''
     if original_name in fixes:
