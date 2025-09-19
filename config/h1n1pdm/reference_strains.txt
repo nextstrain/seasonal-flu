@@ -151,7 +151,6 @@ A/Pennsylvania/2/2021
 A/Pennsylvania/2/2021-egg
 A/Perth/10/2017
 A/Perth/103/2015
-A/Perth/456/2025
 A/Saarland/19/2024
 A/Shanghai-Putuo/SWL1666/2024
 A/Sichuan-Jingyang/SWL228/2024
