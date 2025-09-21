@@ -5,9 +5,6 @@ J.2.3	clade	J.2.3
 J.2.4	clade	J.2.4
 J.2.5	clade	J.2.5
 
-J.2:8D	clade	J.2
-J.2:8D	HA1	8	D
-
 J.2:135K	clade	J.2
 J.2:135K	HA1	135	K
 
@@ -21,3 +18,7 @@ J.2:135A-145N	HA1	145	N
 J.2:145N-261Q	clade	J.2
 J.2:145N-261Q	HA1	145	N
 J.2:145N-261Q	HA1	261	Q
+
+J.2.4:158D-160K	clade	J.2.4
+J.2.4:158D-160K	HA1	158	D
+J.2.4:158D-160K	HA1	160	K
