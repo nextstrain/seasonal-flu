@@ -16,7 +16,7 @@ def _():
 
 @app.cell
 def _():
-    lineage = "h3n2"
+    lineage = "h1n1pdm"
     return (lineage,)
 
 
@@ -26,6 +26,8 @@ def _(lineage):
         pivot = "C.1.9.3"
     elif lineage == "h3n2":
         pivot = "J.2.2"
+    elif lineage == "vic":
+        pivot = "C.5"
     return (pivot,)
 
 
@@ -141,9 +143,12 @@ def _(antigenic_advance):
 
 @app.cell
 def _(antigenic_advance):
+    human_advance_attribute = "kikawa_2025_cTiterSub"
+    #human_advance_attribute = "vcm_SH_2025_cTiterSub"
+
     antigenic_advance_per_haplotype = antigenic_advance.groupby("emerging_haplotype").aggregate(
-        human_advance_median=("kikawa_2025_cTiterSub", "median"),
-        human_advance_std=("kikawa_2025_cTiterSub", "std"),
+        human_advance_median=(human_advance_attribute, "median"),
+        human_advance_std=(human_advance_attribute, "std"),
         ferret_advance_median=("cell_hi_cTiterSub", "median"),
         ferret_advance_std=("cell_hi_cTiterSub", "std"),
     ).reset_index()
