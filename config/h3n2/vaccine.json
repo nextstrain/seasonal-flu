@@ -99,6 +99,16 @@
             "vaccine": {
                 "selection_date": "2024-09-27"
             }
+        },
+        "A/Sydney/1359/2024": {
+            "vaccine": {
+                "selection_date": "2025-09-26"
+            }
+        },
+        "A/Singapore/GP20238/2024-egg": {
+            "vaccine": {
+                "selection_date": "2025-09-26"
+            }
         }
     }
 }
