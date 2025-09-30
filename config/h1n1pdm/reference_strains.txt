@@ -120,6 +120,7 @@ A/Minnesota/32/2015
 A/Minnesota/34/2018
 A/Mississippi/10/2020-egg
 A/Missouri/11/2025
+A/Missouri/11/2025-egg
 A/Montana/50/2016
 A/Montana/50/2016-egg
 A/Navarra/1985/2017

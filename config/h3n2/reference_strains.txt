@@ -172,6 +172,8 @@ A/Sidney/7/2014
 A/Sidon/S0212/2022
 A/Sidon/S0213/2022
 A/Singapore/22/2012
+A/Singapore/GP20238/2024
+A/Singapore/GP20238/2024-egg
 A/Singapore/Infimh-16-0019/2016
 A/Singapore/Infimh-16-0019/2016-egg
 A/Singapore/MOH0334/2024
@@ -197,6 +199,7 @@ A/Switzerland/8060/2017-egg
 A/Switzerland/9715293/2013
 A/Switzerland/9715293/2013-egg
 A/Sydney/1304/2022
+A/Sydney/1359/2024
 A/Sydney/16/2025
 A/Sydney/22/2018
 A/Sydney/68/2025

@@ -54,6 +54,16 @@
             "vaccine": {
                 "selection_date": "2023-02-24"
             }
+        },
+        "A/Missouri/11/2025": {
+            "vaccine": {
+                "selection_date": "2025-09-26"
+            }
+        },
+        "A/Missouri/11/2025-egg": {
+            "vaccine": {
+                "selection_date": "2025-09-26"
+            }
         }
     }
 }
