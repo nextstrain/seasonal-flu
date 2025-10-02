@@ -302,7 +302,8 @@ rule merge_nextclade_with_metadata:
            --metadata-id-columns \
              metadata={params.metadata_id} \
              nextclade={params.nextclade_id} \
-           --output-metadata {output.merged} 2>&1 | tee {log}
+           --output-metadata /dev/stdout 2> {log} \
+           | csvtk mutate -t -f subclade -n subclade_nextclade > {output.merged}
         """
 
 def get_subsample_input(w):
