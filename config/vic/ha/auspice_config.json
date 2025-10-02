@@ -84,6 +84,16 @@
       ]
     },
     {
+      "key": "subclade_nextclade_ha",
+      "title": "HA subclade (Nextclade)",
+      "type": "categorical"
+    },
+    {
+      "key": "subclade_nextclade_na",
+      "title": "NA subclade (Nextclade)",
+      "type": "categorical"
+    },
+    {
       "key": "emerging_haplotype",
       "title": "Emerging haplotype",
       "type": "categorical",

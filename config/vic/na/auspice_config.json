@@ -84,43 +84,14 @@
       ]
     },
     {
-      "key": "proposed_subclade",
-      "title": "Proposed subclade",
-      "type": "categorical",
-      "scale": [
-        [
-          "B",
-          "#4068CF"
-        ],
-        [
-          "B.3",
-          "#5098B9"
-        ],
-        [
-          "B.5",
-          "#6CB28C"
-        ],
-        [
-          "B.7",
-          "#94BD62"
-        ],
-        [
-          "B.7.1",
-          "#BFBB47"
-        ],
-        [
-          "B.7.2",
-          "#DFA53B"
-        ],
-        [
-          "B.7.3",
-          "#E67131"
-        ],
-        [
-          "B.8",
-          "#DB2823"
-        ]
-      ]
+      "key": "subclade_nextclade_ha",
+      "title": "HA subclade (Nextclade)",
+      "type": "categorical"
+    },
+    {
+      "key": "subclade_nextclade_na",
+      "title": "NA subclade (Nextclade)",
+      "type": "categorical"
     },
     {
       "key": "lbi",
