@@ -74,7 +74,8 @@ Save the XLS file you downloaded (e.g., `gisaid_epiflu_isolates.xls`) as `data/h
 Return to the GISAID "Download" window, and select "Sequences (DNA) as FASTA".
 In the "DNA" section, select the checkbox for "HA".
 In the "FASTA Header" section, enter only `Isolate name`.
-Leave all other sections at the default values.
+Uncheck both boxes related to spaces in the FASTA header.
+Your settings should look like those shown in the screenshot below.
 
 ![Download sequences](images/04-download-sequences.png)
 
