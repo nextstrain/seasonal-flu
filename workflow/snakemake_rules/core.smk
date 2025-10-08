@@ -275,6 +275,7 @@ rule ancestral:
         annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
     output:
         node_data = build_dir + "/{build_name}/{segment}/muts.json",
+        sequences = build_dir + "/{build_name}/{segment}/ancestral_sequences.fasta",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
     params:
         inference = "joint",
@@ -298,8 +299,38 @@ rule ancestral:
             --genes {params.genes} \
             --translations "{params.input_translations}" \
             --output-node-data {output.node_data} \
+            --output-sequences {output.sequences} \
             --output-translations "{params.output_translations}" \
             --inference {params.inference} 2>&1 | tee {log} && touch {output.translations_done}
+        """
+
+rule clades_for_ancestral_sequences:
+    input:
+        sequences = build_dir + "/{build_name}/{segment}/ancestral_sequences.fasta",
+        nextclade_dataset = lambda wildcards: f"nextclade_dataset/{config['builds'][wildcards.build_name]['lineage']}_{wildcards.segment}/",
+    output:
+        annotations = build_dir + "/{build_name}/{segment}/nextclade_ancestral_sequences.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/clades_for_ancestral_sequences_{build_name}_{segment}.txt"
+    log:
+        "logs/clades_for_ancestral_sequences_{build_name}_{segment}.txt"
+    threads: 8
+    resources:
+        mem_mb=16000,
+        time="0:30:00",
+    params:
+        columns="seqName,clade_membership,subclade",
+    shell:
+        r"""
+        nextclade run\
+            {input.sequences} \
+            -D {input.nextclade_dataset} \
+            --gap-alignment-side right \
+            --jobs {threads} \
+            --output-tsv /dev/stdout 2> {log} \
+            | csvtk rename -t -f clade -n clade_membership \
+            | tsv-select -H -f {params.columns} > {output.annotations}
         """
 
 rule traits:
@@ -329,74 +360,30 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
-rule download_clades:
-    output:
-        clades="config/{lineage}/{segment}/clades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: clade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.clades} "{params.url}"
-        """
-
-# Determine clades with HA mutations.
-rule clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/ha/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
-    output:
-        node_data = build_dir + "/{build_name}/ha/clades.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/clades_{build_name}.txt"
-    log:
-        "logs/clades_{build_name}.txt"
-    shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
-
-rule download_subclades:
-    output:
-        subclades="config/{lineage}/{segment}/subclades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.subclades} "{params.url}"
-        """
-
-# Determine subclades for na and ha.
 rule subclades:
     input:
+        nextclade_annotations = build_dir + "/{build_name}/{segment}/nextclade_ancestral_sequences.tsv",
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
-        muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name].get("subclades"),
     output:
         node_data = build_dir + "/{build_name}/{segment}/subclades.json",
     params:
-        membership_name = "subclade",
-        label_name = "Subclade",
+        index_column="seqName",
+        columns = [
+            "clade_membership=clade",
+            "subclade=Subclade",
+        ],
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/subclades_{build_name}_{segment}.txt"
     log:
         "logs/subclades_{build_name}_{segment}.txt"
     shell:
-        """
-        augur clades \
+        r"""
+        python scripts/table_to_node_data.py \
+            --table {input.nextclade_annotations} \
             --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --membership-name {params.membership_name} \
-            --label-name {params.label_name} \
+            --index-column {params.index_column:q} \
+            --branch-labels {params.columns:q} \
             --output {output.node_data} 2>&1 | tee {log}
         """
 
@@ -405,9 +392,9 @@ rule import_clades:
     input:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = build_dir + "/{build_name}/ha/clades.json",
+        clades = build_dir + "/{build_name}/ha/subclades.json",
     output:
-        node_data = build_dir + "/{build_name}/{segment}/clades.json",
+        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/import_clades_{build_name}_{segment}.txt"
@@ -449,7 +436,7 @@ rule annotate_derived_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
         translations=build_dir + "/{build_name}/ha/translations.done",
-        clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json" if "subclades" in config["builds"][wildcards.build_name] else build_dir + "/{build_name}/ha/clades.json",
+        clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json",
     output:
         haplotypes=build_dir + "/{build_name}/ha/derived_haplotypes.json",
     conda: "../envs/nextstrain.yaml"
@@ -460,8 +447,8 @@ rule annotate_derived_haplotypes:
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
         alignment=build_dir + "/{build_name}/ha/translations/HA1_withInternalNodes.fasta",
-        clade_label_attribute=lambda wildcards: "Subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade",
-        clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
+        clade_label_attribute="Subclade",
+        clade_node_attribute="subclade",
     shell:
         """
         python3 scripts/annotate_derived_haplotypes.py \

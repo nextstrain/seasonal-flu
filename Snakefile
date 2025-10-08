@@ -21,31 +21,8 @@ lineage_name_by_abbreviation = {
     "yam": "Yam",
 }
 
-clade_url_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv",
-    },
-    "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv",
-    },
-    "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/clades.tsv",
-    }
-}
-
-subclade_url_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv",
-    },
-    "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv",
-    },
-    "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
-    }
+nextclade_dataset_by_lineage_and_segment = {
+    "h3n2_ha": "flu_h3n2_ha_broad",
 }
 
 include: "workflow/snakemake_rules/common.smk"
