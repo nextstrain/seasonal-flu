@@ -76,11 +76,6 @@
       ]
     },
     {
-      "key": "subclade_nextclade",
-      "title": "Subclade (Nextclade)",
-      "type": "categorical"
-    },
-    {
       "key": "emerging_haplotype",
       "title": "Emerging haplotype",
       "type": "categorical",
