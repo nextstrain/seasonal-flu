@@ -319,8 +319,6 @@ rule clades_for_ancestral_sequences:
     resources:
         mem_mb=16000,
         time="0:30:00",
-    params:
-        columns="seqName,clade_membership,subclade",
     shell:
         r"""
         nextclade run\
@@ -328,9 +326,7 @@ rule clades_for_ancestral_sequences:
             -D {input.nextclade_dataset} \
             --gap-alignment-side right \
             --jobs {threads} \
-            --output-tsv /dev/stdout 2> {log} \
-            | csvtk rename -t -f clade -n clade_membership \
-            | tsv-select -H -f {params.columns} > {output.annotations}
+            --output-tsv {output.annotations} 2>&1 | tee {log}
         """
 
 rule traits:
@@ -360,6 +356,34 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
+rule clades:
+    input:
+        nextclade_annotations = build_dir + "/{build_name}/ha/nextclade_ancestral_sequences.tsv",
+        tree = build_dir + "/{build_name}/ha/tree.nwk",
+    output:
+        node_data = build_dir + "/{build_name}/ha/clades.json",
+    params:
+        index_column="seqName",
+        columns = ["clade"],
+        column_to_branch_label = ["clade=clade"],
+        column_to_node_attribute = ["clade=clade_membership"],
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/clades_{build_name}_ha.txt"
+    log:
+        "logs/clades_{build_name}_ha.txt"
+    shell:
+        r"""
+        python scripts/table_to_node_data.py \
+            --table {input.nextclade_annotations} \
+            --tree {input.tree} \
+            --index-column {params.index_column:q} \
+            --columns {params.columns:q} \
+            --branch-labels {params.column_to_branch_label:q} \
+            --column-to-node-attribute {params.column_to_node_attribute:q} \
+            --output {output.node_data} 2>&1 | tee {log}
+        """
+
 rule subclades:
     input:
         nextclade_annotations = build_dir + "/{build_name}/{segment}/nextclade_ancestral_sequences.tsv",
@@ -368,10 +392,9 @@ rule subclades:
         node_data = build_dir + "/{build_name}/{segment}/subclades.json",
     params:
         index_column="seqName",
-        columns = [
-            "clade_membership=clade",
-            "subclade=Subclade",
-        ],
+        columns = lambda wildcards: ["subclade"] if wildcards.segment == "ha" else ["clade"],
+        column_to_branch_label = lambda wildcards: ["subclade=Subclade"] if wildcards.segment == "ha" else ["clade=Subclade"],
+        column_to_node_attribute = lambda wildcards: ["subclade=subclade"] if wildcards.segment == "ha" else ["clade=subclade"],
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/subclades_{build_name}_{segment}.txt"
@@ -383,7 +406,9 @@ rule subclades:
             --table {input.nextclade_annotations} \
             --tree {input.tree} \
             --index-column {params.index_column:q} \
-            --branch-labels {params.columns:q} \
+            --columns {params.columns:q} \
+            --branch-labels {params.column_to_branch_label:q} \
+            --column-to-node-attribute {params.column_to_node_attribute:q} \
             --output {output.node_data} 2>&1 | tee {log}
         """
 
@@ -392,9 +417,9 @@ rule import_clades:
     input:
         tree = build_dir + "/{build_name}/ha/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = build_dir + "/{build_name}/ha/subclades.json",
+        clades = build_dir + "/{build_name}/ha/clades.json",
     output:
-        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+        node_data = build_dir + "/{build_name}/{segment}/clades.json",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/import_clades_{build_name}_{segment}.txt"

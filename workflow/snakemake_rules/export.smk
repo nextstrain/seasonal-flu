@@ -8,7 +8,7 @@ def _get_node_data_by_wildcards(wildcards):
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.subclades.output.node_data,
+        rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
     ]
@@ -20,6 +20,10 @@ def _get_node_data_by_wildcards(wildcards):
     # configurations defined.
     if _get_build_distance_map_config(wildcards) is not None:
         inputs.append(rules.distances.output.distances)
+
+
+    if config["builds"][wildcards.build_name].get('subclades', False):
+        inputs.append(rules.subclades.output.node_data)
 
     if wildcards.segment == "ha" and config["builds"][wildcards.build_name].get('emerging_haplotypes', False):
         inputs.append(rules.emerging_haplotypes.output.node_data)

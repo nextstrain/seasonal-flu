@@ -13,8 +13,10 @@ if __name__ == "__main__":
     parser.add_argument("--table", required=True, help="table to convert to a node data JSON")
     parser.add_argument("--tree", help="tree with named internal nodes that match the index column values in the given table. Only required for assigning branch labels.")
     parser.add_argument("--index-column", default="strain", help="name of the column to use as an index")
+    parser.add_argument("--columns", nargs="+", help="optional list of columns in the given table to include in the output. If not provided, all columns will be included.")
     parser.add_argument("--node-name", default="nodes", help="name of the node data attribute in the JSON output")
-    parser.add_argument("--branch-labels", nargs="+", help="Add branch labels where there is a change in trait inferred for that column. You must supply this for each column you would like to label. By default the branch label key the same as the column name, but you may customise this via the COLUMN=NAME syntax.")
+    parser.add_argument("--branch-labels", nargs="+", help="optional map of column names to branch labels. You must supply this for each column you would like to label. By default the branch label key the same as the column name, but you may customise this via the COLUMN=LABEL syntax.")
+    parser.add_argument("--column-to-node-attribute", nargs="+", help="optional map of column names to node attributes in the node data JSON in the format of COLUMN=ATTRIBUTE")
     parser.add_argument("--output", required=True, help="node data JSON file")
 
     args = parser.parse_args()
@@ -28,7 +30,18 @@ if __name__ == "__main__":
         dtype=str,
     )
 
-    table_dict = table.transpose().to_dict()
+    if args.columns:
+        table = table.loc[:, args.columns].copy()
+
+    # Optionally rename columns to new node attribute names.
+    column_to_node_attribute = {}
+    if args.column_to_node_attribute:
+        column_to_node_attribute = dict(
+            tuple(value.split("="))
+            for value in args.column_to_node_attribute
+        )
+
+    table_dict = table.rename(columns=column_to_node_attribute).transpose().to_dict()
     node_data = {
         args.node_name: table_dict,
     }
