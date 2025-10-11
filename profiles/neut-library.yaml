@@ -1,0 +1,36 @@
+custom_rules:
+  - workflow/snakemake_rules/download_from_s3.smk
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_submitted
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+builds:
+    h3n2:
+      lineage: h3n2
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      clades: "config/h3n2/ha/clades.tsv"
+      subclades: "config/h3n2/{segment}/subclades.tsv"
+      auspice_config: "config/h3n2/{segment}/auspice_config.json"
+      subsamples: &subsampling
+        global:
+            filters: --min-date 2025-09-01 --exclude-ambiguous-dates-by month --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus\` == 'good'"
+    h1n1pdm:
+      lineage: h1n1pdm
+      reference: "config/h1n1pdm/{segment}/reference.fasta"
+      annotation: "config/h1n1pdm/{segment}/genemap.gff"
+      clades: "config/h1n1pdm/ha/clades.tsv"
+      subclades: "config/h1n1pdm/{segment}/subclades.tsv"
+      auspice_config: "config/h1n1pdm/{segment}/auspice_config.json"
+      subsamples: *subsampling
