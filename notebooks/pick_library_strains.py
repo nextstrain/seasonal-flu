@@ -97,13 +97,19 @@ def _(epitope_sites, lineage, pd, rbs_sites):
 
 @app.cell
 def _(df):
-    (df["derived_haplotype"].value_counts() > 0).sum()
-    return
+    distinct_haplotypes = (df["derived_haplotype"].value_counts() > 0).sum()
+    return (distinct_haplotypes,)
 
 
 @app.cell
 def _(df):
-    (df["derived_haplotype"].value_counts() > 1).sum()
+    non_singleton_distinct_haplotypes = (df["derived_haplotype"].value_counts() > 1).sum()
+    return (non_singleton_distinct_haplotypes,)
+
+
+@app.cell
+def _(distinct_haplotypes, lineage, mo, non_singleton_distinct_haplotypes):
+    mo.md(rf"""Found {distinct_haplotypes} distinct haplotypes for {lineage} including {non_singleton_distinct_haplotypes} with more than 1 sequence.""")
     return
 
 
