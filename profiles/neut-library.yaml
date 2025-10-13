@@ -25,7 +25,7 @@ builds:
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       subsamples: &subsampling
         global:
-            filters: --min-date 2025-09-01 --exclude-ambiguous-dates-by month --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus\` == 'good'"
+            filters: --min-date 2025-05-01 --exclude-ambiguous-dates-by month --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus\` == 'good'"
     h1n1pdm:
       lineage: h1n1pdm
       reference: "config/h1n1pdm/{segment}/reference.fasta"
