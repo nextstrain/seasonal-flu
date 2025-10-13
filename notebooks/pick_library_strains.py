@@ -47,8 +47,19 @@ def _(
 
 
 @app.cell
-def _():
-    min_date = "2025-09-01"
+def _(mo):
+    min_date_picker = mo.ui.date(
+        start="2025-05-01",
+        value="2025-09-01",
+        label="min date:",
+    )
+    min_date_picker
+    return (min_date_picker,)
+
+
+@app.cell
+def _(min_date_picker):
+    min_date = min_date_picker.value.strftime("%Y-%m-%d")
     return (min_date,)
 
 
@@ -58,7 +69,7 @@ def _(mo):
         start=1,
         stop=20,
         value=2,
-        label="min sequences",
+        label="min sequences:",
     )
     min_sequences_picker
     return (min_sequences_picker,)
@@ -177,7 +188,6 @@ def _(
     return (
         data_frame_by_lineage,
         haplotypes_by_lineage,
-        lineage_paths,
         nonsingleton_haplotypes_by_lineage,
     )
 
@@ -206,7 +216,7 @@ def summarize_haplotypes(data_frame):
 
 
 @app.cell
-def _(data_frame_by_lineage, lineage_paths, paths_by_lineage):
+def _(data_frame_by_lineage, paths_by_lineage):
     summary_by_lineage = {}
     for _lineage, _lineage_paths in paths_by_lineage.items():    
         summary_by_lineage[_lineage] = summarize_haplotypes(
@@ -214,7 +224,7 @@ def _(data_frame_by_lineage, lineage_paths, paths_by_lineage):
         )
 
         summary_by_lineage[_lineage].to_csv(
-            lineage_paths["output"],
+            _lineage_paths["output"],
             sep="\t",
         )
     return (summary_by_lineage,)
