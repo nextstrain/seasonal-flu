@@ -26,6 +26,7 @@ builds:
       subclades: "config/h3n2/{segment}/subclades.tsv"
       emerging_haplotypes: "config/h3n2/{segment}/emerging_haplotypes.tsv"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
+      vaccines: "config/h3n2/vaccine.json"
       subsamples: &subsampling
         global:
             filters: "--subsample-max-sequences 300 --group-by region month --min-date 1Y --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True'"
@@ -38,6 +39,7 @@ builds:
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
       emerging_haplotypes: "config/h1n1pdm/{segment}/emerging_haplotypes.tsv"
       auspice_config: "config/h1n1pdm/{segment}/auspice_config.json"
+      vaccines: "config/h1n1pdm/vaccine.json"
       subsamples: *subsampling
     vic:
       lineage: vic
@@ -48,4 +50,5 @@ builds:
       subclades: "config/vic/{segment}/subclades.tsv"
       emerging_haplotypes: "config/vic/{segment}/emerging_haplotypes.tsv"
       auspice_config: "config/vic/{segment}/auspice_config.json"
+      vaccines: "config/vic/vaccine.json"
       subsamples: *subsampling
