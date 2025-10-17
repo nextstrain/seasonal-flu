@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.13.15"
+__generated_with = "0.14.17"
 app = marimo.App(width="medium")
 
 
@@ -8,9 +8,11 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
 
+    import datetime
     import json
+    import numpy as np
     import pandas as pd
-    return json, mo, pd
+    return datetime, json, mo, np, pd
 
 
 @app.cell(hide_code=True)
@@ -44,6 +46,15 @@ def _(
     """
     )
     return
+
+
+@app.cell
+def _():
+    pivot_by_lineage = {
+        "h1n1pdm": "D.3.1",
+        "h3n2": "J.2.4",
+    }
+    return (pivot_by_lineage,)
 
 
 @app.cell
@@ -87,12 +98,14 @@ def _():
         "h1n1pdm": {
             "distance_map": "config/distance_maps/h1n1pdm/ha/canton.json",
             "metadata": "builds/h1n1pdm/metadata.tsv",
+            "ga": "h1n1pdm_ga.tsv",
             "output": "h1n1pdm_haplotypes.tsv",
         },
         "h3n2": {
             "distance_map": "config/distance_maps/h3n2/ha/wolf.json",
             "rbs_distance_map": "config/distance_maps/h3n2/ha/koel.json",
             "metadata": "builds/h3n2/metadata.tsv",
+            "ga": "h3n2_ga.tsv",
             "output": "h3n2_haplotypes.tsv",
         },
     }
@@ -137,6 +150,10 @@ def _(pd):
         )
 
         df["derived_haplotype"] = (df["subclade"] + ":" + df["founder_ha1_substitutions"]).str.rstrip(":")
+
+        df["ha1_mutations_from_subclade"] = df["founder_ha1_substitutions"].apply(
+            lambda subs: len(subs.split(","))
+        )
 
         df["epitope_mutations_from_subclade"] = df["founder_ha1_substitutions"].apply(
             lambda subs: sum(
@@ -192,40 +209,107 @@ def _(
     )
 
 
-@app.function
-def summarize_haplotypes(data_frame):
-    strain_to_accession = dict(data_frame.loc[:, ["strain", "gisaid_epi_isl"]].values)
+@app.cell
+def _(datetime, pd):
+    def summarize_haplotypes(data_frame):
+        strain_to_accession = dict(data_frame.loc[:, ["strain", "gisaid_epi_isl"]].values)
 
-    summary = data_frame.groupby("derived_haplotype").aggregate(
-        count=("derived_haplotype", "count"),
-        mean_epitope_mutations=("epitope_mutations_from_subclade", "mean"),
-        mean_rbs_mutations=("rbs_mutations_from_subclade", "mean"),
-        mean_glycosylation_count=("glycosylation_count", "mean"),
-        latest_sequence=("date", "max"),
-        representative_strain=("strain", "first"),
-    ).sort_values(
-        "count",
-        ascending=False,
-    )
+        summary = data_frame.groupby("derived_haplotype").aggregate(
+            count=("derived_haplotype", "count"),
+            mean_ha1_mutations=("ha1_mutations_from_subclade", "mean"),
+            mean_epitope_mutations=("epitope_mutations_from_subclade", "mean"),
+            mean_rbs_mutations=("rbs_mutations_from_subclade", "mean"),
+            mean_glycosylation_count=("glycosylation_count", "mean"),
+            latest_sequence=("date", "max"),
+            representative_strain=("strain", "first"),
+        ).sort_values(
+            "count",
+            ascending=False,
+        )
 
-    summary["representative_strain_accession"] = summary["representative_strain"].map(
-        strain_to_accession
-    )
+        summary["representative_strain_accession"] = summary["representative_strain"].map(
+            strain_to_accession
+        )
 
-    return summary
+        summary["days_since_latest_sequence"] = (pd.to_datetime(datetime.date.today()) - pd.to_datetime(summary["latest_sequence"])).dt.days
+
+        return summary
+    return (summarize_haplotypes,)
 
 
 @app.cell
-def _(data_frame_by_lineage, paths_by_lineage):
+def _(
+    data_frame_by_lineage,
+    np,
+    paths_by_lineage,
+    pd,
+    pivot_by_lineage,
+    summarize_haplotypes,
+):
     summary_by_lineage = {}
     for _lineage, _lineage_paths in paths_by_lineage.items():    
-        summary_by_lineage[_lineage] = summarize_haplotypes(
+        lineage_summary = summarize_haplotypes(
             data_frame_by_lineage[_lineage],
         )
 
+        # Load GAs for lineage.
+        ga = pd.read_csv(_lineage_paths["ga"], sep="\t")
+        hier_ga = ga.loc[ga["location"] == "hierarchical", ["variant", "median"]].rename(
+            columns={
+                "variant": "derived_haplotype",
+                "median": "median_ga",
+            }
+        )
+
+        hier_ga = pd.concat([
+            hier_ga,
+            pd.DataFrame([{
+                "derived_haplotype": pivot_by_lineage[_lineage],
+                "median_ga": 1.0,
+            }])
+        ])
+
+        # Calculate the weighted population average GA.
+        hier_ga = hier_ga.merge(
+            lineage_summary.reset_index().loc[:, ["derived_haplotype", "count"]],
+            on="derived_haplotype",
+        )
+        hier_ga["frequency"] = hier_ga["count"] / hier_ga["count"].sum()
+        weighted_mean_population_ga = (hier_ga["frequency"] * hier_ga["median_ga"]).sum()
+        print(weighted_mean_population_ga)
+
+        hier_ga["relative_fitness"] = np.log(hier_ga["median_ga"]) - np.log(weighted_mean_population_ga)
+        hier_ga = hier_ga.drop(columns=["count"])
+    
+        # Annotate summary by median hierarchical GA.
+        lineage_summary = lineage_summary.merge(
+            hier_ga,
+            how="left",
+            on="derived_haplotype",
+        )
+        lineage_summary["median_ga"] = lineage_summary["median_ga"].fillna(0.0)
+        lineage_summary["relative_fitness"] = lineage_summary["relative_fitness"].fillna(0.0)
+
+        # Score haplotypes following approach for clade assignment in:
+        # https://github.com/influenza-clade-nomenclature/clade-suggestion-algorithm
+        lineage_summary["score_mutations"] = (
+            (lineage_summary["mean_ha1_mutations"] * 1) +
+            (lineage_summary["mean_epitope_mutations"] * 2) +
+            (lineage_summary["mean_rbs_mutations"] * 3)
+        )
+        lineage_summary["score_mutations"] = lineage_summary["score_mutations"] / (4 + lineage_summary["score_mutations"])
+        lineage_summary["score_fitness"] = lineage_summary["relative_fitness"] / lineage_summary["relative_fitness"].abs().max()
+
+        lineage_summary["score_total"] = lineage_summary["score_mutations"] + lineage_summary["score_fitness"]
+
+        summary_by_lineage[_lineage] = lineage_summary.sort_values(
+            "score_total",
+            ascending=False,
+        )
         summary_by_lineage[_lineage].to_csv(
             _lineage_paths["output"],
             sep="\t",
+            index=False,
         )
     return (summary_by_lineage,)
 
@@ -237,8 +321,40 @@ def _(summary_by_lineage):
 
 
 @app.cell
+def _(min_sequences, summary_by_lineage):
+    ((~summary_by_lineage["h1n1pdm"]["derived_haplotype"].str.startswith("D.3.1")) & (summary_by_lineage["h1n1pdm"]["count"] >= min_sequences)).sum()
+    return
+
+
+@app.cell
 def _(summary_by_lineage):
     summary_by_lineage["h3n2"]
+    return
+
+
+@app.cell
+def _(min_sequences, summary_by_lineage):
+    ((~summary_by_lineage["h3n2"]["derived_haplotype"].str.startswith("J.2")) & (summary_by_lineage["h3n2"]["count"] >= min_sequences)).sum()
+    return
+
+
+@app.cell
+def _(data_frame_by_lineage):
+    data_frame_by_lineage["h1n1pdm"].loc[:, ["strain", "date", "region", "derived_haplotype"]].to_csv(
+        "h1n1pdm_metadata_with_nextclade.tsv",
+        sep="\t",
+        index=False,
+    )
+    return
+
+
+@app.cell
+def _(data_frame_by_lineage):
+    data_frame_by_lineage["h3n2"].loc[:, ["strain", "date", "region", "derived_haplotype"]].to_csv(
+        "h3n2_metadata_with_nextclade.tsv",
+        sep="\t",
+        index=False,
+    )
     return
 
 
