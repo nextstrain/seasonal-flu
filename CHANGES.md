@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 22 October 2025
+
+- Nextclade: Migrate unmaintained clade labels to a new `legacy-clade` column, report subclades in the `clade` column, and retain the original `subclade` column for backward compatibility. See [#262](https://github.com/nextstrain/seasonal-flu/pull/262/) for details.
+
 # 30 September 2025
 
 - Add new vaccine strains for H1N1pdm and H3N2 based on [the WHO recommendations for the Southern Hemisphere 2026](https://www.who.int/news/item/26-09-2025-recommendations-announced-for-influenza-vaccine-composition-for-the-2026-southern-hemisphere-influenza-season). See [#256](https://github.com/nextstrain/seasonal-flu/pull/256) for details.

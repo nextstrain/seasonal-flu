@@ -78,3 +78,13 @@ A/Colorado/90/2025
 A/Tokyo/24238/2024
 A/Darwin/172/2025
 A/India/PUN_NIVCOV2512/2025
+
+#J.2.4.1
+A/Wisconsin/114/2025
+A/Massachusetts/106/2025
+A/SouthAustralia/2527007683/2025
+
+# J.2.5
+A/NewYork/PX16967/2025
+A/Yokohama/30/2025
+A/Minnesota/ISC-1357/2025

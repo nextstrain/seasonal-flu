@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/nextstrain/nextclade/refs/heads/release/packages/nextclade-schemas/input-pathogen-json.schema.json",
   "schemaVersion": "3.0.0",
   "alignmentParams": {
     "excessBandwidth": 9,

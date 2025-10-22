@@ -20,8 +20,8 @@
       "type": "categorical"
     },
     {
-      "key": "subclade",
-      "title": "Subclade",
+      "key": "legacy-clade",
+      "title": "Legacy clade",
       "type": "categorical"
     },
     {
