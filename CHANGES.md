@@ -9,6 +9,7 @@ The "__NEXT__" heading below describes changes in the unreleased development sou
 
 # 22 October 2025
 
+- Set default clade and branch label to "subclade" for all public Nextstrain builds. See commit [6fb8478](https://github.com/nextstrain/seasonal-flu/commit/6fb8478234f65a576210ef6222899751d04a811c).
 - Nextclade: Migrate unmaintained clade labels to a new `legacy-clade` column, report subclades in the `clade` column, and retain the original `subclade` column for backward compatibility. See [#262](https://github.com/nextstrain/seasonal-flu/pull/262/) for details.
 
 # 30 September 2025
