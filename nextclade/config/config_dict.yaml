@@ -8,10 +8,13 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
+          key: "legacy-clade"
         short-clade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv"
           key: "short-clade"
         subclade:
+          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
+        subclade_backcompat:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
         proposedSubclade:
@@ -51,7 +54,10 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
+          key: "legacy-clade"
         subclade:
+          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
+        subclade_backcompat:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
         short-clade:
@@ -94,7 +100,10 @@ builds:
       clade_systems:
         clade:
           url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
+          key: "legacy-clade"
         subclade:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+        subclade_backcompat:
           url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
         proposedSubclade:

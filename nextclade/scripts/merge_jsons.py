@@ -3,26 +3,31 @@ import argparse
 
 def get_clade_configs(name):
     return {
-    "short_clades": {
-        "name": "short_clade",
-        "displayName": "Abbreviated clade name",
-        "description": "For recent subclades with long names, the prefix describing their history is omitted."
+    "legacy-clade": {
+        "name": "legacy-clade",
+        "displayName": "Legacy clade",
+        "description": "Previous clades system that is no longer actively used.",
+        "hideInWeb": True,
     },
-    "short-clades": {
+    "short-clade": {
         "name": "short-clade",
-        "displayName": "Abbreviated clade name",
-        "description": "For recent subclades with long names, the prefix describing their history is omitted."
+        "displayName": "Abbr.legacy clade name",
+        "description": "Shortened names of legacy clades.",
+        "skipAsReference": True
     },
     "subclade": {
         "name": "subclade",
         "displayName": "Subclade",
-        "description": "Experimental fine-grained subclade annotation."
+        "description": "Fine-grained subclade annotation.",
+        "hideInWeb": True,
+        "skipAsReference": True
     },
     "proposedSubclade": {
         "name": "proposedSubclade",
         "displayName": "Proposed subclade",
         "description": "Includes proposals of new subclades. These can change anytime.",
-        "hideInWeb": True
+        "hideInWeb": True,
+        "skipAsReference": True
     }}.get(name, {'name':name, "displayName":name, "description":""})
 
 
@@ -61,11 +66,11 @@ if __name__=="__main__":
 
     if len(args.clades):
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
-            get_clade_configs(c) for c in args.clades if c!='default'
+            get_clade_configs(c) for c in args.clades if c not in ['default']
         ]
-    if 'subclade' in args.clades:
-        auspice_json['display_defaults']['color_by'] = 'subclade'
-        auspice_json['display_defaults']['branch_label'] = 'subclade'
+    # if 'subclade' in args.clades:
+    #     auspice_json['display_defaults']['color_by'] = 'subclade'
+    #     auspice_json['display_defaults']['branch_label'] = 'subclade'
 
     with open(args.output_pathogen, 'w') as fh:
         json.dump(pathogen_json, fh, indent=2)
