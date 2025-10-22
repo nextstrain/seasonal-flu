@@ -82,7 +82,7 @@ A/India/PUN_NIVCOV2512/2025
 #J.2.4.1
 A/Wisconsin/114/2025
 A/Massachusetts/106/2025
-A/South Australia/2527007683/2025
+A/SouthAustralia/2527007683/2025
 
 # J.2.5
 A/NewYork/PX16967/2025
