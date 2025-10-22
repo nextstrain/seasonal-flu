@@ -68,9 +68,6 @@ if __name__=="__main__":
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
             get_clade_configs(c) for c in args.clades if c not in ['default']
         ]
-    # if 'subclade' in args.clades:
-    #     auspice_json['display_defaults']['color_by'] = 'subclade'
-    #     auspice_json['display_defaults']['branch_label'] = 'subclade'
 
     with open(args.output_pathogen, 'w') as fh:
         json.dump(pathogen_json, fh, indent=2)
