@@ -429,7 +429,7 @@ rule emerging_haplotypes:
         haplotypes_table=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
         node_data=build_dir + "/{build_name}/{segment}/emerging_haplotypes.json",
     params:
-        clade_column="subclade",
+        clade_column="clade",
         membership_name="emerging_haplotype",
     conda: "../envs/nextstrain.yaml"
     log:
