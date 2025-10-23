@@ -20,6 +20,14 @@ on:
         description: "Specific container image to use for nextflu-private group builds"
         required: false
         type: string
+      triggerForecastsFlu:
+        description: "Trigger forecasts-flu models"
+        required: true
+        type: boolean
+      forecastsFluDockerImage:
+        description: "Specific container image to use for forecasts-flu models"
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}
@@ -62,11 +70,17 @@ jobs:
       matrix:
         include:
           - trigger: ${{ inputs.triggerPublic }}
+            repo: seasonal-flu
             workflow: run-public-builds.yaml
             image: ${{ inputs.publicDockerImage }}
           - trigger: ${{ inputs.triggerNextfluPrivate }}
+            repo: seasonal-flu
             workflow: run-nextflu-private-builds.yaml
             image: ${{ inputs.nextfluPrivateDockerImage }}
+          - trigger: ${{ inputs.triggerForecastsFlu }}
+            repo: forecasts-flu
+            workflow: run-models.yaml
+            image: ${{ inputs.forecastsFluDockerImage }}
     runs-on: ubuntu-latest
     steps:
       - if: ${{ matrix.trigger }}
@@ -74,7 +88,7 @@ jobs:
         run: |
           gh workflow run \
             ${{ matrix.workflow }} \
-            --repo nextstrain/seasonal-flu \
+            --repo nextstrain/${{ matrix.repo }} \
             -f dockerImage=${{ matrix.image }}
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
