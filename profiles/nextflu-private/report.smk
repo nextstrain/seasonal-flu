@@ -118,7 +118,7 @@ rule get_derived_haplotypes:
     conda: "../../workflow/envs/nextstrain.yaml"
     params:
         genes=["HA1"],
-        clade_column="subclade",
+        clade_column="clade",
         mutations_column="founderMuts['subclade'].aaSubstitutions",
         derived_haplotype_column="derived_haplotype",
     shell:
