@@ -240,11 +240,15 @@ rule get_nextclade_dataset_for_lineage_and_segment:
     output:
         nextclade_dir=directory("nextclade_dataset/{lineage}_{segment}/"),
     params:
+        dataset_name=lambda wildcards: nextclade_dataset_by_lineage_and_segment.get(
+            f"{wildcards.lineage}_{wildcards.segment}",
+            f"nextstrain/flu/{wildcards.lineage}/{wildcards.segment}"
+        ),
         nextclade_server_arg=lambda wildcards: f"--server={shquotewords(config['nextclade_server'])}" if config.get("nextclade_server") else "",
     shell:
         r"""
-        nextclade3 dataset get \
-            -n 'nextstrain/flu/{wildcards.lineage}/{wildcards.segment}' \
+        nextclade dataset get \
+            -n {params.dataset_name} \
             {params.nextclade_server_arg} \
             --output-dir {output.nextclade_dir}
         """
@@ -302,7 +306,8 @@ rule merge_nextclade_with_metadata:
            --metadata-id-columns \
              metadata={params.metadata_id} \
              nextclade={params.nextclade_id} \
-           --output-metadata {output.merged} 2>&1 | tee {log}
+           --output-metadata /dev/stdout 2> {log} \
+           | csvtk mutate -t -f subclade -n subclade_nextclade > {output.merged}
         """
 
 def get_subsample_input(w):
