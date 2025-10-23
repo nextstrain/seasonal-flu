@@ -119,7 +119,7 @@ rule get_derived_haplotypes:
     params:
         genes=["HA1"],
         clade_column="clade",
-        mutations_column="founderMuts['subclade'].aaSubstitutions",
+        mutations_column="founderMuts['clade'].aaSubstitutions",
         derived_haplotype_column="derived_haplotype",
     shell:
         """
