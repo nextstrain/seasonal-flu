@@ -1,7 +1,7 @@
 ---
 title: "Nextstrain seasonal influenza report for {{long_month}} {{year}}"
 date: "{{long_month}} {{day}}, {{year}}"
-dataset: https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=subclade&c=emerging_haplotype&d=tree&label=clade:5a.2a&p=full
+dataset: https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree&label=clade:5a.2a&p=full
 abstract: TKTK
 ---
 
@@ -25,27 +25,29 @@ abstract: TKTK
 ![Vic genome sequence counts per region](../figures/total-sample-count_vic.png)
 ```
 
-# [Recent H1N1pdm submissions](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:5a.2a&p=grid)
+# [Recent H1N1pdm submissions](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:5a.2a&p=grid)
 
 Counts reflect all sequences submitted in the last month and with a Nextclade QC value better than "bad".
 
 {{h1n1pdm_clade_counts}}
 
-# [Global H1N1pdm circulation](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=grid)
+# [Global H1N1pdm circulation](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=grid)
 
 # [Location-specific H1N1pdm clade frequencies and growth advantages](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=subclade&d=tree,map,frequencies&f_year_month={{year_month_filter}}&p=grid&label=clade:5a.2a)
+
+[View in interactive visualization](https://nextstrain.github.io/forecasts-flu/?tab=h1n1pdm%2Fregion&date={{date}}).
 
 ```auspiceMainDisplayMarkdown
 ## HA subclade frequencies per location
 
-![H1N1pdm HA clade frequencies](../../forecasts-flu/plots/h1n1pdm/region/freq/freq_by_location.png)
+![H1N1pdm HA clade frequencies](../figures/h1n1pdm_mlr_frequencies.png)
 
 Frequencies modeled with a multinomial logistic regression model.
 The solid lines show median frequencies per location and clade while the shading shows lower and upper 95% highest posterior density intervals for the median.
 
 ## Growth advantages per location and overall (hierarchical)
 
-![H1N1pdm growth advantages](../../forecasts-flu/plots/h1n1pdm/region/ga/ga_by_location.png)
+![H1N1pdm growth advantages](../figures/h1n1pdm_mlr_growth_advantages.png)
 
 ```
 
@@ -67,27 +69,29 @@ The "delta frequency" is the change in frequency between the current frequency a
 
 # [H1N1pdm local branching index](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}:/seasonal-flu/h1n1pdm/na/2y@{{date}}?branchLabel=aa&c=lbi&d=tree&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=full&transmissions=hide&m=div)
 
-# [Recent H3N2 submissions](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:2a.3a&p=grid)
+# [Recent H3N2 submissions](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:2a.3a&p=grid)
 
 Counts reflect all sequences submitted in the last month and with a Nextclade QC value better than "bad".
 
 {{h3n2_clade_counts}}
 
-# [Global H3N2 circulation](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:2a.3a&p=grid)
+# [Global H3N2 circulation](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:2a.3a&p=grid)
 
 # [Location-specific H3N2 clade frequencies and growth advantages](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=subclade&d=tree,map,frequencies&f_year_month={{year_month_filter}}&p=grid)
+
+[View in interactive visualization](https://nextstrain.github.io/forecasts-flu/?tab=h3n2%2Fregion&date={{date}}).
 
 ```auspiceMainDisplayMarkdown
 ## HA subclade frequencies per location
 
-![H3N2 HA clade frequencies](../../forecasts-flu/plots/h3n2/region/freq/freq_by_location.png)
+![H3N2 HA clade frequencies](../figures/h3n2_mlr_frequencies.png)
 
 Frequencies modeled with a multinomial logistic regression model.
 The solid lines show median frequencies per location and clade while the shading shows lower and upper 95% highest posterior density intervals for the median.
 
 ## Growth advantages per location and overall (hierarchical)
 
-![H3N2 growth advantages](../../forecasts-flu/plots/h3n2/region/ga/ga_by_location.png)
+![H3N2 growth advantages](../figures/h3n2_mlr_growth_advantages.png)
 
 ```
 
@@ -103,13 +107,13 @@ The "delta frequency" is the change in frequency between the current frequency a
 {{h3n2_haplotypes}}
 ```
 
-# [H3N2 antigenic distances by ferret cell FRA](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?branchLabel=subclade&d=tree,measurements&label=clade:2a.3a.1&p=grid&f_year_month={{year_month_filter}})
+# [H3N2 antigenic distances by ferret cell FRA](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?branchLabel=Subclade&d=tree,measurements&label=clade:2a.3a.1&p=grid&f_year_month={{year_month_filter}})
 
 The measurements panel shows antigenic distances for test viruses grouped by subclade.
 
-# [H3N2 antigenic distances by ferret cell HI](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?branchLabel=subclade&d=tree,measurements&label=clade:2a.3a.1&m_collection=cell_hi&p=grid&f_year_month={{year_month_filter}})
+# [H3N2 antigenic distances by ferret cell HI](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?branchLabel=Subclade&d=tree,measurements&label=clade:2a.3a.1&m_collection=cell_hi&p=grid&f_year_month={{year_month_filter}})
 
-The measurements panel shows antigenic distances for test viruses collected since May 2024 grouped by subclade.
+The measurements panel shows antigenic distances for recent test viruses collected grouped by subclade.
 These HI data show similar pattern of coverage as the FRA measurements.
 
 # [H3N2 ferret-based antigenic advance from cell-based FRA data](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype&scatterY=cell_fra_cTiterSub)
@@ -132,17 +136,19 @@ Counts reflect all sequences submitted in the last month and with a Nextclade QC
 
 # [Location-specific Vic clade frequencies and growth advantages](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}?branchLabel=Subclade&c=subclade&d=tree,map,frequencies&f_year_month={{year_month_filter}}&p=grid&label=clade:V1A.3a.2)
 
+[View in interactive visualization](https://nextstrain.github.io/forecasts-flu/?tab=vic%2Fregion&date={{date}}).
+
 ```auspiceMainDisplayMarkdown
 ## HA subclade frequencies per location
 
-![Vic HA clade frequencies](../../forecasts-flu/plots/vic/region/freq/freq_by_location.png)
+![Vic HA clade frequencies](../figures/vic_mlr_frequencies.png)
 
 Frequencies modeled with a multinomial logistic regression model.
 The solid lines show median frequencies per location and clade while the shading shows lower and upper 95% highest posterior density intervals for the median.
 
 ## Growth advantages per location and overall (hierarchical)
 
-![Vic growth advantages](../../forecasts-flu/plots/vic/region/ga/ga_by_location.png)
+![Vic growth advantages](../figures/vic_mlr_growth_advantages.png)
 
 ```
 
@@ -158,7 +164,7 @@ The "delta frequency" is the change in frequency between the current frequency a
 {{vic_haplotypes}}
 ```
 
-# [Vic antigenic distances by ferret cell HI](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/vic/2y/titers/ha?branchLabel=subclade&d=tree,measurements&f_year_month={{year_month_filter}}&label=Subclade:C&p=grid)
+# [Vic antigenic distances by ferret cell HI](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/vic/2y/titers/ha?branchLabel=Subclade&d=tree,measurements&f_year_month={{year_month_filter}}&label=Subclade:C&p=grid)
 
 # [Vic antigenic advance](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/vic/2y/titers/ha?branchLabel=none&c=subclade&d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:C&p=full&scatterX=subclade&scatterY=cell_hi_cTiterSub)
 
