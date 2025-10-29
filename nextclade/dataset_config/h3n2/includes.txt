@@ -78,6 +78,9 @@ A/Colorado/90/2025
 A/Tokyo/24238/2024
 A/Darwin/172/2025
 A/India/PUN_NIVCOV2512/2025
+A/Ohio/255/2025
+A/Colorado/101/2025
+A/South Australia/2525911555/2025
 
 #J.2.4.1
 A/Wisconsin/114/2025
