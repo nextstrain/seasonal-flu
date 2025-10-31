@@ -77,7 +77,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
@@ -117,7 +117,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
@@ -170,7 +170,7 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/auspice_config.json"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
