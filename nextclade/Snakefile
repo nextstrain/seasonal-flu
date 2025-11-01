@@ -22,6 +22,7 @@ def all_builds(w):
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
+                builds.append(f"builds/{lineage}/{segment}/{ref}/founder_sequences.translations.done")
     return builds
 
 rule all:
@@ -446,6 +447,45 @@ rule generate_sample_sequences:
             --probabilistic-sampling \
             --output-sequences {output.sequences}
         """
+
+rule extract_clade_founders:
+    input:
+        clades="build/{lineage}/{segment}/{reference}/clade_subclade.json",
+        ancestral = "build/{lineage}/{segment}/{reference}/muts.json",
+    output:
+        sequences="build/{lineage}/{segment}/{reference}/founder_sequences.fasta",
+    shell:
+        """
+        python3 scripts/extract_founder_sequences.py \
+            --clades-json {input.clades} \
+            --ancestral-json {input.ancestral} \
+            --output {output.sequences}
+        """
+
+rule translate_clade_founders:
+    input:
+        sequences=rules.extract_clade_founders.output.sequences,
+        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
+    output:
+        translations="build/{lineage}/{segment}/{reference}/founder_sequences.translations.done",
+    params:
+        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
+        nextclade_bin = "nextclade3"
+    threads: 3
+    shell:
+        """
+        {params.nextclade_bin} run \
+            --jobs={threads} \
+            --input-ref {input.reference} \
+            --input-annotation {input.annotation} \
+            --gap-alignment-side right \
+            --in-order \
+            --output-translations {params.outdir} \
+            {input.sequences}
+        touch {output.translations}
+        """
+
 
 rule make_dataset:
     input:
