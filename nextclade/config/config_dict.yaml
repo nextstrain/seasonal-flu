@@ -37,7 +37,7 @@ builds:
     na:
       changelog: "seasonal_A-H1N1pdm_NA/main/CHANGELOG.md"
       clade_systems:
-        clade:
+        subclade:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
           tree-url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade.nwk"
         proposedSubclade:
@@ -85,7 +85,7 @@ builds:
     na:
       changelog: "seasonal_A-H3N2_NA/main/CHANGELOG.md"
       clade_systems:
-        clade:
+        subclade:
           url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
           tree-url: "seasonal_A-H3N2_NA/main/.auto-generated/subclade.nwk"
         proposedSubclade:
@@ -124,7 +124,7 @@ builds:
     na:
       changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
       clade_systems:
-        clade:
+        subclade:
           url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
           tree-url: "seasonal_B-Vic_NA/main/.auto-generated/subclade.nwk"
         proposedSubclade:

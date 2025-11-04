@@ -22,7 +22,7 @@ def all_builds(w):
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
-                builds.append(f"builds/{lineage}/{segment}/{ref}/founder_sequences.translations.done")
+                builds.append(f"build/{lineage}/{segment}/{ref}/founder_sequences.translations.done")
     return builds
 
 rule all:
@@ -465,7 +465,7 @@ rule extract_clade_founders:
         clades="build/{lineage}/{segment}/{reference}/clade_subclade.json",
         ancestral = "build/{lineage}/{segment}/{reference}/muts.json",
     output:
-        sequences="build/{lineage}/{segment}/{reference}/founder_sequences.fasta",
+        sequences="config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
     shell:
         """
         python3 scripts/extract_founder_sequences.py \
@@ -482,7 +482,7 @@ rule translate_clade_founders:
     output:
         translations="build/{lineage}/{segment}/{reference}/founder_sequences.translations.done",
     params:
-        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
+        outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
         nextclade_bin = "nextclade3"
     threads: 3
     shell:
