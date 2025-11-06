@@ -1,0 +1,32 @@
+"""
+This is the main ingest Snakefile that orchestrates the full ingest workflow
+for OPEN data and defines its default outputs.
+"""
+
+# Shared Snakemake files with generic functions are shared across pathogens
+include: "../shared/vendored/snakemake/config.smk"
+include: "../shared/vendored/snakemake/remote_files.smk"
+
+# Use default configuration values. Extend with Snakemake's --configfile/--config options.
+configfile: "defaults/config.yaml"
+
+# Value constraints based on the top level phylogenetic Snakefile
+wildcard_constraints:
+    lineage = r'h1n1pdm|h3n2|vic',
+    segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
+
+
+rule all:
+    input:
+        metadata = expand("results/{lineage}/metadata.tsv", lineage=config["lineages"]),
+        sequences = expand("results/{lineage}/{segment}.fasta", lineage=config["lineages"], segment=config["segments"]),
+
+
+include: "rules/fetch.smk"
+include: "rules/curate.smk"
+
+
+if "custom_rules" in config:
+    for rule_file in config["custom_rules"]:
+
+        include: rule_file
