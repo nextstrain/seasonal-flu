@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+: "${SLACK_TOKEN:?The SLACK_TOKEN environment variable is required.}"
+: "${SLACK_CHANNELS:?The SLACK_CHANNELS environment variable is required.}"
+
+bin="$(dirname "$0")"
+
+src="${1:?A source file is required as the first argument.}"
+dst="${2:?A destination s3:// URL is required as the second argument.}"
+
+dst_local="$(mktemp -t s3-file-XXXXXX)"
+diff="$(mktemp -t diff-XXXXXX)"
+
+trap "rm -f '$dst_local' '$diff'" EXIT
+
+# if the file is not already present, just exit
+"$bin"/s3-object-exists "$dst" || exit 0
+
+"$bin"/download-from-s3 "$dst" "$dst_local"
+
+# diff's exit code is 0 for no differences, 1 for differences found, and >1 for errors
+diff_exit_code=0
+diff "$dst_local" "$src" > "$diff" || diff_exit_code=$?
+
+if [[ "$diff_exit_code" -eq 1 ]]; then
+    echo "Notifying Slack about diff."
+    "$bin"/notify-slack --upload "$src.diff" < "$diff"
+elif [[ "$diff_exit_code" -gt 1 ]]; then
+    echo "Notifying Slack about diff failure"
+    "$bin"/notify-slack "Diff failed for $src"
+else
+    echo "No change in $src."
+fi

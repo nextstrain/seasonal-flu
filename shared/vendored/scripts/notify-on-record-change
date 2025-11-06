@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${SLACK_TOKEN:?The SLACK_TOKEN environment variable is required.}"
+: "${SLACK_CHANNELS:?The SLACK_CHANNELS environment variable is required.}"
+
+bin="$(dirname "$0")"
+
+src="${1:?A source ndjson file is required as the first argument.}"
+dst="${2:?A destination ndjson s3:// URL is required as the second argument.}"
+source_name=${3:?A record source name is required as the third argument.}
+
+# if the file is not already present, just exit
+"$bin"/s3-object-exists "$dst" || exit 0
+
+s3path="${dst#s3://}"
+bucket="${s3path%%/*}"
+key="${s3path#*/}"
+
+src_record_count="$(wc -l < "$src")"
+
+# Try getting record count from S3 object metadata
+dst_record_count="$(aws s3api head-object --bucket "$bucket" --key "$key" --query "Metadata.recordcount || ''" --output text 2>/dev/null || true)"
+if [[ -z "$dst_record_count" ]]; then
+  # This object doesn't have the record count stored as metadata
+  # We have to download it and count the lines locally
+  dst_record_count="$(wc -l < <(aws s3 cp --no-progress "$dst" - | xz -T0 -dcfq))"
+fi
+
+added_records="$(( src_record_count - dst_record_count ))"
+
+printf "%'4d %s\n" "$src_record_count" "$src"
+printf "%'4d %s\n" "$dst_record_count" "$dst"
+printf "%'4d added records\n" "$added_records"
+
+slack_message=""
+
+if [[ $added_records -gt 0 ]]; then
+    echo "Notifying Slack about added records (n=$added_records)"
+    slack_message="📈 New records (n=$added_records) found on $source_name."
+
+elif [[ $added_records -lt 0 ]]; then
+    echo "Notifying Slack about fewer records (n=$added_records)"
+    slack_message="📉 Fewer records (n=$added_records) found on $source_name."
+
+else
+    echo "Notifying Slack about same number of records"
+    slack_message="⛔ No new records found on $source_name."
+fi
+
+slack_message+=" (Total record count: $src_record_count)"
+
+"$bin"/notify-slack "$slack_message"

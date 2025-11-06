@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${SLACK_TOKEN:?The SLACK_TOKEN environment variable is required.}"
+: "${SLACK_CHANNELS:?The SLACK_CHANNELS environment variable is required.}"
+
+: "${AWS_BATCH_JOB_ID:=}"
+: "${GITHUB_RUN_ID:=}"
+
+bin="$(dirname "$0")"
+job_name="${1:?A job name is required as the first argument}"
+github_repo="${2:?A GitHub repository with owner and repository name is required as the second argument}"
+
+echo "Notifying Slack about failed ${job_name} job."
+message="❌ ${job_name} job has FAILED 😞 "
+
+if [[ -n "${AWS_BATCH_JOB_ID}" ]]; then
+    message+="See AWS Batch job \`${AWS_BATCH_JOB_ID}\` (<https://console.aws.amazon.com/batch/v2/home?region=us-east-1#jobs/detail/${AWS_BATCH_JOB_ID}|link>) for error details. "
+elif [[ -n "${GITHUB_RUN_ID}" ]]; then
+    message+="See GitHub Action <https://github.com/${github_repo}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true|${GITHUB_RUN_ID}> for error details. "
+fi
+
+"$bin"/notify-slack "$message"
