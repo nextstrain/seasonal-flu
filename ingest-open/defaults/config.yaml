@@ -1,0 +1,16 @@
+# This configuration file should contain all required configuration parameters
+# for the OPEN ingest workflow to run to completion.
+lineages:
+  - h1n1pdm
+  - h3n2
+  - vic
+
+segments:
+  - pb2
+  - pb1
+  - pa
+  - ha
+  - np
+  - na
+  - mp
+  - ns
