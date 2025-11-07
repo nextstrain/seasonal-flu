@@ -11,6 +11,19 @@ OUTPUTS:
 from urllib.parse import urlencode
 
 
+# Map wildcards.segment to GenSpectrum segments
+SEGMENT_MAP = {
+    "pb2": "seg1",
+    "pb1": "seg2",
+    "pa":  "seg3",
+    "ha":  "seg4",
+    "np":  "seg5",
+    "na":  "seg6",
+    "mp":  "seg7",
+    "ns":  "seg8",
+}
+
+
 def _genspectrum_lapis_url(wildcards):
     """
     Returns the URL for the GenSpectrum LAPIS query engine for 
@@ -56,17 +69,6 @@ def _genspectrum_sequences_url(wildcards):
 
     See <https://api.loculus.genspectrum.org/b-victoria/swagger-ui/index.html#/multi-segmented-sequence-controller/getUnalignedNucleotideSequence>
     """
-    # Map wildcards.segment to GenSpectrum segments
-    SEGMENT_MAP = {
-        "pb2": "seg1",
-        "pb1": "seg2",
-        "pa":  "seg3",
-        "ha":  "seg4",
-        "np":  "seg5",
-        "na":  "seg6",
-        "mp":  "seg7",
-        "ns":  "seg8",
-    }
 
     if (segment := SEGMENT_MAP.get(wildcards.segment)) is None:
         raise InvalidConfigError(
@@ -122,6 +124,31 @@ rule download_genspectrum_sequences:
 
 
 # Pull out GenBank accessions from GenSpectrum metadata
+rule genspectrum_to_genbank:
+    input:
+        genspectrum_metadata = "data/{lineage}/genspectrum/metadata.tsv",
+    output:
+        genbank_accessions = "data/{lineage}/{segment}/genspectrum_to_genbank.tsv"
+    benchmark:
+        "benchmarks/{lineage}/{segment}/genspectrum_to_genbank.txt"
+    log:
+        "logs/{lineage}/{segment}/genspectrum_to_genbank.txt",
+    params:
+        accession_columns = lambda w: ",".join([
+            "accession",
+            f"insdcAccessionBase_{SEGMENT_MAP[w.segment]}",
+        ]),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        csvtk cut -t -f {params.accession_columns:q} \
+            {input.genspectrum_metadata:q} \
+            | csvtk filter2 -t -f 'len($2) > 0' \j
+            > {output.genbank_accessions:q}
+        """
+
+
 # Fetch from Entrez
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
