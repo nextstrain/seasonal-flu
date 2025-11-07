@@ -29,6 +29,7 @@
 # Japan Korea region
 */Chiba/*/*	Japan Korea/Japan/Chiba/*
 */Japan/*/*	Japan Korea/Japan/*/*
+*/Korea/*/*	Japan Korea/South Korea/*/*
 */Niigata/*/*	Japan Korea/Japan/Niigata/*
 */South Korea/*/*	Japan Korea/South Korea/*/*
 */Korea/*/*	Japan Korea/South Korea/*/*
@@ -70,6 +71,7 @@ Asia/Kawasaki/*/*	Japan Korea/Japan/Kanagawa/Kawasaki
 */Palestinian Territory/*/*	West Asia/Palestine/*/*
 */Qatar/*/*	West Asia/Qatar/*/*
 */Saudi Arabia/*/*	West Asia/Saudi Arabia/*/*
+*/State of Palestine/*/*	West Asia/Palestine/*/*
 */Syria/*/*	West Asia/Syria/*/*
 */Turkey/*/*	West Asia/Turkey/*/*
 */Turkmenistan/*/*	West Asia/Turkmenistan/*/*
@@ -79,6 +81,7 @@ Asia/Kawasaki/*/*	Japan Korea/Japan/Kanagawa/Kawasaki
 */Kazakhstan/*/*	West Asia/Kazakhstan/*/*
 */Tajikistan/*/*	West Asia/Tajikistan/*/*
 */United Arab Emirates/*/*	West Asia/United Arab Emirates/*/*
+*/Ussr/*/*	West Asia/USSR/*/*
 */Uzbekistan/*/*	West Asia/Uzbekistan/*/*
 */Yemen/*/*	West Asia/Yemen/*/*
 
@@ -95,18 +98,23 @@ Sudan, South/*/*/*	Africa/South Sudan/*/*
 /Kosova/*/*	Europe/Kosovo/*/*
 
 # General rules that should be migrated to the central geolocation rules in Augur
+*/Missing/*/*	*///
 */Russia/Novoaydar/*	Europe/Ukraine/Luhansk/Novoaydar
 */Russia/Republic of Crimea/*	Europe/Ukraine/Crimea/*
 */China/Hong Kong/*	*/Hong Kong/Hong Kong/*
 */Congo, the Democatic Republic of/*/*	*/Democatic Republic of the Congo/*/*
+*/Cuba/*/*	North America/Cuba/*/*
 */Macedonia, the Former Yogoslav Republic of/*/*	*/Macedonia/*/*
 */Micronesia, Federated States of/*/*	*/Micronesia/*/*
 */Moldova, Republic of/*/*	*/Moldova/*/*
+*/Nicaragua/*/*	North America/Nicaragua/*/*
 */Saint Kitts and Nevis, Federation of/*/*	*/Saint Kitts and Nevis/*/*
 */Syrian Arab Republic/*/*	*/Syria/*/*
 */Tanzania, United Republic of/*/*	*/Tanzania/*/*
 */Timor-Leste/*/*	*/East Timor/*/*
+*/Tonga/*/*	Oceania/Tonga/*/*
 */Venezuela, Bolivarian Republic of/*/*	*/Venezuela/*/*
+*/Viet Nam/*/*	Asia/Vietnam/*/*
 Asia/Nonthaburi/*/*	Asia/Thailand/Nonthaburi/*
 Europe/France/Mayotte/*	Africa/Mayotte/Mayotte/*
 Europe/Netherlands/Bonaire/*	South America/Bonaire/Bonaire/*

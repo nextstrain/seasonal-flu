@@ -14,3 +14,77 @@ segments:
   - na
   - mp
   - ns
+
+curate:
+  field_map:
+    accession: accession
+    accessionVersion: accession_version
+    specimenCollectorSampleId: strain
+    sampleCollectionDate: date
+    ncbiReleaseDate: date_released
+    country: country
+    division: division
+    authors: full_authors
+    authorAffiliations: institution
+    insdcAccessionBase_seg1: accession_pb2
+    insdcAccessionBase_seg2: accession_pb1
+    insdcAccessionBase_seg3: accession_pa
+    insdcAccessionBase_seg4: accession_ha
+    insdcAccessionBase_seg5: accession_np
+    insdcAccessionBase_seg6: accession_na
+    insdcAccessionBase_seg7: accession_mp
+    insdcAccessionBase_seg8: accession_ns
+
+  date_fields:
+    - date
+    - date_released
+  expected_date_formats:
+    - "%Y-%m-%d"
+  
+  genspectrum_division_field: division
+  location_field: location 
+
+  titlecase:
+    # List of string fields to titlecase
+    fields: ["region", "country", "division", "location"]
+    # List of abbreviations not cast to titlecase, keeps uppercase
+    abbreviations: ["USA"]
+    # Articles that should not be cast to titlecase
+    articles: [
+      "and", "d", "de", "del", "des", "di", "do", "en", "l", "la", "las", "le",
+      "los", "nad", "of", "op", "sur", "the", "y"
+    ]
+
+  # Metadata field that contains the list of authors associated with the sequence
+  authors_field: "full_authors"
+  # Default value to use if the authors field is empty
+  authors_default_value: "?"
+  # Name to use for the generated abbreviated authors field
+  abbr_authors_field: "authors"
+
+  local_geolocation_rules: ../ingest/defaults/geolocation_rules.tsv
+
+  annotations: '../ingest/defaults/annotations.tsv'
+  annotations_id: 'strain'
+
+  metadata_columns:
+    - accession
+    - accession_version
+    - strain
+    - date
+    - date_released
+    - region
+    - country
+    - division
+    - location
+    - authors
+    - full_authors
+    - institution
+    - accession_pb2
+    - accession_pb1
+    - accession_pa
+    - accession_ha
+    - accession_np
+    - accession_na
+    - accession_mp
+    - accession_ns
