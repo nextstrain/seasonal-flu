@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+Parse Pathoplexus division field into two separate fields, "division" and "location".
+"""
+import sys
+import argparse
+from typing import Iterable
+
+from augur.curate import validate_records
+from augur.io.json import dump_ndjson, load_ndjson
+
+
+def run(args: argparse.Namespace, records: Iterable[dict]) -> Iterable[dict]:
+
+    for index, record in enumerate(records):
+        record = record.copy()
+
+        original_division = record.get(args.division_field, None)
+        original_location = record.get(args.location_field, "").strip()
+
+        if original_division is None:
+            raise Exception(f"Records must have divison field {args.division_field!r}")
+
+        # Modified from how `augur curate parse-genbank-location` treats the division field
+        # <https://github.com/nextstrain/augur/blob/5d99406b76bfd28444eddbd47a6565086d2f94be/augur/curate/parse_genbank_location.py#L37-L38>
+        division, _, location = original_division.partition(",")
+
+        record[args.division_field] = division.strip()
+        if not original_location:
+            record[args.location_field] = location.strip()
+
+        yield record
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--division-field", default="division",
+        help="The field in the record that contains the Pathoplexus division. " \
+             "Expected to have a comma to separate division and location, " \
+             "<division>[, <location>]")
+    parser.add_argument("--location-field", default="location",
+        help="The field in the record for detailed location, e.g. county. " \
+             "This field will get filled with the detailed location parsed " \
+             "from the division field if it does not already have a non-empy string.")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(sys.stdin)
+
+    # Validate records have the same input fields
+    validated_input_records = validate_records(records, __doc__, True)
+
+    # Run this custom curate command to get modified records
+    modified_records = run(args, validated_input_records)
+
+    # Validate modified records have the same output fields
+    validated_output_records = validate_records(modified_records, __doc__, False)
+
+    dump_ndjson(validated_output_records)
