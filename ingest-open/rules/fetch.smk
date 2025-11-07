@@ -128,7 +128,8 @@ rule genspectrum_to_genbank:
     input:
         genspectrum_metadata = "data/{lineage}/genspectrum/metadata.tsv",
     output:
-        genbank_accessions = "data/{lineage}/{segment}/genspectrum_to_genbank.tsv"
+        genspectrum_to_genbank = "data/{lineage}/{segment}/genspectrum_to_genbank.tsv",
+        genbank_accessions = temp("data/{lineage}/{segment}/genbank_accessions.txt"),
     benchmark:
         "benchmarks/{lineage}/{segment}/genspectrum_to_genbank.txt"
     log:
@@ -144,11 +145,37 @@ rule genspectrum_to_genbank:
 
         csvtk cut -t -f {params.accession_columns:q} \
             {input.genspectrum_metadata:q} \
-            | csvtk filter2 -t -f 'len($2) > 0' \j
+            | csvtk filter2 -t -f 'len($2) > 0' \
+            | tee {output.genspectrum_to_genbank:q} \
+            | csvtk cut -t -f 2 \
+            | csvtk del-header -t \
             > {output.genbank_accessions:q}
         """
 
 
 # Fetch from Entrez
+# Limit concurrent connections via Entrez to avoid hitting Too Many Requests error
+workflow.global_resources.setdefault("concurrent_entrez", 2)
+rule fetch_from_ncbi_entrez:
+    input:
+        genbank_accessions = "data/{lineage}/{segment}/genbank_accessions.txt",
+    output:
+        genbank="data/{lineage}/{segment}/genbank.gb",
+    resources:
+        concurrent_entrez = 1
+    # Allow retries in case of network errors
+    retries: 5
+    benchmark:
+        "benchmarks/{lineage}/{segment}/fetch_from_ncbi_entrez.txt"
+    log:
+        "logs/{lineage}/{segment}/fetch_from_ncbi_entrez.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        {workflow.basedir}/scripts/fetch-from-ncbi-entrez-with-accessions \
+            --accessions {input.genbank_accessions:q} \
+            --output {output.genbank:q}
+        """
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
