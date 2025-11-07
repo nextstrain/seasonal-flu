@@ -153,6 +153,46 @@ rule genspectrum_to_genbank:
         """
 
 
+rule gather_genbank_accessions:
+    input:
+        genbank_accessions = "data/{lineage}/genspectrum_to_genbank.tsv",
+    output:
+        genbank_accessions = "data/{lineage}/genbank_accessions.txt",
+    benchmark:
+        "benchmarks/{lineage}/gather_genbank_accessions.txt"
+    log:
+        "logs/{lineage}/gather_genbank_accessions.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        cat {input.genbank_accessions:q} \
+            | csvtk gather -t -k item -v value -f -1 \
+            | csvtk filter2 -t -f 'len($value) > 0' \
+            | csvtk cut -t -f value \
+            | csvtk del-header -t > {output.genbank_accessions:q}
+        """
+
+
 # Fetch from Entrez
+rule fetch_from_ncbi_entrez:
+    input:
+        genbank_accessions = "data/{lineage}/genbank_accessions.txt",
+    output:
+        genbank="data/{lineage}/genbank.gb",
+    # Allow retries in case of network errors
+    retries: 5
+    benchmark:
+        "benchmarks/{lineage}/fetch_from_ncbi_entrez.txt"
+    log:
+        "logs/{lineage}/fetch_from_ncbi_entrez.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        {workflow.basedir}/scripts/fetch-from-ncbi-entrez-with-accessions \
+            --accessions {input.genbank_accessions:q} \
+            --output {output.genbank:q}
+        """
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
