@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""
+Fetch from NCBI Entrez using provided accessions and output to a GenBank file.
+"""
+import argparse
+from Bio import SeqIO, Entrez
+from itertools import islice
+from augur.io.print import print_err
+
+# To use the efetch API, the docs indicate only around 10,000 records should be fetched per request
+# https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
+# However, in my testing with HepB, the max records returned was 9,999
+#   - Jover, 16 August 2023
+BATCH_SIZE = 9999
+
+Entrez.email = "hello@nextstrain.org"
+
+
+def batched(iterable, n, *, strict=False):
+    """
+    Copied from https://docs.python.org/3/library/itertools.html#itertools.batched
+    To be replaced by itertools.batched once all minimum Python version is 3.12
+
+    batched('ABCDEFG', 2) → AB CD EF G
+    """
+    if n < 1:
+        raise ValueError('n must be at least one')
+    iterator = iter(iterable)
+    while batch := tuple(islice(iterator, n)):
+        if strict and len(batch) != n:
+            raise ValueError('batched(): incomplete batch')
+        yield batch
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--accessions', required=True, type=str,
+        help='Text file of GenBank accessions to fetch, with one accession per line.')
+    parser.add_argument('--output', required=True, type=str, help='Output file (Genbank)')
+    return parser.parse_args()
+
+
+if __name__=="__main__":
+    args = parse_args()
+
+    with open(args.accessions, "r") as handle:
+        accessions = list(batched((line.rstrip() for line in handle), BATCH_SIZE))
+
+    print_err(f"Fetching GenBank records in batches of n={BATCH_SIZE} in {len(accessions)} batches")
+
+    with open(args.output, "w") as output_handle:
+        for n, batch in enumerate(accessions):
+            print_err(f"Fetching batch {n}")
+            handle = Entrez.efetch(
+                db="nucleotide",
+                id=",".join(batch),
+                retmax=BATCH_SIZE,
+                rettype="gb",
+                retmode="text"
+            )
+            batch_results = SeqIO.parse(handle, "genbank")
+            SeqIO.write(batch_results, output_handle, "genbank")

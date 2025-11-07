@@ -11,9 +11,22 @@ OUTPUTS:
 from urllib.parse import urlencode
 
 
+# Map wildcards.segment to GenSpectrum segments
+SEGMENT_MAP = {
+    "pb2": "seg1",
+    "pb1": "seg2",
+    "pa":  "seg3",
+    "ha":  "seg4",
+    "np":  "seg5",
+    "na":  "seg6",
+    "mp":  "seg7",
+    "ns":  "seg8",
+}
+
+
 def _genspectrum_lapis_url(wildcards):
     """
-    Returns the URL for the GenSpectrum LAPIS query engine for 
+    Returns the URL for the GenSpectrum LAPIS query engine for
     the provided *wildcards.lineage*.
 
     See <https://loculus.genspectrum.org/api-documentation>
@@ -35,7 +48,7 @@ def _genspectrum_lapis_url(wildcards):
 
 def _genspectrum_metadata_url(wildcards):
     """
-    Returns the URL for downloading the metadata TSV. 
+    Returns the URL for downloading the metadata TSV.
 
     See <https://api.loculus.genspectrum.org/b-victoria/swagger-ui/index.html#/lapis-controller/getDetailsAsCsv>
     """
@@ -51,22 +64,11 @@ def _genspectrum_metadata_url(wildcards):
 def _genspectrum_sequences_url(wildcards):
     """
     Returns the URL for downloading the sequences FASTA per *wildcards.segment*.
-    Only includes the LATEST_VERSION of GenSpectrum records and uses the 
+    Only includes the LATEST_VERSION of GenSpectrum records and uses the
     GenSpectrum accession field as the FASTA header.
 
     See <https://api.loculus.genspectrum.org/b-victoria/swagger-ui/index.html#/multi-segmented-sequence-controller/getUnalignedNucleotideSequence>
     """
-    # Map wildcards.segment to GenSpectrum segments
-    SEGMENT_MAP = {
-        "pb2": "seg1",
-        "pb1": "seg2",
-        "pa":  "seg3",
-        "ha":  "seg4",
-        "np":  "seg5",
-        "na":  "seg6",
-        "mp":  "seg7",
-        "ns":  "seg8",
-    }
 
     if (segment := SEGMENT_MAP.get(wildcards.segment)) is None:
         raise InvalidConfigError(
@@ -86,7 +88,7 @@ def _genspectrum_sequences_url(wildcards):
 # Fetch metadata from GenSpectrum
 rule download_genspectrum_metadata:
     output:
-        metadata = "data/{lineage}/metadata.tsv",
+        metadata = "data/{lineage}/genspectrum_metadata.tsv",
     retries: 5
     benchmark:
         "benchmarks/{lineage}/download_genspectrum_metadata.txt",
@@ -122,6 +124,93 @@ rule download_genspectrum_sequences:
 
 
 # Pull out GenBank accessions from GenSpectrum metadata
+rule genspectrum_to_genbank:
+    input:
+        genspectrum_metadata = "data/{lineage}/genspectrum_metadata.tsv",
+    output:
+        genspectrum_to_genbank = "data/{lineage}/{segment}/genspectrum_to_genbank.tsv",
+        genbank_accessions = temp("data/{lineage}/{segment}/genbank_accessions.txt"),
+    benchmark:
+        "benchmarks/{lineage}/{segment}/genspectrum_to_genbank.txt"
+    log:
+        "logs/{lineage}/{segment}/genspectrum_to_genbank.txt",
+    params:
+        accession_columns = lambda w: ",".join([
+            "accession",
+            f"insdcAccessionBase_{SEGMENT_MAP[w.segment]}",
+        ]),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        csvtk cut -t -f {params.accession_columns:q} \
+            {input.genspectrum_metadata:q} \
+            | csvtk filter2 -t -f 'len($2) > 0' \
+            | tee {output.genspectrum_to_genbank:q} \
+            | csvtk cut -t -f 2 \
+            | csvtk del-header -t \
+            > {output.genbank_accessions:q}
+        """
+
+
 # Fetch from Entrez
+# Limit concurrent connections via Entrez to avoid hitting Too Many Requests error
+workflow.global_resources.setdefault("concurrent_entrez", 2)
+rule fetch_from_ncbi_entrez:
+    input:
+        genbank_accessions = "data/{lineage}/{segment}/genbank_accessions.txt",
+    output:
+        genbank="data/{lineage}/{segment}/genbank.gb",
+    resources:
+        concurrent_entrez = 1
+    # Allow retries in case of network errors
+    retries: 5
+    benchmark:
+        "benchmarks/{lineage}/{segment}/fetch_from_ncbi_entrez.txt"
+    log:
+        "logs/{lineage}/{segment}/fetch_from_ncbi_entrez.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        {workflow.basedir}/scripts/fetch-from-ncbi-entrez-with-accessions \
+            --accessions {input.genbank_accessions:q} \
+            --output {output.genbank:q}
+        """
+
+
+rule parse_genbank_to_tsv:
+    """
+    Parse relevant fields from GenBank and output as a TSV
+    """
+    input:
+        genbank="data/{lineage}/{segment}/genbank.gb",
+    output:
+        tsv="data/{lineage}/{segment}/ncbi_entrez.tsv",
+    benchmark:
+        "benchmarks/{lineage}/{segment}/parse_genbank_to_ndjson.txt"
+    log:
+        "logs/{lineage}/{segment}/parse_genbank_to_ndjson.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        bio json --lines {input.genbank:q} \
+            | jq -c --arg segment {wildcards.segment} '
+                {{
+                  "accession_\($segment)":        .record.accessions[0],
+                  "strain_\($segment)":           .record.strain[0],
+                  "date_\($segment)":             .record.collection_date[0],
+                  "organism_\($segment)":         .record.organism[0],
+                  "isolation_source_\($segment)": .record.isolation_source[0],
+                  "lab_host_\($segment)":         .record.lab_host[0],
+                  "note_\($segment)":             .record.note[0],
+                }}
+              ' \
+            | augur curate passthru \
+                --output-metadata {output.tsv:q}
+        """
+
+
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
