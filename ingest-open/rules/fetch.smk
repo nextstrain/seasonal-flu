@@ -122,6 +122,37 @@ rule download_genspectrum_sequences:
 
 
 # Pull out GenBank accessions from GenSpectrum metadata
+rule genspectrum_to_genbank:
+    input:
+        genspectrum_metadata = "data/{lineage}/genspectrum/metadata.tsv",
+    output:
+        genbank_accessions = "data/{lineage}/genspectrum_to_genbank.tsv"
+    benchmark:
+        "benchmarks/{lineage}/genspectrum_to_genbank.txt"
+    log:
+        "logs/{lineage}/genspectrum_to_genbank.txt",
+    params:
+        accession_columns = ",".join([
+            "accession",
+            "insdcAccessionBase_seg1",
+            "insdcAccessionBase_seg2",
+            "insdcAccessionBase_seg3",
+            "insdcAccessionBase_seg4",
+            "insdcAccessionBase_seg5",
+            "insdcAccessionBase_seg6",
+            "insdcAccessionBase_seg7",
+            "insdcAccessionBase_seg8",
+        ]),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        csvtk cut -t -f {params.accession_columns:q} \
+            {input.genspectrum_metadata:q} \
+            > {output.genbank_accessions:q}
+        """
+
+
 # Fetch from Entrez
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
