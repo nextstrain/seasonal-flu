@@ -41,6 +41,27 @@ rule mask:
             --output {output.sequences} 2>&1 | tee {log}
         """
 
+
+founder_refs = {
+    "h1n1pdm": {
+        "ha": "MW626062",
+        "na": "MW626056",
+    },
+    "h3n2": {
+        "ha": "EPI1857216",
+        "na": "EPI1857215",
+    },
+    "vic": {
+        "ha": "KX058884",
+        "na": "CY073894",
+    }
+}
+
+def get_founder_sequences(w):
+    lineage = w.build_name.split('_')[-2]
+    segment = w.segment
+    return f"nextclade/config/{lineage}/{segment}/{founder_refs[lineage][segment]}/founder_sequences.fasta"
+
 checkpoint align:
     message:
         """
@@ -48,6 +69,7 @@ checkpoint align:
         """
     input:
         sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
+        founder_sequences= get_founder_sequences,
         reference =  lambda w: config['builds'][w.build_name]['reference'],
         annotation = lambda w: config['builds'][w.build_name]['annotation'],
     output:
@@ -67,7 +89,7 @@ checkpoint align:
     shell:
         """
         nextclade3 run\
-            {input.sequences} \
+            {input.sequences}  {input.founder_sequences} \
             -r {input.reference} \
             -m {input.annotation} \
             --gap-alignment-side right \
@@ -94,10 +116,66 @@ def aggregate_translations(wildcards):
                   segment=wildcards.segment,
                   gene=GENES[wildcards.segment])
 
-rule tree:
+rule download_clade_tree:
+    message:
+        "Downloading clade tree for {wildcards.lineage} from {params.source_nwk} -> {output}"
+    output:
+        clade_nwk = "config/{lineage}/{segment}/subclades.nwk"
+    params:
+        source_nwk=lambda wildcards: subclade_tree_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+    shell:
+        """
+        curl {params.source_nwk} > {output.clade_nwk}
+        """
+
+
+# rule tree:
+#     message: "Building tree"
+#     input:
+#         alignment = rules.align.output.alignment,
+#     output:
+#         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
+#     conda: "../envs/nextstrain.yaml"
+#     benchmark:
+#         "benchmarks/tree_{build_name}_{segment}.txt"
+#     log:
+#         "logs/tree_{build_name}_{segment}.txt"
+#     params:
+#         method = config.get("tree", {}).get("method", "iqtree"),
+#         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
+#         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
+#     threads: 8
+#     resources:
+#         mem_mb=16000,
+#         time="2:00:00",
+#     shell:
+#         """
+#         augur tree \
+#             --method {params.method} \
+#             --alignment {input.alignment} \
+#             {params.tree_builder_args} \
+#             {params.override_default_args} \
+#             --output {output.tree} \
+#             --nthreads {threads} 2>&1 | tee {log}
+#         """
+
+def get_root_clade(w):
+    lineage = w.build_name.split('_')[-2]
+    segment = w.segment
+    resolution = w.build_name.split('_')[-1]
+    return root_lineage.get(lineage, {}).get(segment, {}).get(resolution, "A")
+
+def get_guide_tree_name(w):
+    lineage = w.build_name.split('_')[-2]
+    segment = w.segment
+    return f"config/{lineage}/{segment}/subclades.nwk"
+
+rule tidytree:
     message: "Building tree"
     input:
         alignment = rules.align.output.alignment,
+        guide_tree = get_guide_tree_name,
+        metadata = build_dir + "/{build_name}/metadata.tsv",
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
     conda: "../envs/nextstrain.yaml"
@@ -106,22 +184,24 @@ rule tree:
     log:
         "logs/tree_{build_name}_{segment}.txt"
     params:
-        method = config.get("tree", {}).get("method", "iqtree"),
         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
-    threads: 8
+        root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
+    threads: 2
     resources:
         mem_mb=16000,
         time="2:00:00",
     shell:
         """
-        augur tree \
-            --method {params.method} \
+        python3 scripts/tidy_tree.py \
             --alignment {input.alignment} \
-            {params.tree_builder_args} \
-            {params.override_default_args} \
-            --output {output.tree} \
-            --nthreads {threads} 2>&1 | tee {log}
+            --guide-tree {input.guide_tree} \
+            --lineage-assignments {input.metadata} \
+            --seq-id-column strain \
+            --lineage-column clade \
+            --threads {threads} \
+            {params.root_lineage} \
+            --output-tree {output.tree} 2>&1 | tee {log}
         """
 
 rule prune_reference:
@@ -141,7 +221,7 @@ rule prune_reference:
 
 rule prune_outliers:
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
+        tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk",
         aln = build_dir+"/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
