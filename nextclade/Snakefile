@@ -110,12 +110,12 @@ rule download_clade_tree:
     message:
         "Downloading clade tree for {wildcards.lineage} from {params.source_tsv} -> {output}"
     output:
-        clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}.nwk"
+        clade_nwk = "data/{clade}_{lineage}_{segment}_{reference}.nwk"
     params:
-        source_tsv=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
+        source_nwk=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
     shell:
         """
-        curl {params.source_tsv} > {output.clade_tsv}
+        curl {params.source_nwk} > {output.clade_nwk}
         """
 
 rule download_changelog_clades:
