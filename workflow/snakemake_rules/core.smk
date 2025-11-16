@@ -58,7 +58,7 @@ founder_refs = {
 }
 
 def get_founder_sequences(w):
-    lineage = w.build_name.split('_')[-2]
+    lineage = config['builds'][w.build_name]['lineage']
     segment = w.segment
     return f"nextclade/config/{lineage}/{segment}/{founder_refs[lineage][segment]}/founder_sequences.fasta"
 
@@ -95,7 +95,6 @@ checkpoint align:
             --gap-alignment-side right \
             --cds-selection {params.genes} \
             --jobs {threads} \
-            --include-reference \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
         """
@@ -160,13 +159,14 @@ rule download_clade_tree:
 #         """
 
 def get_root_clade(w):
-    lineage = w.build_name.split('_')[-2]
+    lineage = config['builds'][w.build_name]['lineage']
     segment = w.segment
-    resolution = w.build_name.split('_')[-1]
+    resolution = f"{config['builds'][w.build_name].get('resolution', '6')}y"
+    print(f"Getting root clade for lineage {lineage}, segment {segment}, resolution {resolution}")
     return root_lineage.get(lineage, {}).get(segment, {}).get(resolution, "A")
 
 def get_guide_tree_name(w):
-    lineage = w.build_name.split('_')[-2]
+    lineage = config['builds'][w.build_name]['lineage']
     segment = w.segment
     return f"config/{lineage}/{segment}/subclades.nwk"
 
@@ -175,7 +175,7 @@ rule tidytree:
     input:
         alignment = rules.align.output.alignment,
         guide_tree = get_guide_tree_name,
-        metadata = build_dir + "/{build_name}/metadata.tsv",
+        metadata = lambda w:f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}/nextclade.tsv.xz"
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk"
     conda: "../envs/nextstrain.yaml"
@@ -197,26 +197,12 @@ rule tidytree:
             --alignment {input.alignment} \
             --guide-tree {input.guide_tree} \
             --lineage-assignments {input.metadata} \
-            --seq-id-column strain \
+            --seq-id-column seqName \
             --lineage-column clade \
             --threads {threads} \
+            --keep-founders \
             {params.root_lineage} \
             --output-tree {output.tree} 2>&1 | tee {log}
-        """
-
-rule prune_reference:
-    input:
-        tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk",
-        reference = lambda wildcards: config['builds'][wildcards.build_name]['reference'],
-    output:
-        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
-    conda: "../envs/nextstrain.yaml"
-    shell:
-        """
-        python3 scripts/prune_reference.py \
-            --tree {input.tree} \
-            --reference {input.reference} \
-            --output {output.tree}
         """
 
 rule prune_outliers:
@@ -225,7 +211,7 @@ rule prune_outliers:
         aln = build_dir+"/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup_clean.nwk",
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outliers_clean.nwk",
         outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
     params:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
@@ -243,7 +229,7 @@ rule prune_outliers:
 
 rule sanitize_trees:
     input:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outgroup_clean.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outliers_clean.nwk",  segment=config['segments'], build_dir=[build_dir]),
         alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
