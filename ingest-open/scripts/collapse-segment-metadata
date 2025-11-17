@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""
+Collapse segment metadata into single record.
+"""
+import argparse
+from typing import Iterable, List
+from augur.io.metadata import read_table_to_dict, write_records_to_tsv
+from augur.io.print import print_err
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--metadata', required=True,
+        help='Metadata TSV with segment columns (*_<SEGMENT>)')
+    parser.add_argument("--segments", required=True, nargs="+", metavar="SEGMENT",
+        help="Segment names used in the column names.")
+    parser.add_argument('--accession', required=False, default="accession",
+        help="Column name of unique ID in input metadata.")
+    parser.add_argument("--columns", required=True, nargs="+", metavar="COLUMN",
+        help="Columns to collapse across segments. " +
+             "Provide the shared column name, excluding the `_<SEGMENT>` suffix. " +
+             "E.g. if columns are 'date_ha' and 'date_na', then just provide 'date'.")
+    parser.add_argument('--output-metadata', required=True,
+        help="Output metadata TSV file.")
+    return parser.parse_args()
+
+
+def collapse_segment_metadata(records: Iterable[dict],
+                              id_field: str,
+                              segments: List[str],
+                              fields: List[str],) -> Iterable[dict]:
+    """
+    Collapse segment metadata fields into single field per record.
+    """
+    for record in records:
+        accession = record[id_field]
+
+        yield {
+            "accession": accession,
+            **{
+                field: collapse_field_values(
+                    (
+                        record.get(f"{field}_{segment}", "")
+                        for segment in segments
+                    ),
+                    field,
+                    accession,
+                )
+                for field in fields
+            },
+        }
+
+
+def collapse_field_values(values: Iterable[str], field: str, accession: str) -> str:
+    """
+    Returns the first non-empty value and prints warning to stdout if there
+    are other values that do not match.
+    """
+    final_value = ""
+    potential_values = [v for v in values if v.strip()]
+    if potential_values:
+        final_value = potential_values[0]
+
+        different_values = set(v for v in potential_values if v != final_value)
+        if different_values:
+            print_err(
+                f"Chose value {final_value!r} for accession {accession!r}, "
+                f"field {field!r}, but record has other values: {different_values!r} ")
+
+    return final_value
+
+
+if __name__=="__main__":
+    args = parse_args()
+
+    records = read_table_to_dict(args.metadata, ["\t"])
+    collapsed_records = collapse_segment_metadata(
+        records,
+        args.accession,
+        args.segments,
+        args.columns
+    )
+    write_records_to_tsv(collapsed_records, args.output_metadata)

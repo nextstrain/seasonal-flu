@@ -213,4 +213,80 @@ rule parse_genbank_to_tsv:
 
 
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
+rule link_entrez_to_genspectrum_accession:
+    input:
+        genspectrum_to_genbank = "data/{lineage}/{segment}/genspectrum_to_genbank.tsv",
+        entrez_tsv="data/{lineage}/{segment}/ncbi_entrez.tsv",
+    output:
+        entrez_with_genspectrum_accession = "data/{lineage}/{segment}/entrez_with_genspectrum_accession.tsv",
+    benchmark:
+        "benchmarks/{lineage}/{segment}/link_entrez_to_genspectrum_accession.txt"
+    log:
+        "logs/{lineage}/{segment}/link_entrez_to_genspectrum_accession.txt"
+    params:
+        genspectrum_col = lambda w: f"insdcAccessionBase_{SEGMENT_MAP[w.segment]}",
+        entrez_col = lambda w: f"accession_{w.segment}",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        augur merge \
+            --metadata genspectrum={input.genspectrum_to_genbank:q} entrez={input.entrez_tsv:q} \
+            --metadata-id-columns genspectrum={params.genspectrum_col:q} entrez={params.entrez_col:q} \
+            --output-metadata {output.entrez_with_genspectrum_accession:q}
+        """
+
+
+rule merge_segment_metadata:
+    # Using SEGMENT_MAP.keys instead of config["segments"] because we want to
+    # merge the full metadata of segment records regardless of which segments
+    # are requested as final output segment FASTAs.
+    input:
+        **{
+            segment: f"data/{{lineage}}/{segment}/entrez_with_genspectrum_accession.tsv"
+            for segment in SEGMENT_MAP.keys()
+        },
+    output:
+        all_segment_metadata = "data/{lineage}/entrez_all_segment_metadata.tsv",
+    benchmark:
+        "benchmarks/{lineage}/merge_segment_metadata.txt"
+    log:
+        "logs/{lineage}/merge_segment_metadata.txt"
+    params:
+        metadata = lambda _, input: list(map("=".join, input.items())),
+        id_field = "accession",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        augur merge \
+            --metadata {params.metadata:q} \
+            --metadata-id-columns {params.id_field:q} \
+            --output-metadata {output.all_segment_metadata:q}
+        """
+
+
+rule collapse_segment_metadata:
+    input:
+        all_segment_metadata = "data/{lineage}/entrez_all_segment_metadata.tsv",
+    output:
+        entrez_metadata = "data/{lineage}/entrez_metadata.tsv",
+    benchmark:
+        "benchmarks/{lineage}/collapse_segment_metadata.txt"
+    log:
+        "logs/{lineage}/collapse_segment_metadata.txt"
+    params:
+        segments = list(SEGMENT_MAP.keys()),
+        columns = ["strain", "date", "isolation_source", "note"],
+    shell:
+        r"""
+        exec &> {log:q}
+
+        {workflow.basedir}/scripts/collapse-segment-metadata \
+            --metadata {input.all_segment_metadata:q} \
+            --segments {params.segments:q} \
+            --columns {params.columns:q} \
+            --output-metadata {output.entrez_metadata:q}
+        """
+
 # Produce 1 metadata TSV and 8 segment FASTA
