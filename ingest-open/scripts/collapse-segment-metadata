@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""
+Collapse segment metadata into single record.
+"""
+import argparse
+from typing import Iterable, List
+from augur.io.metadata import read_table_to_dict, write_records_to_tsv
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--metadata', required=True,
+        help='Metadata TSV with segment columns (*_<segment>)')
+    parser.add_argument("--segments", required=True, nargs="+",
+        help="Segment names used in the column names.")
+    parser.add_argument('--accession', required=False, default="accession",
+        help="Field name of unique ID in input metadata.")
+    parser.add_argument('--output-metadata', required=True,
+        help="Output metadata file.")
+    return parser.parse_args()
+
+
+def collapse_segment_metadata(records: Iterable[dict],
+                              id_field: str,
+                              segments: List[str]) -> Iterable[dict]:
+    """
+    Collapse segment metadata fields into single field. 
+    """  
+    for record in records:
+        # TODO: replace _ha fields with heuristic to determine if segments metadata match
+        new_record = {
+            "accession": record[id_field],
+            "date": record["date_ha"],
+            "strain": record["strain_ha"],
+            "isolate_source": record["isolation_source_ha"],
+            "note": record["note_ha"]
+        }
+        yield new_record
+
+
+if __name__=="__main__":
+    args = parse_args()
+
+    records = read_table_to_dict(args.metadata, ["\t"])
+    collapsed_records = collapse_segment_metadata(records, args.accession, args.segments)
+    write_records_to_tsv(collapsed_records, args.output_metadata)
