@@ -177,5 +177,38 @@ rule fetch_from_ncbi_entrez:
             --accessions {input.genbank_accessions:q} \
             --output {output.genbank:q}
         """
+
+
+rule parse_genbank_to_tsv:
+    """
+    Parse relevant fields from GenBank and output as a TSV
+    """
+    input:
+        genbank="data/{lineage}/{segment}/genbank.gb",
+    output:
+        tsv="data/{lineage}/{segment}/ncbi_entrez.tsv",
+    benchmark:
+        "benchmarks/{lineage}/{segment}/parse_genbank_to_ndjson.txt"
+    log:
+        "logs/{lineage}/{segment}/parse_genbank_to_ndjson.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        bio json --lines {input.genbank:q} \
+            | jq -c --arg segment {wildcards.segment} '
+                {{
+                  "accession_\($segment)":        .record.accessions[0],
+                  "strain_\($segment)":           .record.strain[0],
+                  "date_\($segment)":             .record.collection_date[0],
+                  "isolation_source_\($segment)": .record.isolation_source[0],
+                  "note_\($segment)":             .record.note[0],
+                }}
+              ' \
+            | augur curate passthru \
+                --output-metadata {output.tsv:q}
+        """
+
+
 # Merge and collapse segment Entrez metadata with GenSpectrum metadata
 # Produce 1 metadata TSV and 8 segment FASTA
