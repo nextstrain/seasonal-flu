@@ -289,4 +289,24 @@ rule collapse_segment_metadata:
             --output-metadata {output.entrez_metadata:q}
         """
 
+
 # Produce 1 metadata TSV and 8 segment FASTA
+rule merge_genspectrum_and_entrez:
+    input:
+        genspectrum_metadata = "data/{lineage}/genspectrum_metadata.tsv",
+        entrez_metadata = "data/{lineage}/entrez_metadata.tsv",
+    output:
+        metadata = "data/{lineage}/metadata.tsv",
+    benchmark:
+        "benchmarks/{lineage}/merge_genspectrum_and_entrez.txt"
+    log:
+        "logs/{lineage}/merge_genspectrum_and_entrez.txt"
+    params:
+        id_field = "accession"
+    shell:
+        r"""
+        augur merge \
+            --metadata genspectrum={input.genspectrum_metadata:q} entrez={input.entrez_metadata:q} \
+            --metadata-id-columns {params.id_field:q} \
+            --output-metadata {output.metadata:q}
+        """
