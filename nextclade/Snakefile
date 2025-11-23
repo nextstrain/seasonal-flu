@@ -110,7 +110,7 @@ rule download_clade_tree:
     message:
         "Downloading clade tree for {wildcards.lineage} from {params.source_tsv} -> {output}"
     output:
-        clade_nwk = "data/{clade}_{lineage}_{segment}_{reference}.nwk"
+        clade_nwk = "data/{clade}_{lineage}_{segment}.nwk"
     params:
         source_nwk=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
     shell:
@@ -217,6 +217,7 @@ rule align:
         sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
+        founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
     output:
         alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta"
     params:
@@ -234,49 +235,79 @@ rule align:
             --output-fasta {output.alignment} \
             {input.sequences} \
             2>&1
+        cat {input.founder_sequences} >> {output.alignment}
         """
 
 
-rule tree:
+# rule tree:
+#     input:
+#         alignment=rules.align.output.alignment,
+#     output:
+#         tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
+#     threads: 3
+#     shell:
+#         """
+#         augur tree \
+#             --alignment {input.alignment} \
+#             --output {output.tree} \
+#             --nthreads {threads} \
+#             --tree-builder-args '-ninit 10 -n 4 -czb' \
+#             > /dev/null
+#         """
+
+rule tidytree:
+    message: "Building tree"
     input:
-        alignment=rules.align.output.alignment,
+        alignment = rules.align.output.alignment,
+        guide_tree = "data/subclade_{lineage}_{segment}.nwk",
+        founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
+        metadata = "data/{lineage}_{segment}_metadata.tsv"
     output:
-        tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
-    threads: 3
+        tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk"
+    threads: 2
+    resources:
+        mem_mb=16000,
+        time="2:00:00",
     shell:
         """
-        augur tree \
+        python3 ../scripts/tidy_tree.py \
             --alignment {input.alignment} \
-            --output {output.tree} \
-            --nthreads {threads} \
-            --tree-builder-args '-ninit 10 -n 4 -czb' \
-            > /dev/null
+            --guide-tree {input.guide_tree} \
+            --lineage-assignments {input.metadata} \
+            --seq-id-column strain \
+            --lineage-column subclade \
+            --threads {threads} \
+            --keep-founders \
+            --iqtree-args '-ninit 10 -n 4 -czb' \
+            --ignore-missing-founders \
+            --output-tree {output.tree} 2>&1 | tee {log}
         """
 
-# root using dates in treetime, use 1500 as sequence length (good enough, doesn't matter)
-rule root:
-    input:
-        tree=rules.tree.output.tree,
-        metadata="data/{lineage}_{segment}_metadata.tsv",
-    output:
-        tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
-    params:
-        outdir = "build/{lineage}/{segment}/{reference}/tt_out"
-    shell:
-        """
-        treetime clock \
-            --tree {input.tree} \
-            --sequence-length 1500 \
-            --dates {input.metadata} \
-            --clock-filter 3 \
-            --clock-filter-method local \
-            --outdir {params.outdir}
-        cp {params.outdir}/rerooted.newick {output.tree}
-        """
+
+# # root using dates in treetime, use 1500 as sequence length (good enough, doesn't matter)
+# rule root:
+#     input:
+#         tree=rules.tree.output.tree,
+#         metadata="data/{lineage}_{segment}_metadata.tsv",
+#     output:
+#         tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
+#     params:
+#         outdir = "build/{lineage}/{segment}/{reference}/tt_out"
+#     shell:
+#         """
+#         treetime clock \
+#             --tree {input.tree} \
+#             --sequence-length 1500 \
+#             --dates {input.metadata} \
+#             --clock-filter 3 \
+#             --clock-filter-method local \
+#             --outdir {params.outdir}
+#         cp {params.outdir}/rerooted.newick {output.tree}
+#         """
 
 rule prune_outliers:
     input:
-        tree = rules.root.output.tree
+        tree = "build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_rooted_pruned.nwk"
     params:
