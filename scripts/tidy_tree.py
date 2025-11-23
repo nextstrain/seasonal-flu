@@ -97,6 +97,11 @@ def parse_arguments():
         help='Keep founder sequences as leaves in the final tree'
     )
     parser.add_argument('--root-lineage', default=None, help='Root lineage for the tree')
+    parser.add_argument(
+        '--ignore-missing-founders',
+        action='store_true',
+        help='Ignore lineages in guide tree that lack founder sequences (default: raise error)'
+    )
     return parser.parse_args()
 
 
@@ -181,14 +186,23 @@ def assign_sequences_to_lineages(
 
 def assign_founders_to_lineages(
     root: LineageNode,
-    founders: Dict[str, SeqRecord]
+    founders: Dict[str, SeqRecord],
+    ignore_missing_founders: bool = False
 ):
     """Assign founder sequences to their respective lineage nodes."""
     def assign(node):
         if node.name in founders:
             node.founder_seq = founders[node.name]
+        children_to_keep = []
         for child in node.children:
-            assign(child)
+            if ignore_missing_founders and child.name not in founders:
+                print(f"Warning: Founder sequence for lineage '{child.name}' not found. Skipping this lineage.")
+            elif child.name not in founders:
+                raise ValueError(f"Founder sequence for lineage '{child.name}' not found.")
+            else:
+                assign(child)
+                children_to_keep.append(child)
+        node.children = children_to_keep
 
     assign(root)
 
@@ -366,10 +380,8 @@ def graft_subtree(
 
     # Replace parent_node's children with child_node's children
     parent_node.clades = list(clades_to_graft)
-    print(f"Grafted subtree at {parent_node.name} in parent tree")
-    if parent_node.name and len(parent_node.clades):
+    if parent_node.name:
         parent_node.name = parent_node.name + "_internal"
-    print(f"Grafted subtree at {parent_node.name} in parent tree")
 
 
 def stitch_subtrees(
@@ -449,7 +461,8 @@ def main():
     # Prepare lineage structure
     print("\nAssigning sequences to lineages...")
     assign_sequences_to_lineages(lineage_root, assignments, sequences)
-    assign_founders_to_lineages(lineage_root, founders)
+    assign_founders_to_lineages(lineage_root, founders, args.ignore_missing_founders)
+
 
     # Build and stitch trees
     print("\nBuilding subtrees using IQ-TREE...")
