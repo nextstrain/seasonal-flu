@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""
+Formats the host field.
+
+Originally copied from <https://github.com/nextstrain/fauna/blob/8a389ad2acc15fd3ba306ef33b72220597514cb1/vdb/avian_flu_upload.py#L407C9-L538>
+with subsequent modifications
+"""
+import argparse
+import re
+from sys import stdin
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+# NOTE: these host names have had spaces stripped, e.g. "dairy cow" is "dairycow"
+
+HUMAN = set([
+    "human"
+])
+AVIAN = set([
+    "accipitercooperii","accipitergentilis", "accipiternisus", "accipitertrivirgatus","aixsponsa",
+    "african__stonechat", "aixgalericulata", "alectorischukar", "american__black__duck",
+    "americanpelican","american__wigeon","americanwigeon", "anade",
+    "anassibilatrix","anasboschas", "anasacuta", "anasamericana", "anasfalcata",
+    "anaspenelope","anasflavirostris","ansersp.","anseriformessp.","anasquerquedula",
+    "anseranserdomesticus", "anserbrachyrhynchus", "ansercanagica","ansercaerulescens" ,
+    "ansercygnoides","anasplatyrhynchosf.domestica","anas_platyrhynchos",
+    "anascarolinensis", "anasclypeata", "anascrecca", "anascyanoptera",
+    "anasdiscors"," anasfalcata","anasgeorgica","anasformosa", "anasplatyrhynchos", "anaspoecilorhyncha",
+    "anasrubripes", "anassp.", "anasstrepera", "anasstrepera", "anasplatyrhynchosvar.domesticus",
+    "anasundalata", "anseranser", "anserfabalis", "anseralbifrons", "anthropoidesvirgo",
+    "anserindicus", "arenariainterpres","ardeacinerea","anaszonorhyncha","aythyaaffinis",
+    "anserrossii",
+    "aythyamarila","aythyafuligula","aythyaamericana","aythya_americana","aythyanyroca","aythyacollaris","aythyaferina",
+    "avian",
+    
+    "baldeagle", "bar__headed__goose","barnacle_goose", "beangoose","bird",
+    "barn__swallow", "blackvulture","black vulture","brantabernicla","brown__headed__gull", "bucephalaclangula", "buteo",
+    "baikal__teal", "bewick's__swan", "black__billed__magpie", "babbler","black-headedgull",
+    "buteobuteo","buteojamaicensis","buteojaponicus",
+    "blue__winged__teal","blue-wingedteal","bluegoose",
+    "brantahutchinsii","brantacanadensis","brantaleucopsis","buteolineatus",
+    
+    "cairinamoschata", "calidrisalba","calidris_canutus","calidriscanutus","calidrisminutilla","canada__goose","chencaerulescens",
+    "chencanagica", "chicken", "chukar", "chroicocephalusridibundus","ciconiaciconia","common__pochard",
+    "common__goldeneye", "common__coot", "common__pheasant", "commonteal", "common_teal","condor",
+    "cooper'shawk","cormorant", "corvus", "copsychussaularis","corvusmacrorhynchos",
+    "coturnix", "coturnixsp.", "coturniccoturnix", "coturnixjaponica","chlidoniashybridus",
+    "crane", "crow", "cygnus","cyrtonyxmontezumai","curlew", "cygnusatratus", "chinese__francolin",
+    "chroicocephaluscirrocephalus","corvusfrugilegus","chlidoniashybridus","circusaeruginosus,"
+    "corvussplendens", "cygnuscolumbianus", "cygnuscygnus","cygnus_cygnus", "cygnusolor",
+    
+    "dabblingduck", "dendrocygnaviduata","dendrocygnaautumnalis","domesticgoose","duck", "dove",
+    
+    "eagle", "egret","egyptiangoose","eurasiancurlew","eurasian__eagel__owl","emperorgoose",
+    "eurasian__wigeon",
+    
+    "falco", "falcon", "falcoperegrinus", "finch", "francolinus", "fowl", "falcotinnunculus", "falscorusticolus",
+    
+    "gadwall", "gallinulachloropus","gallus", "gallusgallus", "gallusgallusdomesticus",
+    "gallinagogallinago",
+    "goose", "graculareligiosa", "great__black__headed__gull", "grey_teal","greyteal","garrulaxcanorus", "garganey",
+    "glaucous-wingedgull","greygull","glaucousgull",
+    "great__crested__grebe", "greatcrestedgrebe","greatbustard", "great__bustard","greattit",
+    "greater__white__fronted__goose", "greylaggoose","greylag_goose" "grebe",
+    "green__winged__teal","green-wingedteal", "grey__teal",
+    "grey__heron", "guineafowl", "gull",
+    
+    "halietusleucocephalus","haliaeetusleucocephalus",
+    "halietusalbicilla","himantopushimantopusmelanurus","larusfuscus",
+    "heron", "herringgull","hirundorustica", "houbara__bustard",
+    
+    "japanese__white__eye", "japanese__quail",
+
+    "larusarmenicus","larusschistisagus", "larussmithsonianus","larusargentatus", "larusbrunnicephalus",
+    "larusglaucescens","larusmarinus","larusmelanocephalus","laruscachinnans","larosternainca",
+    "larusatricilla", "laruscanus", "larusdelawarensis","larusdominicanus","laughing__gull","larus",
+    "larusichthyaetus", "larusridibundus", "larusridibundus", "leucophaeusatricilla",
+    "leucophaeus","little__grebe","larushyperboreus","larusmichahellis","laruscrassirostris",
+    "little__egret", "lophuranycthemera", "lophodytescucullatus","lophodytescucullatus",
+    
+    "magpie", "magpie__robin", "mallard","milvusmigrans",
+    "mallardduck","marecapenelope","murre",
+    "morphnusguianensis", "mulardduck","mute__swan", "muscovy__duck", "myna", "meleagrisgallopavo",
+    
+    "necrosyrtesmonachus", "nisaetusnipalensis","northernpintail",
+    "northern__shoveler", "northernshoveler","numidasp.","northernpintail",
+    "northern__pintail", "numidameleagris","numeniusarquata",
+    
+    "openbill__stork","oreortyx", "ostrich", "oystercatcher", "otheravian",
+    
+    "parabuteo","parabuteounicinctus",
+    "partridge", "passerdomesticus", "parakeet", "parrot", "passerine", "passermontanus",
+    "pavocristatus", "peacock","peafowl", "phasianuscolchicus", "phasianus",
+    "phasaniussp.","pheasant","phasaniuscolchicus","pelican","pelecanus",
+    "penguin","peregrine__falcon", "picapica","pica","pigeon", "pink__footed__goose",
+    "polyplectronbicalcaratum", "podicepscristatus",
+    "poultry","pygoscelisantarcticus",
+
+    "quail", 
+
+    "rissatridactyla","rynchopsniger",
+    "rails","rail","ring-neckedduck","rook", "ruddy__turnstone", "ruddyturnstone",
+    "ruddyshelduck","rosy__billed__pochard",
+    
+    "sacredibis",
+    "saker__falcon", "sanderling","sandpiper", "scolopaxrusticola","shearwater","shrike",
+    "shorebird", "silky__chicken",
+    "silverteal", "snow__goose","somateriamollissima",
+    "sparrow", "speckledpigeon","starling", "sternasandvicensis","swan", "sterna",
+    "sternahirundo","sternaparadisaea",
+    "streptopeliadecaocto",
+    "stork", "swiftlet",
+    
+    "tachybaptusruficollis","tadornaferuginea","tadornatadorna",
+    "teal", "turkey", "tern","turtledove", "tree__sparrow", "turnstone",
+    
+    "us_quail",
+    
+    "waterbird","waterfowl",
+    "wild__turkey", "wildwaterfowl","white__bellied__bustard",
+    "white-frontedgoose", "white-frontedgoose",
+    "wild__chicken","wild__duck","wildbirds",
+    "whooper__swan","whooperswan", "wildbird",
+    
+    "yellow__billed__duck",
+    
+    "zosteropsjaponicus"
+])
+ENVIRONMENT = set([
+    "feces", "otherenvironment", "surfaceswab", "watersample", "environment",
+    "airsample"
+])
+CATTLE = set(["dairycattle", "cattle", "cow", "bovine", "dairycow"])
+NONHUMAN_MAMMAL = set([
+    "bat", "canine", "equine", "feline", "harbourseal","mammals", "mink", "othermammals",
+    "primate","swine","pig", "susscrofadomesticus", "lion", "weasel", "raccoon__dog", "tiger",
+    "dog", "large__cat", "mouse","murine","pika","seal","meerkat", "cat","feliscatus", "rousettusaegyptiacus","rodent"])
+OTHER_HOSTS = set([
+    "circus", "ferret", "insect", "laboratoryderived", "unknown", "animal", "host"
+])
+
+def guess_host_from_strain(strain_name: str) -> str:
+    """Returns a host extracted from the strain name or the empty string"""
+    strain_parts = strain_name.split("/")
+    if len(strain_parts) == 5:
+        return strain_parts[1].lower()
+    return ""
+
+def format_host(records: Iterable, strain_key:str, host_key:str) -> Iterable:
+    '''
+    Fix host formatting
+    '''
+    for record in records:
+        gisaid_host = record[host_key].lower().replace(' ', '')
+        gisaid_strain = record[strain_key]
+
+        if gisaid_host == '':
+            gisaid_host = guess_host_from_strain(gisaid_strain)
+
+        if gisaid_host in HUMAN:
+            record['host'] = 'Human'
+        elif gisaid_host in AVIAN:
+            record['host'] = 'Avian'
+        elif gisaid_host in ENVIRONMENT:
+            record['host'] = 'Environment'
+        elif gisaid_host in CATTLE:
+            record['host'] = 'Cattle'
+        elif gisaid_host in NONHUMAN_MAMMAL:
+            # extra logic to find cattle sequences that are annotated as mammal but are cattle
+            if guess_host_from_strain(gisaid_strain) in CATTLE:
+                record['host'] = "Cattle"
+            else:
+                record['host'] = "Nonhuman Mammal"
+        elif gisaid_host in OTHER_HOSTS:
+            record['host'] = "other"
+        else:
+            print_err("cannot classify host for", gisaid_strain, record['host'])
+
+        yield record
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--strain-field", required=True, help="The record field containing the strain name")
+    parser.add_argument("--host-field", required=True, help="The record field containing the host")
+    args = parser.parse_args()
+
+    records = load_ndjson(stdin)
+    modified_records = format_host(records, args.strain_field, args.host_field)
+    dump_ndjson(modified_records)
