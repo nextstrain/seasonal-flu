@@ -13371,3 +13371,6 @@ EPI_ISL_995	b//yam
 EPI_ISL_67933	b//yam
 EPI_ISL_162865	b//yam
 EPI_ISL_153427	b//yam
+# Following isolate labelled as H1N2 pdm09. Nextclade indicates it is H1 & N2,
+# and that it's probably (?) a reassortant of h1n1pdm09. But for our purposes call it h1n2. 
+EPI_ISL_128301	a/h1n2/h1n2
