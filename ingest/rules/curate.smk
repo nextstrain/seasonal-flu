@@ -80,6 +80,7 @@ rule curate:
         gender_field=config["curate"]["gender_field"],
         new_gender_field=config["curate"]["new_gender_field"],
         annotations_id=config["curate"]["annotations_id"],
+        host_field=config["curate"]["host_field"],
     shell:
         r"""
         (zstdcat {input.sequences_ndjson:q} \
@@ -106,6 +107,9 @@ rule curate:
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \
                 --abbreviations {params.abbreviations:q} \
+            | ./scripts/curate-host \
+                --host-field {params.host_field:q} \
+                --strain-field {params.gisaid_strain_field:q} \
             | augur curate apply-geolocation-rules \
             | augur curate apply-geolocation-rules \
                 --no-default-rules \
