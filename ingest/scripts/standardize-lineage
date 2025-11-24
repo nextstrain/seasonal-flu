@@ -15,43 +15,41 @@ SCRIPT_NAME = Path(sys.argv[0]).stem
 def print_err(*args):
     print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
-# GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
-# <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+UNKNOWN = "n/a" # value to use for unknown subtypes / lineages
+
 # Maps GISAID "Subtype" and "Lineage" fields to the standardized type, subtype, and lineage.
+# (matching will be performed case-insensitive). To summarise the underlying data you can run:
+# `cat data/gisaid.ndjson | jq -r '[.Subtype, .Lineage] | join(" :: ")' | sort  | uniq -c | sort -h`
+#
+# Originally copied from nextstrain/fauna/vdb/flu_upload.py <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+# and edited to incorporate all known HA / NA subtypes. The gisaid lineage "seasonal" is ignored
+# as we don't use this to differentiate isolates in our pipeline. It's unclear why we first copied
+# (A) subtypes to the lineage field, but that's become the norm so it's preserved here.
+#
 # type    = virus type (i.e. A or B)
-# subtype = HxNx subtype
+# subtype = A viruses only -- "HxNx" subtype, or "Hx" or "Nx" if full genome not sequenced
 # lineage = standardized lineages used in our builds
 GISAID_LINEAGE_MAP = {
 #   (GISAID Subtype,  GISAID Lineage):    (type,   subtype,   lineage)
-    ('a',             ''):                ('a',    'n/a',     'n/a'),
+    # A-Type viruses
+    ('a',             ''):                ('a',    UNKNOWN,     UNKNOWN),
+    # The only gisaid lineage other than "seasonal" is "pdm09"
     ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'h1n1pdm'),
-    ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
-    ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'h1n2'),
-    ('a / h2n2',      ''):                ('a',    'h2n2',    'n/a'),
-    ('a / h3n2',      ''):                ('a',    'h3n2',    'h3n2'),
-    ('a / h3n2',      'seasonal'):        ('a',    'h3n2',    'h3n2'),
-    ('a / h3n3',      ''):                ('a',    'h3n3',    'n/a'),
-    ('a / h5n1',      ''):                ('a',    'h5n1',    'n/a'),
-    ('a / h5n6',      ''):                ('a',    'h5n6',    'n/a'),
-    ('a / h6n1',      ''):                ('a',    'h6n1',    'n/a'),
-    ('a / h7n1',      ''):                ('a',    'h7n1',    'n/a'),
-    ('a / h7n2',      ''):                ('a',    'h7n2',    'n/a'),
-    ('a / h7n3',      ''):                ('a',    'h7n3',    'n/a'),
-    ('a / h7n7',      ''):                ('a',    'h7n7',    'n/a'),
-    ('a / h7n9',      ''):                ('a',    'h7n9',    'n/a'),
-    ('a / h9n2',      ''):                ('a',    'h9n2',    'n/a'),
-    ('a / h10n7',     ''):                ('a',    'h10n7',   'n/a'),
-    ('a / h10n8',     ''):                ('a',    'h10n8',   'n/a'),
-    ('a / h11',       ''):                ('a',    'h11',     'n/a'),
-    ('b',             ''):                ('b',    'n/a',     'n/a'),
-    ('b / h0n0',      'victoria'):        ('b',    'n/a',     'vic'),
-    ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'yam'),
-    ('b',             'victoria'):        ('b',    'n/a',     'vic'),
-    ('b',             'yamagata'):        ('b',    'n/a',     'yam'),
+    # Add all (A) HA / NA combinations
+    **{(f"a / h{HA_NUM}n{NA_NUM}", ''):   ('a',    f"h{HA_NUM}n{NA_NUM}",  f"h{HA_NUM}n{NA_NUM}") for HA_NUM in range(1, 19+1) for NA_NUM in range(1, 11+1)},
+    # and all (A) HA-only combinations (presumably as the NA wasn't sequenced?)
+    **{(f"a / h{HA_NUM}", ''):            ('a',    f"h{HA_NUM}",           f"h{HA_NUM}")          for HA_NUM in range(1, 19+1)},
+    # and vice-versa, presumably when the HA wasn't sequenced!
+    **{(f"a / n{NA_NUM}", ''):            ('a',    f"n{NA_NUM}",           f"n{NA_NUM}")          for NA_NUM in range(1, 11+1)},
+    # B-Type viruses
+    ('b',             ''):                ('b',    UNKNOWN,     UNKNOWN),
+    ('b',             'victoria'):        ('b',    UNKNOWN,     'vic'),
+    ('b',             'yamagata'):        ('b',    UNKNOWN,     'yam'),
+    # C-Type viruses (n=727 as of November 2025)
+    ('c',             ''):                ('c',    UNKNOWN,     UNKNOWN),
 }
 
 TBD_TYPE = "tbd"
-UNKNOWN_SUBTYPE = "n/a"
 
 def standardize_record_lineage(records: Iterable[dict],
                                subtype_field: str,
@@ -72,10 +70,15 @@ def standardize_record_lineage(records: Iterable[dict],
     Based on nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L462-L484>
     """
-    unknown_gisaid_types = set()
+    num_records_unmatched = 0
     for record in records:
         gisaid_subtype = record.get(subtype_field)
         gisaid_lineage = record.get(lineage_field)
+
+        # ignore "seasonal" lineage info as we don't use it (see earlier comment)
+        if gisaid_lineage == 'seasonal':
+            gisaid_lineage = ''
+
         gisaid_note = record.get(note_field)
         annotations_key = record.get(annotations_field, None) if annotations else ''
 
@@ -95,17 +98,12 @@ def standardize_record_lineage(records: Iterable[dict],
         gisaid_types = (gisaid_subtype.lower(), gisaid_lineage.lower())
         lineage_match = GISAID_LINEAGE_MAP.get(gisaid_types)
 
-        # Records without clear subtype/lineage are marked as "tbd"
-        # e.g. sequences submitted with _only_ the HA segment
-        if lineage_match is None:
-            unknown_gisaid_types.add(gisaid_types)
-            lineage_match = (TBD_TYPE, TBD_TYPE, TBD_TYPE)
+        record[new_type_field]    = lineage_match[0] if lineage_match else TBD_TYPE
+        record[new_subtype_field] = lineage_match[1] if lineage_match else TBD_TYPE
+        record[new_lineage_field] = lineage_match[2] if lineage_match else TBD_TYPE
 
-        record[new_type_field]    = lineage_match[0]
-        record[new_subtype_field] = lineage_match[1]
-        record[new_lineage_field] = lineage_match[2]
-
-        # Apply hardcoded annotations last as they override everything        
+        # Apply hardcoded annotations last as they override everything. Doing so last
+        # allows us to print warnings when the annotation was unnecessary
         if hardcoded:=annotations.get(annotations_key):
             changes = False
             if record[new_type_field]!=hardcoded['type']:
@@ -120,13 +118,14 @@ def standardize_record_lineage(records: Iterable[dict],
             if not changes:
                 print_err(f"Lineage annotation for {annotations_key!r} is unnecessary (no changes needed)")
 
+        elif not lineage_match:
+            print_err(f"no lineage match for {record['gisaid_epi_isl']} {record['gisaid_strain']!r}. Subtype: {gisaid_subtype!r} lineage {gisaid_lineage!r}")
+            num_records_unmatched+=1
+
         yield record
 
-    if len(unknown_gisaid_types):
-        print_err(
-            "WARNING: Records with the following GISAID subtype and lineages",
-            f"were marked as {TBD_TYPE!r}: {unknown_gisaid_types!r}"
-        )
+    if num_records_unmatched:
+        print_err(f"In total {num_records_unmatched:,} records were not matched against our set of known types/subtypes/lineages (see previous messages)")
 
 
 def parse_lineage_from_note(note: str) -> str:
@@ -174,7 +173,7 @@ def read_annotations_tsv(fname):
                 print_err(f"ISL {isl} already seen in annotations TSV. Overwriting.")
             annotations[isl] = {
                 'type': parts[0],
-                'subtype': parts[1] if parts[1] else UNKNOWN_SUBTYPE,
+                'subtype': parts[1] if parts[1] else UNKNOWN,
                 'lineage': parts[2],
             }
     return annotations
