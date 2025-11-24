@@ -155,7 +155,7 @@ rule filter_for_seasonal_flu:
     shell:
         r"""
         cat {input.curated_ndjson:q} \
-            | ./scripts/filter-for-seasonal-flu \
+            | ./scripts/filter-ndjson \
                 --id-field {params.gisaid_id_field:q} \
                 --lineage-field {params.new_lineage_field:q} \
                 --host-field {params.host_field:q} \
