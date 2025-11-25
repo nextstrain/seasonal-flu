@@ -107,10 +107,10 @@ builds:
           key: "legacy-clade"
         subclade:
           url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
         subclade_backcompat:
           url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
           key: "subclade"
-          tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
         proposedSubclade:
           url: "seasonal_B-Vic_HA/main/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
