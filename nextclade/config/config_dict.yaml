@@ -39,7 +39,7 @@ builds:
       clade_systems:
         subclade:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade.nwk"
+          tree-url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade.nwk"
         proposedSubclade:
           url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
