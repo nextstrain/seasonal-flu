@@ -100,7 +100,7 @@ rule download_clades:
     output:
         clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}_raw.tsv"
     params:
-        source_tsv=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
+        source_tsv = lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
     shell:
         """
         curl {params.source_tsv} > {output.clade_tsv}
@@ -108,7 +108,7 @@ rule download_clades:
 
 rule download_clade_tree:
     message:
-        "Downloading clade tree for {wildcards.lineage} from {params.source_tsv} -> {output}"
+        "Downloading clade tree for {wildcards.lineage} from {params.source_nwk} -> {output}"
     output:
         clade_nwk = "data/{clade}_{lineage}_{segment}.nwk"
     params:
@@ -265,6 +265,8 @@ rule tidytree:
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk"
     threads: 2
+    params:
+        clade_name = lambda w: 'subclade' if w.segment=='ha' else 'clade'
     resources:
         mem_mb=16000,
         time="2:00:00",
@@ -275,7 +277,7 @@ rule tidytree:
             --guide-tree {input.guide_tree} \
             --lineage-assignments {input.metadata} \
             --seq-id-column strain \
-            --lineage-column subclade \
+            --lineage-column {params.clade_name} \
             --threads {threads} \
             --keep-founders \
             --iqtree-args '-ninit 10 -n 4 -czb' \
@@ -496,7 +498,7 @@ rule extract_clade_founders:
         clades="build/{lineage}/{segment}/{reference}/clade_subclade.json",
         ancestral = "build/{lineage}/{segment}/{reference}/muts.json",
     output:
-        sequences="config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
+        sequences="config/{lineage}/{segment}/{reference}/founder_sequences_new.fasta",
     shell:
         """
         python3 scripts/extract_founder_sequences.py \
@@ -513,7 +515,7 @@ rule translate_clade_founders:
     output:
         translations="build/{lineage}/{segment}/{reference}/founder_sequences.translations.done",
     params:
-        outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
+        outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_new_{{cds}}.fasta",
         nextclade_bin = "nextclade3"
     threads: 3
     shell:
