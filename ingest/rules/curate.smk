@@ -42,6 +42,7 @@ def format_field_map(field_map: dict[str, str]) -> str:
 rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson",
+        lineage_annotations=config["curate"]["lineage_annotations"],
         strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
         geolocation_rules=config["curate"]["local_geolocation_rules"],
@@ -90,6 +91,7 @@ rule curate:
                 --new-type-field {params.new_type_field:q} \
                 --new-subtype-field {params.new_subtype_field:q} \
                 --new-lineage-field {params.new_lineage_field:q} \
+                --annotations {input.lineage_annotations:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
