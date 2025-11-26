@@ -61,6 +61,7 @@ curate:
   new_type_field: "vtype"
   new_subtype_field: "subtype"
   new_lineage_field: "lineage"
+  lineage_annotations: "defaults/lineages.tsv"
   host_field: "host"
   hosts_to_include: ["Human"]
   # List of date fields to standardize to ISO format YYYY-MM-DD

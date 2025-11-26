@@ -4,8 +4,9 @@ Standardize lineage based on GISAID's subtype and lineage.
 """
 import argparse
 import re
+import csv
 from sys import stdin
-from typing import Iterable
+from typing import Iterable, Dict
 from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
 
@@ -46,7 +47,7 @@ GISAID_LINEAGE_MAP = {
 }
 
 TBD_TYPE = "tbd"
-
+UNKNOWN_SUBTYPE = "n/a"
 
 def standardize_record_lineage(records: Iterable[dict],
                                subtype_field: str,
@@ -54,7 +55,9 @@ def standardize_record_lineage(records: Iterable[dict],
                                note_field: str,
                                new_type_field: str,
                                new_subtype_field: str,
-                               new_lineage_field: str) -> Iterable:
+                               new_lineage_field: str,
+                               annotations_field: str,
+                               annotations: Dict[str, Dict[str,str]]) -> Iterable:
     """
     Match the GISAID *subtype_field* and *lineage_field* to the
     GISAID_LINEAGE_MAP to add standardized fields for type, subtype, and
@@ -70,12 +73,17 @@ def standardize_record_lineage(records: Iterable[dict],
         gisaid_subtype = record.get(subtype_field)
         gisaid_lineage = record.get(lineage_field)
         gisaid_note = record.get(note_field)
+        annotations_key = record.get(annotations_field, None) if annotations else ''
 
         if gisaid_subtype is None:
             raise Exception(f"Records must have the expected GISAID subtype field: {subtype_field!r}")
 
         if gisaid_lineage is None:
             raise Exception(f"Records must have the expected GISAID lineage field: {lineage_field!r}")
+
+        if annotations_key is None:
+            raise Exception(f"Records must have the annotations field {annotations_field!r} if an annotations TSV is being used")
+
 
         if not gisaid_lineage.strip() and gisaid_note:
             gisaid_lineage = parse_lineage_from_note(gisaid_note)
@@ -92,6 +100,21 @@ def standardize_record_lineage(records: Iterable[dict],
         record[new_type_field]    = lineage_match[0]
         record[new_subtype_field] = lineage_match[1]
         record[new_lineage_field] = lineage_match[2]
+
+        # Apply hardcoded annotations last as they override everything        
+        if hardcoded:=annotations.get(annotations_key):
+            changes = False
+            if record[new_type_field]!=hardcoded['type']:
+                record[new_type_field] = hardcoded['type']
+                changes=True
+            if record[new_subtype_field]!=hardcoded['subtype']:
+                record[new_subtype_field] = hardcoded['subtype']
+                changes=True
+            if record[new_lineage_field]!=hardcoded['lineage']:
+                record[new_lineage_field] = hardcoded['lineage']
+                changes=True
+            if not changes:
+                print_err(f"Lineage annotation for {annotations_key!r} is unnecessary (no changes needed)")
 
         yield record
 
@@ -125,6 +148,32 @@ def parse_lineage_from_note(note: str) -> str:
 
     return ""
 
+def read_annotations_tsv(fname):
+    # Based on augur curate's apply_record_annotations.py
+    # <https://github.com/nextstrain/augur/blob/58f8b1aea1c135f71796bc9fbd8fefe6bc9e4369/augur/curate/apply_record_annotations.py#L31C1-L41C70>
+    annotations = {}
+    with open(fname, 'r', newline='') as annotations_fh:
+        csv_reader = csv.reader(annotations_fh, delimiter='\t')
+        for row in csv_reader:
+            if not row or row[0].lstrip()[0] == '#':
+                    continue
+            elif len(row) != 2:
+                print_err("WARNING: Could not decode lineage annotation TSV line " + "\t".join(row))
+                continue
+            isl, data = row
+            # data format is type:subtype:lineage
+            parts = data.split('#')[0].rstrip().split('/')
+            if len(parts)!=3:
+                print_err("WARNING: Could not decode lineage annotation TSV line - ensure type/subtype/lineage formatting is correct. " + "\t".join(row))
+                continue
+            if isl in annotations:
+                print_err(f"ISL {isl} already seen in annotations TSV. Overwriting.")
+            annotations[isl] = {
+                'type': parts[0],
+                'subtype': parts[1] if parts[1] else UNKNOWN_SUBTYPE,
+                'lineage': parts[2],
+            }
+    return annotations
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
@@ -144,8 +193,17 @@ if __name__ == '__main__':
     parser.add_argument("--new-lineage-field", default="lineage",
         help="The name of the new field to add to the record with the lineage, " + \
              f"e.g. h1n1pdm. If subtype is unknown, will default to {TBD_TYPE!r}")
-
+    parser.add_argument("--annotations", metavar="TSV", 
+        help="Manually curated annotations TSV file. " +
+             "The TSV should have two columns, the first is the EPI ISL and " +
+             "the second defines the <type>:<subtype>:<lineage>. " +
+             "Lines starting with '#' are treated as comments. " +
+             "Any '#' after the field value are treated as comments.")
+    parser.add_argument("--annotations-field", default="gisaid_epi_isl",
+        help="The record field used match against the annotations TSV")
     args = parser.parse_args()
+
+    annotations = read_annotations_tsv(args.annotations) if args.annotations else {}
 
     records = load_ndjson(stdin)
     modified_records = standardize_record_lineage(
@@ -155,5 +213,7 @@ if __name__ == '__main__':
         args.note_field,
         args.new_type_field,
         args.new_subtype_field,
-        args.new_lineage_field)
+        args.new_lineage_field,
+        args.annotations_field,
+        annotations)
     dump_ndjson(modified_records)
