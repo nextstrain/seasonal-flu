@@ -38,11 +38,15 @@ Then the strain location "Baltimore" will be returned as the division:
 """
 import argparse
 import re
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 DEFAULT_UNKNOWN_VALUE = "?"
 LOCATION_FIELDS = [
@@ -122,7 +126,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = parse_locations(
         records,
         args.location_field,

@@ -5,11 +5,15 @@ Standardize lineage based on GISAID's subtype and lineage.
 import argparse
 import re
 import csv
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable, Dict
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 # GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
 # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
@@ -205,7 +209,7 @@ if __name__ == '__main__':
 
     annotations = read_annotations_tsv(args.annotations) if args.annotations else {}
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = standardize_record_lineage(
         records,
         args.subtype_field,

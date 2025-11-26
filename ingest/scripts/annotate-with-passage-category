@@ -5,11 +5,15 @@ detailed passage field.
 """
 import argparse
 import re
-from sys import stdin
+import sys
+from pathlib import Path
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 DEFAULT_PASSAGE_CATEGORY = "undetermined"
 EXPECTED_PASSAGE_CATEGORIES = [
@@ -91,6 +95,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = annotate_records_with_passage_category(records, args.passage_field, args.passage_category_field)
     dump_ndjson(modified_records)

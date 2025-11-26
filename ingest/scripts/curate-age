@@ -3,11 +3,15 @@
 Combines GISAID age information (number + units) into one field.
 """
 import argparse
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 DEFAULT_UNKNOWN_VALUE = "?"
 DEFAULT_AGE_UNIT = "y"
@@ -59,7 +63,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = combine_age_and_unit(records,
                                             args.age_field,
                                             args.age_unit_field,

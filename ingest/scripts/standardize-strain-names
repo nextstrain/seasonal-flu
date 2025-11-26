@@ -5,11 +5,15 @@ Standardizes GISAID strain names to our expected patterns.
 import argparse
 import csv
 import re
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 EGG_PASSAGE = "egg"
 EGG_SUFFIX = "-egg"
@@ -266,7 +270,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = standardize_record_strains(
         records,
         args.strain_field,
