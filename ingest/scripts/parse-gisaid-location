@@ -42,6 +42,7 @@ import argparse
 import re
 from pathlib import Path
 import sys
+import csv
 from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
 
@@ -62,7 +63,9 @@ STRAIN_LOCATION_PATTERN = r".+\/(?P<location>.+)\/.+\/.+"
 
 def parse_locations(records: Iterable,
                     location_field: str,
-                    strain_field: str) -> Iterable:
+                    strain_field: str,
+                    annotations_field: str,
+                    annotations: dict[str, dict[str,str]]) -> Iterable:
     """
     Parse the *location_field* in the *records* to split it into 4 separate
     fields: region, country, division, and location.
@@ -75,6 +78,17 @@ def parse_locations(records: Iterable,
     expected_num_locations = len(LOCATION_FIELDS)
     for record in records:
         record = record.copy()
+
+        isl = record.get(annotations_field)
+        if isl is None:
+            raise Exception(f"Records must have the specified annotations field: {annotations_field!r}")
+        if isl in annotations:
+            # use hardcoded annotation and move on - don't check for conflicts
+            for field,value in annotations[isl].items():
+                record[field] = value
+            yield record
+            continue
+
         gisaid_location = record.get(location_field)
 
         if gisaid_location is None:
@@ -118,6 +132,32 @@ def parse_location_from_strain(strain: str) -> Optional[str]:
     return location
 
 
+def read_annotations_tsv(fname: str) -> dict[str, dict[str,str]]:
+    # Based on augur curate's apply_record_annotations.py
+    # <https://github.com/nextstrain/augur/blob/58f8b1aea1c135f71796bc9fbd8fefe6bc9e4369/augur/curate/apply_record_annotations.py#L31C1-L41C70>
+    annotations = {}
+    with open(fname, 'r', newline='') as annotations_fh:
+        csv_reader = csv.reader(annotations_fh, delimiter='\t')
+        for row in csv_reader:
+            if not row or not row[0].lstrip() or row[0].lstrip()[0] == '#':
+                    continue
+            if len(row)<2 or len(row)>5:
+                print_err(f"WARNING: Could not decode annotation TSV line. Found {len(row)} fields, expected: 2-5." + "\t".join(row))
+                continue
+            row = [x.strip() for x in row]
+            if any([not x for x in row]):
+                print_err(f"WARNING: Empty field in TSV line; skipping." + "\t".join(row))
+                continue
+            isl, *parts = row
+            if isl in annotations:
+                print_err(f"ISL {isl} already seen in annotations TSV. Overwriting.")
+            # fill in un-specified fields
+            for _ in range(len(parts), len(LOCATION_FIELDS)):
+                parts.append(DEFAULT_UNKNOWN_VALUE)
+            annotations[isl] = {key: parts[idx] for idx, key in enumerate(LOCATION_FIELDS)}
+    return annotations
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
 
@@ -125,12 +165,22 @@ if __name__ == '__main__':
         help="The record field containing the GISAID location")
     parser.add_argument("--strain-field",
         help="Optional record field with strain name that includes location info.")
-
+    parser.add_argument("--annotations", metavar="TSV", 
+        help="Manually curated annotations TSV file. " +
+             "The first column should be the EPI_ISL, the 2nd - 5th columns represent region, country, location & division. " +
+             "The 3rd-5th columns are optional, if unset the default (unknown) value will be used for that field. " +
+             "Lines starting with '#' are comments.")
+    parser.add_argument("--annotations-field", default="gisaid_epi_isl",
+        help="The record field used match against the annotations TSV")
     args = parser.parse_args()
+
+    annotations = read_annotations_tsv(args.annotations) if args.annotations else {}
 
     records = load_ndjson(sys.stdin)
     modified_records = parse_locations(
         records,
         args.location_field,
-        args.strain_field)
+        args.strain_field,
+        args.annotations_field,
+        annotations)
     dump_ndjson(modified_records)
