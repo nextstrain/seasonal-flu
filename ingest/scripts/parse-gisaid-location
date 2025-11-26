@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
 """
-Parses GISAID's location field into 4 separate fields: region, country, division, and location.
+Parses GISAID's Location field (capital "L") into 4 separate fields:
 
-Expects the GISAID location field to be formatted as
+    region, country, division, and location.
+
+Expects the GISAID Location field to be formatted as
 
     <region> / <country> / <division> / <location>
 
-The location values are not guaranteed across GISAID records, so they will
+The presence of 4 values are not guaranteed across GISAID records, so they will
 default to "?" if not available.
 
-If the location field does not include all geolocation values, then try to parse
+If the Location field does not include all geolocation values, then try to parse
 the optional strain field for additional location information. Strain names are
 expected to be formatted as
 
-    <subtype>/<location>/<sample_id>/<year>
+    <subtype>/<geography>/<sample_id>/<year>
 
-The strain location will only be used if it is not already included in the
-geolocation values from the location field. The strain location will be used as
+The <geography> value will only be used if it is not already included in the
+values extracted from the Location field, and the <geography> value will be used as
 the next missing geolocation value.
 
-For example, the following record only has region and country in the location field:
+For example, the following record only has region and country in the Location field:
 
     {
-        "location": "North America / United States",
+        "Location": "North America / United States",
         "strain": "A/Baltimore/123/2025"
     }
 
-Then the strain location "Baltimore" will be returned as the division:
+Then the strain's geography value "Baltimore" will be returned as the division:
 
     {
         "region": "North America",
@@ -44,7 +46,6 @@ from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
 
 SCRIPT_NAME = Path(sys.argv[0]).stem
-
 def print_err(*args):
     print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
@@ -85,16 +86,17 @@ def parse_locations(records: Iterable,
                 f"The GISAID location field has more values ({split_locations!r})",
                 f"than expected ({LOCATION_FIELDS!r}), the extra values will be ignored.")
 
-        if ((strain := record.get(strain_field)) is not None and
-           (strain_location := parse_location_from_strain(strain)) is not None):
+        # Attempt to extract geographical info from the strain name if we don't already have all location fields
+        if (len(split_locations) < expected_num_locations and 
+                (strain := record.get(strain_field)) is not None and
+                (strain_location := parse_location_from_strain(strain)) is not None):
             # TODO: need better fuzzy matching because the strain_location
             # can have various spellings that don't match the metadata location
             if not any([strain_location.lower() in location.lower() for location in split_locations]):
                 # If the strain_location is not found in the metadata location values
                 # then assume that it is more specific than the metadata locations
                 # and append it to the location values to output
-                if len(split_locations) < expected_num_locations:
-                    split_locations.append(strain_location)
+                split_locations.append(strain_location)
 
         for index, field in enumerate(LOCATION_FIELDS):
             record[field] = split_locations[index] if len(split_locations) > index else DEFAULT_UNKNOWN_VALUE
