@@ -51,7 +51,6 @@ curate:
     Collection_Date: date
     Submission_Date: date_submitted
     Passage_History: passage
-    Location: location # This is <region>/<country>/<division>/<location>
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
@@ -70,7 +69,7 @@ curate:
   # These date formats should use directives expected by datetime
   # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
   expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
-  gisaid_location_field: "location"
+  gisaid_location_field: "Location"
   titlecase:
     # List of string fields to titlecase
     fields: ["region", "country", "division", "location"]
