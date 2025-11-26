@@ -1,0 +1,11 @@
+# Manually curated annotations TSV file which defines the geographical
+# information for a record.
+#
+# The first column must be the EPI ISL
+# The 2nd - 5th columns represent region, country, location & division
+# The 3rd-5th columns are optional, if unset the default (unknown) value will be used for that field.
+#
+# Lines starting with '#' are treated as comments, but '#' should not appear elsewhere in a row
+
+# GISAID strain "A/Japan/2013"
+EPI_ISL_144969 	Japan Korea	Japan

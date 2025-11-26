@@ -1,0 +1,17 @@
+# Manually curated annotations TSV file
+#
+# This runs as the final step in the curate chain. If possible, please
+# put hardcoded annotations in an annotations file specific to a relevant
+# curation layer. For instance, lineage annotatoins should not go in this
+# file but rather `defaults/lineages.tsv`
+#
+#
+# This TSV should not have a header and should have exactly three columns:
+# COLUMN 1: (CURATED) STRAIN NAME
+# COLUMN 2: FIELD NAME (e.g. date)
+# COLUMN 3: NEW VALUE (e.g. 2025-01-01)
+#
+# If there are multiple annotations for the same id and field, then the last value is used
+# Lines starting with '#' are treated as comments
+# Any '#' after the field value are treated as comments.
+

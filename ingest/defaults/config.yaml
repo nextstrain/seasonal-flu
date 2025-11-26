@@ -70,6 +70,7 @@ curate:
   # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
   expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
   gisaid_location_field: "Location"
+  location_annotations: "defaults/locations.tsv"
   titlecase:
     # List of string fields to titlecase
     fields: ["region", "country", "division", "location"]
@@ -92,9 +93,9 @@ curate:
   new_gender_field: "gender"
   # Path to the manual annotations file
   # The path should be relative to the ingest directory
-  annotations: "defaults/annotations.tsv"
+  final_annotations: "defaults/final_annotations.tsv"
   # The ID field in the metadata to use to merge the manual annotations
-  annotations_id: "gisaid_epi_isl"
+  annotations_id: "strain"
   # The ID field in the metadata to use as the sequence id in the output FASTA file
   output_id_field: "strain"
   # The GISAID ID field used to prioritize records during strain deduplication
