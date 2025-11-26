@@ -94,7 +94,7 @@ curate:
   # The path should be relative to the ingest directory
   annotations: "defaults/annotations.tsv"
   # The ID field in the metadata to use to merge the manual annotations
-  annotations_id: "strain"
+  annotations_id: "gisaid_epi_isl"
   # The ID field in the metadata to use as the sequence id in the output FASTA file
   output_id_field: "strain"
   # The GISAID ID field used to prioritize records during strain deduplication
