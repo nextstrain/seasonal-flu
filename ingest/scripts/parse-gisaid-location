@@ -50,7 +50,7 @@ SCRIPT_NAME = Path(sys.argv[0]).stem
 def print_err(*args):
     print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
-DEFAULT_UNKNOWN_VALUE = "?"
+DEFAULT_UNKNOWN_VALUE = ""
 LOCATION_FIELDS = [
     "region",
     "country",
