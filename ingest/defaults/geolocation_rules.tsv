@@ -107,3 +107,9 @@ Asia/Nonthaburi/*/*	Asia/Thailand/Nonthaburi/*
 Europe/France/Mayotte/*	Africa/Mayotte/Mayotte/*
 Europe/Netherlands/Bonaire/*	South America/Bonaire/Bonaire/*
 South America/Brazil/Estado do Acre/*	South America/Brazil/Acre/*
+
+Europe/Spain/Pontevedra/	Europe/Spain/Galicia/Pontevedra
+Europe/Spain/Pontevedra/Galicia	Europe/Spain/Galicia/Pontevedra
+
+# Fix casing changes introduced by `augur curate titlecase`
+*/*/*/Maricopa County Az	*/*/*/Maricopa County AZ
