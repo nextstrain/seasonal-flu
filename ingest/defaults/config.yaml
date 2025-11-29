@@ -71,6 +71,7 @@ curate:
   expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
   gisaid_location_field: "Location"
   location_annotations: "defaults/locations.tsv"
+  gisaid_location_rules: "defaults/gisaid_location_rules.tsv"
   titlecase:
     # List of string fields to titlecase
     fields: ["region", "country", "division", "location"]

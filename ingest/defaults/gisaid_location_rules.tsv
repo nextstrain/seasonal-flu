@@ -1,0 +1,12 @@
+# This file defines how to handle GISAID location fields with more than the expected 4 values
+# 
+# For help on what values they should be changed to, the following command will summarise
+# the original GISAID Location and our curated values
+# cat data/seasonal_flu.ndjson | jq -r '[.Location, .region, .country, .division, .location] | join(" :: ")' | sort  | uniq -c
+#
+# The first column is the GISAID Location - spaces surrounding the '/' are optional
+# a '*' character in the first column matches any value
+# The second column is the corrected Location (spaces surrounding the '/' are still optional)
+# If the first column had a '*' character then you may use one here to refer back to that field in the original.
+#
+# Lines starting with '#' are treated as comments, but '#' should not appear elsewhere in a row
