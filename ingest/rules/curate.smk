@@ -48,6 +48,7 @@ rule curate:
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         location_annotations=config["curate"]["location_annotations"],
         final_annotations=config["curate"]["final_annotations"],
+        gisaid_location_rules=config["curate"]["gisaid_location_rules"],
     output:
         curated_ndjson=temp("data/curated_gisaid.ndjson"),
     log:
@@ -100,6 +101,7 @@ rule curate:
                 --location-field {params.gisaid_location_field:q} \
                 --strain-field {params.gisaid_strain_field:q} \
                 --annotations {input.location_annotations:q} \
+                --rules {input.gisaid_location_rules:q} \
             | augur curate titlecase \
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \

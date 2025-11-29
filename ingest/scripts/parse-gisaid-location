@@ -60,12 +60,15 @@ LOCATION_FIELDS = [
 # <subtype>/<location>/<sample_id>/<year>
 STRAIN_LOCATION_PATTERN = r".+\/(?P<location>.+)\/.+\/.+"
 
+def parse_gisaid_location(gisaid_location):
+    return [location.strip() for location in gisaid_location.split("/")]
 
 def parse_locations(records: Iterable,
                     location_field: str,
                     strain_field: str,
                     annotations_field: str,
-                    annotations: dict[str, dict[str,str]]) -> Iterable:
+                    annotations: dict[str, dict[str,str]],
+                    rules: dict[tuple[str], list[str|int]]) -> Iterable:
     """
     Parse the *location_field* in the *records* to split it into 4 separate
     fields: region, country, division, and location.
@@ -94,11 +97,13 @@ def parse_locations(records: Iterable,
         if gisaid_location is None:
             raise Exception(f"Records must have the expected location field: {location_field!r}")
 
-        split_locations = [location.strip() for location in gisaid_location.split("/")]
+        split_locations = parse_gisaid_location(gisaid_location)
+
+        split_locations = update_gisaid_locations_via_rules(rules, split_locations)
+
         if len(split_locations) > expected_num_locations:
-            print_err(
-                f"The GISAID location field has more values ({split_locations!r})",
-                f"than expected ({LOCATION_FIELDS!r}), the extra values will be ignored.")
+            print_err(f"{isl} Location field has too many values: {split_locations!r}, " +
+                      "the extra values will be ignored. Please use annotations/rules files to fix.")
 
         # Attempt to extract geographical info from the strain name if we don't already have all location fields
         if (len(split_locations) < expected_num_locations and 
@@ -157,6 +162,54 @@ def read_annotations_tsv(fname: str) -> dict[str, dict[str,str]]:
             annotations[isl] = {key: parts[idx] for idx, key in enumerate(LOCATION_FIELDS)}
     return annotations
 
+def read_rules_tsv(fname: str) -> dict[tuple[str], list[str|int]]:
+    """
+    Returns a dictionary mapping the fields of a (uncurated) gisaid location
+    to a list of strings or integers. A string value is simply the updated field,
+    an integer value is the index of the original field to use.
+    """
+    rules = {}
+    with open(fname, 'r', newline='') as annotations_fh:
+        csv_reader = csv.reader(annotations_fh, delimiter='\t')
+        for row in csv_reader:
+            if not row or not row[0].lstrip() or row[0].lstrip()[0] == '#':
+                    continue
+            if len(row)!=2:
+                print_err(f"WARNING: Could not decode rules TSV line. Contents:" + "\t".join(row))
+                continue
+            row = [x.strip() for x in row]
+            if row[0].count('*')>1 or ('*' in row[1] and ('*' not in row[0] or row[1].count('*')>1)):
+                print_err(f"Error parsing rules TSV line. Contents:" + "\t".join(row))
+                continue
+
+            original = tuple(parse_gisaid_location(row[0]))
+            try:
+                updated = [
+                    original.index(new_field) if new_field=='*' else new_field
+                    for new_field in parse_gisaid_location(row[1])
+                ]
+            except ValueError:
+                print_err(f"Error parsing rules TSV line. Contents:" + "\t".join(row))
+                continue
+
+            rules[original] = updated
+    return rules
+
+def update_gisaid_locations_via_rules(rules: dict[tuple[str], list[str|int]], locations: list[str]) -> list[str]:
+    """
+    Given (parsed, uncurated) gisaid locations, remap them via a set of rules
+    """
+    for rule in rules:
+        if len(rule)!=len(locations):
+            continue
+        if all(a==b or a=='*' for a,b in zip(rule, locations)):
+            # rule matches!
+            return [
+                locations[new_field] if isinstance(new_field, int) else new_field
+                for new_field in rules[rule]
+            ]
+    return locations
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
@@ -172,9 +225,16 @@ if __name__ == '__main__':
              "Lines starting with '#' are comments.")
     parser.add_argument("--annotations-field", default="gisaid_epi_isl",
         help="The record field used match against the annotations TSV")
+    parser.add_argument("--rules", metavar="TSV",
+        help="Manually curated rules TSV file. " +
+             "The first column should be the slash-separated Location, the second is the corrected location. " +
+             "A single '*' match-all can be used in either column." +
+             "Lines starting with '#' are comments.")
+
     args = parser.parse_args()
 
     annotations = read_annotations_tsv(args.annotations) if args.annotations else {}
+    rules = read_rules_tsv(args.rules) if args.rules else {}
 
     records = load_ndjson(sys.stdin)
     modified_records = parse_locations(
@@ -182,5 +242,6 @@ if __name__ == '__main__':
         args.location_field,
         args.strain_field,
         args.annotations_field,
-        annotations)
+        annotations,
+        rules)
     dump_ndjson(modified_records)
