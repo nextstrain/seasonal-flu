@@ -200,6 +200,7 @@ rule tidytree:
             --seq-id-column seqName \
             --lineage-column clade \
             --threads {threads} \
+            --ignore-missing-founders \
             --keep-founders \
             {params.root_lineage} \
             --output-tree {output.tree} 2>&1 | tee {log}
