@@ -109,3 +109,12 @@ A/Yamanashi/2390/2023
  A/Tennessee/3/2024
  A/Iowa/96/2023
 
+# D.3.1.1
+A/Oman/CPHL_7253935/2025
+A/Victoria/2525608274/2025
+A/Sachsen/24/2025
+
+#D.3.1
+A/Darwin/1015/2025
+A/Bangkok/1803/2025
+A/Victoria/82/2025
