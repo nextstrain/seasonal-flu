@@ -26,7 +26,7 @@ def standardize_record_strains(records: Iterable,
                                passage_field: str,
                                type_field: str,
                                new_strain_field: str,
-                               strain_replacements_file: Optional[str],
+                               strain_replacements_files: list[str],
                                location_replacements_file: Optional[str]) -> Iterable:
     """
     Adds the *new_strain_field* to the *records*, with standardized strain name
@@ -34,10 +34,10 @@ def standardize_record_strains(records: Iterable,
 
     Yields the modified records.
     """
-    strain_replacements = {}
+    strain_replacements: dict[str,str] = {}
     location_replacements = {}
-    if strain_replacements_file:
-        strain_replacements = define_strain_fixes(strain_replacements_file)
+    for strain_replacements_file in strain_replacements_files:
+        strain_replacements = define_strain_fixes(strain_replacements_file, strain_replacements)
     if location_replacements_file:
         location_replacements = define_location_label_fixes(location_replacements_file)
 
@@ -77,7 +77,7 @@ def standardize_record_strains(records: Iterable,
         yield record
 
 
-def define_strain_fixes(fname: str) -> dict:
+def define_strain_fixes(fname: str, fix_whole_name:dict[str,str]) -> dict[str,str]:
     """
     Open strain name fixing files and define corresponding dictionaries
 
@@ -85,7 +85,6 @@ def define_strain_fixes(fname: str) -> dict:
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L142-L150>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    fix_whole_name:dict[str,str] = {}
     for line in reader:
         old_name = line['label'].encode().decode('unicode-escape')
         new_name = line['fix']
@@ -280,8 +279,8 @@ if __name__ == '__main__':
         help="The optional record field containing the Influenza type (e.g. a or b).")
     parser.add_argument("--new-strain-field", default="strain",
         help="The name of the new field to add to the record with the standardized strain name")
-    parser.add_argument("--strain-replacements",
-        help="A TSV file of full strain name replacements. " + \
+    parser.add_argument("--strain-replacements", nargs="+", metavar="TSV",
+        help="One or more TSV files of full strain name replacements. " + \
              "Strains in the 'label' column are replaced with the strains in the 'fix' column.")
     parser.add_argument("--location-replacements",
         help="A TSV file of location label replacements in strain names. " + \

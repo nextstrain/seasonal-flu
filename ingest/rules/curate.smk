@@ -43,7 +43,8 @@ rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson.zst",
         lineage_annotations=config["curate"]["lineage_annotations"],
-        strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_replacements_seasonal="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_replacements_avian="data/fauna-source-data/avian_flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         location_annotations=config["curate"]["location_annotations"],
@@ -122,7 +123,7 @@ rule curate:
                 --passage-field {params.passage_category_field:q} \
                 --type-field {params.new_type_field:q} \
                 --new-strain-field {params.new_strain_field:q} \
-                --strain-replacements {input.strain_replacements:q} \
+                --strain-replacements {input.strain_replacements_avian:q} {input.strain_replacements_seasonal:q} \
                 --location-replacements {input.strain_location_replacements:q} \
             | ./scripts/annotate-with-gihsn \
                 --strain-field {params.gisaid_strain_field:q} \
