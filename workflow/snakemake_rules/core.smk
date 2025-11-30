@@ -189,7 +189,7 @@ rule tidytree:
         root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
     threads: 2
     resources:
-        mem_mb=4000,
+        mem_mb=8000,
         time="2:00:00",
     shell:
         """
