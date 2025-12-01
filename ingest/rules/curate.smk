@@ -70,6 +70,7 @@ rule curate:
         articles=config["curate"]["titlecase"]["articles"],
         abbreviations=config["curate"]["titlecase"]["abbreviations"],
         titlecase_fields=config["curate"]["titlecase"]["fields"],
+        lowercase_fields=config["curate"]["lowercase"]["fields"],
         passage_field=config["curate"]["passage_field"],
         passage_category_field=config["curate"]["passage_category_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
@@ -88,6 +89,8 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
+            | ./scripts/lowercase-fields \
+                --fields {params.lowercase_fields:q} \
             | ./scripts/standardize-lineage \
                 --subtype-field {params.gisaid_subtype_field:q} \
                 --lineage-field {params.gisaid_lineage_field:q} \
