@@ -54,6 +54,14 @@ curate:
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
+    Clade: gisaid_clade # used by avian-flu builds
+    Domestic_Status: domestic_status # used by avian-flu builds
+    Pathogenicity: pathogenicity
+    Authors: authors # used by avian-flu builds
+  lowercase:
+    fields:
+      - gisaid_clade
+      - domestic_status
   gisaid_subtype_field: "Subtype"
   gisaid_lineage_field: "Lineage"
   gisaid_note_field: "Note"
