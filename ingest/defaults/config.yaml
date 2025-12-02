@@ -56,6 +56,7 @@ curate:
     Host: host
     Clade: gisaid_clade # used by avian-flu builds
     Domestic_Status: domestic_status # used by avian-flu builds
+    Pathogenicity: pathogenicity
     Authors: authors # used by avian-flu builds
   lowercase:
     fields:
