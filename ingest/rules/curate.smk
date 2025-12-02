@@ -7,8 +7,8 @@ REQUIRED INPUTS:
 
 OUTPUTS:
 
-    metadata    = results/{lineage}/metadata.tsv
-    sequences   = results/{lineage}/{segment}.fasta
+    metadata    = results/{dataset}/metadata.tsv
+    sequences   = results/{dataset}/{segment}.fasta
 
 """
 from pathlib import Path
@@ -146,87 +146,87 @@ rule curate:
         """
 
 
-rule filter_for_seasonal_flu:
+# Copied from
+# <https://github.com/nextstrain/zika/blob/4d8d8c452b8f3f50b771d95a17662c88818b6048/phylogenetic/rules/annotate_phylogeny.smk#L81-L97>
+def conditional(option, argument):
+    """Used for config-defined arguments whose presence necessitates a command-line option
+    (e.g. --foo) prepended and whose absence should result in no option/arguments in the CLI command.
+    *argument* can be falsey, in which case an empty string is returned (i.e. "don't pass anything
+    to the CLI"), or a *list* or *string* or *number* in which case a flat list of options/args is returned,
+    or *True* in which case a list of a single element (the option) is returned.
+    Any other argument type is a WorkflowError
+    """
+    if not argument:
+        return ""
+    if argument is True: # must come before `isinstance(argument, int)` as bool is a subclass of int
+        return [option]
+    if isinstance(argument, list):
+        return [option, *argument]
+    if isinstance(argument, int) or isinstance(argument, float) or isinstance(argument, str):
+        return [option, argument]
+    raise WorkflowError(f"Workflow function conditional() received an argument value of unexpected type: {type(argument).__name__}")
+
+
+rule filter_curated_data:
     input:
         curated_ndjson="data/curated_gisaid.ndjson",
     output:
-        seasonal_flu_ndjson=temp("data/seasonal_flu.ndjson"),
+        filtered_ndjson=temp("data/{dataset}/curated_gisaid.ndjson"),
     log:
-        "logs/filter_for_seasonal_flu.txt",
+        "logs/{dataset}/filter_curated_data.txt",
     benchmark:
-        "benchmarks/filter_for_seasonal_flu.txt"
+        "benchmarks/{dataset}/filter_curated_data.txt",
     params:
         gisaid_id_field=config["curate"]["gisaid_id_field"],
-        new_lineage_field=config["curate"]["new_lineage_field"],
-        host_field=config["curate"]["host_field"],
-        lineages_to_include=config["lineages"],
-        hosts_to_include=config["curate"]["hosts_to_include"],
+        optional_lineage_field=lambda w: conditional('--lineage-field', config["filtering"][w.dataset].get('lineage_field', None)),
+        # TODO XXX: There's a gotcha where the lineages have to be a list if there's multiple - we should remove the :q as we know all lineage values are a single word
+        lineages_to_include=lambda w: config["filtering"][w.dataset].get('lineages', None),
+        optional_additional_field=lambda w:conditional('--additional-field', config["filtering"][w.dataset].get('additional_field', None)),
+        optional_additional_field_values=lambda w:conditional('--additional-field-values', config["filtering"][w.dataset].get('additional_field_values', None)),
     shell:
         r"""
         cat {input.curated_ndjson:q} \
             | ./scripts/filter-ndjson \
                 --id-field {params.gisaid_id_field:q} \
-                --lineage-field {params.new_lineage_field:q} \
-                --host-field {params.host_field:q} \
+                {params.optional_lineage_field:q} \
                 --lineages {params.lineages_to_include:q} \
-                --hosts {params.hosts_to_include:q} \
-                > {output.seasonal_flu_ndjson:q} 2> {log:q}
-        """
-
-
-rule split_ndjson_by_lineage:
-    input:
-        seasonal_flu_ndjson="data/seasonal_flu.ndjson",
-    output:
-        lineage_ndjsons=temp(expand("data/{lineage}/curated_gisaid.ndjson", lineage=config["lineages"])),
-    log:
-        "logs/split_ndjson_by_lineage.txt"
-    params:
-        lineages=config["lineages"],
-        lineage_output_dir=lambda w, output: Path(output.lineage_ndjsons[0]).parents[1],
-        lineage_field=config["curate"]["new_lineage_field"],
-        id_field=config["curate"]["gisaid_id_field"],
-    shell:
-        r"""
-        cat {input.seasonal_flu_ndjson:q} \
-            | ./scripts/split-gisaid-ndjson-by-lineage \
-                --output-directory {params.lineage_output_dir:q} \
-                --lineages {params.lineages:q} \
-                --lineage-field {params.lineage_field:q} \
-                --id-field {params.id_field:q} 2> {log:q}
+                {params.optional_additional_field:q} \
+                {params.optional_additional_field_values:q} \
+                > {output.filtered_ndjson:q} 2> {log:q}
         """
 
 
 rule deduplicate_ndjson_by_strain:
     input:
-        curated_ndjson="data/{lineage}/curated_gisaid.ndjson",
-        prioritized_strain_ids=config["curate"]["prioritized_strain_ids"],
+        curated_ndjson="data/{dataset}/curated_gisaid.ndjson",
     output:
-        deduped_ndjson=temp("data/{lineage}/deduped_curated.ndjson"),
+        deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson"),
     log:
-        "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
+        "logs/{dataset}/deduplicate_ndjson_by_strain.txt"
     params:
         strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
+        # TODO XXX - can we make this an input to get snakemake's file checking?
+        prioritized_strain_ids=lambda w: conditional('--prioritized-ids', config["filtering"][w.dataset].get('prioritized_strain_ids', None)),
     shell:
         r"""
          cat {input.curated_ndjson:q} \
             | ./scripts/dedup-by-strain \
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
-                --prioritized-ids {input.prioritized_strain_ids:q} \
+                {params.prioritized_strain_ids:q} \
                 > {output.deduped_ndjson:q} 2> {log:q}
         """
 
 
 rule split_ndjson_by_segment:
     input:
-        deduped_ndjson="data/{lineage}/deduped_curated.ndjson",
+        deduped_ndjson="data/{dataset}/deduped_curated.ndjson",
     output:
-        metadata="data/{lineage}/curated_metadata.tsv",
-        sequences=expand("results/{{lineage}}/{segment}.fasta", segment=config["segments"]),
+        metadata="data/{dataset}/curated_metadata.tsv",
+        sequences=expand("results/{{dataset}}/{segment}.fasta", segment=config["segments"]),
     log:
-        "logs/{lineage}/split_ndjson_by_segment.txt"
+        "logs/{dataset}/split_ndjson_by_segment.txt"
     params:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
@@ -246,9 +246,9 @@ rule split_ndjson_by_segment:
 # <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L94-L113>
 rule build_reference_strains_table:
     input:
-        references="../config/{lineage}/reference_strains.txt",
+        references=lambda w: config['filtering'][w.dataset]['reference_strains'],
     output:
-        references="data/{lineage}/reference_strains.tsv",
+        references="data/{dataset}/reference_strains.tsv",
     params:
         reference_column=config["curate"]["reference_column"],
         id_field=config["curate"]["output_id_field"],
@@ -268,10 +268,10 @@ rule build_reference_strains_table:
 # https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L115-L137
 rule annotate_metadata_with_reference_strains:
     input:
-        references="data/{lineage}/reference_strains.tsv",
-        metadata="data/{lineage}/curated_metadata.tsv",
+        references="data/{dataset}/reference_strains.tsv",
+        metadata="data/{dataset}/curated_metadata.tsv",
     output:
-        metadata="data/{lineage}/all_metadata.tsv",
+        metadata="data/{dataset}/curated_metadata_with_references.tsv",
     params:
         id_field=config["curate"]["output_id_field"],
     shell:
@@ -285,12 +285,24 @@ rule annotate_metadata_with_reference_strains:
         """
 
 
+def metadata_selector(wildcards):
+    """
+    If the config sets a "reference_strains" TSV file for the dataset then this
+    function returns the metadata TSV file which has the reference strain appended.
+    Otherwise this points to an earlier TSV file, thus skipping the rules which
+    add the reference strains.
+    """
+    if config['filtering'][wildcards.dataset].get('reference_strains', False):
+        return "data/{dataset}/curated_metadata_with_references.tsv",
+    return "data/{dataset}/curated_metadata.tsv",
+
+
 def metadata_fields(wildcards) -> str:
     """
-    Returns config["curate"]["metadata_columns"] and any additional segment
+    Returns config defined columns and any additional segment
     columns added by ./scripts/split-gisaid-ndjson-by-segment
     """
-    metadata_columns = config["curate"]["metadata_columns"].copy()
+    metadata_columns = config["filtering"][wildcards.dataset]["metadata_columns"].copy()
     for segment in config["segments"]:
         metadata_columns.extend([
             segment,
@@ -302,9 +314,9 @@ def metadata_fields(wildcards) -> str:
 
 rule subset_metadata:
     input:
-        metadata="data/{lineage}/all_metadata.tsv",
+        metadata=metadata_selector,
     output:
-        subset_metadata="results/{lineage}/metadata.tsv",
+        subset_metadata="results/{dataset}/metadata.tsv",
     params:
         metadata_fields=metadata_fields,
     shell:

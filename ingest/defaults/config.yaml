@@ -16,17 +16,13 @@
 # If left empty, workflow will glob for all `data/<YYYY-MM-DD-N>-metadata.xls`
 # to include all pairs as input. These will be sorted in reverse order to
 # prioritize the later downloads during deduplication.
+#
+# If you set this to "gisaid_cache" (e.g. via `--config gisaid_pairs='["gisaid_cache"]'`)
+# then the pipeline will run without consuming any xlsx/fasta files
 gisaid_pairs: []
+
 # GISAID EPI ISL field to deduplicate the GISAID records by id prior to curation
 gisaid_id_field: Isolate_Id
-
-# Expected lineages that should match the standardized output lineages
-# in scripts/standardized-lineage
-lineages:
-  - h1n1pdm
-  - h3n2
-  - vic
-  - yam
 
 segments:
   - pb2
@@ -70,7 +66,6 @@ curate:
   new_lineage_field: "lineage"
   lineage_annotations: "defaults/lineages.tsv"
   host_field: "host"
-  hosts_to_include: ["Human"]
   # List of date fields to standardize to ISO format YYYY-MM-DD
   date_fields: ["date", "date_submitted"]
   # List of expected date formats that are present in the date fields provided above
@@ -114,25 +109,96 @@ curate:
   # The GISAID ID field used to prioritize records during strain deduplication
   gisaid_id_field: "gisaid_epi_isl"
   # The prioritized strain ids for strain deduplication.
-  # The {lineage} is a wildcard that will be filled by Snakemake
-  prioritized_strain_ids: "defaults/{lineage}/prioritized_strain_ids.tsv"
   # Column added to metadata to annotate which strains are reference strains
   reference_column: "is_reference"
-  # The list of metadata columns to keep in the final output of the curation pipeline.
-  metadata_columns:
-  - strain
-  - gisaid_epi_isl
-  - date
-  - date_submitted
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
-  - gisaid_strain
-  - gihsn_sample
-  - is_reference
+
+
+# The *filtering* block determines how the curated (all-influenza NDJSON) is sliced and diced
+filtering:
+  # The seasonal-flu phylo workflows start from TSV/FASTAs per lineage
+  # NOTE [james]: This isn't all h3n2 as it's filtered to host=human. I toyed with the idea of naming
+  # the dataset "seasonal-h3n2" for this reason, but the "h3n2" term is so ubiquitous in the
+  # codebase that it felt egregious.
+  h3n2:
+    lineages: h3n2
+    additional_field: host
+    additional_field_values: human
+    prioritized_strain_ids: defaults/h3n2/prioritized_strain_ids.tsv
+    reference_strains: ../config/h3n2/reference_strains.txt
+    metadata_columns: &seasonal-flu-metadata-columns
+      - strain
+      - gisaid_epi_isl
+      - date
+      - date_submitted
+      - region
+      - country
+      - division
+      - location
+      - passage_category
+      - originating_lab
+      - submitting_lab
+      - age
+      - gender
+      - gisaid_strain
+      - gihsn_sample
+      - is_reference
+  h1n1pdm:
+    lineages: h1n1pdm
+    additional_field: host
+    additional_field_values: human
+    reference_strains: ../config/h1n1pdm/reference_strains.txt
+    metadata_columns: *seasonal-flu-metadata-columns
+  vic:
+    lineages: vic
+    additional_field: host
+    additional_field_values: human
+    reference_strains: ../config/vic/reference_strains.txt
+    metadata_columns: *seasonal-flu-metadata-columns
+  yam:
+    lineages: yam
+    additional_field: host
+    additional_field_values: human
+    reference_strains: ../config/yam/reference_strains.txt
+    metadata_columns: *seasonal-flu-metadata-columns
+
+  # The avian-flu workflows do the filtering themselves via `augur filter`
+  # using the config key `subtype_query`. To prevent too many changes for the present time
+  # we're going to continue to provision one big "avian-flu" dataset. (We may want to change
+  # this in the future.)
+  avian-flu:
+    lineages:
+      - h5nx # this'll include more than avian-flu currently subsamples to, but that's ok!
+      - h7n9
+      - h9n2
+    metadata_columns: # <https://github.com/nextstrain/avian-flu/blob/f963447179c2b500b5598f056054374d3c9557a0/ingest/rules/ingest_fauna.smk#L37>
+      - strain
+      # Note: Fauna's 'virus' field (always "avian-flu") dropped
+      # Note: Fauna's 'isolate_id' remapped to 'accession_ha'
+      - date
+      - region
+      - country
+      - division
+      - location
+      - host
+      - domestic_status
+      - subtype # Note: identical to *lineage* for all A-type, non h1n1pdm viruses
+      - originating_lab
+      - submitting_lab
+      - authors
+      - PMID
+      - gisaid_clade
+      # Note: h5 clade no longer available
+      - pathogenicity # newly added (not used in fauna)
+
+  # This dataset (for testing purposes only) replicates the previous "data/seasonal_flu.ndjson"
+  # (target: `data/seasonal-flu-for-diffing/curated_gisaid.ndjson`)
+  # Note that it won't go all the way to TSV/FASTA as it's missing config params
+  # seasonal-flu-for-diffing:
+  #   lineages:
+  #     - h3n2
+  #     - h1n1pdm
+  #     - vic
+  #     - yam
+  #   additional_field: host
+  #   additional_field_values: human
+
