@@ -1,26 +1,97 @@
 #!/usr/bin/env python3
 """
-Filter NDJSON by matching records by lineage and host
+Filter NDJSON by two criteria:
+
+First we match the lineages using custom matching. Multiple values can be
+provided and a record matching any value will pass the filters. By default
+this is the 'lineage' filter but in some circumstances it may make sense to
+use 'subtype' instead. This uses pattern matching so that you can specify
+lineages such as "H5Nx". It is case insensitive.
+
+Second (and optionally) we can filter by an additional field and set of values.
+A common use case of this is to filter by host for seasonal-flu.
+It is case insensitive.
 """
 import argparse
-from sys import stdin, exit
-from typing import Iterable, List
+from sys import stdin, exit, stderr
+from typing import Iterable
+import re
 from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
+
+def ha_number(value: str) -> str|None:
+    if m:=re.match(r'H(\d+)', value):
+        return m.group(1)
+    return None
+
+def na_number(value: str) -> str|None:
+    if m:=re.search(r'N(\d+)', value):
+        return m.group(1)
+    return None
+
+def lineage_match(pattern: str, value:str) -> bool:
+    pattern = pattern.upper()
+    value = value.upper()
+    if m:=re.fullmatch(r'H(\d+)NX', pattern):
+        # H5Nx matches "H5" and "H5N1" and "H5N2" etc
+        return m.group(1)==ha_number(value)
+    elif m:=re.fullmatch(r'H(\d+)', pattern):
+        # H5 _only_ matches H5, not H5N1 etc (use H5Nx for that!)
+        return m.group(1)==ha_number(value) and 'N' not in value
+    elif m:=re.fullmatch(r'HXN(\d+)', pattern):
+        # HxN3 matches "N3" and "H3N3" etc
+        return m.group(1)==na_number(value)
+    elif m:=re.fullmatch(r'N(\d+)', pattern):
+        # N2 _only_ matches N2, not H3N2 etc (use HxN2 for that!)
+        return m.group(1)==na_number(value) and 'H' not in value
+    # Fallthrough: require exact match. For instance: "h1n1pdm", "h1n1" etc
+    return pattern==value
+
+# for PPP,VVV,RRR in [
+#     ("h5n1", "h5n1", True),
+#     ("h5n1", "h5n2", False),
+#     ("h5n1", "h5", False),
+#     ("h5n1", "tbd", False),
+#     ("h5n1pdm", "h5n1pdm", True),
+#     ("h5n1pdm", "h5n1", False),
+
+#     ("h5nx", "h5", True),
+#     ("h5nx", "h5n1", True),
+#     ("h5nx", "h7n9", False),
+#     ("h5nx", "n3", False),
+
+#     ("h5", "h5", True),
+#     ("h5", "h5n1", False),
+#     ("h5", "n3", False),
+#     ("h5", "tbd", False),
+
+#     ("hxn2", "h5", False),
+#     ("hxn2", "h3n2", True),
+#     ("hxn2", "h7n9", False),
+#     ("hxn2", "n2", True),
+#     ("hxn2", "n3", False),
+
+#     ("n2", "n2", True),
+#     ("n2", "n3", False),
+#     ("n2", "h3n2", False),
+#     ("n2", "h3", False),
+# ]:
+#     print(f"PATTERN {PPP:<10} VALUE {VVV:<10} TEST PASS? {RRR==lineage_match(PPP,VVV)}", file=sys.stderr)
 
 
 def filter_records(records: Iterable[dict],
                    record_id_field: str,
                    lineage_field: str,
-                   host_field: str|None,
-                   lineages_to_include: List[str],
-                   hosts_to_include: List[str]) -> Iterable:
+                   additional_field_key: str|None,
+                   lineages_to_include: list[str],
+                   additional_field_values: list[str]|None) -> Iterable:
     """
-    Filter for *records* that have *lineage_field* and *host_field* matching
-    the *lineages_to_include* and *host_to_include*.
+    Filter for *records* that have *lineage_field* and (optionally) *additional_field_key* matching
+    the *lineages_to_include* and (optionally) *additional_field_values*.
 
     Records that do not match will be skipped.
     """
+    additional_comparison_set = set([x.lower() for x in additional_field_values] if additional_field_values else [])
     for record in records:
         record_id = record.get(record_id_field, "")
         lineage = record.get(lineage_field)
@@ -28,17 +99,19 @@ def filter_records(records: Iterable[dict],
         if lineage is None:
             raise Exception(f"Records must have the expected lineage field: {lineage_field!r}")
 
-        if host_field:
-            host = record.get(host_field)
-            if host is None:
-                raise Exception(f"Records must have the expected host field: {host_field!r}")
+        if additional_field_key:
+            additional_field = record.get(additional_field_key)
+            if additional_field is None:
+                raise Exception(f"Records must have the requested additional field: {additional_field_key!r}")
+            additional_field = additional_field.lower()
         else:
-            host = "N/A"
+            additional_field = "N/A"
 
-        if lineage in lineages_to_include and (host=="N/A" or host in hosts_to_include):
+        if any((lineage_match(pattern, lineage) for pattern in lineages_to_include)) and \
+                (additional_field=="N/A" or additional_field in additional_comparison_set):
             yield record
         else:
-            print_err(f"WARNING: Skipping record {record_id!r} because it does not match filters")
+            print_err(f"Skipping record {record_id!r} because it does not match filters")
 
 
 if __name__ == '__main__':
@@ -46,19 +119,19 @@ if __name__ == '__main__':
 
     parser.add_argument("--id-field", default="gisaid_epi_isl",
         help="The record field containing the record id.")
-    parser.add_argument("--lineage-field", required=True,
-        help="The record field containing the standardized lineage.")
+    parser.add_argument("--lineage-field", default="lineage", 
+        help="The record field containing the standardized lineage (default: %(default)s).")
     parser.add_argument("--lineages", nargs="+", required=True,
         help="Lineages to include in the output.")
-    parser.add_argument("--host-field", default=None,
-        help="The record field containing the host (optional)")
-    parser.add_argument("--hosts", nargs="+",
-        help="Hosts to include in the output directory (optional)")
+    parser.add_argument("--additional-field", default=None,
+        help="[optional] Additional record field to filter by")
+    parser.add_argument("--additional-field-values", nargs="+",
+        help="[optional] Values to filter additional field by")
 
     args = parser.parse_args()
 
-    if args.host_field and not args.hosts:
-        print_err("Host field provided without providing hosts to query on")
+    if args.additional_field and not args.additional_field_values:
+        print_err("Additional field provided without providing values to query on")
         exit(2)
 
     records = load_ndjson(stdin)
@@ -66,7 +139,7 @@ if __name__ == '__main__':
         records,
         args.id_field,
         args.lineage_field,
-        args.host_field,
+        args.additional_field,
         args.lineages,
-        args.hosts)
+        args.additional_field_values)
     dump_ndjson(modified_records)
