@@ -7,10 +7,15 @@ Curates GISAID gender field.
 3. Checks records have expected gender values
 """
 import argparse
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 DEFAULT_UNKNOWN_VALUE = "?"
 EXPECTED_GENDER_VALUES = {
@@ -57,7 +62,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = standardize_gender(records,
                                           args.gender_field,
                                           args.new_gender_field)

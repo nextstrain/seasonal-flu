@@ -42,10 +42,13 @@ def format_field_map(field_map: dict[str, str]) -> str:
 rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson",
+        lineage_annotations=config["curate"]["lineage_annotations"],
         strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
         geolocation_rules=config["curate"]["local_geolocation_rules"],
-        annotations=config["curate"]["annotations"],
+        location_annotations=config["curate"]["location_annotations"],
+        final_annotations=config["curate"]["final_annotations"],
+        gisaid_location_rules=config["curate"]["gisaid_location_rules"],
     output:
         curated_ndjson=temp("data/curated_gisaid.ndjson"),
     log:
@@ -90,12 +93,15 @@ rule curate:
                 --new-type-field {params.new_type_field:q} \
                 --new-subtype-field {params.new_subtype_field:q} \
                 --new-lineage-field {params.new_lineage_field:q} \
+                --annotations {input.lineage_annotations:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
             | ./scripts/parse-gisaid-location \
                 --location-field {params.gisaid_location_field:q} \
                 --strain-field {params.gisaid_strain_field:q} \
+                --annotations {input.location_annotations:q} \
+                --rules {input.gisaid_location_rules:q} \
             | augur curate titlecase \
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \
@@ -125,7 +131,7 @@ rule curate:
                 --gender-field {params.gender_field:q} \
                 --new-gender-field {params.new_gender_field:q} \
             | augur curate apply-record-annotations \
-                --annotations {input.annotations:q} \
+                --annotations {input.final_annotations:q} \
                 --id-field {params.annotations_id:q} \
                 > {output.curated_ndjson:q}) 2> {log:q}
         """

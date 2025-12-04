@@ -1,0 +1,46 @@
+# Manually curated annotations TSV file which defines the geographical
+# information for a record.
+#
+# The first column must be the EPI ISL
+# The 2nd - 5th columns represent region, country, location & division
+# The 3rd-5th columns are optional, if unset the default (unknown) value will be used for that field.
+#
+# Lines starting with '#' are treated as comments, but '#' should not appear elsewhere in a row
+
+# GISAID strain "A/Japan/2013"
+EPI_ISL_144969 	Japan Korea	Japan
+
+# Following had overly specific Location fields 
+EPI_ISL_19169248	America	USA	Hawaii	Honolulu County
+EPI_ISL_18128205	Africa	Canary Islands
+EPI_ISL_17099964	South America	Peru	Departamento de Ica
+EPI_ISL_167906	Europe	Sweden	Vastra Gotalands Lan	Goteborgs Kommun
+EPI_ISL_149782	Europe	Sweden	Varmlands Lan	Karlstads Kommun
+EPI_ISL_20180388	South America	Bolivia	Departamento de Santa Cruz	Provincia Cordillera
+EPI_ISL_1191587	Europe	Czech Republic	Jihocesky Kraj	Okres Tabor
+EPI_ISL_977513	Europe	Czech Republic	Jihocesky Kraj	Okres Tabor
+EPI_ISL_19437154	North America	Canada	British Columbia	White Rock
+EPI_ISL_19860186	South America	Brazil	Estado de Mato Grosso do Sul	Campo Grande
+EPI_ISL_19860184	South America	Brazil	Estado de Mato Grosso do Sul	Dois Irmaos Do Buriti
+EPI_ISL_19855239	South America	Brazil	Estado de Mato Grosso do Sul	Corumba
+EPI_ISL_19755596	South America	Brazil	Estado de Mato Grosso do Sul	Paranaiba
+EPI_ISL_19755593	South America	Brazil	Estado de Mato Grosso do Sul	Navirai
+EPI_ISL_16023373	South America	Brazil	Estado de Santa Catarina	Concordia
+EPI_ISL_13970231	Europe	Ukraine	Kiev Oblast
+EPI_ISL_9492447	Europe	Italy	Friuli-Venezia Giulia	Province of Trieste
+EPI_ISL_176815	Europe	Netherlands	Provincie Groningen	Eemsmond
+EPI_ISL_167226	Europe	Sweden	Hallands Lan	Kungsbacka Kommun
+EPI_ISL_167225	Europe	Sweden	Hallands Lan	Kungsbacka Kommun
+
+# Travel cases
+EPI_ISL_389326	South America	Peru	Lima
+EPI_ISL_335732	Europe	United Kingdom	England	Middlesex
+
+# Location field defines parent strains etc
+EPI_ISL_127599	North America
+EPI_ISL_223465	Asia	China
+EPI_ISL_19786270	North America	United States	Hawaii	Honolulu County
+EPI_ISL_18308442	Africa	Canary Islands
+EPI_ISL_17778392	South America	Brazil	Estado do Parana	Toledo
+
+

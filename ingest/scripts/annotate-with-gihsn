@@ -5,11 +5,15 @@ Surveillance Network (GIHSN) by checking for "GIHSN" in the strain name.
 """
 import argparse
 import re
-from sys import stdin
+import sys
+from pathlib import Path
 from typing import Iterable
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
+
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
 
 GIHSN_PATTERN = r"(GIHSN)"
 
@@ -44,6 +48,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = annotate_records_with_gihsn(records, args.strain_field, args.gihsn_field)
     dump_ndjson(modified_records)
