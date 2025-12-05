@@ -12,27 +12,36 @@ Each record represents a single GISAID record, formatted as:
         “Collection_Date”: “...”,
         “Passage_History”: “...”,
         […other metadata fields…],
-        “sequences”: [
-            {
-                “segment”: “HA”,
-                “accession”: “...”,
-                “sequence”: “...”
-            },
-            {
-                “segment”: “NA”,
-                “accession”: “...”,
-                “sequence”: “...”
-            },
+        “sequences”: {
+            "ha": [
+                {
+                    “accession”: “...”,
+                    “sequence”: “...”
+                },
+                {
+                    “accession”: “...”,
+                    “sequence”: “...”
+                }
+            ],
+            "na": [
+                {
+                    "accession": "...",
+                    "sequence": "..."
+                }
+            ],
             […other 8 segments…]
-        ]
+        }
     }
+
+Segments without any sequences will be represented as an empty list.
 """
 import argparse
 import os
 import pyfastx
 import re
+from collections import defaultdict
 from textwrap import dedent
-from typing import Iterable
+from typing import Iterable, Optional
 from augur.io.json import dump_ndjson
 from augur.io.metadata import DEFAULT_DELIMITERS, read_table_to_dict
 from augur.io.print import print_err
@@ -42,20 +51,19 @@ from augur.io.print import print_err
 # The last two segments (HE and P3) are unused, but keeping for completion
 #   -Jover, 11 February 2025
 SEGMENTS = [
-    "PB2",
-    "PB1",
-    "PA",
-    "HA",
-    "NP",
-    "NA",
-    "MP",
-    "NS",
-    "HE",
-    "P3",
+    "pb2",
+    "pb1",
+    "pa",
+    "ha",
+    "np",
+    "na",
+    "mp",
+    "ns",
+    "he",
+    "p3",
 ]
 
-SEGMENT_ACCESSION_PATTERN = r'^(?P<accession>EPI\d+)\|'
-DEFAULT_UNKNOWN_VALUE = "?"
+SEGMENT_ACCESSION_PATTERN = r'^\s*(?P<accession>EPI\d+)\|'
 
 # Expected columns in the GISAID xls file
 # Hard-coding here as I don't expect them to change, but if they get updated
@@ -63,7 +71,7 @@ DEFAULT_UNKNOWN_VALUE = "?"
 #   -Jover, 11 February 2025
 RECORD_ID_COLUMN = "Isolate_Id"
 SEGMENT_COLUMNS = {
-    segment: f"{segment} Segment_Id"
+    segment: f"{segment.upper()} Segment_Id"
     for segment in SEGMENTS
 }
 
@@ -91,26 +99,23 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                 f"The metadata does not include all expected segment columns: {SEGMENT_COLUMNS.values()!r}.\n" + \
                 "The expected `SEGMENTS` or `SEGMENT_COLUMNS` might need to be updated."
 
-        record_seqs = []
-        unmatched_accessions = {}
-        unmatched_sequences = {}
+        record_seqs = {}
+        unmatched_accessions = defaultdict(list)
+        unmatched_sequences = defaultdict(list)
         for segment, segment_column in SEGMENT_COLUMNS.items():
-            segment_id = linked_record.pop(segment_column)
-            accession = parse_segment_accession(segment_id)
-            sequence = get_segment_sequence(sequences, record_id,
-                                            segment, accession)
-
-            if segment_id and accession == DEFAULT_UNKNOWN_VALUE:
-                unmatched_accessions[segment] = segment_id
-
-            if accession != DEFAULT_UNKNOWN_VALUE and sequence == DEFAULT_UNKNOWN_VALUE:
-                unmatched_sequences[segment] = accession
-
-            record_seqs.append({
-                "segment": segment,
-                "accession": accession,
-                "sequence": sequence
-            })
+            record_seqs[segment] = []
+            if segment_ids := linked_record.pop(segment_column):
+                for segment_id in segment_ids.split(","):
+                    if accession := parse_segment_accession(segment_id):
+                        if sequence := get_segment_sequence(sequences, record_id, segment, accession):
+                            record_seqs[segment].append({
+                                "accession": accession,
+                                "sequence": sequence
+                            })
+                        else:
+                            unmatched_sequences[segment].append(accession)
+                    else:
+                        unmatched_accessions[segment].append(segment_id)
 
         if len(unmatched_accessions):
             print_err(
@@ -139,12 +144,12 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
         "Verify the provided GISAID Excel file and FASTA file contain the same records."
 
 
-def parse_segment_accession(segment_id: str) -> str:
+def parse_segment_accession(segment_id: str) -> Optional[str]:
     """
     Parses the segment accession from the provided *segment_id*. If unable to
-    parse the accession, then returns the `DEFAULT_UNKNOWN_VALUE`.
+    parse the accession, then returns None.
     """
-    accession = DEFAULT_UNKNOWN_VALUE
+    accession = None
 
     matches = re.search(SEGMENT_ACCESSION_PATTERN, segment_id)
     if matches is not None:
@@ -154,13 +159,12 @@ def parse_segment_accession(segment_id: str) -> str:
 
 
 def get_segment_sequence(sequences: pyfastx.Fasta, record_id: str,
-                         segment: str, accession: str) -> str:
+                         segment: str, accession: str) -> Optional[str]:
     """
     Gets the sequence matching the provided *accession* from the indexed
-    *sequences. If there is not matching sequence, returns the
-    `DEFAULT_UNKNOWN_VALUE`.
+    *sequences. If there is not matching sequence, returns None.
     """
-    sequence = DEFAULT_UNKNOWN_VALUE
+    sequence = None
 
     # try/except was consistently faster than checking accession is in sequences
     #   -Jover, 11 February 2025
