@@ -63,6 +63,24 @@ STRAIN_LOCATION_PATTERN = r".+\/(?P<location>.+)\/.+\/.+"
 def parse_gisaid_location(gisaid_location):
     return [location.strip() for location in gisaid_location.split("/")]
 
+def drop_numeric_fields(fields: list[str], threshold: int = 1) -> list[str]:
+    """
+    Looking at "geographic" fields, there are many which clearly aren't geographic,
+    and checking for numbers is a simple way to filter them out. Some examples:
+        * North America / 1934 X Hong Kong /  / 
+        * North America / USA / 02 / 
+        * North America / USA / 2006 X Puerto Rico / 
+        * Europe / Germany / Ha_23-00075_22He40_Of / Hessen
+    In the majoriy of cases this approach works really well, however it does filter out
+    fields which we could extract geographic info out of if wanted, e.g.:
+        * "Ivankovo (45°15'31.29 18°42'28.27)"
+        * "Zamboanga Cty Medical Center (Reg 12)"
+        * "Malvern East, 3145" (area code)
+    """
+    filtered = [f for f in fields if sum(c.isdigit() for c in f)<threshold]
+    return filtered
+
+
 def parse_locations(records: Iterable,
                     location_field: str,
                     strain_field: str,
@@ -116,6 +134,8 @@ def parse_locations(records: Iterable,
                 # then assume that it is more specific than the metadata locations
                 # and append it to the location values to output
                 split_locations.append(strain_location)
+
+        split_locations = drop_numeric_fields(split_locations)
 
         for index, field in enumerate(LOCATION_FIELDS):
             record[field] = split_locations[index] if len(split_locations) > index else DEFAULT_UNKNOWN_VALUE

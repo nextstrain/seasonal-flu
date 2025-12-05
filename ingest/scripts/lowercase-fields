@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""
+Lowercases values in an NDJSON
+"""
+import argparse
+from sys import stdin, exit
+from typing import Iterable
+from augur.io.json import dump_ndjson, load_ndjson
+from augur.io.print import print_err
+
+def lowercase_fields(records: Iterable, fields=list[str]) -> Iterable:
+    for record in records:
+        for key in fields:
+            if key not in record:
+                print_err(f"[FATAL] {key} not in record. EPI ISL: {record.get('gisaid_epi_isl', '[unknown]')}")
+                exit(2)
+            record[key] = record[key].lower()
+        yield record
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fields", nargs="+", help="record fields to turn into lowercase")
+    args = parser.parse_args()
+    dump_ndjson(lowercase_fields(load_ndjson(stdin), args.fields))
