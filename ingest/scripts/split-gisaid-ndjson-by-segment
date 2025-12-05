@@ -6,14 +6,15 @@ Reads NDJSON from stdin and expects each record to be formatted as:
 
     {
         "<id_field>": "...",
-        "<sequences_field>": [
-            {
-                "segment": "HA",
-                "accession": "...",
-                "sequence": "...",
-            },
+        "<sequences_field>": {
+            "ha": [
+                {
+                    "accession": "...",
+                    "sequence": "...",
+                }
+            ],
             [...other segments...]
-        ]
+        }
     }
 """
 import argparse
@@ -76,32 +77,25 @@ def update_records_and_output_sequences(records: Iterable,
     """
     for record in records:
         record_id = record[output_id_field]
-
-        output_sequences = 0
         # Remove the `sequences` since we will be outputting them to FASTAs
         # and keeping relevant metadata fields as new fields
-        for seq in record.pop("sequences"):
-            segment = seq["segment"].lower()
-
-            # Skip segments that are not expected in output
-            if segment not in segment_fasta_files:
-                continue
-
-            record[segment] = "False"
-            accession = seq["accession"]
-            sequence = seq["sequence"]
+        record_seqs = record.pop("sequences")
+        output_sequences = 0
+        for segment, fasta_file in segment_fasta_files.items():
             accession_field = f"accession_{segment}"
-            record[accession_field] = "N/A"
-
-            if accession != UNKNOWN_VALUE and sequence != UNKNOWN_VALUE:
+            if segment_seqs := record_seqs.get(segment, []):
+                output_seq = select_seq(segment_seqs)
                 record[segment] = "True"
-                record[accession_field] = accession
+                record[accession_field] = output_seq["accession"]
                 output_sequences += 1
-                with segment_fasta_files[segment].open("a") as fh:
+                with fasta_file.open("a") as fh:
                     fh.writelines([
                         f">{record_id}\n",
-                        f"{sequence}\n"
+                        f"{output_seq['sequence']}\n"
                     ])
+            else:
+                record[segment] = "False"
+                record[f"accession_{segment}"] = "N/A"
 
         # Only keep metadata for records that have at least one segment sequence
         if output_sequences >= 1:
@@ -109,6 +103,22 @@ def update_records_and_output_sequences(records: Iterable,
         else:
             print_err(f"WARNING: Dropping record {record_id} because it doesn't have any segment sequences")
             continue
+
+
+def select_seq(seqs: list[dict]) -> dict:
+    """
+    Given a list of *seqs*, return the selected seq dict.
+    Selects the seq has the longest sequence then the latest accession, with
+    latest accession represented by having the biggest integer after the
+    "EPI" prefix in the accession.
+    """
+    sorted_seqs = sorted(
+        seqs,
+        # Sort for longest sequence then latest accession
+        key=lambda s: (len(s["sequence"]), int(s["accession"].removeprefix("EPI"))),
+        reverse=True)
+
+    return sorted_seqs[0]
 
 
 if __name__ == '__main__':
