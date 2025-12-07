@@ -5,12 +5,17 @@ Standardizes GISAID strain names to our expected patterns.
 import argparse
 import csv
 import re
-from sys import stdin
+from pathlib import Path
+import sys
 from typing import Iterable, Optional
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
 
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
+
+SCRIPT_NAME = Path(sys.argv[0]).stem
 EGG_PASSAGE = "egg"
 EGG_SUFFIX = "-egg"
 EXPECTED_TYPES = {"a", "b"}
@@ -80,9 +85,18 @@ def define_strain_fixes(fname: str) -> dict:
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L142-L150>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    fix_whole_name = {}
+    fix_whole_name:dict[str,str] = {}
     for line in reader:
-        fix_whole_name[line['label'].encode().decode('unicode-escape')] = line['fix']
+        old_name = line['label'].encode().decode('unicode-escape')
+        new_name = line['fix']
+        # Following commented out while we're simply taking the TSV from fauna
+        # Re-enable these lines once the files are stored here and we can fix them
+        # if old_name in fix_whole_name: # duplicate
+        #     if new_name == fix_whole_name[old_name]:
+        #         continue
+        #     print_err("conflicting duplicate strain name replacement. " +
+        #                f"Original name: '{old_name}'. Proposed new names: '{fix_whole_name[old_name]}' and '{new_name}'. Using the second.")
+        fix_whole_name[old_name] = new_name
     return fix_whole_name
 
 
@@ -95,9 +109,18 @@ def define_location_label_fixes(fname: str) -> dict:
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L240-L244>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    label_to_fix = {}
+    label_to_fix:dict[str,str] = {}
     for line in reader:
-        label_to_fix[line['label'].encode().decode('unicode-escape').replace(' ', '').lower()] = line['fix']
+        old_name = line['label'].encode().decode('unicode-escape').replace(' ', '').lower()
+        new_name = line['fix']
+        # Following commented out while we're simply taking the TSV from fauna
+        # Re-enable these lines once the files are stored here and we can fix them
+        # if old_name in label_to_fix: # duplicate
+        #     if new_name == label_to_fix[old_name]:
+        #         continue
+        #     print_err("conflicting duplicate location label replacement. " +
+        #               f"Original location: '{old_name}'. Proposed new locations: '{label_to_fix[old_name]}' and '{new_name}'. Using the second.")
+        label_to_fix[old_name] = new_name
     return label_to_fix
 
 
@@ -266,7 +289,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    records = load_ndjson(sys.stdin)
     modified_records = standardize_record_strains(
         records,
         args.strain_field,

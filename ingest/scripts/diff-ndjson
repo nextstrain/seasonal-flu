@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""
+Compares two NDJSON files using the 'gisaid_epi_isl' key as the unique identifier
+for each. The NDJSON structure is intended to be GISAID records, but this doesn't
+have to be so.
+To save memory, the sequences themselves are removed and thus not compared.
+"""
+
+import argparse
+import json
+import sys
+from augur.io.json import load_ndjson
+from augur.io.print import print_err
+
+
+def deep_diff(truth_val, query_val, path=""):
+    """
+    Recursively compare two values and return a list of differences.
+    Each difference is a tuple of (path, truth_value, query_value).
+    """
+    differences = []
+
+    # Handle None values
+    if truth_val is None and query_val is None:
+        return differences
+    if truth_val is None or query_val is None:
+        differences.append((path, truth_val, query_val))
+        return differences
+
+    # If types differ, report it
+    if type(truth_val) != type(query_val):
+        differences.append((path, truth_val, query_val))
+        return differences
+
+    # Handle dictionaries
+    if isinstance(truth_val, dict):
+        all_keys = set(truth_val.keys()) | set(query_val.keys())
+        for key in all_keys:
+            new_path = f"{path}.{key}" if path else key
+
+            if key not in truth_val:
+                differences.append((f"{new_path} (key added)", None, query_val[key]))
+            elif key not in query_val:
+                differences.append((f"{new_path} (key removed)", truth_val[key], None))
+            else:
+                differences.extend(deep_diff(truth_val[key], query_val[key], new_path))
+        return differences
+
+    # Handle lists
+    if isinstance(truth_val, list):
+        # Compare lists element by element
+        max_len = max(len(truth_val), len(query_val))
+        for i in range(max_len):
+            new_path = f"{path}[{i}]"
+
+            if i >= len(truth_val):
+                differences.append((f"{new_path} (element added)", None, query_val[i]))
+            elif i >= len(query_val):
+                differences.append((f"{new_path} (element removed)", truth_val[i], None))
+            else:
+                differences.extend(deep_diff(truth_val[i], query_val[i], new_path))
+        return differences
+
+    # Handle primitive values
+    if truth_val != query_val:
+        differences.append((path, truth_val, query_val))
+
+    return differences
+
+def format_value(val):
+    if val is None:
+        return "<missing>"
+    if isinstance(val, str):
+        return f'"{val}"'
+    if isinstance(val, (dict, list)):
+        # For complex types, show a truncated JSON representation
+        s = json.dumps(val)
+        if len(s) > 80:
+            return s[:77] + "..."
+        return s
+    return str(val)
+
+
+def compare_records(truth_record, query_record):
+    differences = deep_diff(truth_record, query_record)
+    if differences:
+
+        print(f"DIFFERENCES FOR ISL {query_record['gisaid_epi_isl']}")
+        for path, truth_val, query_val in differences:
+            if "(key removed)" in path:
+                field = path.replace(" (key removed)", "")
+                print(f"  Key removed: {field} (was: {format_value(truth_val)})")
+            elif "(key added)" in path:
+                field = path.replace(" (key added)", "")
+                print(f"  Key added: {field} (now: {format_value(query_val)})")
+            elif "(element removed)" in path:
+                print(f"  Element removed at {path.replace(' (element removed)', '')}: {format_value(truth_val)}")
+            elif "(element added)" in path:
+                print(f"  Element added at {path.replace(' (element added)', '')}: {format_value(query_val)}")
+            else:
+                print(f"  Value differs at {path}: {format_value(truth_val)} → {format_value(query_val)}")
+        print()
+        return False
+    return True
+
+def remove_sequence(record):
+    """Remove the sequence string (ATCGs) to save memory"""
+    for s in record.get('sequences', []):
+        if 'sequence' in s:
+            del s['sequence']
+    return record
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--truth", required=True, metavar="NDJSON", help="Source of truth NDJSON")
+    parser.add_argument("--query", required=True, metavar="NDJSON", help="Query NDJSON")
+    args = parser.parse_args()
+
+    with open(args.truth) as fh:
+        print_err("Loading the entire truth NDJSON into memory...")
+        truth_records = {record['gisaid_epi_isl']: remove_sequence(record) for record in load_ndjson(fh)}
+        truth_keys = set(truth_records.keys())
+
+    fh = open(args.query)
+    query_records = load_ndjson(fh) # generator
+    query_keys = set()
+
+    n_query_records = 0
+    n_conflicting_rows = 0
+    common_keys = set() # in both NDJSONs
+    added_keys = set() # in query, not in truth
+
+    for query_record in query_records:
+        isl = query_record['gisaid_epi_isl']
+        query_keys.add(isl)
+        n_query_records+=1
+
+        if n_query_records%25_000==0:
+            print_err(f"...parsed {n_query_records:,} query records...")
+
+        if isl in truth_keys:
+            common_keys.add(isl)
+            same = compare_records(truth_records[isl], remove_sequence(query_record))
+            if not same:
+                n_conflicting_rows+=1
+            # we know ISLs are unique, so delete the entry from the (LARGE)
+            # truth db to keep memory down
+            del truth_records[isl]
+        else:
+            added_keys.add(isl)
+
+    # set of keys not observed in the query NDJSON, i.e. "removed"
+    removed_keys = truth_keys - common_keys
+
+    print("---------------------------------")
+    print(f"n(truth records) = {len(truth_keys):,}")
+    print(f"n(query records) = {n_query_records:,}")
+    print(f"num added records (in query, not in truth): {len(added_keys)}")
+    print(", ".join(added_keys))
+    print(f"num removed records (in truth, not in query): {len(removed_keys)}")
+    print(", ".join(removed_keys))
+    print(f"n(conflicting records) = {n_conflicting_rows:,}" )
+    print("---------------------------------")

@@ -1,0 +1,520 @@
+# This file defines how to handle GISAID location fields with more than the expected 4 values
+# 
+# For help on what values they should be changed to, the following command will summarise
+# the original GISAID Location and our curated values
+# cat data/seasonal_flu.ndjson | jq -r '[.Location, .region, .country, .division, .location] | join(" :: ")' | sort  | uniq -c
+#
+# The first column is the GISAID Location - spaces surrounding the '/' are optional
+# a '*' character in the first column matches any value
+# The second column is the corrected Location (spaces surrounding the '/' are still optional)
+# If the first column had a '*' character then you may use one here to refer back to that field in the original.
+#
+# Lines starting with '#' are treated as comments, but '#' should not appear elsewhere in a row
+
+# ░██████████ ░██     ░██ ░█████████    ░██████   ░█████████  ░██████████ 
+# ░██         ░██     ░██ ░██     ░██  ░██   ░██  ░██     ░██ ░██         
+# ░██         ░██     ░██ ░██     ░██ ░██     ░██ ░██     ░██ ░██         
+# ░█████████  ░██     ░██ ░█████████  ░██     ░██ ░█████████  ░█████████  
+# ░██         ░██     ░██ ░██   ░██   ░██     ░██ ░██         ░██         
+# ░██          ░██   ░██  ░██    ░██   ░██   ░██  ░██         ░██         
+# ░██████████   ░██████   ░██     ░██   ░██████   ░██         ░██████████ 
+
+
+# Galicia is the community, Pontevedra is the province, and the * is {Vigo,Pontevedra} which are cities in the Pontevedra province
+Europe/Spain/Galicia/Pontevedra/*	Europe/Spain/Galicia/Pontevedra
+# Similarly for other provinces in Galicia
+Europe/Spain/Galicia/Lugo/*	Europe/Spain/Galicia/Lugo
+Europe/Spain/Galicia/Ourense/*	Europe/Spain/Galicia/Ourense
+
+# Note: "Kalmar Lan" will be changed to "Kalmar" by Augur's default geolocation rules
+Europe/Sweden/Kalmar Lan/Kalmar Kommun/Ottenby Bird Observatory	Europe/Sweden/Kalmar Lan/Kalmar Kommun
+
+Europe/Norway/Aust-Agder Fylke/Arendal/*	Europe/Norway/Aust-Agder Fylke/Arendal
+Europe/Norway/Aust-Agder Fylke/Vegarshei/*	Europe/Norway/Aust-Agder Fylke/Vegarshei
+Europe/Norway/Finnmark Fylke/Batsfjord/*	Europe/Norway/Finnmark Fylke/Batsfjord
+Europe/Norway/Finnmark Fylke/Loppa/*	Europe/Norway/Finnmark Fylke/Loppa
+Europe/Norway/Finnmark Fylke/Nordkap/*	Europe/Norway/Finnmark Fylke/Nordkap
+Europe/Norway/Finnmark Fylke/Sor-Varanger/*	Europe/Norway/Finnmark Fylke/Sor-Varanger
+Europe/Norway/Finnmark Fylke/Vadso/*	Europe/Norway/Finnmark Fylke/Vadso
+Europe/Norway/Finnmark Fylke/Vardo/*	Europe/Norway/Finnmark Fylke/Vardo
+Europe/Norway/Hordaland Fylke/Bergen/*	Europe/Norway/Hordaland Fylke/Bergen
+Europe/Norway/Hordaland Fylke/Fitjar/*	Europe/Norway/Hordaland Fylke/Fitjar
+Europe/Norway/More og Romsdal Fylke/Aure/*	Europe/Norway/More og Romsdal Fylke/Aure
+Europe/Norway/More og Romsdal Fylke/Averoy/*	Europe/Norway/More og Romsdal Fylke/Averoy
+Europe/Norway/More og Romsdal Fylke/Smola/*	Europe/Norway/More og Romsdal Fylke/Smola
+Europe/Norway/More og Romsdal Fylke/Ulstein/*	Europe/Norway/More og Romsdal Fylke/Ulstein
+Europe/Norway/Nord-Trondelag Fylke/Leka/*	Europe/Norway/Nord-Trondelag Fylke/Leka
+Europe/Norway/Nordland Fylke/Hadsel/*	Europe/Norway/Nordland Fylke/Hadsel
+Europe/Norway/Nordland Fylke/Heroy/*	Europe/Norway/Nordland Fylke/Heroy
+Europe/Norway/Nordland Fylke/Meloy/*	Europe/Norway/Nordland Fylke/Meloy
+Europe/Norway/Nordland Fylke/Somna/*	Europe/Norway/Nordland Fylke/Somna
+Europe/Norway/Nordland Fylke/Vefsn/*	Europe/Norway/Nordland Fylke/Vefsn
+Europe/Norway/Nordland Fylke/Vega/*	Europe/Norway/Nordland Fylke/Vega
+Europe/Norway/Nordland Fylke/Vestvagoy/*	Europe/Norway/Nordland Fylke/Vestvagoy
+Europe/Norway/Oslo Fylke/Oslo/*	Europe/Norway/Oslo Fylke/Oslo
+Europe/Norway/Ostfold Fylke/Moss/*	Europe/Norway/Ostfold Fylke/Moss
+Europe/Norway/Ostfold Fylke/Sarpsborg/*	Europe/Norway/Ostfold Fylke/Sarpsborg
+Europe/Norway/Rogaland Fylke/Eigersund/*	Europe/Norway/Rogaland Fylke/Eigersund
+Europe/Norway/Rogaland Fylke/Karmoy/*	Europe/Norway/Rogaland Fylke/Karmoy
+Europe/Norway/Rogaland Fylke/Klepp/*	Europe/Norway/Rogaland Fylke/Klepp
+Europe/Norway/Rogaland Fylke/Randaberg/*	Europe/Norway/Rogaland Fylke/Randaberg
+Europe/Norway/Rogaland Fylke/Sandnes/*	Europe/Norway/Rogaland Fylke/Sandnes
+Europe/Norway/Rogaland Fylke/Stavanger/*	Europe/Norway/Rogaland Fylke/Stavanger
+Europe/Norway/Sogn og Fjordane Fylke/Selje/*	Europe/Norway/Sogn og Fjordane Fylke/Selje
+Europe/Norway/Sor-Trondelag Fylke/Afjord/*	Europe/Norway/Sor-Trondelag Fylke/Afjord
+Europe/Norway/Sor-Trondelag Fylke/Hitra/*	Europe/Norway/Sor-Trondelag Fylke/Hitra
+Europe/Norway/Telemark Fylke/Bamble/*	Europe/Norway/Telemark Fylke/Bamble
+Europe/Norway/Troms Fylke/Lenvik/*	Europe/Norway/Troms Fylke/Lenvik
+Europe/Norway/Troms Fylke/Storfjord/*	Europe/Norway/Troms Fylke/Storfjord
+Europe/Norway/Troms Fylke/Tromso/*	Europe/Norway/Troms Fylke/Tromso
+Europe/Norway/Vest-Agder Fylke/Farsund/*	Europe/Norway/Vest-Agder Fylke/Farsund
+Europe/Norway/Vestfold Fylke/Holmestrand/*	Europe/Norway/Vestfold Fylke/Holmestrand
+Europe/Norway/Vestfold Fylke/Notteroy/*	Europe/Norway/Vestfold Fylke/Notteroy
+
+Europe/Denmark/Region Hovedstaden/Kobenhavns Kommune/*	Europe/Denmark/Region Hovedstaden/Kobenhavns Kommune
+Europe/Denmark/Region Midtjylland/Norddjurs/*	Europe/Denmark/Region Midtjylland/Norddjurs
+Europe/Denmark/Region Sjaland/Vordingborg Kommune/*	Europe/Denmark/Region Sjaland/Vordingborg Kommune
+Europe/France/Basse-Normandie/Departement du Calvados/*	Europe/France/Basse-Normandie/Departement du Calvados
+Europe/France/Franche-Comte/Departement du Doubs/*	Europe/France/Franche-Comte/Departement du Doubs
+Europe/France/Midi-Pyrenees/Departement de la Haute-Garonne/*	Europe/France/Midi-Pyrenees/Departement de la Haute-Garonne
+Europe/France/Midi-Pyrenees/Departement du Gers/*	Europe/France/Midi-Pyrenees/Departement du Gers
+Europe/France/Poitou-Charentes/Departement de la Vienne/*	Europe/France/Poitou-Charentes/Departement de la Vienne
+Europe/France/Provence-Alpes-Cote d'Azur/Departement des Bouches-du-Rhone/*	Europe/France/Provence-Alpes-Cote d'Azur/Departement des Bouches-du-Rhone
+Europe/France/Provence-Alpes-Cote d'Azur/Departement du Var/*	Europe/France/Provence-Alpes-Cote d'Azur/Departement du Var
+Europe/France/Rhone-Alpes/Departement du Rhone/*	Europe/France/Rhone-Alpes/Departement du Rhone
+Europe/Germany/Baden-Wuerttemberg/Regierungsbezirk Karlsruhe/*	Europe/Germany/Baden-Wuerttemberg/Regierungsbezirk Karlsruhe
+Europe/Germany/Bavaria/Regierungsbezirk Niederbayern/*	Europe/Germany/Bavaria/Regierungsbezirk Niederbayern
+Europe/Germany/Bavaria/Regierungsbezirk Oberbayern/*	Europe/Germany/Bavaria/Regierungsbezirk Oberbayern
+Europe/Germany/Bavaria/Regierungsbezirk Oberpfalz/*	Europe/Germany/Bavaria/Regierungsbezirk Oberpfalz
+Europe/Germany/Brandenburg/Spree/*	Europe/Germany/Brandenburg/Spree
+Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Arnsberg/*	Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Arnsberg
+Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Munster/*	Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Munster
+Europe/Germany/Saxony/Regierungsbezirk Leipzig/*	Europe/Germany/Saxony/Regierungsbezirk Leipzig
+Europe/Italy/Emilia-Romagna/Province of Bologna/*	Europe/Italy/Emilia-Romagna/Province of Bologna
+Europe/Italy/Emilia-Romagna/Province of Ferrara/*	Europe/Italy/Emilia-Romagna/Province of Ferrara
+Europe/Italy/Friuli-Venezia Giulia/Province of Pordenone/*	Europe/Italy/Friuli-Venezia Giulia/Province of Pordenone
+Europe/Italy/Friuli-Venezia Giulia/Province of Trieste/*	Europe/Italy/Friuli-Venezia Giulia/Province of Trieste
+Europe/Italy/Lombardy/Province of Bergamo/*	Europe/Italy/Lombardy/Province of Bergamo
+Europe/Italy/Lombardy/Province of Pavia/*	Europe/Italy/Lombardy/Province of Pavia
+Europe/Italy/Marche/Province of Ancona/*	Europe/Italy/Marche/Province of Ancona
+Europe/Italy/Marche/Province of Ascoli Piceno/*	Europe/Italy/Marche/Province of Ascoli Piceno
+Europe/Italy/Marche/Province of Macerata/*	Europe/Italy/Marche/Province of Macerata
+Europe/Italy/Marche/Province of Persaro and Urbino/*	Europe/Italy/Marche/Province of Persaro and Urbino
+Europe/Italy/Piemont/Province of Turin/*	Europe/Italy/Piemont/Province of Turin
+Europe/Italy/Trentino-Alto Adige/Province of Bolzano-Bozen/*	Europe/Italy/Trentino-Alto Adige/Province of Bolzano-Bozen
+Europe/Italy/Tuscany/Province of Siena/*	Europe/Italy/Tuscany/Province of Siena
+Europe/Italy/Veneto/Province of Rovigo/*	Europe/Italy/Veneto/Province of Rovigo
+Europe/Italy/Veneto/Province of Venice/*	Europe/Italy/Veneto/Province of Venice
+Europe/Italy/Veneto/Province of Verona/*	Europe/Italy/Veneto/Province of Verona
+Europe/Netherlands/North Brabant/Geldrop-Mierlo/*	Europe/Netherlands/North Brabant/Geldrop-Mierlo
+Europe/Netherlands/North Brabant/Gemeente Best/*	Europe/Netherlands/North Brabant/Gemeente Best
+Europe/Netherlands/North Brabant/Gemeente Dongen/*	Europe/Netherlands/North Brabant/Gemeente Dongen
+Europe/Netherlands/North Brabant/Gemeente Someren/*	Europe/Netherlands/North Brabant/Gemeente Someren
+Europe/Netherlands/North Brabant/Gemeente Son en Breugel/*	Europe/Netherlands/North Brabant/Gemeente Son en Breugel
+Europe/Netherlands/North Brabant/Gemeente Veldhoven/*	Europe/Netherlands/North Brabant/Gemeente Veldhoven
+Europe/Netherlands/North Brabant/Gemeente Werkendam/*	Europe/Netherlands/North Brabant/Gemeente Werkendam
+Europe/Netherlands/North Brabant/Heeze-Leende/*	Europe/Netherlands/North Brabant/Heeze-Leende
+Europe/Netherlands/North Brabant/Laarbeek/*	Europe/Netherlands/North Brabant/Laarbeek
+Europe/Netherlands/Provincie Flevoland/Gemeente Dronten/*	Europe/Netherlands/Provincie Flevoland/Gemeente Dronten
+Europe/Netherlands/Provincie Friesland/Gemeente Schiermonnikoog/*	Europe/Netherlands/Provincie Friesland/Gemeente Schiermonnikoog
+Europe/Netherlands/Provincie Friesland/Gemeente Terschelling/*	Europe/Netherlands/Provincie Friesland/Gemeente Terschelling
+Europe/Netherlands/Provincie Gelderland/Gemeente Zaltbommel/*	Europe/Netherlands/Provincie Gelderland/Gemeente Zaltbommel
+Europe/Netherlands/Provincie Gelderland/West Maas en Waal/*	Europe/Netherlands/Provincie Gelderland/West Maas en Waal
+Europe/Netherlands/Provincie Groningen/Eemsmond/*	Europe/Netherlands/Provincie Groningen/Eemsmond
+Europe/Netherlands/Provincie Groningen/Gemeente Bedum/*	Europe/Netherlands/Provincie Groningen/Gemeente Bedum
+Europe/Netherlands/Provincie Groningen/Gemeente Groningen/*	Europe/Netherlands/Provincie Groningen/Gemeente Groningen
+Europe/Netherlands/Provincie Limburg/Gemeente Nederweert/*	Europe/Netherlands/Provincie Limburg/Gemeente Nederweert
+Europe/Netherlands/Provincie Noord-Holland/Gemeente Purmerend/*	Europe/Netherlands/Provincie Noord-Holland/Gemeente Purmerend
+Europe/Netherlands/Provincie Overijssel/Gemeente Enschede/*	Europe/Netherlands/Provincie Overijssel/Gemeente Enschede
+Europe/Netherlands/Provincie Overijssel/Gemeente Haaksbergen/*	Europe/Netherlands/Provincie Overijssel/Gemeente Haaksbergen
+Europe/Netherlands/Provincie Overijssel/Gemeente Kampen/*	Europe/Netherlands/Provincie Overijssel/Gemeente Kampen
+Europe/Netherlands/Provincie Overijssel/Gemeente Ommen/*	Europe/Netherlands/Provincie Overijssel/Gemeente Ommen
+Europe/Netherlands/Provincie Utrecht/Gemeente Bunschoten/*	Europe/Netherlands/Provincie Utrecht/Gemeente Bunschoten
+Europe/Netherlands/Provincie Utrecht/Gemeente De Bilt/*	Europe/Netherlands/Provincie Utrecht/Gemeente De Bilt
+Europe/Netherlands/Provincie Utrecht/Gemeente Woerden/*	Europe/Netherlands/Provincie Utrecht/Gemeente Woerden
+Europe/Netherlands/Provincie Zeeland/Gemeente Middelburg/*	Europe/Netherlands/Provincie Zeeland/Gemeente Middelburg
+Europe/Netherlands/South Holland/Alphen a/*	Europe/Netherlands/South Holland/Alphen a
+Europe/Netherlands/South Holland/Gemeente Alblasserdam/*	Europe/Netherlands/South Holland/Gemeente Alblasserdam
+Europe/Netherlands/South Holland/Gemeente Bergambacht/*	Europe/Netherlands/South Holland/Gemeente Bergambacht
+Europe/Netherlands/South Holland/Gemeente Leiden/*	Europe/Netherlands/South Holland/Gemeente Leiden
+Europe/Netherlands/South Holland/Gemeente Nieuwkoop/*	Europe/Netherlands/South Holland/Gemeente Nieuwkoop
+Europe/Netherlands/South Holland/Gemeente Rotterdam/*	Europe/Netherlands/South Holland/Gemeente Rotterdam
+Europe/Netherlands/South Holland/Gemeente Zoeterwoude/*	Europe/Netherlands/South Holland/Gemeente Zoeterwoude
+Europe/Netherlands/South Holland/Krimpen a/*	Europe/Netherlands/South Holland/Krimpen a
+Europe/Netherlands/South Holland/Nederlek/*	Europe/Netherlands/South Holland/Nederlek
+Europe/Netherlands/South Holland/Nieuwerkerk a/*	Europe/Netherlands/South Holland/Nieuwerkerk a
+Europe/Netherlands/South Holland/Pijnacker-Nootdorp/*	Europe/Netherlands/South Holland/Pijnacker-Nootdorp
+Europe/Poland/Greater Poland Voivodeship/Chocicza/*	Europe/Poland/Greater Poland Voivodeship/Chocicza
+Europe/Poland/Greater Poland Voivodeship/Krzyzowniki/*	Europe/Poland/Greater Poland Voivodeship/Krzyzowniki
+Europe/Poland/Greater Poland Voivodeship/Miroslaw/*	Europe/Poland/Greater Poland Voivodeship/Miroslaw
+Europe/Poland/Greater Poland Voivodeship/Ostrowite/*	Europe/Poland/Greater Poland Voivodeship/Ostrowite
+Europe/Poland/Greater Poland Voivodeship/Pierzchno/*	Europe/Poland/Greater Poland Voivodeship/Pierzchno
+Europe/Poland/Greater Poland Voivodeship/Rabczyn/*	Europe/Poland/Greater Poland Voivodeship/Rabczyn
+Europe/Poland/Greater Poland Voivodeship/Sokolniki_Male/*	Europe/Poland/Greater Poland Voivodeship/Sokolniki_Male
+Europe/Poland/Greater Poland Voivodeship/Starkowiec_Piatkowski/*	Europe/Poland/Greater Poland Voivodeship/Starkowiec_Piatkowski
+Europe/Poland/Greater Poland Voivodeship/Zielniczki/*	Europe/Poland/Greater Poland Voivodeship/Zielniczki
+Europe/Poland/Kuyavian-Pomeranian Voivodeship/Pakosc/*	Europe/Poland/Kuyavian-Pomeranian Voivodeship/Pakosc
+Europe/Poland/Lower Silesian Voivodeship/Bielawy_Wielkie/*	Europe/Poland/Lower Silesian Voivodeship/Bielawy_Wielkie
+Europe/Poland/Lower Silesian Voivodeship/Chojnow/*	Europe/Poland/Lower Silesian Voivodeship/Chojnow
+Europe/Poland/Lower Silesian Voivodeship/Pierwoszow/*	Europe/Poland/Lower Silesian Voivodeship/Pierwoszow
+Europe/Poland/Lower Silesian Voivodeship/Piotrkowiczki/*	Europe/Poland/Lower Silesian Voivodeship/Piotrkowiczki
+Europe/Poland/Lower Silesian Voivodeship/Pruszowice/*	Europe/Poland/Lower Silesian Voivodeship/Pruszowice
+Europe/Poland/Lower Silesian Voivodeship/Wisznia_Mala/*	Europe/Poland/Lower Silesian Voivodeship/Wisznia_Mala
+Europe/Poland/Lower Silesian Voivodeship/WiszniaMala/*	Europe/Poland/Lower Silesian Voivodeship/WiszniaMala
+Europe/Poland/Lower Silesian Voivodeship/Wroclaw/*	Europe/Poland/Lower Silesian Voivodeship/Wroclaw
+Europe/Poland/Opole Voivodeship/Nysa/*	Europe/Poland/Opole Voivodeship/Nysa
+Europe/Poland/Opole Voivodeship/Objazdna/*	Europe/Poland/Opole Voivodeship/Objazdna
+Europe/Poland/Silesian Voivodeship/Raciborz/*	Europe/Poland/Silesian Voivodeship/Raciborz
+Europe/Poland/Warmian-Masurian Voivedeship/Olsztyn/*	Europe/Poland/Warmian-Masurian Voivedeship/Olsztyn
+Europe/Russian Federation/Yamalo-Nenets Autonomous Okrug/Yamalo/*	Europe/Russian Federation/Yamalo-Nenets Autonomous Okrug/Yamalo
+Europe/Spain/Andalusia/Almeria/*	Europe/Spain/Andalusia/Almeria
+Europe/Spain/Andalusia/Cadiz/*	Europe/Spain/Andalusia/Cadiz
+Europe/Spain/Andalusia/Malaga/*	Europe/Spain/Andalusia/Malaga
+Europe/Spain/Andalusia/Seville/*	Europe/Spain/Andalusia/Seville
+Europe/Spain/Canary Islands/https:/*	Europe/Spain/Canary Islands/https:
+Europe/Spain/Castille-La Mancha/Toledo/*	Europe/Spain/Castille-La Mancha/Toledo
+Europe/Spain/Catalonia/Barcelona/*	Europe/Spain/Catalonia/Barcelona
+Europe/Spain/Catalonia/Tarragona/*	Europe/Spain/Catalonia/Tarragona
+Europe/Spain/Galicia/La Coruna/*	Europe/Spain/Galicia/La Coruna
+Europe/Sweden/Blekinge Lan/Karlskrona Kommun/*	Europe/Sweden/Blekinge Lan/Karlskrona Kommun
+Europe/Sweden/Hallands Lan/Kungsbacka Kommun/*	Europe/Sweden/Hallands Lan/Kungsbacka Kommun
+Europe/Sweden/Kalmar Lan/Hultsfreds Kommun/*	Europe/Sweden/Kalmar Lan/Hultsfreds Kommun
+Europe/Sweden/Kalmar Lan/Kalmar Kommun/*	Europe/Sweden/Kalmar Lan/Kalmar Kommun
+Europe/Sweden/Kalmar Lan/Morbylanga Kommun/*	Europe/Sweden/Kalmar Lan/Morbylanga Kommun
+Europe/Sweden/Skane Lan/Helsingborgs Kommun/*	Europe/Sweden/Skane Lan/Helsingborgs Kommun
+Europe/Sweden/Skane Lan/Malmo Kommun/*	Europe/Sweden/Skane Lan/Malmo Kommun
+Europe/Sweden/Skane Lan/Ostra Goinge Kommun/*	Europe/Sweden/Skane Lan/Ostra Goinge Kommun
+Europe/Sweden/Skane Lan/Vellinge Kommun/*	Europe/Sweden/Skane Lan/Vellinge Kommun
+Europe/Sweden/Stockholms Lan/Stockholms Kommun/*	Europe/Sweden/Stockholms Lan/Stockholms Kommun
+Europe/Sweden/Stockholms Lan/Sweden/*	Europe/Sweden/Stockholms Lan/Sweden
+Europe/Sweden/Varmlands Lan/Karlstads Kommun/*	Europe/Sweden/Varmlands Lan/Karlstads Kommun
+Europe/Netherlands/South Holland/Nederlek/Krimpen a/d Lek	Europe/Netherlands/South Holland/Nederlek
+
+Europe/Switzerland/Kanton Bern/Amt Bern/*	Europe/Switzerland/Kanton Bern/Amt Bern
+Europe/Switzerland/Kanton Bern/Amt Biel/*	Europe/Switzerland/Kanton Bern/Amt Biel
+
+
+# many Czech records have an overly specific 5th field which is already being dropped,
+# so these avoid the warnings being shown
+Europe/Czech Republic/Czech Republic/Kraj Vysocina/*	Europe/Czech Republic/Czech Republic/Kraj Vysocina
+Europe/Czech Republic/Czech Republic/Moravskoslezsky Kraj/*	Europe/Czech Republic/Czech Republic/Moravskoslezsky Kraj
+Europe/Czech Republic/Czech Republic/Plzensky Kraj/*	Europe/Czech Republic/Czech Republic/Plzensky Kraj
+Europe/Czech Republic/Hlavni mesto Praha/Okres Praha/*	Europe/Czech Republic/Hlavni mesto Praha/Okres Praha
+Europe/Czech Republic/Jihocesky Kraj/Okres Ceske Budejovice/*	Europe/Czech Republic/Jihocesky Kraj/Okres Ceske Budejovice
+Europe/Czech Republic/Jihocesky Kraj/Okres Cesky Krumlov/*	Europe/Czech Republic/Jihocesky Kraj/Okres Cesky Krumlov
+Europe/Czech Republic/Jihocesky Kraj/Okres Jindrichuv Hradec/*	Europe/Czech Republic/Jihocesky Kraj/Okres Jindrichuv Hradec
+Europe/Czech Republic/Jihocesky Kraj/Okres Pisek/*	Europe/Czech Republic/Jihocesky Kraj/Okres Pisek
+Europe/Czech Republic/Jihocesky Kraj/Okres Prachatice/*	Europe/Czech Republic/Jihocesky Kraj/Okres Prachatice
+Europe/Czech Republic/Jihocesky Kraj/Okres Strakonice/*	Europe/Czech Republic/Jihocesky Kraj/Okres Strakonice
+Europe/Czech Republic/Jihocesky Kraj/Okres Tabor/*	Europe/Czech Republic/Jihocesky Kraj/Okres Tabor
+Europe/Czech Republic/Karlovarsky Kraj/Okres Cheb/*	Europe/Czech Republic/Karlovarsky Kraj/Okres Cheb
+Europe/Czech Republic/Karlovarsky Kraj/Okres Karlovy Vary/*	Europe/Czech Republic/Karlovarsky Kraj/Okres Karlovy Vary
+Europe/Czech Republic/Karlovarsky Kraj/Okres Sokolov/*	Europe/Czech Republic/Karlovarsky Kraj/Okres Sokolov
+Europe/Czech Republic/Kralovehradecky Kraj/Okres Hradec Kralove/*	Europe/Czech Republic/Kralovehradecky Kraj/Okres Hradec Kralove
+Europe/Czech Republic/Kralovehradecky Kraj/Okres Jicin/*	Europe/Czech Republic/Kralovehradecky Kraj/Okres Jicin
+Europe/Czech Republic/Kralovehradecky Kraj/Okres Nachod/*	Europe/Czech Republic/Kralovehradecky Kraj/Okres Nachod
+Europe/Czech Republic/Kralovehradecky Kraj/Okres Trutnov/*	Europe/Czech Republic/Kralovehradecky Kraj/Okres Trutnov
+Europe/Czech Republic/Liberecky Kraj/Okres Ceska Lipa/*	Europe/Czech Republic/Liberecky Kraj/Okres Ceska Lipa
+Europe/Czech Republic/Liberecky Kraj/Okres Liberec/*	Europe/Czech Republic/Liberecky Kraj/Okres Liberec
+Europe/Czech Republic/Liberecky Kraj/Okres Semily/*	Europe/Czech Republic/Liberecky Kraj/Okres Semily
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Bruntal/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Bruntal
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Frydek-Mistek/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Frydek-Mistek
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Karvina/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Karvina
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Novy Jicin/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Novy Jicin
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Opava/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Opava
+Europe/Czech Republic/Morovskoslezsky Kraj/Okres Ostrava-Mesto/*	Europe/Czech Republic/Morovskoslezsky Kraj/Okres Ostrava-Mesto
+Europe/Czech Republic/Olomoucky Kraj/Okres Jesenik/*	Europe/Czech Republic/Olomoucky Kraj/Okres Jesenik
+Europe/Czech Republic/Olomoucky Kraj/Okres Olomouc/*	Europe/Czech Republic/Olomoucky Kraj/Okres Olomouc
+Europe/Czech Republic/Olomoucky Kraj/Okres Prerov/*	Europe/Czech Republic/Olomoucky Kraj/Okres Prerov
+Europe/Czech Republic/Olomoucky Kraj/Okres Prostejov/*	Europe/Czech Republic/Olomoucky Kraj/Okres Prostejov
+Europe/Czech Republic/Pardubicky kraj/Okres Chrudim/*	Europe/Czech Republic/Pardubicky kraj/Okres Chrudim
+Europe/Czech Republic/Pardubicky kraj/Okres Pardubice/*	Europe/Czech Republic/Pardubicky kraj/Okres Pardubice
+Europe/Czech Republic/Pardubicky kraj/Okres Svitavy/*	Europe/Czech Republic/Pardubicky kraj/Okres Svitavy
+Europe/Czech Republic/Pardubicky kraj/Okres Usti nad Orlici/*	Europe/Czech Republic/Pardubicky kraj/Okres Usti nad Orlici
+Europe/Czech Republic/Plzensky Kraj/Okres Klatovy/*	Europe/Czech Republic/Plzensky Kraj/Okres Klatovy
+Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Jih/*	Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Jih
+Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Mesto/*	Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Mesto
+Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Sever/*	Europe/Czech Republic/Plzensky Kraj/Okres Plzen-Sever
+Europe/Czech Republic/Plzensky Kraj/Okres Rokycany/*	Europe/Czech Republic/Plzensky Kraj/Okres Rokycany
+Europe/Czech Republic/Plzensky Kraj/Okres Tacov/*	Europe/Czech Republic/Plzensky Kraj/Okres Tacov
+Europe/Czech Republic/South Moravian Region/Mesto Brno/*	Europe/Czech Republic/South Moravian Region/Mesto Brno
+Europe/Czech Republic/South Moravian Region/Okres Blansko/*	Europe/Czech Republic/South Moravian Region/Okres Blansko
+Europe/Czech Republic/South Moravian Region/Okres Breclav/*	Europe/Czech Republic/South Moravian Region/Okres Breclav
+Europe/Czech Republic/South Moravian Region/Okres Brno-Venkov/*	Europe/Czech Republic/South Moravian Region/Okres Brno-Venkov
+Europe/Czech Republic/South Moravian Region/Okres Hodonin/*	Europe/Czech Republic/South Moravian Region/Okres Hodonin
+Europe/Czech Republic/South Moravian Region/Okres Vyskov/*	Europe/Czech Republic/South Moravian Region/Okres Vyskov
+Europe/Czech Republic/South Moravian Region/Okres Znoimo/*	Europe/Czech Republic/South Moravian Region/Okres Znoimo
+Europe/Czech Republic/Stredocesky Kraj/Okres Benesov/*	Europe/Czech Republic/Stredocesky Kraj/Okres Benesov
+Europe/Czech Republic/Stredocesky Kraj/Okres Beroun/*	Europe/Czech Republic/Stredocesky Kraj/Okres Beroun
+Europe/Czech Republic/Stredocesky Kraj/Okres Kladno/*	Europe/Czech Republic/Stredocesky Kraj/Okres Kladno
+Europe/Czech Republic/Stredocesky Kraj/Okres Kolin/*	Europe/Czech Republic/Stredocesky Kraj/Okres Kolin
+Europe/Czech Republic/Stredocesky Kraj/Okres Melnik/*	Europe/Czech Republic/Stredocesky Kraj/Okres Melnik
+Europe/Czech Republic/Stredocesky Kraj/Okres Mlada Boleslav/*	Europe/Czech Republic/Stredocesky Kraj/Okres Mlada Boleslav
+Europe/Czech Republic/Stredocesky Kraj/Okres Nymburk/*	Europe/Czech Republic/Stredocesky Kraj/Okres Nymburk
+Europe/Czech Republic/Stredocesky Kraj/Okres Praha-Vychod/*	Europe/Czech Republic/Stredocesky Kraj/Okres Praha-Vychod
+Europe/Czech Republic/Stredocesky Kraj/Okres Praha-Zapad/*	Europe/Czech Republic/Stredocesky Kraj/Okres Praha-Zapad
+Europe/Czech Republic/Stredocesky Kraj/Okres Pribram/*	Europe/Czech Republic/Stredocesky Kraj/Okres Pribram
+Europe/Czech Republic/Stredocesky Kraj/Okres Rakovnik/*	Europe/Czech Republic/Stredocesky Kraj/Okres Rakovnik
+Europe/Czech Republic/Ustecky Kraj/Okres Chomutov/*	Europe/Czech Republic/Ustecky Kraj/Okres Chomutov
+Europe/Czech Republic/Ustecky Kraj/Okres Decin/*	Europe/Czech Republic/Ustecky Kraj/Okres Decin
+Europe/Czech Republic/Ustecky Kraj/Okres Litomerice/*	Europe/Czech Republic/Ustecky Kraj/Okres Litomerice
+Europe/Czech Republic/Ustecky Kraj/Okres Louny/*	Europe/Czech Republic/Ustecky Kraj/Okres Louny
+Europe/Czech Republic/Ustecky Kraj/Okres Most/*	Europe/Czech Republic/Ustecky Kraj/Okres Most
+Europe/Czech Republic/Ustecky Kraj/Okres Teplice/*	Europe/Czech Republic/Ustecky Kraj/Okres Teplice
+Europe/Czech Republic/Ustecky Kraj/Okres Usti nad Labem/*	Europe/Czech Republic/Ustecky Kraj/Okres Usti nad Labem
+Europe/Czech Republic/Vysocina Kraj/Okres Havlickuv Brod/*	Europe/Czech Republic/Vysocina Kraj/Okres Havlickuv Brod
+Europe/Czech Republic/Vysocina Kraj/Okres Jihlava/*	Europe/Czech Republic/Vysocina Kraj/Okres Jihlava
+Europe/Czech Republic/Vysocina Kraj/Okres Pelhrimov/*	Europe/Czech Republic/Vysocina Kraj/Okres Pelhrimov
+Europe/Czech Republic/Vysocina Kraj/Okres Trebic/*	Europe/Czech Republic/Vysocina Kraj/Okres Trebic
+Europe/Czech Republic/Vysocina Kraj/Okres Zd'ar nad Szavou/*	Europe/Czech Republic/Vysocina Kraj/Okres Zd'ar nad Szavou
+Europe/Czech Republic/Zlinsky Kraj/Okres Kromeriz/*	Europe/Czech Republic/Zlinsky Kraj/Okres Kromeriz
+Europe/Czech Republic/Zlinsky Kraj/Okres Uherske Hradiste/*	Europe/Czech Republic/Zlinsky Kraj/Okres Uherske Hradiste
+Europe/Czech Republic/Zlinsky Kraj/Okres Vsetin/*	Europe/Czech Republic/Zlinsky Kraj/Okres Vsetin
+Europe/Czech Republic/Zlinsky Kraj/Okres Zlin/*	Europe/Czech Republic/Zlinsky Kraj/Okres Zlin
+Europe/Czech Republic/Hlavni mesto Praha/Okres Praha/*	Europe/Czech Republic/Hlavni mesto Praha/Okres Praha
+Europe/Czech Republic/Hlavni mesto Praha/Okres Praha/Czech Republic/*	Europe/Czech Republic/Hlavni mesto Praha/Okres Praha
+Europe/Czech Republic/Hlavni mesto Praha/Okres Praha/Czech Republic/Hlavni mesto Praha/*	Europe/Czech Republic/Hlavni mesto Praha/Okres Praha
+
+
+Europe/Bulgaria/Oblast Sofiya-Grad/Municipality of the Capital/*	Europe/Bulgaria/Oblast Sofiya-Grad/Municipality of the Capital
+
+
+
+# ░███    ░██   ░██████   ░█████████  ░██████████░██     ░██             ░███    ░███     ░███ ░██████████ ░█████████  ░██████  ░██████     ░███    
+# ░████   ░██  ░██   ░██  ░██     ░██     ░██    ░██     ░██            ░██░██   ░████   ░████ ░██         ░██     ░██   ░██   ░██   ░██   ░██░██   
+# ░██░██  ░██ ░██     ░██ ░██     ░██     ░██    ░██     ░██           ░██  ░██  ░██░██ ░██░██ ░██         ░██     ░██   ░██  ░██         ░██  ░██  
+# ░██ ░██ ░██ ░██     ░██ ░█████████      ░██    ░██████████          ░█████████ ░██ ░████ ░██ ░█████████  ░█████████    ░██  ░██        ░█████████ 
+# ░██  ░██░██ ░██     ░██ ░██   ░██       ░██    ░██     ░██          ░██    ░██ ░██  ░██  ░██ ░██         ░██   ░██     ░██  ░██        ░██    ░██ 
+# ░██   ░████  ░██   ░██  ░██    ░██      ░██    ░██     ░██          ░██    ░██ ░██       ░██ ░██         ░██    ░██    ░██   ░██   ░██ ░██    ░██ 
+# ░██    ░███   ░██████   ░██     ░██     ░██    ░██     ░██          ░██    ░██ ░██       ░██ ░██████████ ░██     ░██ ░██████  ░██████  ░██    ░██                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                     
+
+# US locations we use county as location
+North America/United States/Arizona/Maricopa County/*	North America/USA/Arizona/Maricopa County AZ
+North America/United States/Alaska/Nome Census Area/*	North America/United States/Alaska/Nome Census Area
+North America/United States/California/Glenn County/*	North America/United States/California/Glenn County
+North America/United States/California/Solano County/*	North America/United States/California/Solano County
+North America/United States/Georgia/Chattahoochee County/*	North America/United States/Georgia/Chattahoochee County
+North America/United States/Hawaii/Honolulu County/*	North America/United States/Hawaii/Honolulu County
+North America/United States/Illinois/DuPage County/*	North America/United States/Illinois/DuPage County
+North America/United States/Illinois/Lake County/*	North America/United States/Illinois/Lake County
+North America/United States/Indiana/Jasper County/*	North America/United States/Indiana/Jasper County
+North America/United States/Kansas/Johnson County/*	North America/United States/Kansas/Johnson County
+North America/United States/Louisiana/Caddo Parish/*	North America/United States/Louisiana/Caddo Parish
+North America/United States/Maine/Cumberland County/*	North America/United States/Maine/Cumberland County
+North America/United States/Maine/Hancook County/*	North America/United States/Maine/Hancook County
+North America/United States/Maine/Knox County/*	North America/United States/Maine/Knox County
+North America/United States/Maine/Penobscot County/*	North America/United States/Maine/Penobscot County
+North America/United States/Maine/Washington County/*	North America/United States/Maine/Washington County
+North America/United States/Maine/York County/*	North America/United States/Maine/York County
+North America/United States/Massachusetts/Barnstable county/*	North America/United States/Massachusetts/Barnstable county
+North America/United States/Massachusetts/Bristol County/*	North America/United States/Massachusetts/Bristol County
+North America/United States/Massachusetts/Essex County/*	North America/United States/Massachusetts/Essex County
+North America/United States/Massachusetts/Middlesex County/*	North America/United States/Massachusetts/Middlesex County
+North America/United States/Massachusetts/Nantucket County/*	North America/United States/Massachusetts/Nantucket County
+North America/United States/Massachusetts/Plymouth County/*	North America/United States/Massachusetts/Plymouth County
+North America/United States/Massachusetts/Suffolk County/*	North America/United States/Massachusetts/Suffolk County
+North America/United States/Michigan/Oakland County/*	North America/United States/Michigan/Oakland County
+North America/United States/Michigan/Washtenaw County/*	North America/United States/Michigan/Washtenaw County
+North America/United States/Michigan/Wayne County/*	North America/United States/Michigan/Wayne County
+North America/United States/Montana/Valley County/*	North America/United States/Montana/Valley County
+North America/United States/New York/The Bronx/*	North America/United States/New York/The Bronx
+North America/United States/North Carolina/Forsyth County/*	North America/United States/North Carolina/Forsyth County
+North America/United States/North Dakota/LaMoure County/*	North America/United States/North Dakota/LaMoure County
+North America/United States/Oklahoma/Oklahoma County/*	North America/United States/Oklahoma/Oklahoma County
+North America/United States/Oregon/Yamhill County/*	North America/United States/Oregon/Yamhill County
+North America/United States/Tennessee/Coffee County/*	North America/United States/Tennessee/Coffee County
+North America/United States/Tennessee/Dyer County/*	North America/United States/Tennessee/Dyer County
+North America/United States/Virginia/Prince William County/*	North America/United States/Virginia/Prince William County
+North America/Costa Rica/Provincia de Alajuela/Alajuela/*	North America/Costa Rica/Provincia de Alajuela/Alajuela
+North America/Costa Rica/Provincia de Alajuela/San Carlos/*	North America/Costa Rica/Provincia de Alajuela/San Carlos
+North America/Costa Rica/Provincia de Cartago/La Union/*	North America/Costa Rica/Provincia de Cartago/La Union
+North America/Costa Rica/Provincia de Guanacaste/Carrillo/*	North America/Costa Rica/Provincia de Guanacaste/Carrillo
+North America/Costa Rica/Provincia de Heredia/San Pablo/*	North America/Costa Rica/Provincia de Heredia/San Pablo
+North America/Costa Rica/Provincia de Heredia/San Rafael/*	North America/Costa Rica/Provincia de Heredia/San Rafael
+North America/Costa Rica/Provincia de Heredia/Santa Barbara/*	North America/Costa Rica/Provincia de Heredia/Santa Barbara
+North America/Costa Rica/Provincia de Puntarenas/Golfito/*	North America/Costa Rica/Provincia de Puntarenas/Golfito
+North America/Costa Rica/Provincia de Puntarenas/Puntarenas/*	North America/Costa Rica/Provincia de Puntarenas/Puntarenas
+North America/Costa Rica/Provincia de San Jose/Desamparados/*	North America/Costa Rica/Provincia de San Jose/Desamparados
+North America/Costa Rica/Provincia de San Jose/Escazu/*	North America/Costa Rica/Provincia de San Jose/Escazu
+North America/Costa Rica/Provincia de San Jose/Perez Zeledon/*	North America/Costa Rica/Provincia de San Jose/Perez Zeledon
+North America/Costa Rica/Provincia de San Jose/Santa Ana/*	North America/Costa Rica/Provincia de San Jose/Santa Ana
+North America/Costa Rica/Provincia de San Jose/Tarrazu/*	North America/Costa Rica/Provincia de San Jose/Tarrazu
+North America/Costa Rica/Provincia de San Jose/Tibas/*	North America/Costa Rica/Provincia de San Jose/Tibas
+North America/Costa Rica/Provincia de San Jose/Vazquez De Coronado/*	North America/Costa Rica/Provincia de San Jose/Vazquez De Coronado
+
+
+                                                                                                              
+#   ░██████     ░██████   ░██     ░██ ░██████████░██     ░██       ░███    ░███     ░███ ░██████████ ░█████████  ░██████  ░██████     ░███    
+#  ░██   ░██   ░██   ░██  ░██     ░██     ░██    ░██     ░██      ░██░██   ░████   ░████ ░██         ░██     ░██   ░██   ░██   ░██   ░██░██   
+# ░██         ░██     ░██ ░██     ░██     ░██    ░██     ░██     ░██  ░██  ░██░██ ░██░██ ░██         ░██     ░██   ░██  ░██         ░██  ░██  
+#  ░████████  ░██     ░██ ░██     ░██     ░██    ░██████████    ░█████████ ░██ ░████ ░██ ░█████████  ░█████████    ░██  ░██        ░█████████ 
+#         ░██ ░██     ░██ ░██     ░██     ░██    ░██     ░██    ░██    ░██ ░██  ░██  ░██ ░██         ░██   ░██     ░██  ░██        ░██    ░██ 
+#  ░██   ░██   ░██   ░██   ░██   ░██      ░██    ░██     ░██    ░██    ░██ ░██       ░██ ░██         ░██    ░██    ░██   ░██   ░██ ░██    ░██ 
+#   ░██████     ░██████     ░██████       ░██    ░██     ░██    ░██    ░██ ░██       ░██ ░██████████ ░██     ░██ ░██████  ░██████  ░██    ░██ 
+
+
+# Following Brazil Locations have the 5th column (here a '*') as "Patient from XXX" etc
+# (That was/is what our pipeline does anyway, these rules just prevent a warning being shown)
+South America/Brazil/Distrito Federal/Brasilia/*	South America/Brazil/Distrito Federal/Brasilia
+South America/Brazil/Estado da Bahia/Biritinga/*	South America/Brazil/Estado da Bahia/Biritinga
+South America/Brazil/Estado da Bahia/Conceicao Do Almeida/*	South America/Brazil/Estado da Bahia/Conceicao Do Almeida
+South America/Brazil/Estado da Bahia/Guanambi/*	South America/Brazil/Estado da Bahia/Guanambi
+South America/Brazil/Estado da Bahia/Irece/*	South America/Brazil/Estado da Bahia/Irece
+South America/Brazil/Estado da Bahia/Itamaraju/*	South America/Brazil/Estado da Bahia/Itamaraju
+South America/Brazil/Estado da Bahia/Jequie/*	South America/Brazil/Estado da Bahia/Jequie
+South America/Brazil/Estado da Bahia/Juazeiro/*	South America/Brazil/Estado da Bahia/Juazeiro
+South America/Brazil/Estado da Bahia/Mairi/*	South America/Brazil/Estado da Bahia/Mairi
+South America/Brazil/Estado da Bahia/Maracas/*	South America/Brazil/Estado da Bahia/Maracas
+South America/Brazil/Estado da Bahia/Salvador/*	South America/Brazil/Estado da Bahia/Salvador
+South America/Brazil/Estado da Bahia/Seabra/*	South America/Brazil/Estado da Bahia/Seabra
+South America/Brazil/Estado da Bahia/Vitoria Da Conquista/*	South America/Brazil/Estado da Bahia/Vitoria Da Conquista
+South America/Brazil/Estado de Alagoas/Arapiraca/*	South America/Brazil/Estado de Alagoas/Arapiraca
+South America/Brazil/Estado de Alagoas/Delmiro Gouveia/*	South America/Brazil/Estado de Alagoas/Delmiro Gouveia
+South America/Brazil/Estado de Alagoas/Maceio/*	South America/Brazil/Estado de Alagoas/Maceio
+South America/Brazil/Estado de Alagoas/Maragogi/*	South America/Brazil/Estado de Alagoas/Maragogi
+South America/Brazil/Estado de Alagoas/Palmeira Dos Indios/*	South America/Brazil/Estado de Alagoas/Palmeira Dos Indios
+South America/Brazil/Estado de Alagoas/Penedo/*	South America/Brazil/Estado de Alagoas/Penedo
+South America/Brazil/Estado de Alagoas/Santana Do Ipanema/*	South America/Brazil/Estado de Alagoas/Santana Do Ipanema
+South America/Brazil/Estado de Espirito Santo/Anchieta/*	South America/Brazil/Estado de Espirito Santo/Anchieta
+South America/Brazil/Estado de Espirito Santo/Guarapari/*	South America/Brazil/Estado de Espirito Santo/Guarapari
+South America/Brazil/Estado de Espirito Santo/Marataizes/*	South America/Brazil/Estado de Espirito Santo/Marataizes
+South America/Brazil/Estado de Espirito Santo/Rio Bananal/*	South America/Brazil/Estado de Espirito Santo/Rio Bananal
+South America/Brazil/Estado de Espirito Santo/Sao Mateus/*	South America/Brazil/Estado de Espirito Santo/Sao Mateus
+South America/Brazil/Estado de Espirito Santo/Serra/*	South America/Brazil/Estado de Espirito Santo/Serra
+South America/Brazil/Estado de Espirito Santo/Vila Velha/*	South America/Brazil/Estado de Espirito Santo/Vila Velha
+South America/Brazil/Estado de Espirito Santo/Vitoria/*	South America/Brazil/Estado de Espirito Santo/Vitoria
+South America/Brazil/Estado de Goias/Goias/*	South America/Brazil/Estado de Goias/Goias
+South America/Brazil/Estado de Mato Grosso do Sul/Agua Clara/*	South America/Brazil/Estado de Mato Grosso do Sul/Agua Clara
+South America/Brazil/Estado de Mato Grosso do Sul/Antonio Joao/*	South America/Brazil/Estado de Mato Grosso do Sul/Antonio Joao
+South America/Brazil/Estado de Mato Grosso do Sul/Campo Grande/*	South America/Brazil/Estado de Mato Grosso do Sul/Campo Grande
+South America/Brazil/Estado de Mato Grosso do Sul/Corumba/*	South America/Brazil/Estado de Mato Grosso do Sul/Corumba
+South America/Brazil/Estado de Mato Grosso do Sul/Dois Irmaos Do Buriti/*	South America/Brazil/Estado de Mato Grosso do Sul/Dois Irmaos Do Buriti
+South America/Brazil/Estado de Mato Grosso do Sul/Dourados/*	South America/Brazil/Estado de Mato Grosso do Sul/Dourados
+South America/Brazil/Estado de Mato Grosso do Sul/Inocencia/*	South America/Brazil/Estado de Mato Grosso do Sul/Inocencia
+South America/Brazil/Estado de Mato Grosso do Sul/Jardim/*	South America/Brazil/Estado de Mato Grosso do Sul/Jardim
+South America/Brazil/Estado de Mato Grosso do Sul/Navirai/*	South America/Brazil/Estado de Mato Grosso do Sul/Navirai
+South America/Brazil/Estado de Mato Grosso do Sul/Paranaiba/*	South America/Brazil/Estado de Mato Grosso do Sul/Paranaiba
+South America/Brazil/Estado de Mato Grosso do Sul/Ponta Pora/*	South America/Brazil/Estado de Mato Grosso do Sul/Ponta Pora
+South America/Brazil/Estado de Mato Grosso do Sul/Rio Brilhante/*	South America/Brazil/Estado de Mato Grosso do Sul/Rio Brilhante
+South America/Brazil/Estado de Mato Grosso do Sul/Sonora/*	South America/Brazil/Estado de Mato Grosso do Sul/Sonora
+South America/Brazil/Estado de Mato Grosso do Sul/Tres Lagos/*	South America/Brazil/Estado de Mato Grosso do Sul/Tres Lagos
+South America/Brazil/Estado de Mato Grosso/Cuiaba/*	South America/Brazil/Estado de Mato Grosso/Cuiaba
+South America/Brazil/Estado de Minas Gerais/Belo Horizonte/*	South America/Brazil/Estado de Minas Gerais/Belo Horizonte
+South America/Brazil/Estado de Minas Gerais/Betim/*	South America/Brazil/Estado de Minas Gerais/Betim
+South America/Brazil/Estado de Minas Gerais/Caratinga/*	South America/Brazil/Estado de Minas Gerais/Caratinga
+South America/Brazil/Estado de Minas Gerais/Diamantina/*	South America/Brazil/Estado de Minas Gerais/Diamantina
+South America/Brazil/Estado de Minas Gerais/Itabira/*	South America/Brazil/Estado de Minas Gerais/Itabira
+South America/Brazil/Estado de Minas Gerais/Itajuba/*	South America/Brazil/Estado de Minas Gerais/Itajuba
+South America/Brazil/Estado de Minas Gerais/Januaria/*	South America/Brazil/Estado de Minas Gerais/Januaria
+South America/Brazil/Estado de Minas Gerais/Manhuacu/*	South America/Brazil/Estado de Minas Gerais/Manhuacu
+South America/Brazil/Estado de Minas Gerais/Montes Claros/*	South America/Brazil/Estado de Minas Gerais/Montes Claros
+South America/Brazil/Estado de Minas Gerais/Pouso Alegre/*	South America/Brazil/Estado de Minas Gerais/Pouso Alegre
+South America/Brazil/Estado de Minas Gerais/Teofilo Otoni/*	South America/Brazil/Estado de Minas Gerais/Teofilo Otoni
+South America/Brazil/Estado de Minas Gerais/Tres Coracoes/*	South America/Brazil/Estado de Minas Gerais/Tres Coracoes
+South America/Brazil/Estado de Minas Gerais/Tres Pontas/*	South America/Brazil/Estado de Minas Gerais/Tres Pontas
+South America/Brazil/Estado de Minas Gerais/Uberaba/*	South America/Brazil/Estado de Minas Gerais/Uberaba
+South America/Brazil/Estado de Minas Gerais/Uberlandia/*	South America/Brazil/Estado de Minas Gerais/Uberlandia
+South America/Brazil/Estado de Minas Gerais/Varginha/*	South America/Brazil/Estado de Minas Gerais/Varginha
+South America/Brazil/Estado de Santa Catarina/Aguas De Chapeco/*	South America/Brazil/Estado de Santa Catarina/Aguas De Chapeco
+South America/Brazil/Estado de Santa Catarina/Ararangua/*	South America/Brazil/Estado de Santa Catarina/Ararangua
+South America/Brazil/Estado de Santa Catarina/Balneario Camboriu/*	South America/Brazil/Estado de Santa Catarina/Balneario Camboriu
+South America/Brazil/Estado de Santa Catarina/Concordia/*	South America/Brazil/Estado de Santa Catarina/Concordia
+South America/Brazil/Estado de Santa Catarina/Criciuma/*	South America/Brazil/Estado de Santa Catarina/Criciuma
+South America/Brazil/Estado de Santa Catarina/Dionisio Cerqueira/*	South America/Brazil/Estado de Santa Catarina/Dionisio Cerqueira
+South America/Brazil/Estado de Santa Catarina/Florianapolis/*	South America/Brazil/Estado de Santa Catarina/Florianapolis
+South America/Brazil/Estado de Santa Catarina/Itajai/*	South America/Brazil/Estado de Santa Catarina/Itajai
+South America/Brazil/Estado de Santa Catarina/Joinville/*	South America/Brazil/Estado de Santa Catarina/Joinville
+South America/Brazil/Estado de Santa Catarina/Lages/*	South America/Brazil/Estado de Santa Catarina/Lages
+South America/Brazil/Estado de Santa Catarina/Laguna/*	South America/Brazil/Estado de Santa Catarina/Laguna
+South America/Brazil/Estado de Santa Catarina/Sao Jose/*	South America/Brazil/Estado de Santa Catarina/Sao Jose
+South America/Brazil/Estado de Santa Catarina/Xanxere/*	South America/Brazil/Estado de Santa Catarina/Xanxere
+South America/Brazil/Estado de Sao Paulo/Campinas/*	South America/Brazil/Estado de Sao Paulo/Campinas
+South America/Brazil/Estado de Sao Paulo/Caraguatatuba/*	South America/Brazil/Estado de Sao Paulo/Caraguatatuba
+South America/Brazil/Estado de Sao Paulo/Ribeirao Preto/*	South America/Brazil/Estado de Sao Paulo/Ribeirao Preto
+South America/Brazil/Estado de Sao Paulo/Sao Caetano Do Sul/*	South America/Brazil/Estado de Sao Paulo/Sao Caetano Do Sul
+South America/Brazil/Estado de Sao Paulo/Sao Paulo/*	South America/Brazil/Estado de Sao Paulo/Sao Paulo
+South America/Brazil/Estado de Sao Paulo/Sorocaba/*	South America/Brazil/Estado de Sao Paulo/Sorocaba
+South America/Brazil/Estado de Sergipe/Aracaju/*	South America/Brazil/Estado de Sergipe/Aracaju
+South America/Brazil/Estado de Tocantins/Silvanopolis/*	South America/Brazil/Estado de Tocantins/Silvanopolis
+South America/Brazil/Estado do Para/Ananindeua/*	South America/Brazil/Estado do Para/Ananindeua
+South America/Brazil/Estado do Para/Belem/*	South America/Brazil/Estado do Para/Belem
+South America/Brazil/Estado do Parana/Castro/*	South America/Brazil/Estado do Parana/Castro
+South America/Brazil/Estado do Parana/Cianorte/*	South America/Brazil/Estado do Parana/Cianorte
+South America/Brazil/Estado do Parana/Curitiba/*	South America/Brazil/Estado do Parana/Curitiba
+South America/Brazil/Estado do Parana/Ivaipora/*	South America/Brazil/Estado do Parana/Ivaipora
+South America/Brazil/Estado do Parana/Londrina/*	South America/Brazil/Estado do Parana/Londrina
+South America/Brazil/Estado do Parana/Maringa/*	South America/Brazil/Estado do Parana/Maringa
+South America/Brazil/Estado do Parana/Paranavai/*	South America/Brazil/Estado do Parana/Paranavai
+South America/Brazil/Estado do Parana/Ponta Grossa/*	South America/Brazil/Estado do Parana/Ponta Grossa
+South America/Brazil/Estado do Parana/Reboucas/*	South America/Brazil/Estado do Parana/Reboucas
+South America/Brazil/Estado do Parana/Sao Jose Dos Pinhais/*	South America/Brazil/Estado do Parana/Sao Jose Dos Pinhais
+South America/Brazil/Estado do Parana/Telemaco Borba/*	South America/Brazil/Estado do Parana/Telemaco Borba
+South America/Brazil/Estado do Parana/Toledo/*	South America/Brazil/Estado do Parana/Toledo
+South America/Brazil/Estado do Parana/Umuarama/*	South America/Brazil/Estado do Parana/Umuarama
+South America/Brazil/Estado do Rio de Janeiro/Guapimirim/*	South America/Brazil/Estado do Rio de Janeiro/Guapimirim
+South America/Brazil/Estado do Rio de Janeiro/Iguaba Grande/*	South America/Brazil/Estado do Rio de Janeiro/Iguaba Grande
+South America/Brazil/Estado do Rio de Janeiro/Marica/*	South America/Brazil/Estado do Rio de Janeiro/Marica
+South America/Brazil/Estado do Rio de Janeiro/Rio De Janeiro/*	South America/Brazil/Estado do Rio de Janeiro/Rio De Janeiro
+South America/Brazil/Estado do Rio de Janeiro/Sao Goncalo/*	South America/Brazil/Estado do Rio de Janeiro/Sao Goncalo
+South America/Brazil/Estado do Rio de Janeiro/Sapucaia/*	South America/Brazil/Estado do Rio de Janeiro/Sapucaia
+South America/Brazil/Estado do Rio de Janeiro/Volta Redonda/*	South America/Brazil/Estado do Rio de Janeiro/Volta Redonda
+South America/Brazil/Estado do Rio Grande do Norte/Natal/*	South America/Brazil/Estado do Rio Grande do Norte/Natal
+South America/Brazil/Estado do Rio Grande do Sul/Santa Cruz do Sul/*	South America/Brazil/Estado do Rio Grande do Sul/Santa Cruz do Sul
+South America/Brazil/Estado do Rio Grande do Sul/Santiago/*	South America/Brazil/Estado do Rio Grande do Sul/Santiago
+South America/Brazil/Estado de Mato Grosso/Cuiaba/Mato Grosso/Cuiaba	South America/Brazil/Estado de Mato Grosso/Cuiaba
+
+South America/Argentina/Provincia de Buenos Aires/San Bernardo/*	South America/Argentina/Provincia de Buenos Aires/San Bernardo
+South America/Bolivia/Departamento de Santa Cruz/Provincia Andres Ibanez/*	South America/Bolivia/Departamento de Santa Cruz/Provincia Andres Ibanez
+South America/Bolivia/Departamento de Tarija/Provincia Gran Chaco/*	South America/Bolivia/Departamento de Tarija/Provincia Gran Chaco
+South America/Brazil/Estado de Mato Grosso/Cuiaba/*	South America/Brazil/Estado de Mato Grosso/Cuiaba
+South America/Brazil/Estado de Santa Catarina/Concordia/*	South America/Brazil/Estado de Santa Catarina/Concordia
+
+
+#    ░███      ░██████   ░██████   ░███    
+#   ░██░██    ░██   ░██    ░██    ░██░██   
+#  ░██  ░██  ░██           ░██   ░██  ░██  
+# ░█████████  ░████████    ░██  ░█████████ 
+# ░██    ░██         ░██   ░██  ░██    ░██ 
+# ░██    ░██  ░██   ░██    ░██  ░██    ░██ 
+# ░██    ░██   ░██████   ░██████░██    ░██ 
+
+
+# Poorly formatted locations -- drop fields
+Asia/Cambodia/Khet Siemreab-Otar Meanchey/n/a	Asia/Cambodia/Khet Siemreab-Otar Meanchey/
+Asia/Cambodia/Khett Kampong Cham/n/a	Asia/Cambodia/Khett Kampong Cham/
+Asia/Cambodia/Khett Kandal/n/a	Asia/Cambodia/Khett Kandal/
+Asia/Cambodia/Khett Mondol Kiri/n/a	Asia/Cambodia/Khett Mondol Kiri/
+Asia/Cambodia/Khett Prey Veng/n/a	Asia/Cambodia/Khett Prey Veng/
+Asia/Cambodia/Khett Svay Rieng/n/a	Asia/Cambodia/Khett Svay Rieng/
+Asia/Cambodia/Khett Takev/n/a	Asia/Cambodia/Khett Takev/
+Asia/Cambodia/Khet Siemreab-Otar Meanchey/n/a	Asia/Cambodia/Khet Siemreab-Otar Meanchey/
+Asia/Cambodia/Khet Siemreab-Otar Meanchey/N/A	Asia/Cambodia/Khet Siemreab-Otar Meanchey/
+
+Asia/China/tianjinHebei/117/2016	Asia/China/tianjinHebei/
+
+Asia/Bangladesh/Dhaka Division/Chadpur/Matlab	Asia/Bangladesh/Dhaka Division/Chadpur
+Asia/Bangladesh/Khulna Division/Bangladesh/*	Asia/Bangladesh/Khulna/*
+
+
+#   ░██████     ░██████  ░██████████    ░███    ░███    ░██ ░██████   ░███    
+#  ░██   ░██   ░██   ░██ ░██           ░██░██   ░████   ░██   ░██    ░██░██   
+# ░██     ░██ ░██        ░██          ░██  ░██  ░██░██  ░██   ░██   ░██  ░██  
+# ░██     ░██ ░██        ░█████████  ░█████████ ░██ ░██ ░██   ░██  ░█████████ 
+# ░██     ░██ ░██        ░██         ░██    ░██ ░██  ░██░██   ░██  ░██    ░██ 
+#  ░██   ░██   ░██   ░██ ░██         ░██    ░██ ░██   ░████   ░██  ░██    ░██ 
+#   ░██████     ░██████  ░██████████ ░██    ░██ ░██    ░███ ░██████░██    ░██ 
+                                                                            
+
+Oceania/Australia/Tasmania/Moonah/*	Oceania/Australia/Tasmania/Moonah
+Oceania/New Zealand/Auckland/North/West Auckland	Oceania/New Zealand/Auckland/West Auckland
+
+#    ░███    ░██████████░█████████  ░██████  ░██████     ░███    
+#   ░██░██   ░██        ░██     ░██   ░██   ░██   ░██   ░██░██   
+#  ░██  ░██  ░██        ░██     ░██   ░██  ░██         ░██  ░██  
+# ░█████████ ░█████████ ░█████████    ░██  ░██        ░█████████ 
+# ░██    ░██ ░██        ░██   ░██     ░██  ░██        ░██    ░██ 
+# ░██    ░██ ░██        ░██    ░██    ░██   ░██   ░██ ░██    ░██ 
+# ░██    ░██ ░██        ░██     ░██ ░██████  ░██████  ░██    ░██ 
+
+

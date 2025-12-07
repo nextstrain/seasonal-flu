@@ -51,7 +51,6 @@ curate:
     Collection_Date: date
     Submission_Date: date_submitted
     Passage_History: passage
-    Location: location # This is <region>/<country>/<division>/<location>
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
@@ -61,6 +60,7 @@ curate:
   new_type_field: "vtype"
   new_subtype_field: "subtype"
   new_lineage_field: "lineage"
+  lineage_annotations: "defaults/lineages.tsv"
   host_field: "host"
   hosts_to_include: ["Human"]
   # List of date fields to standardize to ISO format YYYY-MM-DD
@@ -69,7 +69,9 @@ curate:
   # These date formats should use directives expected by datetime
   # See https://docs.python.org/3.9/library/datetime.html#strftime-and-strptime-format-codes
   expected_date_formats: ["%Y", "%Y-%m", "%Y-%m-%d"]
-  gisaid_location_field: "location"
+  gisaid_location_field: "Location"
+  location_annotations: "defaults/locations.tsv"
+  gisaid_location_rules: "defaults/gisaid_location_rules.tsv"
   titlecase:
     # List of string fields to titlecase
     fields: ["region", "country", "division", "location"]
@@ -92,7 +94,7 @@ curate:
   new_gender_field: "gender"
   # Path to the manual annotations file
   # The path should be relative to the ingest directory
-  annotations: "defaults/annotations.tsv"
+  final_annotations: "defaults/final_annotations.tsv"
   # The ID field in the metadata to use to merge the manual annotations
   annotations_id: "strain"
   # The ID field in the metadata to use as the sequence id in the output FASTA file

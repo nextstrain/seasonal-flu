@@ -4,49 +4,52 @@ Standardize lineage based on GISAID's subtype and lineage.
 """
 import argparse
 import re
-from sys import stdin
-from typing import Iterable
+import csv
+from pathlib import Path
+import sys
+from typing import Iterable, Dict
 from augur.io.json import dump_ndjson, load_ndjson
-from augur.io.print import print_err
 
+SCRIPT_NAME = Path(sys.argv[0]).stem
 
-# GISAID lineage patterns copied from nextstrain/fauna/vdb/flu_upload.py
-# <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+def print_err(*args):
+    print(f"[{SCRIPT_NAME}] ", *args, file=sys.stderr)
+
+UNKNOWN = "n/a" # value to use for unknown subtypes / lineages
+
 # Maps GISAID "Subtype" and "Lineage" fields to the standardized type, subtype, and lineage.
+# (matching will be performed case-insensitive). To summarise the underlying data you can run:
+# `cat data/gisaid.ndjson | jq -r '[.Subtype, .Lineage] | join(" :: ")' | sort  | uniq -c | sort -h`
+#
+# Originally copied from nextstrain/fauna/vdb/flu_upload.py <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L22-L44>
+# and edited to incorporate all known HA / NA subtypes. The gisaid lineage "seasonal" is ignored
+# as we don't use this to differentiate isolates in our pipeline. It's unclear why we first copied
+# (A) subtypes to the lineage field, but that's become the norm so it's preserved here.
+#
 # type    = virus type (i.e. A or B)
-# subtype = HxNx subtype
+# subtype = A viruses only -- "HxNx" subtype, or "Hx" or "Nx" if full genome not sequenced
 # lineage = standardized lineages used in our builds
 GISAID_LINEAGE_MAP = {
 #   (GISAID Subtype,  GISAID Lineage):    (type,   subtype,   lineage)
-    ('a',             ''):                ('a',    'n/a',     'n/a'),
+    # A-Type viruses
+    ('a',             ''):                ('a',    UNKNOWN,     UNKNOWN),
+    # The only gisaid lineage other than "seasonal" is "pdm09"
     ('a / h1n1',      'pdm09'):           ('a',    'h1n1',    'h1n1pdm'),
-    ('a / h1n2',      ''):                ('a',    'h1n2',    'n/a'),
-    ('a / h1n2',      'seasonal'):        ('a',    'h1n2',    'h1n2'),
-    ('a / h2n2',      ''):                ('a',    'h2n2',    'n/a'),
-    ('a / h3n2',      ''):                ('a',    'h3n2',    'h3n2'),
-    ('a / h3n2',      'seasonal'):        ('a',    'h3n2',    'h3n2'),
-    ('a / h3n3',      ''):                ('a',    'h3n3',    'n/a'),
-    ('a / h5n1',      ''):                ('a',    'h5n1',    'n/a'),
-    ('a / h5n6',      ''):                ('a',    'h5n6',    'n/a'),
-    ('a / h6n1',      ''):                ('a',    'h6n1',    'n/a'),
-    ('a / h7n1',      ''):                ('a',    'h7n1',    'n/a'),
-    ('a / h7n2',      ''):                ('a',    'h7n2',    'n/a'),
-    ('a / h7n3',      ''):                ('a',    'h7n3',    'n/a'),
-    ('a / h7n7',      ''):                ('a',    'h7n7',    'n/a'),
-    ('a / h7n9',      ''):                ('a',    'h7n9',    'n/a'),
-    ('a / h9n2',      ''):                ('a',    'h9n2',    'n/a'),
-    ('a / h10n7',     ''):                ('a',    'h10n7',   'n/a'),
-    ('a / h10n8',     ''):                ('a',    'h10n8',   'n/a'),
-    ('a / h11',       ''):                ('a',    'h11',     'n/a'),
-    ('b',             ''):                ('b',    'n/a',     'n/a'),
-    ('b / h0n0',      'victoria'):        ('b',    'n/a',     'vic'),
-    ('b / h0n0',      'yamagata'):        ('b',    'n/a',     'yam'),
-    ('b',             'victoria'):        ('b',    'n/a',     'vic'),
-    ('b',             'yamagata'):        ('b',    'n/a',     'yam'),
+    # Add all (A) HA / NA combinations
+    **{(f"a / h{HA_NUM}n{NA_NUM}", ''):   ('a',    f"h{HA_NUM}n{NA_NUM}",  f"h{HA_NUM}n{NA_NUM}") for HA_NUM in range(1, 19+1) for NA_NUM in range(1, 11+1)},
+    # and all (A) HA-only combinations (presumably as the NA wasn't sequenced?)
+    **{(f"a / h{HA_NUM}", ''):            ('a',    f"h{HA_NUM}",           f"h{HA_NUM}")          for HA_NUM in range(1, 19+1)},
+    # and vice-versa, presumably when the HA wasn't sequenced!
+    **{(f"a / n{NA_NUM}", ''):            ('a',    f"n{NA_NUM}",           f"n{NA_NUM}")          for NA_NUM in range(1, 11+1)},
+    # B-Type viruses
+    ('b',             ''):                ('b',    UNKNOWN,     UNKNOWN),
+    ('b',             'victoria'):        ('b',    UNKNOWN,     'vic'),
+    ('b',             'yamagata'):        ('b',    UNKNOWN,     'yam'),
+    # C-Type viruses (n=727 as of November 2025)
+    ('c',             ''):                ('c',    UNKNOWN,     UNKNOWN),
 }
 
 TBD_TYPE = "tbd"
-
 
 def standardize_record_lineage(records: Iterable[dict],
                                subtype_field: str,
@@ -54,7 +57,9 @@ def standardize_record_lineage(records: Iterable[dict],
                                note_field: str,
                                new_type_field: str,
                                new_subtype_field: str,
-                               new_lineage_field: str) -> Iterable:
+                               new_lineage_field: str,
+                               annotations_field: str,
+                               annotations: Dict[str, Dict[str,str]]) -> Iterable:
     """
     Match the GISAID *subtype_field* and *lineage_field* to the
     GISAID_LINEAGE_MAP to add standardized fields for type, subtype, and
@@ -65,11 +70,17 @@ def standardize_record_lineage(records: Iterable[dict],
     Based on nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/flu_upload.py#L462-L484>
     """
-    unknown_gisaid_types = set()
+    num_records_unmatched = 0
     for record in records:
         gisaid_subtype = record.get(subtype_field)
         gisaid_lineage = record.get(lineage_field)
+
+        # ignore "seasonal" lineage info as we don't use it (see earlier comment)
+        if gisaid_lineage == 'seasonal':
+            gisaid_lineage = ''
+
         gisaid_note = record.get(note_field)
+        annotations_key = record.get(annotations_field, None) if annotations else ''
 
         if gisaid_subtype is None:
             raise Exception(f"Records must have the expected GISAID subtype field: {subtype_field!r}")
@@ -77,29 +88,44 @@ def standardize_record_lineage(records: Iterable[dict],
         if gisaid_lineage is None:
             raise Exception(f"Records must have the expected GISAID lineage field: {lineage_field!r}")
 
+        if annotations_key is None:
+            raise Exception(f"Records must have the annotations field {annotations_field!r} if an annotations TSV is being used")
+
+
         if not gisaid_lineage.strip() and gisaid_note:
             gisaid_lineage = parse_lineage_from_note(gisaid_note)
 
         gisaid_types = (gisaid_subtype.lower(), gisaid_lineage.lower())
         lineage_match = GISAID_LINEAGE_MAP.get(gisaid_types)
 
-        # Records without clear subtype/lineage are marked as "tbd"
-        # e.g. sequences submitted with _only_ the HA segment
-        if lineage_match is None:
-            unknown_gisaid_types.add(gisaid_types)
-            lineage_match = (TBD_TYPE, TBD_TYPE, TBD_TYPE)
+        record[new_type_field]    = lineage_match[0] if lineage_match else TBD_TYPE
+        record[new_subtype_field] = lineage_match[1] if lineage_match else TBD_TYPE
+        record[new_lineage_field] = lineage_match[2] if lineage_match else TBD_TYPE
 
-        record[new_type_field]    = lineage_match[0]
-        record[new_subtype_field] = lineage_match[1]
-        record[new_lineage_field] = lineage_match[2]
+        # Apply hardcoded annotations last as they override everything. Doing so last
+        # allows us to print warnings when the annotation was unnecessary
+        if hardcoded:=annotations.get(annotations_key):
+            changes = False
+            if record[new_type_field]!=hardcoded['type']:
+                record[new_type_field] = hardcoded['type']
+                changes=True
+            if record[new_subtype_field]!=hardcoded['subtype']:
+                record[new_subtype_field] = hardcoded['subtype']
+                changes=True
+            if record[new_lineage_field]!=hardcoded['lineage']:
+                record[new_lineage_field] = hardcoded['lineage']
+                changes=True
+            if not changes:
+                print_err(f"Lineage annotation for {annotations_key!r} is unnecessary (no changes needed)")
+
+        elif not lineage_match:
+            print_err(f"no lineage match for {record['gisaid_epi_isl']} {record['gisaid_strain']!r}. Subtype: {gisaid_subtype!r} lineage {gisaid_lineage!r}")
+            num_records_unmatched+=1
 
         yield record
 
-    if len(unknown_gisaid_types):
-        print_err(
-            "WARNING: Records with the following GISAID subtype and lineages",
-            f"were marked as {TBD_TYPE!r}: {unknown_gisaid_types!r}"
-        )
+    if num_records_unmatched:
+        print_err(f"In total {num_records_unmatched:,} records were not matched against our set of known types/subtypes/lineages (see previous messages)")
 
 
 def parse_lineage_from_note(note: str) -> str:
@@ -125,6 +151,32 @@ def parse_lineage_from_note(note: str) -> str:
 
     return ""
 
+def read_annotations_tsv(fname):
+    # Based on augur curate's apply_record_annotations.py
+    # <https://github.com/nextstrain/augur/blob/58f8b1aea1c135f71796bc9fbd8fefe6bc9e4369/augur/curate/apply_record_annotations.py#L31C1-L41C70>
+    annotations = {}
+    with open(fname, 'r', newline='') as annotations_fh:
+        csv_reader = csv.reader(annotations_fh, delimiter='\t')
+        for row in csv_reader:
+            if not row or row[0].lstrip()[0] == '#':
+                    continue
+            elif len(row) != 2:
+                print_err("WARNING: Could not decode lineage annotation TSV line " + "\t".join(row))
+                continue
+            isl, data = row
+            # data format is type:subtype:lineage
+            parts = data.split('#')[0].rstrip().split('/')
+            if len(parts)!=3:
+                print_err("WARNING: Could not decode lineage annotation TSV line - ensure type/subtype/lineage formatting is correct. " + "\t".join(row))
+                continue
+            if isl in annotations:
+                print_err(f"ISL {isl} already seen in annotations TSV. Overwriting.")
+            annotations[isl] = {
+                'type': parts[0],
+                'subtype': parts[1] if parts[1] else UNKNOWN,
+                'lineage': parts[2],
+            }
+    return annotations
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
@@ -144,10 +196,19 @@ if __name__ == '__main__':
     parser.add_argument("--new-lineage-field", default="lineage",
         help="The name of the new field to add to the record with the lineage, " + \
              f"e.g. h1n1pdm. If subtype is unknown, will default to {TBD_TYPE!r}")
-
+    parser.add_argument("--annotations", metavar="TSV", 
+        help="Manually curated annotations TSV file. " +
+             "The TSV should have two columns, the first is the EPI ISL and " +
+             "the second defines the <type>:<subtype>:<lineage>. " +
+             "Lines starting with '#' are treated as comments. " +
+             "Any '#' after the field value are treated as comments.")
+    parser.add_argument("--annotations-field", default="gisaid_epi_isl",
+        help="The record field used match against the annotations TSV")
     args = parser.parse_args()
 
-    records = load_ndjson(stdin)
+    annotations = read_annotations_tsv(args.annotations) if args.annotations else {}
+
+    records = load_ndjson(sys.stdin)
     modified_records = standardize_record_lineage(
         records,
         args.subtype_field,
@@ -155,5 +216,7 @@ if __name__ == '__main__':
         args.note_field,
         args.new_type_field,
         args.new_subtype_field,
-        args.new_lineage_field)
+        args.new_lineage_field,
+        args.annotations_field,
+        annotations)
     dump_ndjson(modified_records)
