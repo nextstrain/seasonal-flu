@@ -23,6 +23,7 @@ from pathlib import Path
 from sys import stdin
 from textwrap import dedent
 from typing import Iterable
+from collections import defaultdict
 from augur.io.json import load_ndjson
 from augur.io.metadata import write_records_to_tsv
 from augur.io.print import print_err
@@ -41,6 +42,7 @@ SEGMENTS = [
 
 UNKNOWN_VALUE = "?"
 
+STATS:defaultdict[int,int] = defaultdict(int)
 
 def create_segment_fasta_files(output_dir: str, segments: list) -> dict:
     """
@@ -69,7 +71,8 @@ def update_records_and_output_sequences(records: Iterable,
     Updates the records with the expected segment metadata fields, where
     the <segment> field will be "True" if the sequence exists and
     `accession_<segment>` field will have the segment accession or "N/A" if
-    the sequence does not exist.
+    the sequence does not exist. Also adds a `n_segments` field with the count
+    of segments.
 
     Outputs the segment sequences to their corresponding FASTA files and yields
     the modified records if they have at least one segment sequence.
@@ -102,6 +105,8 @@ def update_records_and_output_sequences(records: Iterable,
                         f">{record_id}\n",
                         f"{sequence}\n"
                     ])
+        record['n_segments'] = output_sequences
+        STATS[output_sequences]+=1
 
         # Only keep metadata for records that have at least one segment sequence
         if output_sequences >= 1:
@@ -149,3 +154,10 @@ if __name__ == '__main__':
         Path(args.output_metadata).touch()
     else:
         write_records_to_tsv(chain([first_record], modified_records), args.output_metadata)
+
+    # Summary statistics (to STDERR)
+    print_err(f"Num records: {sum(STATS.values()):,}")
+    print_err("Num segments per record:")
+    print_err(f"0 segments: {STATS[0]:,} (records not written to metadata)")
+    for i in range(1, 8+1):
+        print_err(f"{i} segments: {STATS[i]:,}")

@@ -1,6 +1,34 @@
 #!/usr/bin/env python3
 """
-Standardizes GISAID strain names to our expected patterns.
+Standardizes GISAID strain names to our expected patterns. This is a rather complex
+process with many layers, and made more complex by the divergence of avian- and seasonal-flu
+in fauna. We now have a unified approach, but the complexity remains and one day it'd be
+great to simplify this. (Those sentences could apply across our influenza ingest pipeline!)
+
+
+We use the following approach to correct strain names:
+NOTE: For a strain name, we define the "parts" by splitting the name on '/'
+
+* fix_name
+
+    * Strain names are re-encoded to replace all accents with ? mark
+    
+    * The strain-replacements-file(s) are used to wholesale replace the name
+
+    * A little bit of pattern matching to replace substrings
+
+    * match parts against the location-replacements-file to correct spelling mistakes
+
+    * flu_fix_patterns
+        * A lot of very bespoke regexes
+
+    * If there are 4 parts:
+        * strip leading zeros from the 3rd & 4th parts
+        * Title case the 2nd part if it's all lower/upper case
+
+* Add on an egg-suffix if the passage category is egg
+
+* Adds the strain type ("A" or "B") as the first part in some situations
 """
 import argparse
 import csv
@@ -8,6 +36,7 @@ import re
 from pathlib import Path
 import sys
 from typing import Iterable, Optional
+from collections import defaultdict
 from augur.io.json import dump_ndjson, load_ndjson
 
 SCRIPT_NAME = Path(sys.argv[0]).stem
@@ -20,13 +49,25 @@ EGG_PASSAGE = "egg"
 EGG_SUFFIX = "-egg"
 EXPECTED_TYPES = {"a", "b"}
 
+observed_strains: defaultdict[str, list[tuple[str,str]]] = defaultdict(list)
+
+def is_seasonal_flu(lineage:str, host:str) -> bool:
+    """
+    Because the strain-name modifications had historically diverged between
+    seasonal-flu and avian-flu (in fauna), we need to know which modifications
+    to make. We try to use the same rule-sets wherever possible.
+
+    This relies on the lineages and hosts being assigned / fixed earlier in the
+    curate chain.
+    """
+    return host=='Human' and lineage in {'h3n2', 'h1n1pdm', 'vic', 'yam'}
 
 def standardize_record_strains(records: Iterable,
                                gisaid_strain_field: str,
                                passage_field: str,
                                type_field: str,
                                new_strain_field: str,
-                               strain_replacements_file: Optional[str],
+                               strain_replacements_files: list[str],
                                location_replacements_file: Optional[str]) -> Iterable:
     """
     Adds the *new_strain_field* to the *records*, with standardized strain name
@@ -34,10 +75,10 @@ def standardize_record_strains(records: Iterable,
 
     Yields the modified records.
     """
-    strain_replacements = {}
+    strain_replacements: dict[str,str] = {}
     location_replacements = {}
-    if strain_replacements_file:
-        strain_replacements = define_strain_fixes(strain_replacements_file)
+    for strain_replacements_file in strain_replacements_files:
+        strain_replacements = define_strain_fixes(strain_replacements_file, strain_replacements)
     if location_replacements_file:
         location_replacements = define_location_label_fixes(location_replacements_file)
 
@@ -46,18 +87,18 @@ def standardize_record_strains(records: Iterable,
         gisaid_strain = record.get(gisaid_strain_field)
         passage_category = record.get(passage_field)
         influenza_type = record.get(type_field)
-
+        seasonal = is_seasonal_flu(record['lineage'], record['host']) # nextstrain's definition of seasonal-flu
         if gisaid_strain is None:
             raise Exception(f"Records must have the expected GISAID strain field: {gisaid_strain_field!r}")
 
         if passage_category is None:
             raise Exception(f"Records must have the expected passage category field: {passage_field!r}")
 
-        new_strain = fix_name(gisaid_strain, strain_replacements, location_replacements)
+        new_strain = fix_name(gisaid_strain[:], strain_replacements, location_replacements, seasonal)
 
         # Mirrors the changes to the strain name in nextstrain/fauna/vdb/download.py
         # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/download.py#L326-L327>
-        if passage_category == EGG_PASSAGE:
+        if seasonal and passage_category == EGG_PASSAGE:
             new_strain += EGG_SUFFIX
 
         # Correct type prefix in strain name if it doesn't match the optional type field
@@ -73,11 +114,12 @@ def standardize_record_strains(records: Iterable,
                 new_strain = re.sub("^" + re.escape(strain_type), influenza_type.upper(), new_strain)
 
         record[new_strain_field] = new_strain
+        observed_strains[new_strain].append((record.get('gisaid_epi_isl', '[unknown EPI ISL]'), gisaid_strain))
 
         yield record
 
 
-def define_strain_fixes(fname: str) -> dict:
+def define_strain_fixes(fname: str, fix_whole_name:dict[str,str]) -> dict[str,str]:
     """
     Open strain name fixing files and define corresponding dictionaries
 
@@ -85,7 +127,6 @@ def define_strain_fixes(fname: str) -> dict:
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L142-L150>
     """
     reader = csv.DictReader(filter(lambda row: row[0]!='#', open(fname)), delimiter='\t')
-    fix_whole_name:dict[str,str] = {}
     for line in reader:
         old_name = line['label'].encode().decode('unicode-escape')
         new_name = line['fix']
@@ -124,31 +165,62 @@ def define_location_label_fixes(fname: str) -> dict:
     return label_to_fix
 
 
-def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict) -> str:
+def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict, seasonal:bool) -> str:
     """
     Fix strain names
 
     Modified from nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L256-L283>
+    including comparing against avian-flu which had diverged
+    <https://github.com/nextstrain/fauna/blob/8a389ad2acc15fd3ba306ef33b72220597514cb1/vdb/avian_flu_upload.py#L330-L367>
+
+    Note that avian-flu changed its behaviour over time, which makes it incredibly hard to
+    perfectly replicate what's on fauna as fauna represents a series of uploads which used
+    different versions of the name fixing:
+        * pre 2019-01-03 spaces were replaced with empty string, and afterwards with an underscore
+          <https://github.com/nextstrain/fauna/commit/36ea8386d7561c65e824579baa8f16bab2dd80cc>
+        * after 2019-11-21, underscores were replaced with empty strings, which essentially undoes
+          the above change but also drops underscores
+          <https://github.com/nextstrain/fauna/commit/cb7b6b045c37f95de61a36e3348568eb90defdbc>
+        * after 2019-11-26, hyphens were removed
+          <https://github.com/nextstrain/fauna/commit/2d1ff0a50d437ce3ecbe0765948485b3aca60e20>
     """
     # replace all accents with ? mark
     original_name = name.encode('ascii', 'replace').decode('unicode-escape')
-    # Replace whole strain names
-    name = replace_strain_name(original_name, fix_whole_name)
+    # Replace whole strain names via TSV lookups
+    name = fix_whole_name.get(original_name, original_name)
+
+
     # Reformat names like H1N1/Spain/PV-HUD-96039629/2025 to A/Spain/PV-HUD-96039629/2025
-    if re.match(r'(H1N1|H3N2)/([^/]+/[^/]+/[0-9]{4})', name):
-        match = re.match(r'(H1N1|H3N2)/([^/]+/[^/]+/[0-9]{4})', name)
+    if match:=re.match(r'(H1N1|H3N2)/([^/]+/[^/]+/[0-9]{4})', name):
         name = "A/" + match.group(2)
-    name = name.replace('H1N1', '').replace('H5N6', '').replace('H3N2', '').replace('Human', '')\
-        .replace('human', '').replace('//', '/').replace('.', '').replace(',', '').replace('&', '').replace(' ', '')\
-        .replace('\'', '').replace('>', '').replace('-like', '').replace('+', '')
+    # and similarly, drop the ends of strain names which detail the subtype, e.g. <name>(H7N9)
+    if match:=re.match(r'(.+)\(?H\dN\d\)?$', name):
+        name = match.group(1)
+
+    # Generic find-and-replace
+    name = name.replace('H1N1', '').replace('H5N6', '').replace('H3N2', '')\
+        .replace('Human', '').replace('human', '')\
+        .replace('//', '/').replace('.', '').replace(',', '').replace('&', '').replace(' ', '')\
+        .replace('\'', '').replace('>', '').replace('-like', '').replace('+', '')\
+        .replace('(Mixed)', '/Mixed')\
+        .replace('/H7N9/', '/')
+    name = name.lstrip('-').lstrip('_').lstrip(')').lstrip('(')
+    name = name.lstrip('-').rstrip('_').rstrip(')').rstrip('(')
+
+    if not seasonal:
+        name = name.replace('_','')
+
+    # For each "part" of the name, check against a location-fix TSV to correct
+    # geographical spelling mistakes / synonyms.
+    # TODO: why do we check all parts and not just the canonical "location" part
     split_name = name.split('/')
-    # check location labels in strain names for fixing
     for index, label in enumerate(split_name):
         if label.replace(' ', '').lower() in label_to_fix:
             split_name[index] = label_to_fix[label.replace(' ', '').lower()]
     name = '/'.join(split_name)
-    name = flu_fix_patterns(name)
+
+    name = flu_fix_patterns(name, seasonal)
 
     # Strip leading zeroes, change all capitalization location field to title case
     split_name = name.split('/')
@@ -161,23 +233,11 @@ def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict) -> str:
     return result_name
 
 
-def replace_strain_name(original_name: str, fixes: dict = {}) -> str:
-    """
-    return the new strain name that will replace the original
-
-    Modified from nextstrain/fauna/vdb/upload.py
-    <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/upload.py#L172-L179>
-    """
-    if original_name in fixes:
-        return fixes[original_name]
-    else:
-        return original_name
-
-
-def flu_fix_patterns(name: str) -> str:
+def flu_fix_patterns(name: str, seasonal: bool) -> str:
     """
     Modified from nextstrain/fauna/vdb/flu_upload.py
     <https://github.com/nextstrain/fauna/blob/3177b80bf010d9f75b449dbb400890af9bd920f8/vdb/flu_upload.py#L285-L368>
+    with comparison with the current state of the patterns currently in avian_flu_upload.py
     """
     # various name patterns that need to be fixed
     # capitalization of virus type
@@ -189,73 +249,73 @@ def flu_fix_patterns(name: str) -> str:
     # remove ending parentheses and their contents
     if re.match(r'([^(]+)[^)]+\)$', name):  # A/Eskisehir/359/2016 (109) -> A/Eskisehir/359/2016 ; A/South Australia/55/2014  IVR145  (14/232) -> A/South Australia/55/2014  IVR145
         name = re.match(r'([^(]+)[^)]+\)$', name).group(1)
-    # Add year info to these Hongkong sequences
-    if re.match(r'A/HongKong/H090-[0-9]{3}-V[0-9]$', name):  # A/HongKong/H090-750-V1 All confirmed from 2009
-        name = name + "/2009"
-    # Reformat names like A/NorthAmerica/Canada/NewBrunswick/NBPHLFLU03K-flu-MM00014R/2023 to A/NewBrunswick/NBPHLFLU03K-flu-MM00014R/2023
-    if re.match(r'([A|B]/)NorthAmerica/Canada/(NewBrunswick/[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)NorthAmerica/Canada/(NewBrunswick/[^/]+/[0-9]{4})', name)
-        name = match.group(1) + match.group(2)
-    # Reformat names like A/ABUDHABI/UAE/0015851/2023 to A/ABUDHABI/0015851/2023
-    if re.match(r'([A|B]/[^/]+/)UAE/([^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/[^/]+/)UAE/([^/]+/[0-9]{4})', name)
-        name = match.group(1) + match.group(2)
-    # Reformat names like A/St.Peterburg/CRIE/142/2024 to A/St.Peterburg/142/2024
-    if re.match(r'([A|B]/[^/]+/)CRIE/([^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/[^/]+/)CRIE/([^/]+/[0-9]{4})', name)
-        name = match.group(1) + match.group(2)
-    # Reformat names like A/Uganda/UVRI_NISS-UV-0736_2024 to A/Uganda/UVRI_NISS-UV-0736/2024
-    # and A/Uganda/UVRI_FTL2657_2024 to A/Uganda/UVRI_FTL2657/2024
-    if re.match(r'([A|B]/Uganda/UVRI_[^/^_]+)_(2024)', name):
-        match = re.match(r'([A|B]/Uganda/UVRI_[^/^_]+)_(2024)', name)
-        name = match.group(1) + '/' + match.group(2)
-    # Reformat names like A/La/EVTL-23435/2025 to A/Louisiana/EVTL-23435/2025
-    if re.match(r'([A|B]/)LA(/EVTL-[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)LA(/EVTL-[^/]+/[0-9]{4})', name)
-        name = match.group(1) + "Louisiana" + match.group(2)
-    # Reformat names like A/Unknown/DE-DHSS-871/2025 to A/UnitedStates/DE-DHSS-871/2025
-    if re.match(r'([A|B]/)Unknown(/DE-DHSS-[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)Unknown(/DE-DHSS-[^/]+/[0-9]{4})', name)
-        name = match.group(1) + "UnitedStates" + match.group(2)
-    # Reformat names like A/NJ/DE-DHSS-864/2025 to A/NewJersey/DE-DHSS-864/2025
-    if re.match(r'([A|B]/)NJ(/DE-DHSS-[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)NJ(/DE-DHSS-[^/]+/[0-9]{4})', name)
-        name = match.group(1) + "NewJersey" + match.group(2)
-    # Reformat names like A/FL/DE-DHSS-874/2025 to A/Florida/DE-DHSS-874/2025
-    if re.match(r'([A|B]/)FL(/DE-DHSS-[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)FL(/DE-DHSS-[^/]+/[0-9]{4})', name)
-        name = match.group(1) + "Florida" + match.group(2)
-    # Reformat names like A/AL/DE-DHSS-890/2025 to A/Alabama/DE-DHSS-890/2025
-    if re.match(r'([A|B]/)AL(/DE-DHSS-[^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/)AL(/DE-DHSS-[^/]+/[0-9]{4})', name)
-        name = match.group(1) + "Alabama" + match.group(2)
-    # Reformat names like A/Lyon/CHU/0241865678/2024 to A/Lyon/0241865678/2024
-    if re.match(r'([A|B]/Lyon/)CHU/([^/]+/[0-9]{4})', name):
-        match = re.match(r'([A|B]/Lyon/)CHU/([^/]+/[0-9]{4})', name)
-        name = match.group(1) + match.group(2)
-    # Reformat names like A/165/Hungary/2025 to A/Hungary/165/2025
-    if re.match(r'([A|B]/)([0-9]*/)Hungary/([0-9]{4})', name):
-        match = re.match(r'([A|B]/)([0-9]*/)Hungary/([0-9]{4})', name)
-        name = match.group(1) + "Hungary/" + match.group(2) + match.group(3)
-    # Add year info to these Sendai sequences
-    if re.match(r'A/Sendai/TU[0-9]{2}', name): # A/Sendai/TU08 All confirmed from 2010
-        name = name + "/2010"
-    # reformat names with clinical isolate in names, Philippines and Thailand
-    if re.match(r'([A|B]/)clinicalisolate(SA[0-9]+)([^/]+)(/[0-9]{4})', name):  #B/clinicalisolateSA116Philippines/2002 -> B/Philippines/SA116/2002
-        match = re.match(r'([A|B]/)clinicalisolate(SA[0-9]+)([^/]+)(/[0-9]{4})', name)
-        name = match.group(1) + match.group(3) + "/" + match.group(2) + match.group(4)
-    # reformat Ireland strain names
-    if re.match(r'([1-2]+)IRL([0-9]+)$', name):  # 12IRL26168 -> A/Ireland/26168/2012  (All sequences with same pattern are H3N2)
-        name = "A/Ireland/" + re.match(r'([1-2]+)IRL([0-9]+)$', name).group(2) + "/20" + re.match(r'([1-2]+)IRL([0-9]+)$', name).group(1)
-    # Remove info B/Vic strain info from name
-    if re.match(r'([\w\s\-/]+)(\(?)(B/Victoria/2/87|B/Victoria/2/1987)$', name):  # B/Finland/150/90 B/Victoria/2/1987 -> B/Finland/150/90
-        name = re.match(r'([\w\s\-/]+)(\(?)(B/Victoria/2/87|B/Victoria/2/1987)$', name).group(1)
-    # Separate location info from ID info in strain name
-    if re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name):  #A/Iceland183/2009  A/Baylor4A/1983  A/Beijing262/41/1994
-        name = re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name).group(1) + "/" + re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name).group(2)
-    # Remove characters after year info, associated with passage info but can parse that from passage field later
-    if re.match(r'([A|B]/[A-Za-z-]+/[A-Za-z0-9_-]+/[0-9]{4})(.)+$', name):  # B/California/12/2015BX59B A/Shanghai/11/1987/X99/highyieldingreassortant
-        name = re.match(r'([A|B]/[A-Za-z-]+/[A-Za-z0-9_-]+/[0-9]{4})(.)+$', name).group(1)
+    if seasonal:
+        if re.match(r'A/HongKong/H090-[0-9]{3}-V[0-9]$', name):  # A/HongKong/H090-750-V1 All confirmed from 2009
+            name = name + "/2009"
+        # Reformat names like A/NorthAmerica/Canada/NewBrunswick/NBPHLFLU03K-flu-MM00014R/2023 to A/NewBrunswick/NBPHLFLU03K-flu-MM00014R/2023
+        if re.match(r'([A|B]/)NorthAmerica/Canada/(NewBrunswick/[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)NorthAmerica/Canada/(NewBrunswick/[^/]+/[0-9]{4})', name)
+            name = match.group(1) + match.group(2)
+        # Reformat names like A/ABUDHABI/UAE/0015851/2023 to A/ABUDHABI/0015851/2023
+        if re.match(r'([A|B]/[^/]+/)UAE/([^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/[^/]+/)UAE/([^/]+/[0-9]{4})', name)
+            name = match.group(1) + match.group(2)
+        # Reformat names like A/St.Peterburg/CRIE/142/2024 to A/St.Peterburg/142/2024
+        if re.match(r'([A|B]/[^/]+/)CRIE/([^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/[^/]+/)CRIE/([^/]+/[0-9]{4})', name)
+            name = match.group(1) + match.group(2)
+        # Reformat names like A/Uganda/UVRI_NISS-UV-0736_2024 to A/Uganda/UVRI_NISS-UV-0736/2024
+        # and A/Uganda/UVRI_FTL2657_2024 to A/Uganda/UVRI_FTL2657/2024
+        if re.match(r'([A|B]/Uganda/UVRI_[^/^_]+)_(2024)', name):
+            match = re.match(r'([A|B]/Uganda/UVRI_[^/^_]+)_(2024)', name)
+            name = match.group(1) + '/' + match.group(2)
+        # Reformat names like A/La/EVTL-23435/2025 to A/Louisiana/EVTL-23435/2025
+        if re.match(r'([A|B]/)LA(/EVTL-[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)LA(/EVTL-[^/]+/[0-9]{4})', name)
+            name = match.group(1) + "Louisiana" + match.group(2)
+        # Reformat names like A/Unknown/DE-DHSS-871/2025 to A/UnitedStates/DE-DHSS-871/2025
+        if re.match(r'([A|B]/)Unknown(/DE-DHSS-[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)Unknown(/DE-DHSS-[^/]+/[0-9]{4})', name)
+            name = match.group(1) + "UnitedStates" + match.group(2)
+        # Reformat names like A/NJ/DE-DHSS-864/2025 to A/NewJersey/DE-DHSS-864/2025
+        if re.match(r'([A|B]/)NJ(/DE-DHSS-[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)NJ(/DE-DHSS-[^/]+/[0-9]{4})', name)
+            name = match.group(1) + "NewJersey" + match.group(2)
+        # Reformat names like A/FL/DE-DHSS-874/2025 to A/Florida/DE-DHSS-874/2025
+        if re.match(r'([A|B]/)FL(/DE-DHSS-[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)FL(/DE-DHSS-[^/]+/[0-9]{4})', name)
+            name = match.group(1) + "Florida" + match.group(2)
+        # Reformat names like A/AL/DE-DHSS-890/2025 to A/Alabama/DE-DHSS-890/2025
+        if re.match(r'([A|B]/)AL(/DE-DHSS-[^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/)AL(/DE-DHSS-[^/]+/[0-9]{4})', name)
+            name = match.group(1) + "Alabama" + match.group(2)
+        # Reformat names like A/Lyon/CHU/0241865678/2024 to A/Lyon/0241865678/2024
+        if re.match(r'([A|B]/Lyon/)CHU/([^/]+/[0-9]{4})', name):
+            match = re.match(r'([A|B]/Lyon/)CHU/([^/]+/[0-9]{4})', name)
+            name = match.group(1) + match.group(2)
+        # Reformat names like A/165/Hungary/2025 to A/Hungary/165/2025
+        if re.match(r'([A|B]/)([0-9]*/)Hungary/([0-9]{4})', name):
+            match = re.match(r'([A|B]/)([0-9]*/)Hungary/([0-9]{4})', name)
+            name = match.group(1) + "Hungary/" + match.group(2) + match.group(3)
+        # Add year info to these Sendai sequences
+        if re.match(r'A/Sendai/TU[0-9]{2}', name): # A/Sendai/TU08 All confirmed from 2010
+            name = name + "/2010"
+        # reformat names with clinical isolate in names, Philippines and Thailand
+        if re.match(r'([A|B]/)clinicalisolate(SA[0-9]+)([^/]+)(/[0-9]{4})', name):  #B/clinicalisolateSA116Philippines/2002 -> B/Philippines/SA116/2002
+            match = re.match(r'([A|B]/)clinicalisolate(SA[0-9]+)([^/]+)(/[0-9]{4})', name)
+            name = match.group(1) + match.group(3) + "/" + match.group(2) + match.group(4)
+        # reformat Ireland strain names
+        if re.match(r'([1-2]+)IRL([0-9]+)$', name):  # 12IRL26168 -> A/Ireland/26168/2012  (All sequences with same pattern are H3N2)
+            name = "A/Ireland/" + re.match(r'([1-2]+)IRL([0-9]+)$', name).group(2) + "/20" + re.match(r'([1-2]+)IRL([0-9]+)$', name).group(1)
+        # Remove info B/Vic strain info from name
+        if re.match(r'([\w\s\-/]+)(\(?)(B/Victoria/2/87|B/Victoria/2/1987)$', name):  # B/Finland/150/90 B/Victoria/2/1987 -> B/Finland/150/90
+            name = re.match(r'([\w\s\-/]+)(\(?)(B/Victoria/2/87|B/Victoria/2/1987)$', name).group(1)
+        # Separate location info from ID info in strain name
+        if re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name):  #A/Iceland183/2009  A/Baylor4A/1983  A/Beijing262/41/1994
+            name = re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name).group(1) + "/" + re.match(r'([A|B]/[^0-9/]+)([0-9]+[A-Za-z]*/[0-9/]*[0-9]{2,4})$', name).group(2)
+        # Remove characters after year info, associated with passage info but can parse that from passage field later
+        if re.match(r'([A|B]/[A-Za-z-]+/[A-Za-z0-9_-]+/[0-9]{4})(.)+$', name):  # B/California/12/2015BX59B A/Shanghai/11/1987/X99/highyieldingreassortant
+            name = re.match(r'([A|B]/[A-Za-z-]+/[A-Za-z0-9_-]+/[0-9]{4})(.)+$', name).group(1)
     # Strip trailing slashes
     name = name.rstrip('/')  # A/NorthernTerritory/60/68//  A/Paris/455/2015/
     # Change two digit years to four digit years
@@ -266,6 +326,7 @@ def flu_fix_patterns(name: str) -> str:
         else:
             name = re.match(r'([\w\s\-/]+)/([0-9][0-9])$', name).group(1) + "/19" + year
     return name
+
 
 
 if __name__ == '__main__':
@@ -280,8 +341,8 @@ if __name__ == '__main__':
         help="The optional record field containing the Influenza type (e.g. a or b).")
     parser.add_argument("--new-strain-field", default="strain",
         help="The name of the new field to add to the record with the standardized strain name")
-    parser.add_argument("--strain-replacements",
-        help="A TSV file of full strain name replacements. " + \
+    parser.add_argument("--strain-replacements", nargs="+", metavar="TSV",
+        help="One or more TSV files of full strain name replacements. " + \
              "Strains in the 'label' column are replaced with the strains in the 'fix' column.")
     parser.add_argument("--location-replacements",
         help="A TSV file of location label replacements in strain names. " + \
@@ -299,3 +360,11 @@ if __name__ == '__main__':
         args.strain_replacements,
         args.location_replacements)
     dump_ndjson(modified_records)
+
+    # we kept a copy of strain-name maps in observed_strains, so report any duplicates here
+    duplicates = set()
+    for strain_name, records in observed_strains.items():
+        if len(records)>1:
+            duplicates.add(strain_name)
+    if len(duplicates):
+        print_err(f"{len(duplicates):,} duplicate strain names (after correction)")
