@@ -18,10 +18,10 @@ def all_processed_gisaid_pairs(wildcards):
 rule upload_all:
     input:
         ndjson="results/upload/gisaid.ndjson.upload",
-        metadata=expand("results/upload/{lineage}/metadata.tsv.upload",
-                        lineage=config["lineages"]),
-        sequences=expand("results/upload/{lineage}/{segment}.fasta.upload",
-                         lineage=config["lineages"],
+        metadata=expand("results/upload/{dataset}/metadata.tsv.upload",
+                        dataset=list(config['filtering'].keys())),
+        sequences=expand("results/upload/{dataset}/{segment}.fasta.upload",
+                         dataset=list(config['filtering'].keys()),
                          segment=config["segments"]),
         mv_processed=all_processed_gisaid_pairs,
 
@@ -73,9 +73,9 @@ rule mv_processed_gisaid_pair:
 
 rule upload_metadata:
     input:
-        metadata="results/{lineage}/metadata.tsv",
+        metadata="results/{dataset}/metadata.tsv",
     output:
-        flag="results/upload/{lineage}/metadata.tsv.upload",
+        flag="results/upload/{dataset}/metadata.tsv.upload",
     params:
         s3_dst=config["s3_dst"],
     shell:
@@ -83,16 +83,16 @@ rule upload_metadata:
         ./vendored/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
-            {params.s3_dst:q}/{wildcards.lineage}/metadata.tsv.xz \
+            {params.s3_dst:q}/{wildcards.dataset}/metadata.tsv.xz \
             2>&1 | tee {output.flag:q}
         """
 
 
 rule upload_sequences:
     input:
-        sequences="results/{lineage}/{segment}.fasta",
+        sequences="results/{dataset}/{segment}.fasta",
     output:
-        flag="results/upload/{lineage}/{segment}.fasta.upload",
+        flag="results/upload/{dataset}/{segment}.fasta.upload",
     params:
         s3_dst=config["s3_dst"],
     shell:
@@ -100,6 +100,6 @@ rule upload_sequences:
         ./vendored/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
-            {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/sequences.fasta.xz \
+            {params.s3_dst:q}/{wildcards.dataset}/{wildcards.segment}/sequences.fasta.xz \
             2>&1 | tee {output.flag:q}
         """
