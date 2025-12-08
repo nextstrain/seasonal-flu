@@ -1,0 +1,83 @@
+include: "../../rules/remote_files.smk"
+
+import os
+configfile: os.path.join(workflow.basedir, "config.yaml")
+
+print(f"{config=}")
+
+rule all:
+    input:
+        files = [f"results/strain-name-matching/{d}/{f}" for d in config['strain-lists'] for f in config['strain-lists'][d]]
+
+
+rule metadata_strains:
+    input:
+        "results/{dataset}/metadata.tsv",
+    output:
+        "results/strain-name-matching/{dataset}/metadata.txt"
+    run:
+        from augur.io import read_metadata
+        m = read_metadata(input[0])
+        with open(output[0], 'w') as fh:
+            print("\n".join(m.index.tolist()), file=fh)
+
+rule compute_strain_maps_via_epi_isl_lookup:
+    """
+    Computes maps of (old) fauna strain names to (new) curated strain names, where possible.
+    Fauna inputs via (e.g.) "aws s3 cp s3://nextstrain-data-private/files/workflows/seasonal-flu/vic/metadata.tsv
+.xz - | xz -c -d > data/vic/metadata.tsv"
+    """
+    input:
+        fauna=lambda w: config['strain-maps'][w.dataset],
+        curated="data/curated_gisaid.ndjson",   # hardcoded
+    output:
+        tsv = "results/strain-name-matching/{dataset}/strain-name-map.tsv"
+    wildcard_constraints:
+        dataset= "h3n2|h1n1pdm|vic|yam"
+    shell:
+        """
+        ./scripts/match-strain-names.py \
+            --original-metadata {input.fauna} \
+            --new-metadata {input.curated} \
+            --changed {output.tsv}
+        """
+
+rule compute_strain_maps_via_avian_flu_diff:
+    """
+    Computes maps of (old) fauna strain names to (new) curated strain names, where possible.
+    """
+    input:
+        fauna=lambda w: config['strain-maps'][w.dataset],
+        curated="data/avian-flu/curated_gisaid.ndjson",   # hardcoded
+    output:
+        tsv = "results/strain-name-matching/{dataset}/strain-name-map.tsv"
+    wildcard_constraints:
+        dataset= "avian-flu"
+    shell:
+        """
+        ./scripts/diff-avian-flu.py \
+            --truth {input.fauna} \
+            --query {input.curated} \
+            --output-strain-map {output.tsv}
+        """
+
+def strain_map(wildcards):
+    if config['strain-maps'].get(wildcards.dataset, False):
+        return "results/strain-name-matching/{dataset}/strain-name-map.tsv"
+    return []   
+
+rule match_strains:
+    input:
+        metadata="results/strain-name-matching/{dataset}/metadata.txt",
+        strains=lambda w: path_or_url(config['strain-lists'][w.dataset][w.file_type]),
+        strain_map_tsv=strain_map,
+    output:
+        strains="results/strain-name-matching/{dataset}/{file_type}",
+    shell:
+        """
+        ./scripts/strain-name-fuzzer.py \
+            --curated-strains {input.metadata:q} \
+            --query-strains {input.strains:q} \
+            --strain-map {input.strain_map_tsv:q} \
+            > {output.strains:q}
+        """
