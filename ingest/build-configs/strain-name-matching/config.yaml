@@ -1,0 +1,42 @@
+
+strain-maps:
+    # The value here points to the FAUNA data
+    h1n1pdm: "../data/{dataset}/metadata.tsv"
+    h3n2: "../data/{dataset}/metadata.tsv"
+    vic: "../data/{dataset}/metadata.tsv"
+    yam: "../data/{dataset}/metadata.tsv"
+    avian-flu: "targets/avian-flu-fauna-ha.tsv"
+
+
+strain-lists:
+    h3n2:
+        "outliers.txt": "../config/h3n2/outliers.txt"
+        "reference_strains.txt": "../config/h3n2/reference_strains.txt"
+        "ha_prioritised_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
+
+    vic:
+        "outliers.txt": "../config/vic/outliers.txt"
+        "reference_strains.txt": "../config/vic/reference_strains.txt"
+
+    yam:
+        "outliers.txt": "../config/yam/outliers.txt"
+        "reference_strains.txt": "../config/yam/reference_strains.txt"
+
+    h1n1pdm:
+        "outliers.txt": "../config/h1n1pdm/outliers.txt"
+        "reference_strains.txt": "../config/h1n1pdm/reference_strains.txt"
+
+    avian-flu:
+        h5n1_dropped_strains_h5n1.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/dropped_strains_h5n1.txt
+        h5n1_include_strains_h5n1_2y.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/include_strains_h5n1_2y.txt
+        h5n1_include_strains_h5n1_all-time.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/include_strains_h5n1_all-time.txt
+
+        h5nx_dropped_strains_h5nx.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/dropped_strains_h5nx.txt
+        h5nx_include_strains_h5nx_2y.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/include_strains_h5nx_2y.txt
+        h5nx_include_strains_h5nx_all-time.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/include_strains_h5nx_all-time.txt
+
+        h7n9_dropped_strains_h7n9.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h7n9/dropped_strains_h7n9.txt
+        h7n9_include_strains_h7n9_all-time.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h7n9/include_strains_h7n9_all-time.txt
+
+        h9n2_dropped_strains_h9n2.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h9n2/dropped_strains_h9n2.txt
+        h9n2_include_strains_h9n2_all-time.txt: https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h9n2/include_strains_h9n2_all-time.txt

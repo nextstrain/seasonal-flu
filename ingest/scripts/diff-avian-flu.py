@@ -435,6 +435,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--truth", required=True, metavar="FILE", help="Source of truth file (TSV)")
     parser.add_argument("--query", required=True, metavar="FILE", help="Query file (NDJSON )")
+    parser.add_argument("--output-strain-map", required=False, metavar="FILE", help="Output a map of strain names (FAUNA -> NEW)")
 
     args = parser.parse_args()
 
@@ -453,6 +454,16 @@ if __name__ == '__main__':
     print("\nConsidering strain name matches (lowecase, no spaces comparisons)")
     remap_via_simplified_strain(missing_keys, added_keys, truth_records, query_records)
     (truth_keys, query_keys, missing_keys, added_keys, common_keys) = compare_records(truth_records, query_records)
+
+    if args.output_strain_map:
+        print(f"\nWriting out strain map of these {len(common_keys)} matches if the keys differ")
+        with open(args.output_strain_map, 'w') as fh:
+            for key in common_keys:
+                truth_strain = truth_records[key]['strain'] # FAUNA
+                query_strain = query_records[key]['strain'] # CURATED NDJSON
+                if truth_strain!=query_strain:
+                    print(f"{truth_strain}\t{query_strain}", file=fh)
+        print(f"DONE.")
 
 
     print()
