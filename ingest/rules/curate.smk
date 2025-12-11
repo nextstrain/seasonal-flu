@@ -287,6 +287,7 @@ def metadata_fields(wildcards) -> str:
             segment,
             f"accession_{segment}",
         ])
+    metadata_columns.append("n_segments")
     return ",".join(metadata_columns)
 
 

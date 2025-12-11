@@ -105,9 +105,16 @@ def compare_records(truth_record, query_record):
 
 def remove_sequence(record):
     """Remove the sequence string (ATCGs) to save memory"""
-    for s in record.get('sequences', []):
-        if 'sequence' in s:
-            del s['sequence']
+    sequences = record.get('sequences')
+    if isinstance(sequences, list):
+        for s in sequences:
+            if 'sequence' in s:
+                del s['sequence']
+    elif isinstance(sequences, dict):
+        for segment, seqs in sequences.items():
+            for s in seqs:
+                if 'sequence' in s:
+                    del s['sequence']
     return record
 
 if __name__ == '__main__':
