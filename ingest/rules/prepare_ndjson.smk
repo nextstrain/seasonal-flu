@@ -24,6 +24,10 @@ rule link_gisaid_metadata_and_fasta:
     output:
         ndjson=temp("data/{gisaid_pair}.ndjson.zst"),
     log: "logs/link_gisaid_metadata_and_fasta/{gisaid_pair}.txt"
+    # Give this rule priority so that the automated workflow will
+    # create the compressed NDJSON + rm decompressed XLS/FASTA before
+    # decompressing other pairs of files.
+    priority: 50
     shell:
         r"""
         (./scripts/link-gisaid-metadata-and-fasta \
