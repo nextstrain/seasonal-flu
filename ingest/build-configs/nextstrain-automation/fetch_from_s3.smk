@@ -10,13 +10,13 @@ rule fetch_gisaid_ndjson:
     If it doesn't exist, then just create an empty file.
     """
     output:
-        ndjson=temp("data/gisaid_cache.ndjson"),
+        ndjson=temp("data/gisaid_cache.ndjson.zst"),
     params:
         s3_file=f"{config['s3_src']}/gisaid.ndjson.zst",
     shell:
         r"""
         if $(./vendored/s3-object-exists {params.s3_file:q}); then
-            ./vendored/download-from-s3 {params.s3_file:q} {output.ndjson:q}
+            aws s3 cp {params.s3_file:q} {output.ndjson:q}
         else
             echo "{params.s3_file:q} does not exist, creating empty file."
             touch {output.ndjson:q}

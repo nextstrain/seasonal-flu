@@ -3,7 +3,7 @@ This part of the workflow handles the curation of data from GISAID.
 
 REQUIRED INPUTS:
 
-    ndjson      = data/gisaid.ndjson
+    ndjson      = data/gisaid.ndjson.zst
 
 OUTPUTS:
 
@@ -41,7 +41,7 @@ def format_field_map(field_map: dict[str, str]) -> str:
 
 rule curate:
     input:
-        sequences_ndjson="data/gisaid.ndjson",
+        sequences_ndjson="data/gisaid.ndjson.zst",
         lineage_annotations=config["curate"]["lineage_annotations"],
         strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
@@ -82,7 +82,7 @@ rule curate:
         annotations_id=config["curate"]["annotations_id"],
     shell:
         r"""
-        (cat {input.sequences_ndjson:q} \
+        (zstdcat {input.sequences_ndjson:q} \
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
