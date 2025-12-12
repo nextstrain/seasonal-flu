@@ -16,6 +16,13 @@ on:
         description: "Specific container image to use for build (will override the default of `nextstrain build`)"
         required: false
         type: string
+      runtime:
+        description: "Nextstrain runtime"
+        type: choice
+        default: "docker"
+        options:
+          - "docker"
+          - "aws-batch"
 
 jobs:
   ingest:
@@ -24,7 +31,7 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
-      runtime: docker
+      runtime: ${{ inputs.runtime }}
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
       run: |
