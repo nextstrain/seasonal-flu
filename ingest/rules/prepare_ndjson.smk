@@ -28,11 +28,14 @@ rule link_gisaid_metadata_and_fasta:
     # create the compressed NDJSON + rm decompressed XLS/FASTA before
     # decompressing other pairs of files.
     priority: 50
+    params:
+        fasta_fields=["segment_accession", "Submitting_Lab", "Originating_Lab"],
     shell:
         r"""
         (./scripts/link-gisaid-metadata-and-fasta \
             --metadata {input.metadata:q} \
             --sequences {input.sequences:q} \
+            --fasta-fields {params.fasta_fields:q} \
             | zstd -T0 -c > {output.ndjson:q}) 2> {log:q}
         """
 
