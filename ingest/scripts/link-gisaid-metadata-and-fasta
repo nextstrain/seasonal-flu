@@ -77,11 +77,17 @@ SEGMENT_COLUMNS = {
 
 
 def link_metadata_and_sequences(metadata: Iterable[dict],
-                                sequences: pyfastx.Fasta) -> Iterable[dict]:
+                                sequences: pyfastx.Fasta,
+                                fasta_fields: Optional[list[str]]) -> Iterable[dict]:
     """
     Link records in the provided *metadata* with segment sequences in the
     provided *sequences*. Drops the segment fields and adds a "sequences"
     field, which is an array of all of the segments.
+
+    If *fasta_fields* are provided, then will try to parse the fields from
+    the `sequence.description`. Verifies the field values for segments linked
+    to the same metadata record are all the same and replaces the metadata
+    record field with the new values.
     """
     records_without_accessions = 0
     records_without_sequences = 0
@@ -100,6 +106,7 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                 "The expected `SEGMENTS` or `SEGMENT_COLUMNS` might need to be updated."
 
         record_seqs = {}
+        seq_metadata = {}
         unmatched_accessions = defaultdict(list)
         unmatched_sequences = defaultdict(list)
         for segment, segment_column in SEGMENT_COLUMNS.items():
@@ -107,11 +114,13 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
             if segment_ids := linked_record.pop(segment_column):
                 for segment_id in segment_ids.split(","):
                     if accession := parse_segment_accession(segment_id):
-                        if sequence := get_segment_sequence(sequences, accession):
+                        if sequence := get_sequence_record(sequences, accession):
                             record_seqs[segment].append({
                                 "accession": accession,
-                                "sequence": sequence
+                                "sequence": str(sequence.seq).upper()
                             })
+                            if fasta_fields:
+                                seq_metadata[accession] = parse_sequence_fields(sequence, fasta_fields)
                         else:
                             unmatched_sequences[segment].append(accession)
                     else:
@@ -130,6 +139,10 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                 f"for the following segment accessions: {unmatched_sequences}"
             )
             records_without_sequences += 1
+
+        if seq_metadata:
+            overwrite_metadata = verify_overwrite_metadata(seq_metadata)
+            linked_record.update(overwrite_metadata)
 
         linked_record["sequences"] = record_seqs
         total_records += 1
@@ -158,9 +171,9 @@ def parse_segment_accession(segment_id: str) -> Optional[str]:
     return accession
 
 
-def get_segment_sequence(sequences: pyfastx.Fasta, accession: str) -> Optional[str]:
+def get_sequence_record(sequences: pyfastx.Fasta, accession: str) -> Optional[pyfastx.Sequence]:
     """
-    Gets the sequence matching the provided *accession* from the indexed
+    Gets the sequence record matching the provided *accession* from the indexed
     *sequences. If there is not matching sequence, returns None.
     """
     sequence = None
@@ -168,14 +181,42 @@ def get_segment_sequence(sequences: pyfastx.Fasta, accession: str) -> Optional[s
     # try/except was consistently faster than checking accession is in sequences
     #   -Jover, 11 February 2025
     try:
-        sequence_record = sequences[accession]
+        sequence = sequences[accession]
     except KeyError:
         pass
-    else:
-        sequence = str(sequence_record.seq).upper()
 
     return sequence
 
+
+def parse_sequence_fields(sequence: pyfastx.Sequence, fields: list[str]) -> dict:
+    """
+    Parse *fields* from the sequence description, where the description is
+    separated by `|`.
+    """
+    field_values = sequence.description.split("|")
+    assert len(field_values) == len(fields), \
+        f"Expected {len(fields)!r} but only found {len(field_values)!r} in description for {sequence.name}"
+    return dict(zip(fields, field_values))
+
+
+def verify_overwrite_metadata(seq_metadata: dict) -> dict:
+    """
+    Verify the seq_metadata match across all accessions for each field.
+    Expects *seq_metadata* to be formatted as
+    {
+        <accession>: {
+            <field>: <field_value>
+        },
+        ...
+    }
+    """
+    overwrite_metadata = {}
+    for accession, metadata in seq_metadata.items():
+        for field, field_value in metadata.items():
+            # TODO: confirm all accessions have the same field value
+            overwrite_metadata[field] = field_value
+    return overwrite_metadata
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
@@ -191,9 +232,17 @@ if __name__ == '__main__':
 
     parser.add_argument("--sequences", metavar="<fasta>",
         help=dedent(f"""\
-            GISAID EpiFlu FASTA file, where the headers should only be the
-            sequence accession. This is the “DNA Accession no.” field in the
-            GISAID "Sequences (DNA) as FASTA" download options.
+            GISAID EpiFlu FASTA file, where the first field in the headers
+            should be the sequence accession. This is the “DNA Accession no.”
+            field in the GISAID "Sequences (DNA) as FASTA" download options.
+            """))
+
+    parser.add_argument("--fasta-fields", required=False, nargs="+",
+        help=dedent(f"""\
+            Names of extra fields in the FASTA header after the segment
+            accession. If provided, these fields will overwrite the fields from
+            the <xls> file after confirming that all segments of the same
+            {RECORD_ID_COLUMN} have the same values per field.
             """))
 
     args = parser.parse_args()
@@ -213,7 +262,7 @@ if __name__ == '__main__':
         pass
 
     sequences = pyfastx.Fasta(args.sequences)
-    linked_records = link_metadata_and_sequences(metadata, sequences)
+    linked_records = link_metadata_and_sequences(metadata, sequences, args.fasta_fields)
     dump_ndjson(linked_records)
 
     # Remove Pyfastx index to save disk space
