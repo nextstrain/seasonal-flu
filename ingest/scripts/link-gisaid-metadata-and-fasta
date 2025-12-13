@@ -107,7 +107,7 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
             if segment_ids := linked_record.pop(segment_column):
                 for segment_id in segment_ids.split(","):
                     if accession := parse_segment_accession(segment_id):
-                        if sequence := get_segment_sequence(sequences, record_id, segment, accession):
+                        if sequence := get_segment_sequence(sequences, accession):
                             record_seqs[segment].append({
                                 "accession": accession,
                                 "sequence": sequence
@@ -158,8 +158,7 @@ def parse_segment_accession(segment_id: str) -> Optional[str]:
     return accession
 
 
-def get_segment_sequence(sequences: pyfastx.Fasta, record_id: str,
-                         segment: str, accession: str) -> Optional[str]:
+def get_segment_sequence(sequences: pyfastx.Fasta, accession: str) -> Optional[str]:
     """
     Gets the sequence matching the provided *accession* from the indexed
     *sequences. If there is not matching sequence, returns None.
