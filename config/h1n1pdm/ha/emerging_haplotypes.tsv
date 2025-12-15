@@ -2,7 +2,11 @@ haplotype	gene	site	alt
 C.1.9	clade	C.1.9
 C.1.9.3	clade	C.1.9.3
 D.3.1	clade	D.3.1
+
+D.3.1:270A	clade	D.3.1
+D.3.1:270A	HA1	270	A
+
 D.3.1.1	clade	D.3.1.1
 
-D.3.1:157L	clade	D.3.1
-D.3.1:157L	HA1	157	L
+D.3.1.1:205K	clade	D.3.1.1
+D.3.1.1:205K	HA1	205	K
