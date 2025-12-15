@@ -7,10 +7,27 @@ To save memory, the sequences themselves are removed and thus not compared.
 """
 
 import argparse
+import io
 import json
 import sys
+import zstandard as zstd
 from augur.io.json import load_ndjson
 from augur.io.print import print_err
+
+
+def open_file(file_path):
+    """
+    Open a file, decompressing with zstd if it has a .zst extension.
+    Returns a text-mode file handle.
+    """
+    if file_path.endswith('.zst'):
+        dctx = zstd.ZstdDecompressor()
+        fh = open(file_path, 'rb')
+        reader = dctx.stream_reader(fh)
+        # Wrap in TextIOWrapper to get text mode
+        return io.TextIOWrapper(reader, encoding='utf-8')
+    else:
+        return open(file_path, 'r')
 
 
 def deep_diff(truth_val, query_val, path=""):
@@ -123,12 +140,12 @@ if __name__ == '__main__':
     parser.add_argument("--query", required=True, metavar="NDJSON", help="Query NDJSON")
     args = parser.parse_args()
 
-    with open(args.truth) as fh:
+    with open_file(args.truth) as fh:
         print_err("Loading the entire truth NDJSON into memory...")
         truth_records = {record['gisaid_epi_isl']: remove_sequence(record) for record in load_ndjson(fh)}
         truth_keys = set(truth_records.keys())
 
-    fh = open(args.query)
+    fh = open_file(args.query)
     query_records = load_ndjson(fh) # generator
     query_keys = set()
 
