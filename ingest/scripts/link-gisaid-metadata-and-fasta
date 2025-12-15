@@ -216,3 +216,6 @@ if __name__ == '__main__':
     sequences = pyfastx.Fasta(args.sequences)
     linked_records = link_metadata_and_sequences(metadata, sequences)
     dump_ndjson(linked_records)
+
+    # Remove Pyfastx index to save disk space
+    os.remove(f"{args.sequences}.fxi")

@@ -12,7 +12,7 @@ INPUTS:
 
 OUTPUTS:
 
-    ndjson      = data/gisaid.ndjson
+    ndjson      = data/gisaid.ndjson.zst
 
 """
 
@@ -22,15 +22,18 @@ rule link_gisaid_metadata_and_fasta:
         metadata="data/{gisaid_pair}-metadata.xls",
         sequences="data/{gisaid_pair}-sequences.fasta",
     output:
-        ndjson=temp("data/{gisaid_pair}.ndjson"),
+        ndjson=temp("data/{gisaid_pair}.ndjson.zst"),
     log: "logs/link_gisaid_metadata_and_fasta/{gisaid_pair}.txt"
+    # Give this rule priority so that the automated workflow will
+    # create the compressed NDJSON + rm decompressed XLS/FASTA before
+    # decompressing other pairs of files.
+    priority: 50
     shell:
         r"""
-        ./scripts/link-gisaid-metadata-and-fasta \
+        (./scripts/link-gisaid-metadata-and-fasta \
             --metadata {input.metadata:q} \
             --sequences {input.sequences:q} \
-            > {output.ndjson:q} \
-            2> {log:q}
+            | zstd -T0 -c > {output.ndjson:q}) 2> {log:q}
         """
 
 
@@ -57,21 +60,21 @@ def aggregate_gisaid_ndjsons(wildcards):
 
     assert len(GISAID_PAIRS), "No GISAID metadata and sequences inputs were found"
 
-    return expand("data/{gisaid_pair}.ndjson", gisaid_pair=GISAID_PAIRS)
+    return expand("data/{gisaid_pair}.ndjson.zst", gisaid_pair=GISAID_PAIRS)
 
 
 rule concatenate_gisaid_ndjsons:
     input:
         ndjsons=aggregate_gisaid_ndjsons,
     output:
-        ndjson=temp("data/gisaid.ndjson"),
+        ndjson=temp("data/gisaid.ndjson.zst"),
     params:
         gisaid_id_field=config["gisaid_id_field"],
     log: "logs/concatenate_gisaid_ndjsons.txt"
     shell:
         r"""
-        (cat {input.ndjsons:q} \
+        (zstdcat {input.ndjsons:q} \
             | ./scripts/dedup-by-gisaid-id \
                 --id-field {params.gisaid_id_field:q} \
-            > {output.ndjson:q}) 2> {log:q}
+            | zstd -T0 -c > {output.ndjson:q}) 2> {log:q}
         """
