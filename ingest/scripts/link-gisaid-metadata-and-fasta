@@ -74,6 +74,55 @@ SEGMENT_COLUMNS = {
     segment: f"{segment.upper()} Segment_Id"
     for segment in SEGMENTS
 }
+ADDITIONAL_METADATA_COLUMNS = {
+    "Isolate_Name",
+    "Subtype",
+    "Genotype",
+    "Lineage",
+    "Clade",
+    "Pathogenicity",
+    "Passage_History",
+    "Location",
+    "Host",
+    "Isolate_Submitter",
+    "Submitting_Lab",
+    "Submitting_Sample_Id",
+    "Authors",
+    "Publication",
+    "Originating_Lab",
+    "Originating_Sample_Id",
+    "Collection_Date",
+    "Note",
+    "Update_Date",
+    "Submission_Date",
+    "Antigen_Character",
+    "Animal_Vaccin_Product",
+    "Adamantanes_Resistance_geno",
+    "Oseltamivir_Resistance_geno",
+    "Zanamivir_Resistance_geno",
+    "Peramivir_Resistance_geno",
+    "Other_Resistance_geno",
+    "Adamantanes_Resistance_pheno",
+    "Oseltamivir_Resistance_pheno",
+    "Zanamivir_Resistance_pheno",
+    "Peramivir_Resistance_pheno",
+    "Other_Resistance_pheno",
+    "Host_Age",
+    "Host_Age_Unit",
+    "Host_Gender",
+    "Patient_Status",
+    "Zip_Code",
+    "Outbreak",
+    "Pathogen_Test_Info",
+    "Is_Vaccinated",
+    "Human_Specimen_Source",
+    "Animal_Specimen_Source",
+    "Animal_Health_Status",
+    "Domestic_Status",
+    "PMID",
+}
+OUTPUT_SEQUENCE_FIELD = "sequences"
+ALL_EXPECTED_FIELDS = set([RECORD_ID_COLUMN, OUTPUT_SEQUENCE_FIELD]).union(ADDITIONAL_METADATA_COLUMNS)
 
 
 def link_metadata_and_sequences(metadata: Iterable[dict],
@@ -86,6 +135,8 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
     records_without_accessions = 0
     records_without_sequences = 0
     total_records = 0
+    missing_fields = set()
+    unexpected_fields = set()
     for record in metadata:
         linked_record = record.copy()
         record_id = linked_record[RECORD_ID_COLUMN]
@@ -131,7 +182,20 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
             )
             records_without_sequences += 1
 
-        linked_record["sequences"] = record_seqs
+        linked_record[OUTPUT_SEQUENCE_FIELD] = record_seqs
+
+        # Remove extra fields that are not expected
+        for field in list(linked_record.keys()):
+            if field not in ALL_EXPECTED_FIELDS:
+                unexpected_fields.add(field)
+                del linked_record[field]
+                 
+        # Fill in empty values for additional metadata columns
+        for column in ADDITIONAL_METADATA_COLUMNS:
+            if linked_record.get(column) is None:
+                missing_fields.add(column)
+                linked_record[column] = ""
+
         total_records += 1
         yield linked_record
 
@@ -142,6 +206,14 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
     assert total_records != records_without_sequences, \
         "All records are missing segment sequences.\n" + \
         "Verify the provided GISAID Excel file and FASTA file contain the same records."
+
+    if missing_fields:
+        print_err(f"WARNING: Metadata was missing columns {missing_fields!r}.",
+                  "The fields have been added with empty string values.")
+
+    if unexpected_fields:
+        print_err(f"WARNING: Metadata had new columns {unexpected_fields!r}.",
+                  "These fields have been removed from the record.")
 
 
 def parse_segment_accession(segment_id: str) -> Optional[str]:
