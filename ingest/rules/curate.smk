@@ -43,8 +43,10 @@ rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson.zst",
         lineage_annotations=config["curate"]["lineage_annotations"],
-        strain_replacements="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_replacements_seasonal="data/fauna-source-data/flu_strain_name_fix.tsv",
+        strain_replacements_avian="data/fauna-source-data/avian_flu_strain_name_fix.tsv",
         strain_location_replacements="data/fauna-source-data/flu_fix_location_label.tsv",
+        strain_name_fixes=config['curate']['strain_name_fixes'],
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         location_annotations=config["curate"]["location_annotations"],
         final_annotations=config["curate"]["final_annotations"],
@@ -69,6 +71,7 @@ rule curate:
         articles=config["curate"]["titlecase"]["articles"],
         abbreviations=config["curate"]["titlecase"]["abbreviations"],
         titlecase_fields=config["curate"]["titlecase"]["fields"],
+        lowercase_fields=config["curate"]["lowercase"]["fields"],
         passage_field=config["curate"]["passage_field"],
         passage_category_field=config["curate"]["passage_category_field"],
         gisaid_strain_field=config["curate"]["gisaid_strain_field"],
@@ -80,12 +83,15 @@ rule curate:
         gender_field=config["curate"]["gender_field"],
         new_gender_field=config["curate"]["new_gender_field"],
         annotations_id=config["curate"]["annotations_id"],
+        host_field=config["curate"]["host_field"],
     shell:
         r"""
         (zstdcat {input.sequences_ndjson:q} \
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
+            | ./scripts/lowercase-fields \
+                --fields {params.lowercase_fields:q} \
             | ./scripts/standardize-lineage \
                 --subtype-field {params.gisaid_subtype_field:q} \
                 --lineage-field {params.gisaid_lineage_field:q} \
@@ -106,6 +112,9 @@ rule curate:
                 --titlecase-fields {params.titlecase_fields:q} \
                 --articles {params.articles:q} \
                 --abbreviations {params.abbreviations:q} \
+            | ./scripts/curate-host \
+                --host-field {params.host_field:q} \
+                --strain-field {params.gisaid_strain_field:q} \
             | augur curate apply-geolocation-rules \
             | augur curate apply-geolocation-rules \
                 --no-default-rules \
@@ -118,7 +127,7 @@ rule curate:
                 --passage-field {params.passage_category_field:q} \
                 --type-field {params.new_type_field:q} \
                 --new-strain-field {params.new_strain_field:q} \
-                --strain-replacements {input.strain_replacements:q} \
+                --strain-replacements {input.strain_replacements_avian:q} {input.strain_replacements_seasonal:q} {input.strain_name_fixes:q} \
                 --location-replacements {input.strain_location_replacements:q} \
             | ./scripts/annotate-with-gihsn \
                 --strain-field {params.gisaid_strain_field:q} \
@@ -155,7 +164,7 @@ rule filter_for_seasonal_flu:
     shell:
         r"""
         cat {input.curated_ndjson:q} \
-            | ./scripts/filter-for-seasonal-flu \
+            | ./scripts/filter-ndjson \
                 --id-field {params.gisaid_id_field:q} \
                 --lineage-field {params.new_lineage_field:q} \
                 --host-field {params.host_field:q} \

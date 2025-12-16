@@ -1,30 +1,18 @@
 #!/usr/bin/env python3
 """
-Filter NDJSON for seasonal-flu specific records by lineage and host
+Filter NDJSON by matching records by lineage and host
 """
 import argparse
-from sys import stdin
+from sys import stdin, exit
 from typing import Iterable, List
 from augur.io.json import dump_ndjson, load_ndjson
 from augur.io.print import print_err
 
 
-LINEAGES = [
-    'h1n1pdm',
-    'h3n2',
-    'vic',
-    'yam'
-]
-
-HOSTS = [
-    'human',
-]
-
-
 def filter_records(records: Iterable[dict],
                    record_id_field: str,
                    lineage_field: str,
-                   host_field: str,
+                   host_field: str|None,
                    lineages_to_include: List[str],
                    hosts_to_include: List[str]) -> Iterable:
     """
@@ -36,18 +24,21 @@ def filter_records(records: Iterable[dict],
     for record in records:
         record_id = record.get(record_id_field, "")
         lineage = record.get(lineage_field)
-        host = record.get(host_field)
 
         if lineage is None:
             raise Exception(f"Records must have the expected lineage field: {lineage_field!r}")
 
-        if host is None:
-            raise Exception(f"Records must have the expected host field: {host_field!r}")
+        if host_field:
+            host = record.get(host_field)
+            if host is None:
+                raise Exception(f"Records must have the expected host field: {host_field!r}")
+        else:
+            host = "N/A"
 
-        if lineage in lineages_to_include and host in hosts_to_include:
+        if lineage in lineages_to_include and (host=="N/A" or host in hosts_to_include):
             yield record
         else:
-            print_err(f"WARNING: Skipping record {record_id!r} because it does not match filters for seasonal flu.")
+            print_err(f"WARNING: Skipping record {record_id!r} because it does not match filters")
 
 
 if __name__ == '__main__':
@@ -55,16 +46,20 @@ if __name__ == '__main__':
 
     parser.add_argument("--id-field", default="gisaid_epi_isl",
         help="The record field containing the record id.")
-    parser.add_argument("--lineage-field", default="lineage",
+    parser.add_argument("--lineage-field", required=True,
         help="The record field containing the standardized lineage.")
-    parser.add_argument("--host-field", default="host",
-        help="The record field containing the host.")
-    parser.add_argument("--lineages", nargs="*", default=LINEAGES,
+    parser.add_argument("--lineages", nargs="+", required=True,
         help="Lineages to include in the output.")
-    parser.add_argument("--hosts", nargs="*", default=HOSTS,
-        help="Hosts to include in the output directory.")
+    parser.add_argument("--host-field", default=None,
+        help="The record field containing the host (optional)")
+    parser.add_argument("--hosts", nargs="+",
+        help="Hosts to include in the output directory (optional)")
 
     args = parser.parse_args()
+
+    if args.host_field and not args.hosts:
+        print_err("Host field provided without providing hosts to query on")
+        exit(2)
 
     records = load_ndjson(stdin)
     modified_records = filter_records(

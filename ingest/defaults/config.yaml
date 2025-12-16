@@ -54,6 +54,14 @@ curate:
     Submitting_Lab: submitting_lab
     Originating_Lab: originating_lab
     Host: host
+    Clade: gisaid_clade # used by avian-flu builds
+    Domestic_Status: domestic_status # used by avian-flu builds
+    Pathogenicity: pathogenicity
+    Authors: authors # used by avian-flu builds
+  lowercase:
+    fields:
+      - gisaid_clade
+      - domestic_status
   gisaid_subtype_field: "Subtype"
   gisaid_lineage_field: "Lineage"
   gisaid_note_field: "Note"
@@ -86,6 +94,10 @@ curate:
   passage_category_field: "passage_category"
   gisaid_strain_field: "gisaid_strain"
   new_strain_field: "strain"
+  # our hardcoded strain name fixes
+  # NOTE: we currently also use fauna TSVs which aren't defined in this config
+  # we should add those fixes into this file in due course
+  strain_name_fixes: "defaults/strain_name_fixes.tsv" 
   gihsn_field: "gihsn_sample"
   age_field: "Host_Age"
   age_unit_field: "Host_Age_Unit"

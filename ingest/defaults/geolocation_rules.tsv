@@ -31,7 +31,11 @@
 */Japan/*/*	Japan Korea/Japan/*/*
 */Niigata/*/*	Japan Korea/Japan/Niigata/*
 */South Korea/*/*	Japan Korea/South Korea/*/*
+*/Korea/*/*	Japan Korea/South Korea/*/*
 */Yokohama/*/*	Japan Korea/Japan/Yokohama/*
+*/Korea, Democratic People's Republic of/*/*	Japan Korea/North Korea/*/*
+Asia/Kawasaki/*/*	Japan Korea/Japan/Kanagawa/Kawasaki
+
 
 # Southeast Asia region
 */Brunei/*/*	Southeast Asia/Brunei/*/*
@@ -107,6 +111,7 @@ Asia/Nonthaburi/*/*	Asia/Thailand/Nonthaburi/*
 Europe/France/Mayotte/*	Africa/Mayotte/Mayotte/*
 Europe/Netherlands/Bonaire/*	South America/Bonaire/Bonaire/*
 South America/Brazil/Estado do Acre/*	South America/Brazil/Acre/*
+*/Japan/Kawasaki/*	*/Japan/Kanagawa/Kawasaki
 
 Europe/Spain/Pontevedra/	Europe/Spain/Galicia/Pontevedra
 Europe/Spain/Pontevedra/Galicia	Europe/Spain/Galicia/Pontevedra
