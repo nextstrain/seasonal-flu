@@ -73,7 +73,7 @@ rule concatenate_gisaid_ndjsons:
     log: "logs/concatenate_gisaid_ndjsons.txt"
     shell:
         r"""
-        (cat {input.ndjsons:q} \
+        (zstdcat {input.ndjsons:q} \
             | ./scripts/dedup-by-gisaid-id \
                 --id-field {params.gisaid_id_field:q} \
             > {output.ndjson:q}) 2> {log:q}
