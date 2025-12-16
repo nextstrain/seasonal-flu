@@ -12,7 +12,7 @@ INPUTS:
 
 OUTPUTS:
 
-    ndjson      = data/gisaid.ndjson.zst
+    ndjson      = data/gisaid.ndjson
 
 """
 
@@ -67,14 +67,14 @@ rule concatenate_gisaid_ndjsons:
     input:
         ndjsons=aggregate_gisaid_ndjsons,
     output:
-        ndjson=temp("data/gisaid.ndjson.zst"),
+        ndjson=temp("data/gisaid.ndjson"),
     params:
         gisaid_id_field=config["gisaid_id_field"],
     log: "logs/concatenate_gisaid_ndjsons.txt"
     shell:
         r"""
-        (zstdcat {input.ndjsons:q} \
+        (cat {input.ndjsons:q} \
             | ./scripts/dedup-by-gisaid-id \
                 --id-field {params.gisaid_id_field:q} \
-            | zstd -T0 -c > {output.ndjson:q}) 2> {log:q}
+            > {output.ndjson:q}) 2> {log:q}
         """
