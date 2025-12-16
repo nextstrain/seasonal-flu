@@ -15,7 +15,10 @@ own data.
 
 Manually download the metadata and sequences from GISAID.
 Save the XLS metadata file as `ingest/data/gisaid_epiflu_isolates.xls`.
-Make sure the sequences includes all segments and the FASTA header is set to “DNA Accession no.”.
+Make sure the sequences includes all segments and the FASTA header is set to
+```
+DNA Accession no. | Submitting lab  | Originating lab
+```
 Save the FASTA file as `ingest/data/gisaid_epiflu_sequence.fasta`.
 
 The workflow can be run from the top level pathogen repo directory:
