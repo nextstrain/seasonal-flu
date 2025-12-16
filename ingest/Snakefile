@@ -8,10 +8,13 @@ workdir: workflow.current_basedir
 # Use default configuration values. Override with Snakemake's --configfile/--config options.
 configfile: "defaults/config.yaml"
 
+VALID_DATASETS = list(config['filtering'].keys())
+
 wildcard_constraints:
-    # Expected lineages that should match the standardized output lineages
+    # Expected datasets should match the standardized outputs of the `filtering` block
+    # (example datasets are "h3n2", "avian-flu")
     # in scripts/standardized-lineage
-    lineage = r'h1n1pdm|h3n2|vic|yam',
+    dataset = r'|'.join(VALID_DATASETS),
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     # Constrain GISAID pair names to "gisaid_cache" or YYYY-MM-DD-N
     gisaid_pair = r'gisaid_cache|\d{4}-\d{2}-\d{2}(-\d+)?'
@@ -19,8 +22,8 @@ wildcard_constraints:
 
 rule all:
     input:
-        metadata = expand("results/{lineage}/metadata.tsv", lineage=config["lineages"]),
-        sequences = expand("results/{lineage}/{segment}.fasta", lineage=config["lineages"], segment=config["segments"]),
+        metadata = expand("results/{dataset}/metadata.tsv", dataset=VALID_DATASETS),
+        sequences = expand("results/{dataset}/{segment}.fasta", dataset=VALID_DATASETS, segment=config["segments"]),
 
 
 include: "rules/prepare_ndjson.smk"
