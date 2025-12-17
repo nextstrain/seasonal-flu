@@ -5,6 +5,7 @@ builds:
   h1n1pdm:
     ha:
       changelog: "seasonal_A-H1N1pdm_HA/main/CHANGELOG.md"
+      root: "A/California/7/2009"
       clade_systems:
         clade:
           url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
@@ -35,6 +36,7 @@ builds:
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
     na:
+      root: "A/California/7/2009"
       changelog: "seasonal_A-H1N1pdm_NA/main/CHANGELOG.md"
       clade_systems:
         subclade:
@@ -52,6 +54,7 @@ builds:
           reference_strain: A/Wisconsin/588/2019
   h3n2:
     ha:
+      root: "A/Wisconsin/67/2005"
       changelog: "seasonal_A-H3N2_HA/main/CHANGELOG.md"
       clade_systems:
         clade:
@@ -83,6 +86,7 @@ builds:
           reference_EPI_ISL: EPI545340
           reference_strain: A/Wisconsin/67/2005-egg
     na:
+      root: "A/Wisconsin/67/2005"
       changelog: "seasonal_A-H3N2_NA/main/CHANGELOG.md"
       clade_systems:
         subclade:
@@ -100,6 +104,7 @@ builds:
           reference_strain: A/Darwin/6/2021
   vic:
     ha:
+      root: "B/HongKong/330/2001"
       changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
       clade_systems:
         clade:
@@ -122,6 +127,7 @@ builds:
           reference_EPI_ISL: EPI696970
           reference_strain: B/Brisbane/60/2008-egg
     na:
+      root: "B/HongKong/330/2001"
       changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
       clade_systems:
         subclade:

@@ -160,6 +160,17 @@ rule offset_clades:
             >{output}
         """
 
+rule sample_reference_strains:
+    input:
+        sequences="data/{lineage}_{segment}.fasta",
+        include_strains="../config/{lineage}/reference_strains.txt",
+    output:
+        sampled_sequences="build/{lineage}/{segment}/reference_strains.fasta",
+    shell:
+        """
+        seqkit grep -f {input.include_strains} {input.sequences} > {output.sampled_sequences}
+        """
+
 rule subsample:
     input:
         sequences="data/{lineage}_{segment}.fasta",
@@ -215,6 +226,7 @@ rule subsample_harddate:
 rule align:
     input:
         sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
+        reference_strains="build/{lineage}/{segment}/reference_strains.fasta",
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
         founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
@@ -233,7 +245,7 @@ rule align:
             --gap-alignment-side right \
             --output-translations {params.outdir} \
             --output-fasta {output.alignment} \
-            {input.sequences} \
+            {input.sequences} {input.reference_strains} \
             2>&1
         cat {input.founder_sequences} >> {output.alignment}
         """
@@ -261,12 +273,14 @@ rule tidytree:
         alignment = rules.align.output.alignment,
         guide_tree = "data/subclade_{lineage}_{segment}.nwk",
         founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
-        metadata = "data/{lineage}_{segment}_metadata.tsv"
+        metadata = "data/{lineage}_{segment}_metadata.tsv",
+        contextual_sequences = "build/{lineage}/{segment}/reference_strains.fasta",
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk"
     threads: 2
     params:
-        clade_name = lambda w: 'subclade' if w.segment=='ha' else 'clade'
+        clade_name = lambda w: 'subclade' if w.segment=='ha' else 'clade',
+        context_root = lambda w: config["builds"][w.lineage][w.segment]['root'],
     resources:
         mem_mb=16000,
         time="2:00:00",
@@ -282,6 +296,8 @@ rule tidytree:
             --keep-founders \
             --iqtree-args '-ninit 10 -n 4 -czb' \
             --ignore-missing-founders \
+            --root-context {params.context_root} \
+            --embed-in-context \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 
