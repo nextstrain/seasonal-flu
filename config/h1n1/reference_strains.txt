@@ -1,3 +1,10 @@
+A/WSN/1933
+A/PuertoRico/8/1934
+A/Melbourne/1935
+A/Iowa/1943
+A/Melbourne/1/1946
+A/Liverpool/1951
+A/Denver/1957
 A/USSR/90/1977
 A/USSR/92/1977
 A/Brazil/11/1978
