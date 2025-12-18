@@ -20,15 +20,6 @@
 # ░██████████   ░██████   ░██     ░██   ░██████   ░██         ░██████████ 
 
 
-# Galicia is the community, Pontevedra is the province, and the * is {Vigo,Pontevedra} which are cities in the Pontevedra province
-Europe/Spain/Galicia/Pontevedra/*	Europe/Spain/Galicia/Pontevedra
-# Similarly for other provinces in Galicia
-Europe/Spain/Galicia/Lugo/*	Europe/Spain/Galicia/Lugo
-Europe/Spain/Galicia/Ourense/*	Europe/Spain/Galicia/Ourense
-
-# Note: "Kalmar Lan" will be changed to "Kalmar" by Augur's default geolocation rules
-Europe/Sweden/Kalmar Lan/Kalmar Kommun/Ottenby Bird Observatory	Europe/Sweden/Kalmar Lan/Kalmar Kommun
-
 Europe/Norway/Aust-Agder Fylke/Arendal/*	Europe/Norway/Aust-Agder Fylke/Arendal
 Europe/Norway/Aust-Agder Fylke/Vegarshei/*	Europe/Norway/Aust-Agder Fylke/Vegarshei
 Europe/Norway/Finnmark Fylke/Batsfjord/*	Europe/Norway/Finnmark Fylke/Batsfjord
@@ -74,6 +65,7 @@ Europe/Norway/Vestfold Fylke/Notteroy/*	Europe/Norway/Vestfold Fylke/Notteroy
 Europe/Denmark/Region Hovedstaden/Kobenhavns Kommune/*	Europe/Denmark/Region Hovedstaden/Kobenhavns Kommune
 Europe/Denmark/Region Midtjylland/Norddjurs/*	Europe/Denmark/Region Midtjylland/Norddjurs
 Europe/Denmark/Region Sjaland/Vordingborg Kommune/*	Europe/Denmark/Region Sjaland/Vordingborg Kommune
+
 Europe/France/Basse-Normandie/Departement du Calvados/*	Europe/France/Basse-Normandie/Departement du Calvados
 Europe/France/Franche-Comte/Departement du Doubs/*	Europe/France/Franche-Comte/Departement du Doubs
 Europe/France/Midi-Pyrenees/Departement de la Haute-Garonne/*	Europe/France/Midi-Pyrenees/Departement de la Haute-Garonne
@@ -82,6 +74,7 @@ Europe/France/Poitou-Charentes/Departement de la Vienne/*	Europe/France/Poitou-C
 Europe/France/Provence-Alpes-Cote d'Azur/Departement des Bouches-du-Rhone/*	Europe/France/Provence-Alpes-Cote d'Azur/Departement des Bouches-du-Rhone
 Europe/France/Provence-Alpes-Cote d'Azur/Departement du Var/*	Europe/France/Provence-Alpes-Cote d'Azur/Departement du Var
 Europe/France/Rhone-Alpes/Departement du Rhone/*	Europe/France/Rhone-Alpes/Departement du Rhone
+
 Europe/Germany/Baden-Wuerttemberg/Regierungsbezirk Karlsruhe/*	Europe/Germany/Baden-Wuerttemberg/Regierungsbezirk Karlsruhe
 Europe/Germany/Bavaria/Regierungsbezirk Niederbayern/*	Europe/Germany/Bavaria/Regierungsbezirk Niederbayern
 Europe/Germany/Bavaria/Regierungsbezirk Oberbayern/*	Europe/Germany/Bavaria/Regierungsbezirk Oberbayern
@@ -89,7 +82,11 @@ Europe/Germany/Bavaria/Regierungsbezirk Oberpfalz/*	Europe/Germany/Bavaria/Regie
 Europe/Germany/Brandenburg/Spree/*	Europe/Germany/Brandenburg/Spree
 Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Arnsberg/*	Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Arnsberg
 Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Munster/*	Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Munster
+Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Dusseldorf/*	Europe/Germany/North Rhine-Westphalia/Regierungsbezirk Dusseldorf
 Europe/Germany/Saxony/Regierungsbezirk Leipzig/*	Europe/Germany/Saxony/Regierungsbezirk Leipzig
+Europe/Germany/Bavaria/Lower Franconia/*	Europe/Germany/Bavaria/Lower Franconia
+Europe/Germany/Hessen/Regierungsbezirk Giessen/*	Europe/Germany/Hessen/Regierungsbezirk Giessen
+
 Europe/Italy/Emilia-Romagna/Province of Bologna/*	Europe/Italy/Emilia-Romagna/Province of Bologna
 Europe/Italy/Emilia-Romagna/Province of Ferrara/*	Europe/Italy/Emilia-Romagna/Province of Ferrara
 Europe/Italy/Friuli-Venezia Giulia/Province of Pordenone/*	Europe/Italy/Friuli-Venezia Giulia/Province of Pordenone
@@ -167,6 +164,13 @@ Europe/Poland/Opole Voivodeship/Objazdna/*	Europe/Poland/Opole Voivodeship/Objaz
 Europe/Poland/Silesian Voivodeship/Raciborz/*	Europe/Poland/Silesian Voivodeship/Raciborz
 Europe/Poland/Warmian-Masurian Voivedeship/Olsztyn/*	Europe/Poland/Warmian-Masurian Voivedeship/Olsztyn
 Europe/Russian Federation/Yamalo-Nenets Autonomous Okrug/Yamalo/*	Europe/Russian Federation/Yamalo-Nenets Autonomous Okrug/Yamalo
+
+# Galicia is the community, Pontevedra is the province, and the * is {Vigo,Pontevedra} which are cities in the Pontevedra province
+Europe/Spain/Galicia/Pontevedra/*	Europe/Spain/Galicia/Pontevedra
+# Similarly for other provinces in Galicia
+Europe/Spain/Galicia/Lugo/*	Europe/Spain/Galicia/Lugo
+Europe/Spain/Galicia/Ourense/*	Europe/Spain/Galicia/Ourense
+Europe/Spain/Galicia/La Coruna/*	Europe/Spain/Galicia/La Coruna
 Europe/Spain/Andalusia/Almeria/*	Europe/Spain/Andalusia/Almeria
 Europe/Spain/Andalusia/Cadiz/*	Europe/Spain/Andalusia/Cadiz
 Europe/Spain/Andalusia/Malaga/*	Europe/Spain/Andalusia/Malaga
@@ -175,12 +179,17 @@ Europe/Spain/Canary Islands/https:/*	Europe/Spain/Canary Islands/https:
 Europe/Spain/Castille-La Mancha/Toledo/*	Europe/Spain/Castille-La Mancha/Toledo
 Europe/Spain/Catalonia/Barcelona/*	Europe/Spain/Catalonia/Barcelona
 Europe/Spain/Catalonia/Tarragona/*	Europe/Spain/Catalonia/Tarragona
-Europe/Spain/Galicia/La Coruna/*	Europe/Spain/Galicia/La Coruna
+
 Europe/Sweden/Blekinge Lan/Karlskrona Kommun/*	Europe/Sweden/Blekinge Lan/Karlskrona Kommun
 Europe/Sweden/Hallands Lan/Kungsbacka Kommun/*	Europe/Sweden/Hallands Lan/Kungsbacka Kommun
+# Note: "Kalmar Lan" will be changed to "Kalmar" by Augur's default geolocation rules
 Europe/Sweden/Kalmar Lan/Hultsfreds Kommun/*	Europe/Sweden/Kalmar Lan/Hultsfreds Kommun
 Europe/Sweden/Kalmar Lan/Kalmar Kommun/*	Europe/Sweden/Kalmar Lan/Kalmar Kommun
 Europe/Sweden/Kalmar Lan/Morbylanga Kommun/*	Europe/Sweden/Kalmar Lan/Morbylanga Kommun
+Europe/Sweden/Kalmar Lan/Monsteras Kommun/*	Europe/Sweden/Kalmar Lan/Monsteras Kommun
+Europe/Sweden/Skane Lan/Hassleholms Kommun/*	Europe/Sweden/Skane Lan/Hassleholms Kommun
+Europe/Sweden/Skane Lan/Svedala Kommun/*	Europe/Sweden/Skane Lan/Svedala Kommun
+Europe/Sweden/Skane Lan/Burlovs Kommun/*	Europe/Sweden/Skane Lan/Burlovs Kommun
 Europe/Sweden/Skane Lan/Helsingborgs Kommun/*	Europe/Sweden/Skane Lan/Helsingborgs Kommun
 Europe/Sweden/Skane Lan/Malmo Kommun/*	Europe/Sweden/Skane Lan/Malmo Kommun
 Europe/Sweden/Skane Lan/Ostra Goinge Kommun/*	Europe/Sweden/Skane Lan/Ostra Goinge Kommun
@@ -188,11 +197,13 @@ Europe/Sweden/Skane Lan/Vellinge Kommun/*	Europe/Sweden/Skane Lan/Vellinge Kommu
 Europe/Sweden/Stockholms Lan/Stockholms Kommun/*	Europe/Sweden/Stockholms Lan/Stockholms Kommun
 Europe/Sweden/Stockholms Lan/Sweden/*	Europe/Sweden/Stockholms Lan/Sweden
 Europe/Sweden/Varmlands Lan/Karlstads Kommun/*	Europe/Sweden/Varmlands Lan/Karlstads Kommun
+Europe/Sweden/Vastra Gotalands Lan/Lidkopings Kommun/*	Europe/Sweden/Vastra Gotalands Lan/Lidkopings Kommun
+Europe/Sweden/Vastra Gotalands Lan/Lerums Kommun/*	Europe/Sweden/Vastra Gotalands Lan/Lerums Kommun
+
 Europe/Netherlands/South Holland/Nederlek/Krimpen a/d Lek	Europe/Netherlands/South Holland/Nederlek
 
 Europe/Switzerland/Kanton Bern/Amt Bern/*	Europe/Switzerland/Kanton Bern/Amt Bern
 Europe/Switzerland/Kanton Bern/Amt Biel/*	Europe/Switzerland/Kanton Bern/Amt Biel
-
 
 # many Czech records have an overly specific 5th field which is already being dropped,
 # so these avoid the warnings being shown
@@ -416,6 +427,8 @@ South America/Brazil/Estado de Minas Gerais/Tres Pontas/*	South America/Brazil/E
 South America/Brazil/Estado de Minas Gerais/Uberaba/*	South America/Brazil/Estado de Minas Gerais/Uberaba
 South America/Brazil/Estado de Minas Gerais/Uberlandia/*	South America/Brazil/Estado de Minas Gerais/Uberlandia
 South America/Brazil/Estado de Minas Gerais/Varginha/*	South America/Brazil/Estado de Minas Gerais/Varginha
+South America/Brazil/Estado de Minas Gerais/Janauba/*	South America/Brazil/Estado de Minas Gerais/Janauba
+South America/Brazil/Estado de Santa Catarina/Capinzal/*	South America/Brazil/Estado de Santa Catarina/Capinzal
 South America/Brazil/Estado de Santa Catarina/Aguas De Chapeco/*	South America/Brazil/Estado de Santa Catarina/Aguas De Chapeco
 South America/Brazil/Estado de Santa Catarina/Ararangua/*	South America/Brazil/Estado de Santa Catarina/Ararangua
 South America/Brazil/Estado de Santa Catarina/Balneario Camboriu/*	South America/Brazil/Estado de Santa Catarina/Balneario Camboriu
@@ -517,4 +530,6 @@ Oceania/New Zealand/Auckland/North/West Auckland	Oceania/New Zealand/Auckland/We
 # ░██    ░██ ░██        ░██    ░██    ░██   ░██   ░██ ░██    ░██ 
 # ░██    ░██ ░██        ░██     ░██ ░██████  ░██████  ░██    ░██ 
 
+Asia/Bangladesh/Dhaka Division/Chadpur/Matlab	Asia/Bangladesh/Dhaka Division/Chadpur
 
+Africa/Ghana/Africa/Ghana/*	Africa/Ghana/*
