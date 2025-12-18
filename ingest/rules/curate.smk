@@ -52,7 +52,7 @@ rule curate:
         final_annotations=config["curate"]["final_annotations"],
         gisaid_location_rules=config["curate"]["gisaid_location_rules"],
     output:
-        curated_ndjson=temp("data/curated_gisaid.ndjson"),
+        curated_ndjson=temp("data/curated_gisaid.ndjson.zst"),
     log:
         "logs/curate.txt",
     benchmark:
@@ -142,7 +142,7 @@ rule curate:
             | augur curate apply-record-annotations \
                 --annotations {input.final_annotations:q} \
                 --id-field {params.annotations_id:q} \
-                > {output.curated_ndjson:q}) 2> {log:q}
+            | zstd -T0 -c > {output.curated_ndjson:q}) 2> {log:q}
         """
 
 
@@ -169,9 +169,9 @@ def conditional(option, argument):
 
 rule filter_curated_data:
     input:
-        curated_ndjson="data/curated_gisaid.ndjson",
+        curated_ndjson="data/curated_gisaid.ndjson.zst",
     output:
-        filtered_ndjson=temp("data/{dataset}/curated_gisaid.ndjson"),
+        filtered_ndjson=temp("data/{dataset}/curated_gisaid.ndjson.zst"),
     log:
         "logs/{dataset}/filter_curated_data.txt",
     benchmark:
@@ -185,22 +185,22 @@ rule filter_curated_data:
         optional_additional_field_values=lambda w:conditional('--additional-field-values', config["filtering"][w.dataset].get('additional_field_values', None)),
     shell:
         r"""
-        cat {input.curated_ndjson:q} \
+        (zstdcat {input.curated_ndjson:q} \
             | ./scripts/filter-ndjson \
                 --id-field {params.gisaid_id_field:q} \
                 {params.optional_lineage_field:q} \
                 --lineages {params.lineages_to_include:q} \
                 {params.optional_additional_field:q} \
                 {params.optional_additional_field_values:q} \
-                > {output.filtered_ndjson:q} 2> {log:q}
+            | zstd -T0 -c > {output.filtered_ndjson:q}) 2> {log:q}
         """
 
 
 rule deduplicate_ndjson_by_strain:
     input:
-        curated_ndjson="data/{dataset}/curated_gisaid.ndjson",
+        curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
     output:
-        deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson"),
+        deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
     log:
         "logs/{dataset}/deduplicate_ndjson_by_strain.txt"
     params:
@@ -210,18 +210,18 @@ rule deduplicate_ndjson_by_strain:
         prioritized_strain_ids=lambda w: conditional('--prioritized-ids', config["filtering"][w.dataset].get('prioritized_strain_ids', None)),
     shell:
         r"""
-         cat {input.curated_ndjson:q} \
+         (zstdcat {input.curated_ndjson:q} \
             | ./scripts/dedup-by-strain \
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
                 {params.prioritized_strain_ids:q} \
-                > {output.deduped_ndjson:q} 2> {log:q}
+            | zstd -T0 -c > {output.deduped_ndjson:q}) 2> {log:q}
         """
 
 
 rule split_ndjson_by_segment:
     input:
-        deduped_ndjson="data/{dataset}/deduped_curated.ndjson",
+        deduped_ndjson="data/{dataset}/deduped_curated.ndjson.zst",
     output:
         metadata="data/{dataset}/curated_metadata.tsv",
         sequences=expand("results/{{dataset}}/{segment}.fasta", segment=config["segments"]),
@@ -233,7 +233,7 @@ rule split_ndjson_by_segment:
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""
-        cat {input.deduped_ndjson:q} \
+        zstdcat {input.deduped_ndjson:q} \
             | ./scripts/split-gisaid-ndjson-by-segment \
                 --segments {params.segments:q} \
                 --output-metadata {output.metadata:q} \
