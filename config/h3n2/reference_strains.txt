@@ -232,6 +232,7 @@ A/SouthAfrica/R05190/2025
 A/SouthAfrica/R06126/2023
 A/SouthAustralia/135/2016
 A/SouthAustralia/34/2019
+A/SouthAustralia/34/2019-egg
 A/SouthAustralia/48/2023
 A/SouthAustralia/55/2014
 A/SouthCarolina/4/2017
