@@ -189,6 +189,7 @@ A/Pennsylvania/234/2024
 A/Pennsylvania/98/2023
 A/Perth/10/2010
 A/Perth/16/2009
+A/Perth/16/2009-egg
 A/Perth/20/2020
 A/Perth/20/2020-egg
 A/Perth/815/2024
@@ -288,6 +289,7 @@ A/Victoria/2906/2023
 A/Victoria/3/1975
 A/Victoria/3099/2023
 A/Victoria/361/2011
+A/Victoria/361/2011-egg
 A/Victoria/478/2024
 A/Victoria/500/2004
 A/Victoria/512/2005
