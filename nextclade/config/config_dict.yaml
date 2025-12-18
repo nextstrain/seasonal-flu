@@ -54,8 +54,9 @@ builds:
           reference_strain: A/Wisconsin/588/2019
   h3n2:
     ha:
-      root: "A/Wisconsin/67/2005"
+      root: "A/HongKong/1/1968"
       changelog: "seasonal_A-H3N2_HA/main/CHANGELOG.md"
+      max_branch_length: 0.002
       clade_systems:
         clade:
           url: "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
@@ -86,8 +87,9 @@ builds:
           reference_EPI_ISL: EPI545340
           reference_strain: A/Wisconsin/67/2005-egg
     na:
-      root: "A/Wisconsin/67/2005"
+      root: "A/HongKong/1/1968"
       changelog: "seasonal_A-H3N2_NA/main/CHANGELOG.md"
+      max_branch_length: 0.002
       clade_systems:
         subclade:
           url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"

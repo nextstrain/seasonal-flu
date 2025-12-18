@@ -296,8 +296,7 @@ rule tidytree:
             --keep-founders \
             --iqtree-args '-ninit 10 -n 4 -czb' \
             --ignore-missing-founders \
-            --root-context {params.context_root} \
-            --embed-in-context \
+            --explicit-root {params.context_root} \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 
@@ -423,6 +422,25 @@ rule clades:
             --output-node-data {output.node_data} \
         """
 
+rule adjust_branch_lengths:
+    message:
+        "Adjusting branch lengths for visualization"
+    input:
+        branch_lengths=rules.refine.output.node_data,
+        clades="build/{lineage}/{segment}/{reference}/clade_subclade.json"
+    output:
+        branch_lengths="build/{lineage}/{segment}/{reference}/branch_lengths_adjusted.json",
+    params:
+        max_length = lambda w: config["builds"][w.lineage][w.segment].get('max_branch_length', 0.0),
+    shell:
+        """
+        python scripts/adjust_branch_lengths.py \
+            --branch-lengths {input.branch_lengths} \
+            --clade-json {input.clades} \
+            --max-branch-length {params.max_length} \
+            --output-node-data {output.branch_lengths}
+        """
+
 rule virus_specific_jsons:
     input:
         auspice_config= "config/auspice_config.json",
@@ -451,7 +469,7 @@ rule virus_specific_jsons:
 
 def get_node_data(w):
     node_data = [
-        rules.refine.output.node_data,
+        rules.adjust_branch_lengths.output.branch_lengths,
         "build/{lineage}/{segment}/{reference}/muts.json".format(**w),
     ]
 
@@ -486,6 +504,7 @@ rule export:
             --color-by-metadata {params.fields} \
             --include-root-sequence-inline \
             --minify-json \
+            --skip-validation \
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
         """

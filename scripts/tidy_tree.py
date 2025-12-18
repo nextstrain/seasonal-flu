@@ -46,11 +46,6 @@ def parse_arguments():
         help='Aligned lineage founder sequences in FASTA format (if not provided in alignment)'
     )
     parser.add_argument(
-        '--contextual-sequences', '-c',
-        required=False,
-        help='Additional contextual sequences to include in the final tree (FASTA format)'
-    )
-    parser.add_argument(
         '--guide-tree', '-g',
         required=True,
         help='Lineage guide tree in Newick format'
@@ -102,8 +97,8 @@ def parse_arguments():
         help='Keep founder sequences as leaves in the final tree'
     )
     parser.add_argument('--root-lineage', default=None, help='Root lineage for the tree')
-    parser.add_argument('--root-context', default=None, help='Sequence from the context on which to root the tree')
-    parser.add_argument('--embed-in-context', action='store_true', help='Embed the tree within the context sequences')
+    parser.add_argument('--explicit-root', default=None, type=str, help='Sequence from the context on which to root the tree')
+    parser.add_argument('--default-lineage', default='unassigned', help='Default lineage for sequences with lineage assigned that evaluates to false (emty string, None, 0, etc.)')
     parser.add_argument(
         '--ignore-missing-founders',
         action='store_true',
@@ -123,7 +118,8 @@ def load_sequences(fasta_path: str) -> Dict[str, SeqRecord]:
 def load_assignments(
     assignment_path: str,
     seq_id_column: str = 'seq_id',
-    lineage_column: str = 'lineage'
+    lineage_column: str = 'lineage',
+    default_lineage: str = 'unassigned'
 ) -> Dict[str, str]:
     """Load sequence-to-lineage assignments from TSV file using pandas."""
     # Read TSV file, handling comments
@@ -136,6 +132,10 @@ def load_assignments(
     if lineage_column not in df.columns:
         raise ValueError(f"Column '{lineage_column}' not found in assignments file. "
                         f"Available columns: {', '.join(df.columns)}")
+
+    # Fill missing or falsy lineage values with default_lineage
+    df[lineage_column] = df[lineage_column].fillna(default_lineage)
+    df.loc[~df[lineage_column].astype(bool), lineage_column] = default_lineage
 
     # Convert to dictionary
     assignments = dict(zip(df[seq_id_column], df[lineage_column]))
@@ -201,6 +201,7 @@ def assign_founders_to_lineages(
         if node.name in founders:
             node.founder_seq = founders[node.name]
         children_to_keep = []
+        # note that this allows a missing founder for the root node
         for child in node.children:
             if ignore_missing_founders and child.name not in founders:
                 print(f"Warning: Founder sequence for lineage '{child.name}' not found. Skipping this lineage.")
@@ -282,7 +283,8 @@ def build_subtree(
     iqtree_path: str,
     model: str,
     threads: int,
-    extra_args: str
+    extra_args: str,
+    explicit_root: str = None
 ) -> Optional[Phylo.BaseTree.Tree]:
     """
     Build a phylogenetic subtree for a lineage using IQ-TREE.
@@ -324,7 +326,8 @@ def build_subtree(
         print(f"Building subtree for lineage {node.name} with {len(subtree_seqs)} sequences")
 
         # Build tree using IQ-TREE
-        tree = run_iqtree(subtree_seqs, iqtree_path, model, threads, root=node.name, extra_args=extra_args)
+        print(f"Using explicit root: {explicit_root}, node name: {node.name}")
+        tree = run_iqtree(subtree_seqs, iqtree_path, model, threads, root=explicit_root or node.name, extra_args=extra_args)
 
     return tree
 
@@ -400,8 +403,7 @@ def stitch_subtrees(
     threads: int,
     extra_args: str,
     keep_founders: bool = False,
-    root_context: str = None,
-    contextual_sequences: Dict[str, SeqRecord] = None
+    explicit_root: str = None
 ) -> Optional[Phylo.BaseTree.Tree]:
     """
     Stitch subtrees together following the guide tree structure.
@@ -411,14 +413,14 @@ def stitch_subtrees(
     2. Build subtree for current node
     3. Graft child subtrees onto current subtree at founder positions
     """
-    def process_node(node):
+    def process_node(node, explicit_root: str = None):
         # First process all children (post-order)
         for child in node.children:
-            process_node(child)
+            process_node(child, explicit_root=None)
 
         # Build subtree for this node
         node.subtree = build_subtree(
-            node, all_sequences, iqtree_path, model, threads, extra_args
+            node, all_sequences, iqtree_path, model, threads, extra_args=extra_args, explicit_root=explicit_root
         )
 
         # If this node has a subtree and children with subtrees,
@@ -431,22 +433,10 @@ def stitch_subtrees(
                 else:
                     print(f"Skipping grafting for {child.name} onto {node.name} (missing subtree or founder)")
 
-    process_node(root)
+    process_node(root, explicit_root=explicit_root)
 
-    print("Finished lineage tree processing.")
-    if contextual_sequences and root_context and root.subtree:
-        print(f"Adding context with {len(contextual_sequences)} sequences and graft point {root.name}.")
-        for seq_id in contextual_sequences:
-            print(f"  Context seq: {seq_id}")
-        result_tree = run_iqtree(list(contextual_sequences.values()) + [all_sequences[root.name]], iqtree_path, model, threads, root=root_context, extra_args=extra_args)
-        if result_tree:
-            print(f"Grafting context subtree onto root at {root_context}")
-            graft_subtree(result_tree, root.subtree, root.founder_seq.id, keep_founders)
-    else:
-        result_tree = root.subtree
-
-    result_tree.ladderize()
-    return result_tree
+    root.subtree.ladderize()
+    return root.subtree
 
 
 def main():
@@ -477,7 +467,8 @@ def main():
     assignments = load_assignments(
         args.lineage_assignments,
         args.seq_id_column,
-        args.lineage_column
+        args.lineage_column,
+        args.default_lineage
     )
     print(f"  Loaded {len(assignments)} assignments")
 
@@ -486,22 +477,9 @@ def main():
     assign_sequences_to_lineages(lineage_root, assignments, sequences)
     assign_founders_to_lineages(lineage_root, founders, args.ignore_missing_founders)
 
-    # Load contextual sequences if provided
-    contextual_sequences = {}
-    if args.contextual_sequences:
-        print("Loading contextual sequences...")
-        contextual_sequences = load_sequences(args.contextual_sequences)
-        print(f"  Loaded {len(contextual_sequences)} contextual sequences")
-    else:
-        print("No contextual sequences provided.")
-        contextual_sequences = {k:v for k,v in sequences.items() if assignments.get(k, 'unassigned')=='unassigned' and (k not in founders)}
-
-    if args.embed_in_context:
-        print(f"  Using {len(contextual_sequences)} contextual sequences. will root on {args.root_context}")
     # Build and stitch trees
     print("\nBuilding subtrees using IQ-TREE...")
-    all_sequences = {**sequences, **founders, **contextual_sequences}
-
+    all_sequences = {**sequences, **founders}
     final_tree = stitch_subtrees(
         lineage_root,
         all_sequences,
@@ -510,9 +488,8 @@ def main():
         args.threads,
         args.iqtree_args,
         args.keep_founders,
-        args.root_context,
-        contextual_sequences if args.embed_in_context else None
-    )
+        args.explicit_root,
+        )
 
     if final_tree is None:
         print("Error: Failed to build final tree")
