@@ -6,8 +6,6 @@ metadata_fields:
   - Isolate_Id
   - Passage_History
   - Location
-  - Authors
-  - Originating_Lab
   - Collection_Date
   - Submission_Date
 renamed_metadata_fields:
@@ -15,8 +13,6 @@ renamed_metadata_fields:
   - accession
   - passage
   - full_location
-  - authors
-  - originating_lab
   - date
   - date_submitted
 

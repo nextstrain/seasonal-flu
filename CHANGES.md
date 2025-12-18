@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 18 December 2025
+
+- Updated quickstart guide for working with GISAID data. See [#282](https://github.com/nextstrain/seasonal-flu/pull/282) for details.
+
 # 22 October 2025
 
 - Set default clade and branch label to "subclade" for all public Nextstrain builds. See commit [6fb8478](https://github.com/nextstrain/seasonal-flu/commit/6fb8478234f65a576210ef6222899751d04a811c).

@@ -73,7 +73,7 @@ mkdir -p data/h3n2/
 Save the XLS file you downloaded (e.g., `gisaid_epiflu_isolates.xls`) as `data/h3n2/metadata.xls`.
 Return to the GISAID "Download" window, and select "Sequences (DNA) as FASTA".
 In the "DNA" section, select the checkbox for "HA".
-In the "FASTA Header" section, enter only `Isolate name`.
+In the "FASTA Header" section, enter only `Virus name`.
 Uncheck both boxes related to spaces in the FASTA header.
 Your settings should look like those shown in the screenshot below.
 
