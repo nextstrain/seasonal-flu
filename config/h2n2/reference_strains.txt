@@ -1,0 +1,48 @@
+A/Tashkent/1046/1967
+A/Montevideo/2208/1967
+A/Cornell/1001/1967
+A/Ann Arbor/7/1967
+A/Georgia/1/1967
+A/Albany/9/1967
+A/Albany/8/1967
+A/Albany/7/1967
+A/Albany/6/1967
+A/Albany/4/1967
+A/Albany/3/1967
+A/Johannesburg/617/1967
+A/Czech Republic/1/1966
+A/Moscow/1019/1965
+A/Potsdam/2/1965
+A/Cottbus/1/1964
+A/Berlin/3/1964
+A/Beijing/12/1964
+A/Georgia/1/1963
+A/Leningrad/29/1963
+A/Netherlands/56/1963
+A/Netherlands/001K1/1963
+A/Netherlands/65/1963
+A/England/12/1962
+A/England/1/1961
+A/Ann Arbor/6/1960
+A/Albany/1/1960
+A/Netherlands/056H1/1960
+A/Albany/1/1959
+A/Krasnodar/101/1959
+A/Albany/5/1958
+A/Albany/4/1958
+A/Albany/3/1958
+A/Albany/24/1958
+A/Albany/2/1958
+A/Albany/1/1958
+A/Ann Arbor/23/1957
+A/Rockville Illinois/5/1957
+A/Rockville Illinois/5-CA/1957
+A/Ann Arbor/23/1957
+A/Albany/22/1957
+A/Albany/20/1957
+A/Rotterdam/1957
+A/ITS/1/1957
+A/Okuda/1957
+A/Shanghai/202/1957
+A/Guiyang/1/1957
+A/Zhang/4/1957
