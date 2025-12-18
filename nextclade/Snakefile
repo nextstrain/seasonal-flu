@@ -267,6 +267,18 @@ rule align:
 #             > /dev/null
 #         """
 
+def get_root_lineage(w):
+    if "root_lineage" in config["builds"][w.lineage][w.segment]:
+        return f" --root-lineage {config['builds'][w.lineage][w.segment]['root_lineage']}"
+    else:
+        return ""
+
+def get_explicit_root(w):
+    if "root" in config["builds"][w.lineage][w.segment]:
+        return f" --explicit-root {config['builds'][w.lineage][w.segment]['root']}"
+    else:
+        return ""
+
 rule tidytree:
     message: "Building tree"
     input:
@@ -280,7 +292,8 @@ rule tidytree:
     threads: 2
     params:
         clade_name = lambda w: 'subclade' if w.segment=='ha' else 'clade',
-        context_root = lambda w: config["builds"][w.lineage][w.segment]['root'],
+        explicit_root = get_explicit_root,
+        root_lineage = get_root_lineage
     resources:
         mem_mb=16000,
         time="2:00:00",
@@ -289,6 +302,7 @@ rule tidytree:
         python3 ../scripts/tidy_tree.py \
             --alignment {input.alignment} \
             --guide-tree {input.guide_tree} \
+            {params.root_lineage} \
             --lineage-assignments {input.metadata} \
             --seq-id-column strain \
             --lineage-column {params.clade_name} \
@@ -296,7 +310,7 @@ rule tidytree:
             --keep-founders \
             --iqtree-args '-ninit 10 -n 4 -czb' \
             --ignore-missing-founders \
-            --explicit-root {params.context_root} \
+            {params.explicit_root} \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 
