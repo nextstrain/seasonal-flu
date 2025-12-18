@@ -2,7 +2,7 @@ B/AbuDhabi/27/2019
 B/Aichi/62/2013
 B/Alabama/7/2023
 B/Alaska/03/1992
-B/Ann Arbor/1994
+B/AnnArbor/1994
 B/Argentina/2802/2019
 B/Arkansas/6/2016
 B/Austria/1359417/2021
@@ -79,9 +79,9 @@ B/Henan-Xigong/1118/2021
 B/Henan-Xigong/1118/2021-egg
 B/Hiroshima-C/1/2025
 B/Hiroshima-C/7/2018
-B/Hong Kong/02/1993
-B/Hong Kong/03/1992
-B/Hong Kong/22/1989
+B/HongKong/02/1993
+B/HongKong/03/1992
+B/HongKong/22/1989
 B/HongKong/1404/2018
 B/HongKong/269/2017-egg
 B/HongKong/286/2017
@@ -126,6 +126,7 @@ B/Maryland/1/2021-egg
 B/Maryland/15/2016
 B/Maryland/15/2016-egg
 B/Maryland/24/2019
+B/Memphis/6/1986
 B/Michigan/1/1971
 B/Michigan/1/2021
 B/Michigan/1/2021-egg
@@ -154,12 +155,12 @@ B/Netherlands/25/1993
 B/Netherlands/32/1994
 B/Netherlands/353/1985
 B/Netherlands/802/1991
-B/New York/1000/1993
-B/New York/1001/1993
-B/New York/1002/1993
-B/New York/1003/1993
-B/New York/24/1993
-B/New York/39/1991
+B/NewYork/1000/1993
+B/NewYork/1001/1993
+B/NewYork/1002/1993
+B/NewYork/1003/1993
+B/NewYork/24/1993
+B/NewYork/39/1991
 B/NewHampshire/1/2021
 B/NewHampshire/1/2021-egg
 B/NewJersey/4/2017

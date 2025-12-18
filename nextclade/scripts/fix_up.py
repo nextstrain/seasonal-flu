@@ -16,3 +16,16 @@ if __name__ == "__main__":
 
         tree.root_with_outgroup("A/HongKong/1/1968")
         Phylo.write(tree, f"build/{args.build}/tree_rooted.nwk", "newick")
+
+    if args.build == "vic/na/CY073894":
+        tree = Phylo.read(f"build/{args.build}/tree_rooted.nwk", "newick")
+
+        tree.root_with_outgroup("B/Memphis/6/1986")
+        Phylo.write(tree, f"build/{args.build}/tree_rooted.nwk", "newick")
+
+
+    if args.build == "vic/ha/KX058884":
+        tree = Phylo.read(f"build/{args.build}/tree_rooted.nwk", "newick")
+
+        tree.root_with_outgroup("B/Netherlands/1000/1977")
+        Phylo.write(tree, f"build/{args.build}/tree_rooted.nwk", "newick")
