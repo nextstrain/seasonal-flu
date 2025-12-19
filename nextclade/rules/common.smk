@@ -11,7 +11,13 @@ wildcard_constraints:
 def genes(w):
     return {
         'ha': ["SigPep", "HA1", "HA2"],
-        'na': ["NA"]
+        'na': ["NA"],
+        'pb2': ["PB2"],
+        'pb1': ["PB1", "PB1-F2"],
+        'pa': ["PA"],
+        'np': ["NP"],
+        'mp': ["M1", "M2"],
+        'ns': ["NS1", "NS2"]
     }.get(w.segment, [])
 
 
@@ -111,19 +117,19 @@ rule subsample:
     input:
         sequences="data/{lineage}/{segment}/sequences.fasta",
         metadata="data/{lineage}/{segment}/metadata.tsv",
-        # include_strains="../config/{lineage}/reference_strains.txt",
-        # nextclade_include="dataset_config/{lineage}/includes.txt",
-        # exclude="../config/{lineage}/outliers.txt",
+        include_strains="../config/{lineage}/reference_strains.txt",
+        nextclade_include="dataset_config/{lineage}/includes.txt",
+        exclude="../config/{lineage}/outliers.txt",
     output:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample_tmp.fasta",
         sampled_strains="build/{lineage}/{segment}/{reference}/subsample_tmp.txt",
-    # params:
-    #     filter_arguments=lambda w: config["builds"][w.lineage][w.segment]["refs"][
-    #         w.reference
-    #     ]["filter"],
-    #     reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment]["refs"][
-    #         w.reference
-    #     ].get("reference_EPI_ISL", "none"),
+    params:
+        filter_arguments=lambda w: config["builds"][w.lineage][w.segment]["refs"][
+            w.reference
+        ]["filter"],
+        reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment]["refs"][
+            w.reference
+        ].get("reference_EPI_ISL", "none"),
     shell:
         """
         augur filter \
@@ -131,8 +137,8 @@ rule subsample:
             --metadata {input.metadata} \
             --exclude {input.exclude} \
             --include {input.include_strains} {input.nextclade_include} \
-            # --include-where gisaid_epi_isl={params.reference_EPI_ISL} \
-            # --exclude-where qc.overallStatus='bad' \
+            --include-where gisaid_epi_isl={params.reference_EPI_ISL} \
+            --exclude-where qc.overallStatus='bad' \
             {params.filter_arguments} \
             --output-sequences {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
@@ -148,7 +154,7 @@ rule subsample_harddate:
     params:
         hardmin=lambda w: config["builds"][w.lineage][w.segment]["refs"][
             w.reference
-        ]["hardmin_date"],
+        ].get("hardmin_date", "1900"),
     shell:
         """
         augur filter \
