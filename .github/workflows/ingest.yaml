@@ -23,6 +23,10 @@ on:
         options:
           - "docker"
           - "aws-batch"
+      triggerAvianFlu:
+        description: "Trigger nextstrain/avian-flu GenoFLU workflow"
+        type: boolean
+        required: true
 
 jobs:
   ingest:
@@ -47,3 +51,21 @@ jobs:
         ingest/build.log
         ingest/logs/
         ingest/benchmarks/
+
+  trigger:
+    needs: [ingest]
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ inputs.triggerAvianFlu }}
+        name: Trigger avian-flu/genoflu-gisaid.yaml
+        # TODO XXX - drop --ref once https://github.com/nextstrain/avian-flu/pull/158 is merged
+        # Remove -f once we have switched over to this workflow for avian-flu
+        run: |
+          gh workflow run \
+            genoflu-gisaid.yaml \
+            --repo nextstrain/avian-flu \
+            --ref james/seasonal-flu-ingest \
+            -f trial_name=genoflu-gisaid
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
+            
