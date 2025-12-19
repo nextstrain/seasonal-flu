@@ -32,12 +32,12 @@ rule download_clade_tree:
     message:
         "Downloading clade tree for {wildcards.lineage} from {params.source_nwk} -> {output}"
     output:
-        clade_nwk = "data/{lineage}/{segment}/guide_tree_{clade}.nwk"
+        guide_tree = "data/{lineage}/{segment}/guide-tree_{clade}.nwk"
     params:
         source_nwk=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
     shell:
         """
-        curl {params.source_nwk} > {output.clade_nwk}
+        curl {params.source_nwk} > {output.guide_tree}
         """
 
 rule download_changelog_clades:
@@ -97,10 +97,8 @@ rule tidytree:
     message: "Building tree"
     input:
         alignment = rules.add_founders_to_alignment.output.alignment,
-        guide_tree = "data/{lineage}/{segment}/guide_tree.nwk",
-        founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
+        guide_tree = "data/{lineage}/{segment}/guide-tree_subclade.nwk",
         metadata = "data/{lineage}/{segment}/metadata.tsv",
-        contextual_sequences = "build/{lineage}/{segment}/reference_strains.fasta",
     output:
         tree="build/{lineage}/{segment}/{reference}/tidytree.nwk"
     threads: 2
