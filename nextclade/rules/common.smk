@@ -5,7 +5,7 @@ wildcard_constraints:
     flu_type="[A-Za-z0-9]+",
     lineage=r"h3n2|h1n1pdm|vic|yam",
     segment = r"pb2|pb1|pa|ha|np|na|mp|ns",
-    reference="[^_/]+",
+    reference="[^/]+",
 
 
 def genes(w):
@@ -13,11 +13,11 @@ def genes(w):
         'ha': ["SigPep", "HA1", "HA2"],
         'na': ["NA"],
         'pb2': ["PB2"],
-        'pb1': ["PB1", "PB1-F2"],
+        'pb1': ["PB1"],
         'pa': ["PA"],
         'np': ["NP"],
         'mp': ["M1", "M2"],
-        'ns': ["NS1", "NS2"]
+        'ns': ["NEP", "NS1"]
     }.get(w.segment, [])
 
 
@@ -179,6 +179,7 @@ rule align:
     threads: 3
     shell:
         """
+        seqkit rmdup {input.sequences} {input.reference_strains} | \
         {params.nextclade_bin} run \
             --jobs={threads} \
             --input-ref {input.reference} \
@@ -186,7 +187,7 @@ rule align:
             --gap-alignment-side right \
             --output-translations {params.outdir} \
             --output-fasta {output.alignment} \
-            {input.sequences} {input.reference_strains} \
+            - \
             2>&1
         """
 
@@ -200,15 +201,13 @@ rule virus_specific_jsons:
         pathogen = "build/{lineage}/{segment}/{reference}/pathogen.json",
         auspice = "build/{lineage}/{segment}/{reference}/auspice_config.json",
     params:
-        clades = lambda w: [config["builds"][w.lineage][w.segment]["clade_systems"][clade].get('key', 'default')
-                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]],
         reference_name = lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference]['reference_strain']
     shell:
         """
         python3 scripts/merge_jsons.py --lineage {wildcards.lineage} \
             --reference {wildcards.reference} \
             --reference-name {params.reference_name} \
-            --segment {wildcards.segment} --clades {params.clades} \
+            --segment {wildcards.segment} \
             --pathogen-jsons {input.pathogen} {input.additional_pathogen} \
             --auspice-config {input.auspice_config} \
             --output-pathogen {output.pathogen} \
@@ -243,8 +242,7 @@ rule make_dataset:
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
         readme="dataset_config/{lineage}/{segment}/{reference}/README.md",
-        dataset_changelog="data/{lineage}/{segment}/{reference}_dataset-changelog.md",
-        changelog="data/{lineage}/{segment}/changelog.md",
+        dataset_changelog="data/{lineage}/{segment}/{reference}/dataset-changelog.md",
         pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/sequences.fasta",
