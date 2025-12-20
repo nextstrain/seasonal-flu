@@ -8,7 +8,7 @@ def all_builds(w):
     for lineage in config["builds"]:
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
-                builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
+                builds.append(f"build/{lineage}/{segment}/{ref}/dataset.done")
     return builds
 
 rule all:
@@ -39,15 +39,16 @@ rule root:
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
     params:
-        root = lambda w: config['builds'][w.lineage][w.segment]['root']
-    run:
-        from Bio import Phylo
-
-        T = Phylo.read(input.tree, 'newick')
-
-        T.root_with_outgroup(params.root)
-
-        Phylo.write(T, output.tree, "newick")
+        root = lambda w: config['builds'][w.lineage][w.segment]['root'],
+        prune_length = 0.03,
+    shell:
+        """
+        python scripts/root_and_sanitize.py \
+            --input-tree {input.tree} \
+            --root {params.root} \
+            --prune-length {params.prune_length} \
+            --output-tree {output.tree}
+        """
 
 
 # refine while keeping the root
@@ -145,6 +146,44 @@ rule export:
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
         """
+
+
+
+
+rule make_dataset:
+    input:
+        sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
+        auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
+        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
+        readme="dataset_config/{lineage}/{segment}/{reference}/README.md",
+        dataset_changelog="data/{lineage}/{segment}/{reference}/dataset-changelog.md",
+        pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
+    output:
+        build="build/{lineage}/{segment}/{reference}/dataset.done",
+    params:
+        sequences="datasets/{lineage}/{segment}/sequences.fasta",
+        tree="datasets/{lineage}/{segment}/tree.json",
+        annotation="datasets/{lineage}/{segment}/genome_annotation.gff3",
+        reference="datasets/{lineage}/{segment}/reference.fasta",
+        readme="datasets/{lineage}/{segment}/README.md",
+        pathogen_json="datasets/{lineage}/{segment}/pathogen.json",
+        auspice="auspice/{lineage}_{segment}.json",
+        changelog="datasets/{lineage}/{segment}/CHANGELOG.md",
+    shell:
+        """
+        mkdir -p datasets/{wildcards.lineage}/{wildcards.segment}
+        cp {input.sequences} {params.sequences}
+        cp {input.auspice_json} {params.tree}
+        cp {input.reference} {params.reference}
+        cp {input.readme} {params.readme}
+        cp {input.dataset_changelog} {params.changelog}
+        cp {input.annotation} {params.annotation}
+        cp {input.pathogen_json} {params.pathogen_json}
+        cp {input.auspice_json} {params.auspice}
+        touch {output.build}
+        """
+
 
 
 rule clean:
