@@ -1,0 +1,164 @@
+configfile: "config/config_dict_generic.yaml"
+
+include: "rules/common.smk"
+
+
+def all_builds(w):
+    builds = []
+    for lineage in config["builds"]:
+        for segment in config["builds"][lineage]:
+            for ref in config["builds"][lineage][segment]["refs"]:
+                builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
+    return builds
+
+rule all:
+    input:
+        all_builds
+
+
+rule tree:
+    input:
+        alignment=rules.align.output.alignment,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
+    threads: 3
+    shell:
+        """
+        augur tree \
+            --alignment {input.alignment} \
+            --output {output.tree} \
+            --nthreads {threads} \
+            --tree-builder-args '-ninit 10 -n 4 -czb' \
+            > /dev/null
+        """
+
+
+rule root:
+    input:
+        tree=rules.tree.output.tree,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
+    params:
+        root = lambda w: config['builds'][w.lineage][w.segment]['root']
+    run:
+        from Bio import Phylo
+
+        T = Phylo.read(input.tree, 'newick')
+
+        T.root_with_outgroup(params.root)
+
+        Phylo.write(T, output.tree, "newick")
+
+
+# refine while keeping the root
+rule refine:
+    input:
+        tree=rules.root.output.tree,
+        alignment=rules.align.output.alignment,
+        metadata="data/{lineage}/{segment}/metadata.tsv"
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree.nwk",
+        node_data="build/{lineage}/{segment}/{reference}/branch_lengths.json",
+    threads: 1
+    shell:
+        """
+        augur refine \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.node_data} \
+            --keep-root \
+            --divergence-unit mutations-per-site
+        """
+
+
+
+
+rule ancestral:
+    message:
+        """
+        Reconstructing ancestral sequences and mutations
+          - inferring ambiguous mutations
+        """
+    input:
+        tree=rules.refine.output.tree,
+        alignment=rules.align.output.alignment,
+        reference="dataset_config/{lineage}/{segment}/{reference}/reference.gb",
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/muts.json",
+    params:
+        inference="joint",
+        genes=genes,
+        translations= "build/{lineage}/{segment}/{reference}/aligned.gene.%GENE.fasta",
+    shell:
+        """
+        augur ancestral \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --inference {params.inference} \
+            --infer-ambiguous \
+            --genes {params.genes} \
+            --annotation {input.reference} \
+            --translations {params.translations:q} \
+            --root-sequence {input.reference} \
+            --output-node-data {output.node_data}
+        """
+
+
+def get_node_data(w):
+    node_data = [
+        rules.refine.output.node_data,
+        "build/{lineage}/{segment}/{reference}/muts.json".format(**w),
+    ]
+
+    return node_data
+
+
+
+rule export:
+    message:
+        "Exporting data files for auspice"
+    input:
+        tree="build/{lineage}/{segment}/{reference}/tree.nwk",
+        metadata="data/{lineage}/{segment}/metadata.tsv",
+        node_data = get_node_data,
+        auspice_config= "build/{lineage}/{segment}/{reference}/auspice_config.json"
+    output:
+        auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
+    params:
+        fields="strain region country date gisaid_epi_isl accession_{segment}",
+        select_fields = ','.join(["strain", "region", "country", "date", "gisaid_epi_isl", "accession_{segment}"]),
+        date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
+    shell:
+        """
+        tsv-select -H -f {params.select_fields} {input.metadata} > {input.metadata}.tmp
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata}.tmp \
+            --node-data {input.node_data}\
+            --auspice-config {input.auspice_config} \
+            --color-by-metadata {params.fields} \
+            --include-root-sequence-inline \
+            --minify-json \
+            --skip-validation \
+            --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
+            --output {output.auspice_json} 2>&1;
+        """
+
+
+rule clean:
+    shell:
+        """
+        rm -rf build datasets auspice
+        """
+
+
+rule clean_all:
+    shell:
+        """
+        rm -rf build
+        rm -rf auspice
+        rm -rf datasets
+        rm -rf data/
+        """

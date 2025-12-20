@@ -39,7 +39,7 @@ if __name__=="__main__":
     parser.add_argument("--reference-name", required=True, help="attribute info")
     parser.add_argument("--auspice-config", required=True, help="Auspice config JSON with coloring entry to have scale added to")
     parser.add_argument("--pathogen-jsons", nargs='+', required=True, help="name of the coloring field in the Auspice config JSON")
-    parser.add_argument("--clades", nargs="+", required=True, help="list of values to assign colors to")
+    parser.add_argument("--clades", nargs="+", required=False, help="list of values to assign colors to")
     parser.add_argument("--output-auspice", required=True, help="Auspice config JSON with scale added to the requested coloring")
     parser.add_argument("--output-pathogen", required=True, help="Auspice config JSON with scale added to the requested coloring")
     args = parser.parse_args()
@@ -64,7 +64,7 @@ if __name__=="__main__":
     if args.segment in ['ha', 'na']:
         pathogen_json['defaultCds'] = {"ha": "HA1", "na":"NA"}.get(args.segment)
 
-    if len(args.clades):
+    if args.clades and len(args.clades)>0:
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
             get_clade_configs(c) for c in args.clades if c not in ['default']
         ]

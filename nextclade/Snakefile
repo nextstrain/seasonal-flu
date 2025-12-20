@@ -156,7 +156,7 @@ rule ancestral:
         """
     input:
         tree=rules.refine.output.tree,
-        alignment=rules.align.output.alignment,
+        alignment=rules.add_founders_to_alignment.output.alignment,
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
