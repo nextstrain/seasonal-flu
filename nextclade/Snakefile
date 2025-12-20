@@ -126,10 +126,25 @@ rule tidytree:
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 
+rule sanitize:
+    input:
+        tree=rules.tidytree.output.tree,
+    output:
+        tree="build/{lineage}/{segment}/{reference}/tree_clean.nwk",
+    params:
+        prune_length = 0.03
+    shell:
+        """
+        python scripts/root_and_sanitize.py \
+            --input-tree {input.tree} \
+            --prune-length {params.prune_length} \
+            --output-tree {output.tree}
+        """
+
 # refine while keeping the root
 rule refine:
     input:
-        tree=rules.tidytree.output.tree,
+        tree=rules.sanitize.output.tree,
         alignment=rules.add_founders_to_alignment.output.alignment,
         metadata="data/{lineage}/{segment}/metadata.tsv"
     output:
