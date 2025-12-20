@@ -95,10 +95,13 @@ rule download_changelog_dataset:
     output:
         changelog = "data/{lineage}/{segment}/{reference}/dataset-changelog.md"
     params:
-        source=lambda w: f"{config['dataset_repo']}/{w.lineage}/{w.segment}/{w.reference}/CHANGELOG.md",
+        source=lambda w: f"{config['dataset_repo']}/{w.lineage}/{w.segment}/{w.reference}/CHANGELOG.md" if w.segment in ['ha', 'na'] else f"{config['dataset_repo']}/{w.lineage}/{w.segment}/CHANGELOG.md",
+        msg = "## Unreleased\n" + config.get('changelog', '') + "\n"
     shell:
         """
-        curl {params.source} > {output.changelog}
+        curl {params.source} > {output.changelog}.orig
+        echo -e "{params.msg}" > {output.changelog}
+        cat {output.changelog}.orig >> {output.changelog}
         """
 
 rule sample_reference_strains:
