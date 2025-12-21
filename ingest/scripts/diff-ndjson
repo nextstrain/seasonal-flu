@@ -9,11 +9,19 @@ To save memory, the sequences themselves are removed and thus not compared.
 import argparse
 import io
 import json
+from collections import defaultdict
 import sys
 import zstandard as zstd
 from augur.io.json import load_ndjson
 from augur.io.print import print_err
+from datetime import datetime
+from typing import Any
 
+
+type DifferenceTracker = defaultdict[str, defaultdict[str, defaultdict[tuple[str|None,str|None], set[str]]]]
+#                               change type           key                    was,      is         EPI_ISLs
+
+type Record = dict[str, Any]
 
 def open_file(file_path):
     """
@@ -29,133 +37,156 @@ def open_file(file_path):
     else:
         return open(file_path, 'r')
 
+def double_print(*args):
+    print(*args, file=sys.stdout)
+    print(*args, file=sys.stderr)
 
-def deep_diff(truth_val, query_val, path=""):
+def newpage() -> None:
+    print("\n\\newpage\n")
+
+
+def diff_records(id:str, truth: Record, query: Record, store: DifferenceTracker) -> bool:
+    """Returns true if identical, false if different"""
+    assert 'sequences' in truth and 'sequences' in query, "Every record must have 'sequences'"
+    identical = True
+
+    truth_keys = set(truth.keys())
+    query_keys = set(query.keys())
+
+    for key in truth_keys - query_keys:
+        store['key removed'][key][(truth[key], None)].add(id)
+        identical=False
+
+    for key in query_keys - truth_keys:
+        store['key added'][key][(None, query[key])].add(id)
+        identical=False
+
+    for key in query_keys & truth_keys:
+        if key == 'sequences':
+            continue
+        truth_val = truth[key]
+        query_val = query[key]
+        assert not (isinstance(truth_val, dict) or isinstance(query_val, dict) or isinstance(truth_val, list) or isinstance(query_val, list)),\
+            f"Record values for {key} can't be a list or dict"        
+        if truth_val != query_val:
+            identical=False
+            if not query_val:
+                store['key removed'][key][(truth[key], None)].add(id)
+            elif not truth_val:
+                store['key added'][key][(None, query[key])].add(id)
+            else:
+                store['value modified'][key][(truth_val, query_val)].add(id)
+
+    # Custom analysis of segments
+    truth_segments = set(truth['sequences'].keys())
+    query_segments = set(query['sequences'].keys())
+
+    for segment in query_segments | truth_segments:
+        truth_accessions = set([ el['accession'] for el in truth['sequences'].get(segment, []) ])
+        query_accessions = set([ el['accession'] for el in query['sequences'].get(segment, []) ])
+
+        if truth_accessions == query_accessions:
+            continue
+        identical=False
+        common = truth_accessions & query_accessions
+        removed = truth_accessions - common
+        added = query_accessions - common
+        if len(removed):
+            store['segments changed'][f"{segment} removed"][(", ".join(removed), None)].add(id)
+        if len(added):
+            store['segments changed'][f"{segment} added"][(None, ", ".join(added))].add(id)
+
+    return identical
+
+def stringify(v:str|None)->str:
+    if v is None:
+        return '<null>'
+    
+    # Latex was complaining about control chacters in Wilfried, HervÃ© Kadj
+    # which is mojibake / a string not properly decoded as utf-8 somewhere
+    # upstream. 
+    # TODO XXX - we should remove these upstream!
+    try:
+        return v.encode("latin1").decode("utf-8")
+    except UnicodeError:
+        return v
+
+
+def print_differences(store: DifferenceTracker) -> None:
+    """"
+    Print out our tracking of which values have changed to be rendered in a markdown table
     """
-    Recursively compare two values and return a list of differences.
-    Each difference is a tuple of (path, truth_value, query_value).
-    """
-    differences = []
+    newpage()
+    print()
+    for changeType in store.keys():
+        print(f"\n## {changeType}:\n")
 
-    # Handle None values
-    if truth_val is None and query_val is None:
-        return differences
-    if truth_val is None or query_val is None:
-        differences.append((path, truth_val, query_val))
-        return differences
-
-    # If types differ, report it
-    if type(truth_val) != type(query_val):
-        differences.append((path, truth_val, query_val))
-        return differences
-
-    # Handle dictionaries
-    if isinstance(truth_val, dict):
-        all_keys = set(truth_val.keys()) | set(query_val.keys())
-        for key in all_keys:
-            new_path = f"{path}.{key}" if path else key
-
-            if key not in truth_val:
-                differences.append((f"{new_path} (key added)", None, query_val[key]))
-            elif key not in query_val:
-                differences.append((f"{new_path} (key removed)", truth_val[key], None))
-            else:
-                differences.extend(deep_diff(truth_val[key], query_val[key], new_path))
-        return differences
-
-    # Handle lists
-    if isinstance(truth_val, list):
-        # Compare lists element by element
-        max_len = max(len(truth_val), len(query_val))
-        for i in range(max_len):
-            new_path = f"{path}[{i}]"
-
-            if i >= len(truth_val):
-                differences.append((f"{new_path} (element added)", None, query_val[i]))
-            elif i >= len(query_val):
-                differences.append((f"{new_path} (element removed)", truth_val[i], None))
-            else:
-                differences.extend(deep_diff(truth_val[i], query_val[i], new_path))
-        return differences
-
-    # Handle primitive values
-    if truth_val != query_val:
-        differences.append((path, truth_val, query_val))
-
-    return differences
-
-def format_value(val):
-    if val is None:
-        return "<missing>"
-    if isinstance(val, str):
-        return f'"{val}"'
-    if isinstance(val, (dict, list)):
-        # For complex types, show a truncated JSON representation
-        s = json.dumps(val)
-        if len(s) > 80:
-            return s[:77] + "..."
-        return s
-    return str(val)
+        if changeType=="value modified": # 4-column table
+            print("| {:<15} | {:<40} | {:<40} | {:<10} | ".format('key', 'old value', 'new value', 'count / ID'))
+            print("| {:<15} | {:<40} | {:<40} | {:<10} | ".format('-' * 10, '-' * 10, '-' * 10, '-' * 5))
+            for key in store[changeType].keys():
+                for was_is_tuple, ids in sorted(list(store[changeType][key].items()), key=lambda x: len(x[1]), reverse=True):
+                    count_or_id = f"`{list(ids)[0]}`" if len(ids)==1 else f"n={len(ids)}"
+                    print(f"| {key:<15} | {stringify(was_is_tuple[0]):<40} | {stringify(was_is_tuple[1]):<40} | {count_or_id:<10} | ")
+        else: # 3-column table
+            print("| {:<15} | {:<40} | {:<10} | ".format('key', 'value', 'count / ID'))
+            print("| {:<15} | {:<40} | {:<10} | ".format('-' * 10, '-' * 10, '-' * 5))
+            for key in store[changeType].keys():
+                for was_is_tuple, ids in sorted(list(store[changeType][key].items()), key=lambda x: len(x[1]), reverse=True):
+                    count_or_id = f"`{list(ids)[0]}`" if len(ids)==1 else f"n={len(ids)}"
+                    value = was_is_tuple[0] if was_is_tuple[0] else was_is_tuple[1]
+                    print(f"| {key:<15} | {stringify(value):<40}  | {count_or_id:<10} | ") 
+    print()
+    print()
 
 
-def compare_records(truth_record, query_record):
-    differences = deep_diff(truth_record, query_record)
-    if differences:
+def print_differences_per_id(id_key: str, store: DifferenceTracker) -> None:
+    newpage()
+    print(f"\n# Full diff for each {id_key}\n")
+    for id in sorted({i for t in store for k in store[t] for ids in store[t][k].values() for i in ids}):
+        print(f"\n### {id}")
+        for changeType in store.keys():
+            for key, data in store[changeType].items():
+                for was_is, ids in data.items():
+                    if id in ids:
+                        print()
+                        print(f"[{changeType}] `{key}`: `{stringify(was_is[0])}` → `{stringify(was_is[1])}`")
 
-        print(f"DIFFERENCES FOR ISL {query_record['gisaid_epi_isl']}")
-        for path, truth_val, query_val in differences:
-            if "(key removed)" in path:
-                field = path.replace(" (key removed)", "")
-                print(f"  Key removed: {field} (was: {format_value(truth_val)})")
-            elif "(key added)" in path:
-                field = path.replace(" (key added)", "")
-                print(f"  Key added: {field} (now: {format_value(query_val)})")
-            elif "(element removed)" in path:
-                print(f"  Element removed at {path.replace(' (element removed)', '')}: {format_value(truth_val)}")
-            elif "(element added)" in path:
-                print(f"  Element added at {path.replace(' (element added)', '')}: {format_value(query_val)}")
-            else:
-                print(f"  Value differs at {path}: {format_value(truth_val)} → {format_value(query_val)}")
-        print()
-        return False
-    return True
 
 def remove_sequence(record):
     """Remove the sequence string (ATCGs) to save memory"""
     sequences = record.get('sequences')
-    if isinstance(sequences, list):
-        for s in sequences:
+    assert isinstance(sequences, dict), "The 'sequences' element must be a dictionary. Are you using an old version of the gisaid cache?"
+    for segment, seqs in sequences.items():
+        for s in seqs:
             if 'sequence' in s:
                 del s['sequence']
-    elif isinstance(sequences, dict):
-        for segment, seqs in sequences.items():
-            for s in seqs:
-                if 'sequence' in s:
-                    del s['sequence']
     return record
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--truth", required=True, metavar="NDJSON", help="Source of truth NDJSON")
     parser.add_argument("--query", required=True, metavar="NDJSON", help="Query NDJSON")
+    parser.add_argument("--id-key", required=False, default="gisaid_epi_isl", help="Key to use as the ID for matching records")
     args = parser.parse_args()
-
+    
     with open_file(args.truth) as fh:
-        print_err("Loading the entire truth NDJSON into memory...")
-        truth_records = {record['gisaid_epi_isl']: remove_sequence(record) for record in load_ndjson(fh)}
+        print_err("Loading the truth NDJSON, dropping the actual sequences to reduce memory...")
+        truth_records = {record[args.id_key]: remove_sequence(record) for record in load_ndjson(fh)}
         truth_keys = set(truth_records.keys())
 
     fh = open_file(args.query)
     query_records = load_ndjson(fh) # generator
-    query_keys = set()
+    query_keys: set[str] = set()
 
     n_query_records = 0
     n_conflicting_rows = 0
-    common_keys = set() # in both NDJSONs
-    added_keys = set() # in query, not in truth
+    common_keys: set[str] = set() # in both NDJSONs
+    added_keys: set[str] = set() # in query, not in truth
+    differences: DifferenceTracker = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
 
     for query_record in query_records:
-        isl = query_record['gisaid_epi_isl']
+        isl = query_record[args.id_key]
         query_keys.add(isl)
         n_query_records+=1
 
@@ -164,7 +195,8 @@ if __name__ == '__main__':
 
         if isl in truth_keys:
             common_keys.add(isl)
-            same = compare_records(truth_records[isl], remove_sequence(query_record))
+            # same = compare_records(args.id_key, truth_records[isl], remove_sequence(query_record), differences)
+            same = diff_records(isl, truth_records[isl], remove_sequence(query_record), differences)
             if not same:
                 n_conflicting_rows+=1
             # we know ISLs are unique, so delete the entry from the (LARGE)
@@ -173,15 +205,34 @@ if __name__ == '__main__':
         else:
             added_keys.add(isl)
 
+
     # set of keys not observed in the query NDJSON, i.e. "removed"
     removed_keys = truth_keys - common_keys
 
-    print("---------------------------------")
-    print(f"n(truth records) = {len(truth_keys):,}")
-    print(f"n(query records) = {n_query_records:,}")
-    print(f"num added records (in query, not in truth): {len(added_keys)}")
-    print(", ".join(added_keys))
-    print(f"num removed records (in truth, not in query): {len(removed_keys)}")
-    print(", ".join(removed_keys))
-    print(f"n(conflicting records) = {n_conflicting_rows:,}" )
-    print("---------------------------------")
+    double_print(f"# Comparison of NDJSON files")
+    double_print(f"**Truth file** {args.truth}")
+    double_print(f"\n* n(truth records) = {len(truth_keys):,}")
+    double_print(f"\n**Query file** {args.query}")
+    double_print(f"\n* n(query records) = {n_query_records:,}")
+    double_print(f"\n\nTimestamp: {datetime.now().strftime("%Y-%m-%d %H:%M")}")
+
+    double_print(f"\n## High level summary:")
+
+    double_print(f"* num added records (in query, not in truth): {len(added_keys)}")
+    # print(", ".join(added_keys))
+    double_print(f"* num removed records (in truth, not in query): {len(removed_keys)}")
+    # print(", ".join(removed_keys))
+    double_print(f"* num conflicting records = {n_conflicting_rows:,}" )
+    double_print(f"\nConflicts:")
+    double_print()
+    double_print("| {:<15} | {:<15} | {} |".format("Category", "Key", "Count"))
+    double_print("| {:<15} | {:<15} | {} |".format('-' * 5, '-' * 5, '-' * 5))
+    for changeType in differences.keys():
+        for idx, (key,count) in enumerate(sorted([(key, sum([len(v) for v in el.values()])) for key, el in differences[changeType].items()], key=lambda x: x[1], reverse=True)):
+            ct = changeType if idx==0 else '' # only print first occurance
+            k = f"`{key}`" # for nicer PDF formatting
+            double_print(f"| {ct:<15} | {k:<15} | {count:,} |")
+
+    print_differences(differences)
+
+    print_differences_per_id(args.id_key, differences)
