@@ -1,0 +1,226 @@
+
+configfile: "./profiles/all-influenza/config.yaml"
+
+print(config)
+
+rule select_strains:
+    input:
+        metadata = config['inputs']['metadata'],
+        weights = config['select_strains']['weights'],
+    output:
+        metadata = "builds/all-influenza/metadata.tsv",
+        strains = "builds/all-influenza/strains.txt",
+    params:
+        args = config['select_strains']['args'].replace("\n", " \\\n"),
+    log:
+        "logs/all-influenza/select_strains.txt"
+    shell:
+        r"""
+        augur filter \
+            --metadata {input.metadata} \
+            {params.args} \
+            --group-by-weights {input.weights} \
+            --output-metadata {output.metadata} \
+            --output-strains {output.strains} 2>&1 | tee {log}
+        """
+
+rule select_sequences:
+    input:
+        sequences = config['inputs']['sequences'],
+        metadata = "builds/all-influenza/metadata.tsv",
+        strains = "builds/all-influenza/strains.txt",
+    output:
+        sequences = "builds/all-influenza/{segment}/sequences.fasta",
+    log:
+        "logs/all-influenza/select-sequences_{segment}.txt"
+    shell:
+        """
+        augur filter \
+            --sequences {input.sequences} \
+            --metadata {input.metadata} \
+            --exclude-all \
+            --include {input.strains} \
+            --output-sequences {output.sequences} 2>&1 | tee {log}
+        """
+
+rule mask:
+    input:
+        sequences = "builds/all-influenza/{segment}/sequences.fasta",
+    output:
+        sequences = "builds/all-influenza/{segment}/masked.fasta",
+    log:
+        "logs/all-influenza/mask_{segment}.txt"
+    shell:
+        """
+        augur mask \
+            --sequences {input.sequences} \
+            --mask-invalid \
+            --output {output.sequences} 2>&1 | tee {log}
+        """
+
+
+# TODO - if partitioning don't include reference!
+rule align:
+    input:
+        sequences = "builds/all-influenza/{segment}/masked.fasta",
+        reference =  lambda w: config['align']['reference'][w.segment],
+        annotation = lambda w: config['align']['annotation'][w.segment],
+    output:
+        alignment = "builds/all-influenza/{segment}/aligned.fasta",
+        translations = directory("builds/all-influenza/{segment}/translations"),
+    log:
+        "logs/all-influenza/align_{segment}.txt"
+    params:
+        genes = lambda w: ','.join(config['align']['genes'][w.segment]),
+    threads: 8
+    shell:
+        """
+        nextclade3 run\
+            {input.sequences} \
+            -r {input.reference} \
+            -m {input.annotation} \
+            --gap-alignment-side right \
+            --cds-selection {params.genes} \
+            --jobs {threads} \
+            --include-reference \
+            --output-fasta {output.alignment} \
+            --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
+        """
+
+rule tree:
+    message: "Building tree"
+    input:
+        alignment = rules.align.output.alignment,
+    output:
+        tree = "builds/all-influenza/{segment}/tree_raw.nwk"
+    log:
+        "logs/all-influenza/tree_{segment}.txt"
+    params:
+        method = config.get("tree", {}).get("method", "iqtree"),
+        tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
+        override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
+    threads: 8
+    shell:
+        """
+        augur tree \
+            --method {params.method} \
+            --alignment {input.alignment} \
+            {params.tree_builder_args} \
+            {params.override_default_args} \
+            --output {output.tree} \
+            --nthreads {threads} 2>&1 | tee {log}
+        """
+
+
+rule refine:
+    input:
+        tree = "builds/all-influenza/{segment}/tree_raw.nwk",
+        alignment = "builds/all-influenza/{segment}/aligned.fasta",
+        metadata = "builds/all-influenza/metadata.tsv",
+    output:
+        tree = "builds/all-influenza/{segment}/tree.nwk",
+        node_data = "builds/all-influenza/{segment}/branch-lenghts.json",
+    params:
+        coalescent = "const",
+        date_inference = "marginal",
+        # clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
+        # clock_rate = clock_rate,
+        # clock_std_dev = clock_std_dev
+    log:
+        "logs/all-influenza/refine_{segment}.txt"
+    shell:
+        """
+        augur refine \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.node_data} \
+            --root best \
+            --stochastic-resolve \
+            --timetree \
+            --use-fft \
+            --no-covariance \
+            --coalescent {params.coalescent} \
+            --date-confidence \
+            --date-inference {params.date_inference}  2>&1 | tee {log}
+        """
+
+rule ancestral:
+    input:
+        tree = "builds/all-influenza/{segment}/tree.nwk",
+        alignment = "builds/all-influenza/{segment}/aligned.fasta",
+        # translations = aggregate_translations,
+        reference =  lambda w: config['align']['reference'][w.segment],
+        # annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+    output:
+        node_data = "builds/all-influenza/{segment}/muts.json",
+        # translations_done = build_dir + "/{build_name}/{segment}/translations.done",
+    params:
+        inference = "joint",
+        # genes = lambda w: GENES[w.segment],
+        # input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE.fasta",
+        # output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE_withInternalNodes.fasta",
+    log:
+        "logs/all-influenza/ancestral_{segment}.txt"
+    shell:
+        """
+        augur ancestral \
+            --tree {input.tree} \
+            --alignment {input.alignment} \
+            --output-node-data {output.node_data} \
+            --inference {params.inference} 2>&1 | tee {log}
+        """
+
+rule traits:
+    message:
+        """
+        Inferring ancestral traits for {params.columns!s}
+        """
+    input:
+        tree = rules.refine.output.tree,
+        metadata = "builds/all-influenza/metadata.tsv",
+    output:
+        node_data ="builds/all-influenza/{segment}/traits.json",
+    params:
+        columns = config['traits']['columns']
+    log:
+        "logs/all-influenza/traits_{segment}.txt"
+    shell:
+        """
+        augur traits \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --output {output.node_data} \
+            --columns {params.columns} \
+            --confidence 2>&1 | tee {log}
+        """
+
+
+rule export:
+    message: "Exporting data files for auspice"
+    input:
+        tree = rules.refine.output.tree,
+        metadata = "builds/all-influenza/metadata.tsv",
+        node_data = [
+            "builds/all-influenza/{segment}/branch-lenghts.json",
+            "builds/all-influenza/{segment}/muts.json",
+            "builds/all-influenza/{segment}/traits.json",
+        ],
+        auspice_config = "profiles/all-influenza/auspice-config.json",
+        lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
+    output:
+        auspice_json = "auspice/all-influenza_{segment}.json"
+    log:
+        "logs/all-influenza/export_{segment}.txt"
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.node_data} \
+            --include-root-sequence-inline \
+            --lat-longs {input.lat_longs} \
+            --auspice-config {input.auspice_config} \
+            --output {output.auspice_json} 2>&1 | tee {log}
+        """

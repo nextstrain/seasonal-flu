@@ -1,0 +1,4 @@
+host	weight
+Human	2
+Avian	2
+default	1

@@ -202,3 +202,23 @@ filtering:
   #   additional_field: host
   #   additional_field_values: human
 
+  everything:
+    lineage_field: vtype
+    lineages:
+      - a
+    metadata_columns:
+      - strain
+      - date
+      - region
+      - country
+      - division
+      - location
+      - host
+      - domestic_status
+      - subtype # Note: identical to *lineage* for all A-type, non h1n1pdm viruses
+      - originating_lab
+      - submitting_lab
+      - authors
+      - PMID
+      - gisaid_clade
+      - pathogenicity # newly added (not used in fauna)
