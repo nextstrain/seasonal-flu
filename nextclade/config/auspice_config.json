@@ -47,14 +47,10 @@
   ],
   "filters": [
     "region",
-    "country",
-    "clade_membership",
-    "subclade"
+    "country"
   ],
   "display_defaults": {
-    "color_by": "clade_membership",
-    "distance_measure": "div",
-    "branch_label": "clade"
+    "distance_measure": "div"
   },
   "panels": ["tree","entropy"]
 }
