@@ -30,6 +30,18 @@ def get_clade_configs(name):
         "skipAsReference": True
     }}.get(name, {'name':name, "displayName":name, "description":""})
 
+default_CDS = {
+    "ha": "HA1",
+    "na": "NA",
+    "pb2": "PB2",
+    "pb1": "PB1",
+    "pa": "PA",
+    "np": "NP",
+    "mp": "M1",
+    "ns": "NS1"
+}
+
+
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -61,13 +73,23 @@ if __name__=="__main__":
                                    "reference name": args.reference_name}
 
     pathogen_json['cdsOrderPreference'] = {"ha": ["HA1", "HA2"], "na":["NA"]}.get(args.segment, [])
-    if args.segment in ['ha', 'na']:
-        pathogen_json['defaultCds'] = {"ha": "HA1", "na":"NA"}.get(args.segment)
+    pathogen_json['defaultCds'] = default_CDS[args.segment]
 
     if args.clades and len(args.clades)>0:
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
             get_clade_configs(c) for c in args.clades if c not in ['default']
         ]
+
+    if args.segment in ['ha', 'na']:
+        auspice_json['display_defaults'] = {
+            "color_by": "clade_membership",
+            "branch_label": "clade"
+        }
+        auspice_json['filters'].extend(['clade_membership', 'subclade'])
+    else:
+        auspice_json['display_defaults'] = {
+            "color_by": "QC_status",
+        }
 
     with open(args.output_pathogen, 'w') as fh:
         json.dump(pathogen_json, fh, indent=2)
