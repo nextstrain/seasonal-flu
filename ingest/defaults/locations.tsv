@@ -20,6 +20,7 @@ EPI_ISL_20180388	South America	Bolivia	Departamento de Santa Cruz	Provincia Cord
 EPI_ISL_1191587	Europe	Czech Republic	Jihocesky Kraj	Okres Tabor
 EPI_ISL_977513	Europe	Czech Republic	Jihocesky Kraj	Okres Tabor
 EPI_ISL_19437154	North America	Canada	British Columbia	White Rock
+EPI_ISL_20286859	South America	Brazil	Estado de Mato Grosso do Sul	Campo Grande
 EPI_ISL_19860186	South America	Brazil	Estado de Mato Grosso do Sul	Campo Grande
 EPI_ISL_19860184	South America	Brazil	Estado de Mato Grosso do Sul	Dois Irmaos Do Buriti
 EPI_ISL_19855239	South America	Brazil	Estado de Mato Grosso do Sul	Corumba
@@ -46,4 +47,7 @@ EPI_ISL_19786270	North America	United States	Hawaii	Honolulu County
 EPI_ISL_18308442	Africa	Canary Islands
 EPI_ISL_17778392	South America	Brazil	Estado do Parana	Toledo
 
-
+# Conflict between "Location" and "Additional location information" fields, using "Location"
+EPI_ISL_20288231	Asia	Bangladesh	Khulna Division 
+EPI_ISL_20288227	Asia	Bangladesh	Dhaka Division
+ 
