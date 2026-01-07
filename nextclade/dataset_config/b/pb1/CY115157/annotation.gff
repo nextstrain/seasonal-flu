@@ -1,0 +1,7 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region CY115157.1 1 2334
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=604436
+CY115157.1	Genbank	region	1	2334	.	+	.	ID=CY115157.1:1..2334;Dbxref=taxon:604436;Name=1;collection-date=2008;country=Australia: Brisbane;gbkey=Src;lab-host=Egg passage(s);mol_type=viral cRNA;nat-host=human;segment=1;strain=B/Brisbane/60/2008
+CY115157.1	Genbank	CDS	3	2261	.	+	0	Name=PB1;gbkey=CDS;gene=PB1;protein_id=AFH57918.1;ID=cds-AFH57918.1;product=polymerase PB1;Dbxref=NCBI_GP:AFH57918.1

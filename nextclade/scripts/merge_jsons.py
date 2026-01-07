@@ -64,8 +64,8 @@ if __name__=="__main__":
     with open(args.auspice_config) as fh:
         auspice_json = json.load(fh)
 
-    flu_type = {'h3n2':'A', 'h1n1pdm':'A', 'vic':'B', 'yam':'B'}[args.lineage]
-    lineage_name = {'h3n2':'H3N2', 'h1n1pdm':'H1N1pdm', 'vic':'Victoria', 'yam':'Yamagata'}[args.lineage]
+    flu_type = {'h3n2':'A', 'h1n1pdm':'A', 'vic':'B', 'yam':'B', 'b':'B'}[args.lineage]
+    lineage_name = {'h3n2':'H3N2', 'h1n1pdm':'H1N1pdm', 'vic':'Victoria', 'yam':'Yamagata', 'b':'B'}[args.lineage]
 
     pathogen_json['attributes'] = {"name": f"Influenza {flu_type} {lineage_name} {args.segment.upper()}",
                                    "segment": args.segment,

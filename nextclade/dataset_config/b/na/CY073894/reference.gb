@@ -1,0 +1,76 @@
+LOCUS       CY073894                1401 bp    cRNA    linear   VRL 25-JUL-2016
+DEFINITION  Influenza B virus (B/Brisbane/60/2008) segment 6 sequence.
+ACCESSION   CY073894
+VERSION     CY073894.1
+KEYWORDS    .
+SOURCE      Influenza B virus (B/Brisbane/60/2008)
+  ORGANISM  Influenza B virus (B/Brisbane/60/2008)
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Betainfluenzavirus; Betainfluenzavirus influenzae.
+REFERENCE   1  (bases 1 to 1401)
+  AUTHORS   Sabaiduc,S., Skowronski,D., Petric,M. and Chan,T.
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 1401)
+  AUTHORS   Sabaiduc,S., Skowronski,D., Gardy,J., Petric,M. and Chan,T.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (16-SEP-2010) Genome Research Laboratory, British Columbia
+            Centre for Disease Control, 655 West 12th Ave., Vancouver, BC
+            V5Z4R4, Canada
+FEATURES             Location/Qualifiers
+     source          1..1401
+                     /organism="Influenza B virus (B/Brisbane/60/2008)"
+                     /mol_type="viral cRNA"
+                     /strain="B/Brisbane/60/2008"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:604436"
+                     /segment="6"
+                     /lab_host="MDCK passage(s)"
+                     /geo_loc_name="Australia: Brisbane"
+                     /collection_date="Aug-2008"
+     CDS             1..1401
+                     /ID="cds-ADN32819.1"
+                     /Dbxref="NCBI_GP:ADN32819.1"
+                     /Name="NA"
+                     /gbkey="CDS"
+                     /gene="NA"
+                     /product="neuraminidase"
+                     /protein_id="ADN32819.1"
+                     /locus_tag="NA"
+     CDS             1..296
+                     /ID="cds-ADN32818.1"
+                     /Dbxref="NCBI_GP:ADN32818.1"
+                     /Name="NB"
+                     /gbkey="CDS"
+                     /gene="NB"
+                     /partial="true"
+                     /product="NB protein"
+                     /protein_id="ADN32818.1"
+                     /start_range=".,1"
+                     /locus_tag="NB"
+ORIGIN
+        1 atgctacctt caactataca aacgttaacc ctatttctca catcaggggg agtattatta
+       61 tcactatatg tgtcagcttc attatcatac ttactatatt cggatatatt gctaaaattc
+      121 tcaccaacag aaataactgc accaacaatg ccattggatt gtgcaaacgc atcaaatgtt
+      181 caggctgtga accgttctgc aacaaaaggg gtgacacttc ttctcccaga accggagtgg
+      241 acatacccgc gtttatcttg cccgggctca acctttcaga aagcactcct aattagccct
+      301 catagattcg gagaaaccaa aggaaactca gctcccttga taataaggga accttttatt
+      361 gcttgtggac caaatgaatg caaacacttt gctctaaccc attatgcagc ccaaccaggg
+      421 ggatactaca atggaacaag aggagacaga aacaagctga ggcatctaat ttcagtcaaa
+      481 ttgggcaaaa tcccaacagt agaaaactcc attttccaca tggcagcatg gagcgggtcc
+      541 gcgtgccatg atggtaagga atggacatat atcggagttg atggccctga caataatgca
+      601 ttgctcaaag taaaatatgg agaagcatat actgacacat accattccta tgcaaacaaa
+      661 atcctaagaa cacaagaaag tgcctgcaat tgcatcgggg gaaattgtta tcttatgata
+      721 actgatggct cagcttcagg tgttagtgaa tgcagatttc ttaagattcg agagggccga
+      781 ataataaaag aaatatttcc aacaggaaga gtaaaacaca ctgaggaatg cacatgcgga
+      841 tttgccagca ataaaaccat agaatgtgcc tgtagagata acagttacac agcaaaaaga
+      901 ccttttgtca aattaaacgt ggagactgat acagcagaaa taagattgat gtgcacagat
+      961 acttatttgg acacccccag accaaacgat ggaagcataa caggcccttg tgaatctaat
+     1021 ggggacaaag ggagtggagg catcaaggga ggatttgttc atcaaagaat ggaatccaag
+     1081 attggaaggt ggtactctcg aacgatgtct aaaactgaaa ggatggggat gggactgtat
+     1141 gtcaagtatg atggagaccc atgggctgac agtgatgccc tagcttttag tggagtaatg
+     1201 gtttcaatga aagaacctgg ttggtactcc tttggcttcg aaataaaaga taagaaatgc
+     1261 gatgtcccct gtattgggat agagatggta catgatggtg gaaaagagac ttggcactca
+     1321 gcagcaacag ccatttactg tttaatgggc tcaggacagc tgctgtggga cactgtcaca
+     1381 ggtgttgaca tggctctgta a
+//
