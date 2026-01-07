@@ -436,7 +436,7 @@ def create_fauna_epi_isl_linkage(
     print("\nConsidering strain name matches (lowercase, no spaces comparisons)")
     
     def simplify(s:str) -> str:
-        return s.lower().replace("/",'').replace(' ','').replace('.','').replace("A/A/", "A/")
+        return s.lower().replace("/",'').replace(' ','').replace('.','').replace("a/a/", "a/")
     
     simplified_strain_to_epi_isl = {simplify(ndjson_records[isl]['strain']): isl for isl in epi_isl_unlinked}
     for fauna_key in fauna_keys_unlinked.copy():
@@ -484,6 +484,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--truth", required=True, metavar="FILE", help="Source of truth file (TSV)")
     parser.add_argument("--query", required=True, metavar="FILE", help="Query file (NDJSON )")
+    parser.add_argument("--output-strain-map", required=False, metavar="FILE", help="Output a map of strain names (FAUNA -> NEW)")
     parser.add_argument("--verbose", action="store_true")
 
     args = parser.parse_args()
@@ -503,6 +504,15 @@ if __name__ == '__main__':
 
     (fauna_linkage, fauna_keys_unlinked, epi_isl_unlinked) = \
         create_fauna_epi_isl_linkage(ha_to_epi_isl, query_records, truth_records)
+
+    if args.output_strain_map:
+        print(f"\nWriting out strain map of matches (fauna -> new) where strains aren't already identical")
+        with open(args.output_strain_map, 'w') as fh:
+            for fauna_key, epi_isl in fauna_linkage.items():
+                fauna_strain = truth_records[fauna_key]['strain'] # FAUNA
+                ndjson_strain = query_records[epi_isl]['strain']  # CURATED NDJSON
+                if fauna_strain!=ndjson_strain:
+                    print(f"{fauna_strain}\t{ndjson_strain}", file=fh)
 
     missing_keys_by_type: defaultdict[str, int] = defaultdict(int)
     if fauna_keys_unlinked:
