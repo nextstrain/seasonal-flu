@@ -1,0 +1,4 @@
+##gff-version 3
+##sequence-region CY073894.1 1 1401
+CY073894.1	annotation	remark	1	1401	.	.	.	accessions=CY073894;
+CY073894.1	feature	gene	1	1401	.	+	.	codon_start=1;gene=NA;gene_name=NA;product=neuraminidase;protein_id=ADN32819.1;

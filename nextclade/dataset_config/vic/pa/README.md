@@ -1,12 +1,12 @@
-# Influenza A(H1N1pdm) PA based on reference "A/California/07/2009"
+# Influenza A(H1N1pdm) PA based on reference "B/Brisbane/60/2008"
 
 | Key                  | Value                |
 | -------------------- | -------------------- |
 | authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
-| name                 | Influenza A(H1N1pdm) PA                      |
-| reference            | A/California/07/2009                    |
-| dataset path         | flu/h1n1pdm/pa                     |
-| reference accession  | NC_026437   |
+| name                 | Influenza B(Vic) PA                      |
+| reference            | brisbane-60-2008                   |
+| dataset path         | flu/vic/pa                     |
+| reference accession  | CY115156   |
 
 ## Features
 This dataset only provides a reference for alignment and an annotation for translation.
