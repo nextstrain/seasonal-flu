@@ -80,18 +80,6 @@ builds:
           reference_strain: A/NewYork/392/2004
           filter: "--min-date 1968 --probabilistic-sampling --group-by year region --min-length 800 --subsample-max-sequences 200"
   b:
-    ha:
-      root: "B/Lee/1940"
-      refs:
-        KX058884:
-          reference_strain: B/Brisbane/60/2008
-          filter: "--min-date 1940 --probabilistic-sampling --group-by year region --min-length 1600 --subsample-max-sequences 200"
-    na:
-      root: "B/Lee/1940"
-      refs:
-        CY073894:
-          reference_strain: B/Brisbane/60/2008
-          filter: "--min-date 1940 --probabilistic-sampling --group-by year region --min-length 1600 --subsample-max-sequences 200"
     pb2:
       root: "B/Lee/1940"
       refs:

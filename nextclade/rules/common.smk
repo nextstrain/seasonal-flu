@@ -3,7 +3,7 @@ import datetime
 
 wildcard_constraints:
     flu_type="[A-Za-z0-9]+",
-    lineage=r"h3n2|h1n1pdm|vic|yam",
+    lineage=r"h3n2|h1n1pdm|vic|yam|b",
     segment = r"pb2|pb1|pa|ha|np|na|mp|ns",
     reference="[^/]+",
 
@@ -20,12 +20,11 @@ def genes(w):
         'ns': ["NEP", "NS1"]
     }.get(w.segment, [])
 
-
 rule download_sequences:
     output:
         sequences="data/{lineage}/{segment}/sequences.fasta",
     params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/sequences.fasta.xz",
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest/{lineage}/{segment}/sequences.fasta.xz",
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
@@ -35,7 +34,7 @@ rule download_metadata:
     output:
         metadata="data/{lineage}/{segment}/metadata-raw.tsv",
     params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/metadata.tsv.xz",
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest/{lineage}/metadata.tsv.xz",
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.metadata}
@@ -141,7 +140,6 @@ rule subsample:
             --exclude {input.exclude} \
             --include {input.include_strains} {input.nextclade_include} \
             --include-where gisaid_epi_isl={params.reference_EPI_ISL} \
-            --exclude-where qc.overallStatus='bad' \
             {params.filter_arguments} \
             --output-sequences {output.sampled_sequences} \
             --output-strains {output.sampled_strains}
@@ -204,7 +202,9 @@ rule virus_specific_jsons:
         pathogen = "build/{lineage}/{segment}/{reference}/pathogen.json",
         auspice = "build/{lineage}/{segment}/{reference}/auspice_config.json",
     params:
-        reference_name = lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference]['reference_strain']
+        reference_name = lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference]['reference_strain'],
+        clades = lambda w: f'--clades {" ".join([config["builds"][w.lineage][w.segment]["clade_systems"][clade].get("key", "default")
+                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]])}' if w.segment in ['ha', 'na'] else ""
     shell:
         """
         python3 scripts/merge_jsons.py --lineage {wildcards.lineage} \
@@ -212,6 +212,7 @@ rule virus_specific_jsons:
             --reference-name {params.reference_name} \
             --segment {wildcards.segment} \
             --pathogen-jsons {input.pathogen} {input.additional_pathogen} \
+            {params.clades} \
             --auspice-config {input.auspice_config} \
             --output-pathogen {output.pathogen} \
             --output-auspice {output.auspice}

@@ -1,36 +1,34 @@
-# Influenza B(Vic) NA based on reference "B/Brisbane/60/2008"
+# Influenza B NA based on reference "B/Brisbane/60/2008"
 
 | Key                  | Value                |
 | -------------------- | -------------------- |
 | authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
-| name                 | Influenza B(Vic) HA                      |
+| name                 | Influenza B NA                      |
 | reference            | B/Brisbane/60/2008                      |
-| dataset path         | flu/vic/na/CY073894                     |
-| reference accession  | CY073894   |
-| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/)  |
+| dataset path         | flu/b/na/CY073894                     |
+| reference accession  |  CY073894  |
+| clade definitions  |  [github.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/)  |
+
+This dataset encompasses all Influenza B viruses in humans and is based on the B/Brisbane/60/2008 reference sequence.
+
+## Scope of this dataset
+The reference sequence for this datasets precedes the deletions at positions 162ff in the HA1 protein of the virus and thus follows the canonical numbering of amino acids in the protein.
 
 ## Features
 This dataset supports
 
+ * Assignment of sequences to Victoria and Yamagata lineages
  * Assignment to clades and subclades based on the nomenclature defined in [github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/)
  * Identification of glycosilation motifs
  * Sequence QC
  * Phylogenetic placement
 
-### Resistance mutations
-Resistance markers are taken from the [summary of by the WHO/GISRS](https://www.who.int/teams/global-influenza-programme/laboratory-network/quality-assurance/antiviral-susceptibility-influenza/neuraminidase-inhibitor).
-
-
-
 ## Clades of seasonal influenza viruses
 
-The WHO Collaborating centers **do not** define "clades" for the neuraminidase segment.
-
-This dataset focuses on "subclades" that in analogy to the HA segment are defined to break down diversity at high resolution and allow following the spread of different viral groups.
-These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `A.2.3`.
+In addition to these clades, "subclades" are defined to break down diversity at higher resolution and allow following the spread of different viral groups.
+These follow a Pango-like nomenclature consisting of a letter followed by numbers separated by periods as in `A.3.2`.
 The leading letter is an alias of a previous name.
 Details of the nomenclature system can be found at [github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/](https://github.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/).
-
 
 ## What is Nextclade dataset
 

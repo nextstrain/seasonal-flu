@@ -1,1 +1,7 @@
-{}
+{
+    "shortcuts": [
+      "flu_b_pb2",
+      "nextstrain/flu/b/pb2",
+      "nextstrain/flu/b/pb2/brisbane-60-2008"
+    ]
+}

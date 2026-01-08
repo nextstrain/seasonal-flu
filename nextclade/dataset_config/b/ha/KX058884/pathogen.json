@@ -2,10 +2,10 @@
     "nucMutLabelMap": {},
     "nucMutLabelMapReverse": {},
     "shortcuts": [
-      "flu_vic_ha",
-      "nextstrain/flu/vic",
-      "nextstrain/flu/vic/ha",
-      "nextstrain/flu/vic/ha/brisbane-60-2008"
+      "flu_b_ha",
+      "nextstrain/flu/b",
+      "nextstrain/flu/b/ha",
+      "nextstrain/flu/b/ha/brisbane-60-2008"
     ],
     "aaMotifs": [
       {

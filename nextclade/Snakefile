@@ -54,7 +54,7 @@ rule download_changelog_clades:
 
 rule offset_clades:
     input:
-        rules.download_clades.output,
+        "data/{lineage}/{segment}/{reference}/raw_{clade}.tsv"
     output:
         "data/{lineage}/{segment}/{reference}/shifted_{clade}.tsv",
     params:
@@ -103,7 +103,7 @@ rule tidytree:
         tree="build/{lineage}/{segment}/{reference}/tidytree.nwk"
     threads: 2
     params:
-        clade_name = lambda w: 'subclade' if w.segment=='ha' else 'clade',
+        clade_name = lambda w: 'subclade' if w.segment=='ha' and w.lineage!='b' else 'clade',
         explicit_root = get_explicit_root,
         root_lineage = get_root_lineage
     resources:
