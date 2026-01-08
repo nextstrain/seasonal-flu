@@ -1,0 +1,7 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007382.1 1 1410
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=488241
+NC_007382.1	RefSeq	region	1	1410	.	+	.	ID=NC_007382.1:1..1410;Dbxref=taxon:488241;Name=6;collection-date=1968;gbkey=Src;mol_type=viral cRNA;nat-host=Homo sapiens;old-name=Influenza A virus (A/Korea/426/68(H2N2));segment=6;serotype=H2N2;strain=A/Korea/426/1968
+NC_007382.1	RefSeq	CDS	1	1410	.	+	0	Name=NA;gene=NA;gbkey=CDS;protein_id=YP_308872.1;product=neuraminidase;locus_tag=FLUAVH2N2_s6p1;ID=cds-YP_308872.1;Dbxref=GenBank:YP_308872.1,GeneID:3655112

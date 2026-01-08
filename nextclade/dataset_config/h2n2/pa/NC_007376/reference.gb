@@ -1,0 +1,101 @@
+LOCUS       NC_007376               2233 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 3, complete
+            sequence.
+ACCESSION   NC_007376
+VERSION     NC_007376.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1
+  AUTHORS   Okazaki,K., Kawaoka,Y. and Webster,R.G.
+  TITLE     Evolutionary pathways of the PA genes of influenza A viruses
+  JOURNAL   Virology 172 (2), 601-608 (1989)
+   PUBMED   2800339
+REFERENCE   2  (bases 1 to 2233)
+  AUTHORS   Okazaki,K., Kawaoka,Y. and Webster,R.G.
+  JOURNAL   Unpublished
+REFERENCE   3  (bases 1 to 2233)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from M26079.
+            [2]  sites; for [1].
+            Draft entry and computer readable copy of sequence [1] kindly
+            submitted by K.Okazaki, 18-JUL-1989.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2233
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /db_xref="taxon:488241"
+                     /segment="3"
+                     /geo_loc_name="South Korea"
+                     /collection_date="1968"
+     CDS             25..2175
+                     /ID="cds-YP_308852.1"
+                     /Dbxref="GenBank:YP_308852.1,GeneID:3655106"
+                     /Name="PA"
+                     /gbkey="CDS"
+                     /gene="PA"
+                     /locus_tag="PA"
+                     /product="polymerase PA"
+                     /protein_id="YP_308852.1"
+     CDS             join(25..597,599..784)
+                     /ID="cds-YP_006495803.1"
+                     /Dbxref="GenBank:YP_006495803.1,GeneID:13229461"
+                     /Name="PA-X"
+                     /exception="ribosomal slippage"
+                     /gbkey="CDS"
+                     /gene="PA-X"
+                     /locus_tag="PA-X"
+                     /product="PA-X protein"
+                     /protein_id="YP_006495803.1"
+ORIGIN
+        1 agcaaaagca ggtactgatt cgaaatggaa gattttgtgc gacaatgctt caatccgatg
+       61 attgtcgaac ttgcggaaaa ggcaatgaaa gagtatggag aagatctgaa aatcgaaaca
+      121 aacaaatttg cagcaatatg cactcacttg gaagtatgct tcatgtattc agattttcat
+      181 ttcatcaatg agcaaggcga gtcaataatg gtagagcttg atgatccaaa tgcacttttg
+      241 aagcacagat ttgaaataat agagggaaga gatcgcacaa tggcctggac agtagtaaac
+      301 agtatttgca acaccacagg agctgagaaa ccgaagtttc tgccagattt gtatgattac
+      361 aaggagaata gattcatcga gattggagtg acaaggagag aagtccacat atactatctt
+      421 gaaaaggcca ataaaattaa atctgagaat acacacatcc acattttctc attcactggg
+      481 gaagaaatgg ccacaaaggc cgactacact ctcgatgagg aaagcagggc taggatcaaa
+      541 accagactat tcaccataag acaagaaatg gccaacagag gcctctggga ttcctttcgt
+      601 cagtccgaaa gaggcgaaga aacaattgaa gaaagatttg aaatcacagg gacaatgcgc
+      661 aggcttgccg accaaagtct cccgccgaac ttctcctgcc ttgagaattt tagagcctat
+      721 gtggatggat tcgaaccgaa cggctacatt gagggcaagc tttctcaaat gtccaaagaa
+      781 gtaaatgcaa aaattgaacc ttttctgaaa acaacaccaa gaccaattag acttccggat
+      841 gggcctcctt gttttcagcg gtccaaattc ctgctgatgg atgctttaaa attaagcatt
+      901 gaggacccaa gtcacgaagg ggagggaata ccactatatg atgcgatcaa gtgcatgaga
+      961 acattctttg gatggaaaga accctatatt gttaaaccac acgaaaaggg aataaatcca
+     1021 aattatctgc tgtcatggaa gcaagtactg gcggaactgc aggacattga gaatgaggag
+     1081 aagattccaa gaactaaaaa catgaagaaa acgagtcagc taaagtgggc acttggtgag
+     1141 aacatggcac cagagaaggt agactttgac aactgtagag acataagcga tttgaagcaa
+     1201 tatgatagtg acgaacctga attaaggtca ctttcaagct ggatccagaa tgagttcaac
+     1261 aaggcatgcg agctgaccga ttcaatctgg atagagctcg atgagattgg agaagacgtg
+     1321 gctccaattg aacacattgc aagcatgaga aggaattact tcacagcaga ggtgtcccat
+     1381 tgcagagcca cagaatatat aatgaagggg gtatacatta atactgcctt gcttaatgca
+     1441 tcctgtgcag caatggacga tttccaacta attcccatga taagcaagtg tagaactaaa
+     1501 gagggaaggc gaaagaccaa tttatatggt ttcatcataa aaggaagatc tcacttaagg
+     1561 aatgacaccg acgtggtaaa ctttgtgagc atggagtttt ctctcactga cccgagactt
+     1621 gagccacaca aatgggagaa gtactgtgtc cttgagatag gagatatgct actaagaagt
+     1681 gccataggcc agatgtcaag gcctatgttc ttgtatgtga ggacaaatgg aacatcaaag
+     1741 attaaaatga aatggggaat ggagatgagg ccttgcctcc ttcagtcact acaacaaatc
+     1801 gagagtatgg ttgaagccga gtcctctgtc aaagagaaag acatgaccaa agagtttttt
+     1861 gagaataaat cagaaacatg gcccattggg gagtccccca aaggagtgga agaaggttcc
+     1921 attgggaagg tctgcaggac tttattagcc aagtcggtat tcaatagcct gtatgcatcc
+     1981 ccacaattag aaggattttc agctgaatca agaaaactgc ttcttgtcgt tcaggctctt
+     2041 agggacaatc ttgaacctgg aacctttgat cttggggggc tatatgaagc aattgaggag
+     2101 tgcctgatta atgatccctg ggttttgctt aatgcgtctt ggttcaactc cttcctaaca
+     2161 catgcattaa gatagttgtg gcaatgctac tatttgctat ccatactgtc caaaaaagta
+     2221 ccttgtttct act
+//
