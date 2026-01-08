@@ -178,6 +178,7 @@ filtering:
       - passage_category
       - originating_lab
       - submitting_lab
+      - host
       - age
       - gender
       - gisaid_strain
