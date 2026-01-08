@@ -28,6 +28,27 @@ def get_clade_configs(name):
         "description": "Includes proposals of new subclades. These can change anytime.",
         "hideInWeb": True,
         "skipAsReference": True
+    },
+    "legacy-clade-yam": {
+        "name": "legacy-clade-yam",
+        "displayName": "Legacy B/Yam nomenclature",
+        "description": "Informal legacy nomenclature for B/Yamagata clades",
+        "hideInWeb": True,
+        "skipAsReference": True
+    },
+    "legacy-clade-vic": {
+        "name": "legacy-clade-vic",
+        "displayName": "Legacy B/Vic nomenclature",
+        "description": "Informal legacy nomenclature for B/Victoria clades",
+        "hideInWeb": True,
+        "skipAsReference": True
+    },
+    "lineage": {
+        "name": "lineage",
+        "displayName": "Influenza B lineage",
+        "description": "Classification of into B/Yamagata (now extinct), B/Victoria, or older strains.",
+        "hideInWeb": False,
+        "skipAsReference": True
     }}.get(name, {'name':name, "displayName":name, "description":""})
 
 default_CDS = {

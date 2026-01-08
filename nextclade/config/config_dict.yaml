@@ -147,22 +147,46 @@ builds:
           hardmin_date: 2007
           reference_EPI_ISL: CY073894
           reference_strain: B/Brisbane/60/2008
-  # all-b:
-  #   ha:
-  #     root: "B/Lee/1940"
-  #     changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
-  #     max_branch_length: 0.002
-  #     clade_systems:
-  #       subclade:
-  #         url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
-  #         tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
-  #     refs:
-  #       KX058884:
-  #         filter: "--min-date 1940 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
-  #         clade_offset: 0
-  #         hardmin_date: 1940
-  #         reference_EPI_ISL: EPI696970
-  #         reference_strain: B/Brisbane/60/2008-egg
+  b:
+    ha:
+      root: "B/Lee/1940"
+      changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
+      max_branch_length: 0.002
+      clade_systems:
+        subclade:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
+        lineage:
+          url: "local"
+          key: "lineage"
+        clade-vic:
+          url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
+          key: "legacy-clade-vic"
+        clade-yam:
+          url: "local"
+          key: "legacy-clade-yam"
+      refs:
+        KX058884:
+          filter: "--min-date 1940 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
+          clade_offset: 0
+          hardmin_date: 1940
+          reference_EPI_ISL: EPI696970
+          reference_strain: B/Brisbane/60/2008-egg
+    na:
+      root: "B/Lee/1940"
+      changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
+      max_branch_length: 0.002
+      clade_systems:
+        subclade:
+          url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_NA/main/.auto-generated/subclade.nwk"
+      refs:
+        CY073894:
+          filter: "--min-date 1940 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
+          clade_offset: -30
+          hardmin_date: 1940
+          reference_EPI_ISL: CY073894
+          reference_strain: B/Brisbane/60/2008-egg
 
 
   # yam:
