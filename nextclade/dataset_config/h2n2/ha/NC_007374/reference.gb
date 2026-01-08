@@ -1,0 +1,88 @@
+LOCUS       NC_007374               1773 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 4, complete
+            sequence.
+ACCESSION   NC_007374
+VERSION     NC_007374.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 1773)
+  AUTHORS   Schafer,J.R., Kawaoka,Y., Bean,W.J., Suss,J., Senne,D. and
+            Webster,R.G.
+  TITLE     Origin of the pandemic 1957 H2 influenza A virus and the persistence
+            of its possible progenitors in the avian reservoir
+  JOURNAL   Virology 194 (2), 781-788 (1993)
+   PUBMED   7684877
+REFERENCE   2  (bases 1 to 1773)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from L11133.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1773
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /db_xref="taxon:488241"
+                     /segment="4"
+     CDS             44..88
+                     /gbkey="Prot"
+                     /product="SigPep"
+                     /protein_id="YP_308873.1"
+                     /Name="SigPep"
+                     /locus_tag="SigPep"
+     CDS             89..1063
+                     /ID="id-YP_308850.1:16..340"
+                     /gbkey="Prot"
+                     /product="HA1"
+                     /protein_id="YP_308873.1"
+                     /Name="HA1"
+                     /locus_tag="HA1"
+     CDS             1064..1729
+                     /ID="id-YP_308850.1:341..562"
+                     /gbkey="Prot"
+                     /product="HA2"
+                     /protein_id="YP_308874.1"
+                     /Name="HA2"
+                     /locus_tag="HA2"
+ORIGIN
+        1 agcaaaagca ggggttatac catagacaac caaaagcata acaatggcca tcatttatct
+       61 catactcctg ttcacagcag tgagggggga ccagatatgc attggatacc atgccaataa
+      121 ttccacagaa aaggtcgaca caattctaga gcggaatgtc actgtgactc atgccaagga
+      181 catccttgag aagacccata acggaaagct atgcaaacta aacggaatcc ctccacttga
+      241 actaggggac tgtagcattg ccggatggct ccttggaaat ccagaatgtg ataggcttct
+      301 aagtgtgcca gaatggtcct atataatgga gaaagaaaac ccgagataca gtttgtgtta
+      361 cccaggcagc ttcaatgact atgaagaatt gaaacatctc ctcagcagcg tgaaacattt
+      421 tgagaaagtt aagattttgc ccaaagatag atggacacag catacaacaa ctggaggttc
+      481 atgggcctgc gcggtgtcag gtaaaccatc attcttcagg aacatggtct ggctgacacg
+      541 taaaggatca aattatccgg ttgccaaagg atcgtacaac aatacaagcg gagaacaaat
+      601 gctaataatt tggggagtgc accatcctaa tgatgaggca gaacaaagag cattgtacca
+      661 gaatgtggga acctatgttt ccgtagccac atcaacattg tacaaaaggt caatcccaga
+      721 aatagcagca aggcctaaag tgaatggact aggacgtaga atggaattct cttggaccct
+      781 cttggatatg tgggacacca taaattttga gagcactggt aatctagttg caccagagta
+      841 tgggttcaaa atatcgaaaa gaggtagttc agggatcatg aagacagaag gaacacttga
+      901 gaactgtgaa accaaatgcc aaactccttt gggagcaata aatacaacac taccttttca
+      961 caatgtccac ccactgacaa taggtgaatg ccccaaatat gtaaaatcgg agaaattggt
+     1021 cttagcaaca ggactaagga atgttcccca gattgaatca agaggattgt ttggggcaat
+     1081 agctggtttt atagaaggag gatggcaagg aatggttgat ggttggtatg gataccatca
+     1141 cagcaatgac cagggatcag ggtatgcagc agacaaagaa tccactcaaa aggcatttaa
+     1201 tggaatcacc aacaaggtaa attctgtgat tgaaaagatg aacacccaat ttgaagctgt
+     1261 tgggaaagaa ttcagtaact tagagaaaag actggagaac ttgaacaaaa agatggaaga
+     1321 cgggtttcta gatgtgtgga catacaatgc agagcttcta gttctgatgg aaaatgagag
+     1381 gacacttgac tttcatgatt ctaatgtcaa gaatctgtat gataaagtca gaatgcagct
+     1441 gagagacaac gtcaaagaac taggaaatgg atgttttgaa ttttatcaca aatgtgacaa
+     1501 tgaatgcatg gatagtgtga aaaacgggac atatgattat cccaagtatg aagaagaatc
+     1561 taaactaaat agaaatgaaa tcaaaggggt aaaattgagc agcatggggg tttatcaaat
+     1621 ccttgccatt tatgctacag tagcaggttc tctgtcactg gcaatcatga tggctgggat
+     1681 ctctttctgg atgtgctcca acgggtctct gcagtgcaga atctgcatat gattgtaagt
+     1741 cattttataa ttaaaaacac ccttgtttcc tga
+//

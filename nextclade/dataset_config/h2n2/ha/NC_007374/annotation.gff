@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007374.1 1 1773
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=488241
+NC_007374.1	RefSeq	region	1	1773	.	+	.	ID=NC_007374.1:1..1773;Dbxref=taxon:488241;Name=4;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Korea/426/68 (H2N2));segment=4;serotype=H2N2;strain=A/Korea/426/1968
+NC_007374.1	RefSeq	CDS	44	88	.	+	.	Name=SigPep;product=SigPep;gbkey=Prot;protein_id=YP_308873.1;ID=id-YP_308850.1:1..15
+NC_007374.1	RefSeq	CDS	89	1063	.	+	.	Name=HA1;product=HA1;gbkey=Prot;protein_id=YP_308873.1;ID=id-YP_308850.1:16..340
+NC_007374.1	RefSeq	CDS	1064	1729	.	+	.	Name=HA2;product=HA2;gbkey=Prot;protein_id=YP_308874.1;ID=id-YP_308850.1:341..562

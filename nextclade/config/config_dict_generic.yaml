@@ -115,4 +115,53 @@ builds:
       refs:
         CY115155:
           reference_strain: B/Brisbane/60/2008
-          filter: "--min-date 1940 --probabilistic-sampling --group-by year region --min-length 800 --subsample-max-sequences 200"
+          filter: "--min-date 1940 --probabilistic-sampling --group-by year region --min-length 600 --subsample-max-sequences 200"
+  h2n2:
+    pb2:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007378:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 2200 --subsample-max-sequences 200"
+    pb1:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007375:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 2200 --subsample-max-sequences 200"
+    pa:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007376:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 1800 --subsample-max-sequences 200"
+    ha:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007374:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 1300 --subsample-max-sequences 200"
+    np:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007381:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 1200 --subsample-max-sequences 200"
+    na:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007382:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 1200 --subsample-max-sequences 200"
+    mp:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007377:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 800 --subsample-max-sequences 200"
+    ns:
+      root: "A/Albany/26/1957"
+      refs:
+        NC_007380:
+          reference_strain: A/Korea/426/1968
+          filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 600 --subsample-max-sequences 200"

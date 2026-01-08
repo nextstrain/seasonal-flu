@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_007377.1 1 1027
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=488241
+NC_007377.1	RefSeq	region	1	1027	.	+	.	ID=NC_007377.1:1..1027;Dbxref=taxon:488241;Name=7;collection-date=1968;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Korea/426/68 (H2N2));segment=7;serotype=H2N2;strain=A/Korea/426/1968
+NC_007377.1	RefSeq	CDS	26	51	.	+	0	Name=M2;gene=M2;gbkey=CDS;protein_id=YP_308853.1;locus_tag=FLUAVH2N2_s7p1;ID=cds-YP_308853.1;product=membrane protein M2;Dbxref=GenBank:YP_308853.1,GeneID:3655107
+NC_007377.1	RefSeq	CDS	740	1007	.	+	1	Name=M2;gene=M2;gbkey=CDS;protein_id=YP_308853.1;locus_tag=FLUAVH2N2_s7p1;ID=cds-YP_308853.1;product=membrane protein M2;Dbxref=GenBank:YP_308853.1,GeneID:3655107
+NC_007377.1	RefSeq	CDS	26	784	.	+	0	Name=M1;gene=M1;gbkey=CDS;protein_id=YP_308854.1;locus_tag=FLUAVH2N2_s7p2;ID=cds-YP_308854.1;product=membrane protein M1;Dbxref=GenBank:YP_308854.1,GeneID:3655108

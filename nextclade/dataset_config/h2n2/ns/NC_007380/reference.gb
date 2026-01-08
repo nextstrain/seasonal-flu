@@ -1,0 +1,78 @@
+LOCUS       NC_007380                838 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 8, complete
+            sequence.
+ACCESSION   NC_007380
+VERSION     NC_007380.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 838)
+  AUTHORS   Lindstrom,S.E., Cox,N.J. and Klimov,A.
+  TITLE     Genetic analysis of human H2N2 and early H3N2 influenza viruses,
+            1957-1972: evidence for genetic divergence and multiple reassortment
+            events
+  JOURNAL   Virology 328 (1), 101-119 (2004)
+   PUBMED   15380362
+REFERENCE   2  (bases 1 to 838)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 838)
+  AUTHORS   Lindstrom,S.E., Cox,N.J. and Klimov,A.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (02-JAN-2003) NCID/DVRD/Influenza Branch, Centers for
+            Disease Control and Prevention, 1600 Clifton Road, Atlanta, GA
+            30333, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from AY210191.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..838
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:488241"
+                     /segment="8"
+                     /collection_date="1968"
+     CDS             join(1..30,503..838)
+                     /ID="cds-YP_308869.1"
+                     /Dbxref="GenBank:YP_308869.1,GeneID:3655110"
+                     /Name="NEP"
+                     /gbkey="CDS"
+                     /gene="NEP"
+                     /locus_tag="NEP"
+                     /product="nonstructural protein 2"
+                     /protein_id="YP_308869.1"
+     CDS             1..714
+                     /ID="cds-YP_308870.1"
+                     /Dbxref="GenBank:YP_308870.1,GeneID:23301357"
+                     /Name="NS1"
+                     /gbkey="CDS"
+                     /gene="NS1"
+                     /locus_tag="NS1"
+                     /product="nonstructural protein 1"
+                     /protein_id="YP_308870.1"
+ORIGIN
+        1 atggattcta acactgtgtc aagttttcag gtagattgct tcctttggca tgtccgaaaa
+       61 caagttgtag accaagaact aggtgatgcc ccattccttg atcggcttcg ccgagatcag
+      121 aagtccctaa ggggaagagg cagcactctc gatctagaca tcgaagcagc cacccgtgtt
+      181 ggaaagcaga tagtagagag gattctgaag gaagaatccg atgaggcact taaaatgacc
+      241 atggcctccg cacctgcttc gcgataccta actgacatga ctattgagga attgtcaagg
+      301 gactggttca tgctaatgcc caagcagaaa gtggaaggcc ctctttgcat cagaatagac
+      361 caggcaatca tggataagaa catcatgttg aaagcgaatt tcagtgtgat ttttgaccgg
+      421 ctagagaccc taatattact aagggctttc accgaagagg gagcaattgt tggcgaaatt
+      481 tcaccattgc cttctcttcc aggacatact attgaggatg tcaaaaatgc aattggggtc
+      541 ctcatcggag gacttgaatg gaatgataac acagttcgag tctctaaaac tctacagaga
+      601 ttcgcttgga gaagcagtaa tgagaatggg agacctccac tcactccaaa acagaaacgg
+      661 aaaatggcga gaacaattag gtcaaaagtt cgaagagata agatggctga ttgaagaagt
+      721 gagacacaga ttgaagataa cagagaatag ttttgagcaa ataacattta tgcaagcctt
+      781 acagctacta tttgaagtgg aacaagagat aagaactttc tcgtttcagc ttatttaa
+//

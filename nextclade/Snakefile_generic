@@ -6,6 +6,8 @@ include: "rules/common.smk"
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
+        if lineage!='h2n2':
+            continue
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"build/{lineage}/{segment}/{ref}/dataset.done")
@@ -149,10 +151,10 @@ rule export:
 
 
 
+#    sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
 
 rule make_dataset:
     input:
-        sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
@@ -173,7 +175,7 @@ rule make_dataset:
     shell:
         """
         mkdir -p datasets/{wildcards.lineage}/{wildcards.segment}
-        cp {input.sequences} {params.sequences}
+        cp {input.reference} {params.sequences}
         cp {input.auspice_json} {params.tree}
         cp {input.reference} {params.reference}
         cp {input.readme} {params.readme}

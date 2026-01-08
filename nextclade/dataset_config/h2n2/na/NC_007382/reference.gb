@@ -1,0 +1,79 @@
+LOCUS       NC_007382               1410 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 6, complete
+            sequence.
+ACCESSION   NC_007382
+VERSION     NC_007382.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 1410)
+  AUTHORS   Lindstrom,S.E., Cox,N.J. and Klimov,A.
+  TITLE     Genetic analysis of human H2N2 and early H3N2 influenza viruses,
+            1957-1972: evidence for genetic divergence and multiple reassortment
+            events
+  JOURNAL   Virology 328 (1), 101-119 (2004)
+   PUBMED   15380362
+REFERENCE   2  (bases 1 to 1410)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+REFERENCE   3  (bases 1 to 1410)
+  AUTHORS   Lindstrom,S.E., Cox,N.J. and Klimov,A.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (02-JAN-2003) NCID/DVRD/Influenza Branch, Centers for
+            Disease Control and Prevention, 1600 Clifton Road, Atlanta, GA
+            30333, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from AY209932.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1410
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:488241"
+                     /segment="6"
+                     /collection_date="1968"
+     CDS             1..1410
+                     /ID="cds-YP_308872.1"
+                     /Dbxref="GenBank:YP_308872.1,GeneID:3655112"
+                     /Name="NA"
+                     /gbkey="CDS"
+                     /gene="NA"
+                     /locus_tag="NA"
+                     /product="neuraminidase"
+                     /protein_id="YP_308872.1"
+ORIGIN
+        1 atgaatccaa atcaaaagat aataacaatt ggctctgtct ctctcaccat tgcaacagta
+       61 tgcttcctca tgcagattgc catcctggta actactgtga cattgcattt taagcaacat
+      121 gagtgcgact cccccgcgag caaccaagta atgccgtgtg aaccaataat aatagaaagg
+      181 aacataacag agatagtgta tttgaataac accaccatag agaaagagat ctgccccgaa
+      241 gtagtggaat acagaaattg gtcaaagccg caatgtcaaa ttacaggatt tgcacctttt
+      301 tctaaggaca attcaatccg gctttctgct ggtggggaca tttgggtgac gagagaacct
+      361 tatgtgtcat gcgatcctgg caagtgttat caatttgcac tcgggcaggg gaccacacta
+      421 gacaacaaac attcaaatga cacaatacat gatagaatcc ctcatcgaac cctattaatg
+      481 aatgagttgg gtgttccatt tcatttagga accaggcaag tgtgtgtagc atggtccagc
+      541 tcaagttgtc acgatggaaa agcatggttg catgtttgtg tcactgggga tgataaaaat
+      601 gcaactgcta gcttcattta tgacgggagg cttatggaca gtattggttc atggtctcaa
+      661 aatatcctca ggacccagga gtcggaatgc gtttgtatca atgggacttg cacagtagta
+      721 atgactgatg gaagtgcttc aggaagagcc gatactagaa tactattcat tgaagagggg
+      781 aaaattgtcc atattagccc attgtcagga agtgctcagc atgtagagga gtgttcctgt
+      841 tatcctcgat atcctgacgt cagatgtatc tgcagagaca actggaaagg ctctaatagg
+      901 cccgtcatag acataaatat ggaagattat agcattgatt ccagttatgt gtgctcaggg
+      961 cttgttggcg acacacccag aaacgacgac agatctagca atagtaattg caggaatcct
+     1021 aacaatgaga gagggaatcc aggagtgaaa ggctgggcct ttgacaatgg agatgacgtg
+     1081 tggatgggaa gaacgatcag caaggattta cgctcaggtt atgaaacttt caaagtcatt
+     1141 ggtggttggt ccacacctaa ttccaaatcg cagatcaata gacaggtcat agttgacagc
+     1201 aataattggt caggttactc tggtattttc tctgttgagg gcaaaagatg catcaatagg
+     1261 tgcttttatg tggagttgat aaggggaagg caacaggaga ctagagtatg gtggacctca
+     1321 aacagtattg ttgtgttttg tggcacttca ggtacttatg gaacaggctc atggcctgat
+     1381 ggggcgaaca tcaatttcat gcctatataa
+//
