@@ -84,7 +84,7 @@ checkpoint align:
         genes = lambda w: ','.join(GENES[w.segment]),
     threads: 8
     resources:
-        mem_mb=16000,
+        mem_mb=2000,
         time="0:30:00",
     shell:
         """
@@ -145,7 +145,7 @@ rule download_clade_tree:
 #         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
 #     threads: 8
 #     resources:
-#         mem_mb=16000,
+#         mem_mb=2000,
 #         time="2:00:00",
 #     shell:
 #         """
@@ -187,9 +187,9 @@ rule tidytree:
         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
         root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
-    threads: 2
+    threads: 1
     resources:
-        mem_mb=8000,
+        mem_mb=2000,
         time="2:00:00",
     shell:
         """
@@ -309,7 +309,7 @@ rule refine:
     log:
         "logs/refine_{build_name}_{segment}.txt"
     resources:
-        mem_mb=4000,
+        mem_mb=2000,
         time="2:00:00",
     shell:
         """
@@ -354,7 +354,7 @@ rule ancestral:
     log:
         "logs/ancestral_{build_name}_{segment}.txt"
     resources:
-        mem_mb=4000
+        mem_mb=2000
     shell:
         """
         augur ancestral \
