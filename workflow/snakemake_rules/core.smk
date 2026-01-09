@@ -82,7 +82,7 @@ checkpoint align:
         "logs/align_{build_name}_{segment}.txt"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
-    threads: 8
+    threads: 1
     resources:
         mem_mb=2000,
         time="0:30:00",
