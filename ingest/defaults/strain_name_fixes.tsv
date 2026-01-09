@@ -3,3 +3,13 @@ label	fix
 
 Influenza A Virus (A/Malaysia/228/2014(H7N9)) segment 6 neuraminidase (NA) gene	A/Malaysia/228/2014
 Influenza A Virus (A/Malaysia/228/2014(H7N9)) segment 4 hemagglutinin (HA) gene	A/Malaysia/228/2014
+
+# Older strain names that were being fixed incorrectly by our 2 digit year expansion
+B/lee/40	B/Lee/1940
+B/Lee/40	B/Lee/1940
+B/Bonn/43	B/Bonn/1943
+B/GL/54	B/GL/1954
+B/Maryland/59	B/Maryland/1959
+B/Thailand/62	B/Thailand/1962
+B/SI/64	B/SI/1964
+B/Bangkok/64	B/Bangkok/1964

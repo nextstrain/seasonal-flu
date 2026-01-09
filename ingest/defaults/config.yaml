@@ -161,6 +161,36 @@ filtering:
     reference_strains: ../config/yam/reference_strains.txt
     metadata_columns: *seasonal-flu-metadata-columns
 
+  # Additional lineages requested for adhoc work, not part of our routine
+  # seasonal-flu builds
+  b:
+    lineages: b
+    lineage_field: vtype
+    metadata_columns: &flu-metadata-columns
+      - strain
+      - gisaid_epi_isl
+      - date
+      - date_submitted
+      - region
+      - country
+      - division
+      - location
+      - passage_category
+      - originating_lab
+      - submitting_lab
+      - host
+      - age
+      - gender
+      - gisaid_strain
+      - gihsn_sample
+  # Pre-pandemic h1n1 only, does not include h1n1pdm
+  h1n1:
+    lineages: h1n1
+    metadata_columns: *flu-metadata-columns
+  h2n2:
+    lineages: h2n2
+    metadata_columns: *flu-metadata-columns
+
   # The avian-flu workflows do the filtering themselves via `augur filter`
   # using the config key `subtype_query`. To prevent too many changes for the present time
   # we're going to continue to provision one big "avian-flu" dataset. (We may want to change
