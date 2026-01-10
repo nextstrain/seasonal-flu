@@ -1,0 +1,93 @@
+LOCUS       NC_002018               1413 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 6, complete
+            sequence.
+ACCESSION   NC_002018
+VERSION     NC_002018.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 141 to 233)
+  AUTHORS   Blok,J. and Air,G.M.
+  TITLE     Block deletions in the neuraminidase genes from some influenza A
+            viruses of the N1 subtype
+  JOURNAL   Virology 118 (1), 229-234 (1982)
+   PUBMED   7080440
+REFERENCE   2  (bases 1 to 1413)
+  AUTHORS   Fields,S., Winter,G. and Brownlee,G.G.
+  TITLE     Structure of the neuraminidase gene in human influenza virus
+            A/PR/8/34
+  JOURNAL   Nature 290 (5803), 213-217 (1981)
+   PUBMED   7010182
+REFERENCE   3  (bases 1 to 206)
+  AUTHORS   Blok,J. and Air,G.M.
+  TITLE     Comparative nucleotide sequences at the 3' end of the neuraminidase
+            gene from eleven influenza type A viruses
+  JOURNAL   Virology 107 (1), 50-60 (1980)
+   PUBMED   7445434
+REFERENCE   4  (bases 1 to 1413)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence is identical to J02146.
+            [2],[1] sequence determined either by analysis of cloned cdna
+            fragments [2] or by analysis of cdna synthesized with either
+            poly-adenylated vrna template or vrna template and dodecamer primer
+            [1]. assignment of coding region by consideration of open reading
+            frames. [3] compares this na sequence with 11 other influenza
+            strains and finds that the strains collected from 1933-1935 have
+            deletions of 33 to 48bp in their seg 6 vrna 3' ends. the sequence
+            figure for [3] was unclear at the extreme 3' end (bases 228-233).
+            Complete source information:
+            influenza A/Puerto Rico/8/34 [2]: rna & cdna to rna from human;
+            [1],[3]: cdna to rna grown in chicken embryos, originally from
+            human. [3] specifies A/Puerto Rico/8/34(mt. sinai).
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1413
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934(H1N1)"
+                     /db_xref="taxon:211044"
+                     /segment="6"
+     CDS             21..1385
+                     /ID="cds-NP_040981.1"
+                     /Dbxref="GenBank:NP_040981.1,GeneID:956530"
+                     /Name="NA"
+                     /gbkey="CDS"
+                     /gene="NA"
+                     /locus_tag="NA"
+                     /product="neuraminidase"
+                     /protein_id="NP_040981.1"
+ORIGIN
+        1 agcgaaagca ggggtttaaa atgaatccaa atcagaaaat aataaccatt ggatcaatct
+       61 gtctggtagt cggactaatt agcctaatat tgcaaatagg gaatataatc tcaatatgga
+      121 ttagccattc aattcaaact ggaagtcaaa accatactgg aatatgcaac caaaacatca
+      181 ttacctataa aaatagcacc tgggtaaagg acacaacttc agtgatatta accggcaatt
+      241 catctctttg tcccatccgt gggtgggcta tatacagcaa agacaatagc ataagaattg
+      301 gttccaaagg agacgttttt gtcataagag agccctttat ttcatgttct cacttggaat
+      361 gcaggacctt ttttctgacc caaggtgcct tactgaatga caggcattca aatgggactg
+      421 ttaaggacag aagcccttat agggccttaa tgagctgccc tgtcggtgaa gctccgtccc
+      481 cgtacaattc aagatttgaa tcggttgctt ggtcagcaag tgcatgtcat gatggcatgg
+      541 gctggctaac aatcggaatt tcaggtccag ataatggagc agtggctgta ttaaaataca
+      601 acggcataat aactgaaacc ataaaaagtt ggaggaagaa aatattgagg acacaagagt
+      661 ctgaatgtgc ctgtgtaaat ggttcatgtt ttactataat gactgatggc ccgagtgatg
+      721 ggctggcctc gtacaaaatt ttcaagatcg aaaaggggaa ggttactaaa tcaatagagt
+      781 tgaatgcacc taattctcac tatgaggaat gttcctgtta ccctgatacc ggcaaagtga
+      841 tgtgtgtgtg cagagacaat tggcatggtt cgaaccggcc atgggtgtct ttcgatcaaa
+      901 acctggatta tcaaatagga tacatctgca gtggggtttt cggtgacaac ccgcgtccca
+      961 aagatggaac aggcagctgt ggtccagtgt atgttgatgg agcaaacgga gtaaagggat
+     1021 tttcatatag gtatggtaat ggtgtttgga taggaaggac caaaagtcac agttccagac
+     1081 atgggtttga gatgatttgg gatcctaatg gatggacaga gactgatagt aagttctctg
+     1141 tgaggcaaga tgttgtggca atgactgatt ggtcagggta tagcgggagt ttcgttcaac
+     1201 atcctgagct aacagggcta gactgtataa ggccgtgctt ctgggttgaa ttaatcaggg
+     1261 gacgacctaa agaaaaaaca atctggacta gtgcgagcag catttctttt tgtggcgtga
+     1321 atagtgatac tgtagattgg tcttggccag acggtgctga gttgccattc accattgaca
+     1381 agtagtctgt tcaaaaaact ccttgtttct act
+//

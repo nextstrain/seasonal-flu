@@ -11,9 +11,6 @@
 
 This dataset encompasses all Influenza B viruses in humans and is based on the B/Brisbane/60/2008 reference sequence.
 
-## Scope of this dataset
-The reference sequence for this datasets precedes the deletions at positions 162ff in the HA1 protein of the virus and thus follows the canonical numbering of amino acids in the protein.
-
 ## Features
 This dataset supports
 

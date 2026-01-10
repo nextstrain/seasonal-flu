@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_002016.1 1 1027
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=211044
+NC_002016.1	RefSeq	region	1	1027	.	+	.	ID=NC_002016.1:1..1027;Dbxref=taxon:211044;Name=7;collection-date=1934;country=Puerto Rico;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Puerto Rico/8/34(H1N1));segment=7;serotype=H1N1;strain=A/Puerto Rico/8/1934
+NC_002016.1	RefSeq	CDS	26	51	.	+	0	Name=M2;gene=M2;gbkey=CDS;locus_tag=FLUAVs7gp2;protein_id=NP_040979.2;ID=cds-NP_040979.2;product=matrix protein 2;Dbxref=GOA:P06821,UniProtKB/Swiss-Prot:P06821,GenBank:NP_040979.2,GeneID:956528
+NC_002016.1	RefSeq	CDS	740	1007	.	+	1	Name=M2;gene=M2;gbkey=CDS;locus_tag=FLUAVs7gp2;protein_id=NP_040979.2;ID=cds-NP_040979.2;product=matrix protein 2;Dbxref=GOA:P06821,UniProtKB/Swiss-Prot:P06821,GenBank:NP_040979.2,GeneID:956528
+NC_002016.1	RefSeq	CDS	26	784	.	+	0	Name=M1;gene=M1;gbkey=CDS;locus_tag=FLUAVs7gp1;protein_id=NP_040978.1;ID=cds-NP_040978.1;product=matrix protein 1;Dbxref=GOA:P03485,UniProtKB/Swiss-Prot:P03485,GenBank:NP_040978.1,GeneID:956527

@@ -34,10 +34,14 @@ if __name__ == "__main__":
         if node.total_length_per_child > args.prune_length:
             to_prune.append(node)
 
+
     for node in to_prune:
         if node == T.root:
             continue
         node.parent.clades = [c for c in node.parent.clades if c != node]
+        while len(node.parent.clades) == 0 and node.parent != T.root:
+            node = node.parent
+            node.parent.clades = [c for c in node.parent.clades if c != node]
 
     T.ladderize()
 

@@ -3,7 +3,7 @@ import datetime
 
 wildcard_constraints:
     flu_type="[A-Za-z0-9]+",
-    lineage=r"h3n2|h1n1pdm|vic|yam|b",
+    lineage=r"h3n2|h1n1pdm|vic|yam|b|h2n2|h1n1",
     segment = r"pb2|pb1|pa|ha|np|na|mp|ns",
     reference="[^/]+",
 
@@ -204,7 +204,8 @@ rule virus_specific_jsons:
     params:
         reference_name = lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference]['reference_strain'],
         clades = lambda w: f'--clades {" ".join([config["builds"][w.lineage][w.segment]["clade_systems"][clade].get("key", "default")
-                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]])}' if w.segment in ['ha', 'na'] else ""
+                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]])}' \
+                            if "clade_systems" in config["builds"][w.lineage][w.segment] else ""
     shell:
         """
         python3 scripts/merge_jsons.py --lineage {wildcards.lineage} \

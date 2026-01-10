@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_002017.1 1 1778
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=211044
+NC_002017.1	RefSeq	region	1	1778	.	+	.	ID=NC_002017.1:1..1778;Dbxref=taxon:211044;Name=4;collection-date=1934;country=Puerto Rico;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Puerto Rico/8/34(H1N1));segment=4;serotype=H1N1;strain=A/Puerto Rico/8/1934
+NC_002017.1	RefSeq	CDS	33	83	.	+	.	Name=SigPep;product=SigPep;protein_id=YP_163735.1;ID=id-NP_040980.1:1..17
+NC_002017.1	RefSeq	CDS	84	1064	.	+	.	Name=HA1;product=HA1;gbkey=Prot;protein_id=YP_163735.1;ID=id-NP_040980.1:18..344
+NC_002017.1	RefSeq	CDS	1065	1730	.	+	.	Name=HA2;product=HA2;gbkey=Prot;protein_id=YP_163736.1;ID=id-NP_040980.1:345..566

@@ -6,12 +6,22 @@ include: "rules/common.smk"
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
-        if lineage!='h2n2':
+        if w.lineage and lineage!=w.lineage:
             continue
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"build/{lineage}/{segment}/{ref}/dataset.done")
     return builds
+
+rule all_lineage:
+    input:
+        all_builds
+    output:
+        "build/{lineage}.done"
+    shell:
+        """
+        touch {output}
+        """
 
 rule all:
     input:
