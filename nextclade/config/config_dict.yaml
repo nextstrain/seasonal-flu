@@ -36,7 +36,7 @@ builds:
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
     na:
-      root_lineage: "A"
+      root_lineage: "A/California/7/2009"
       changelog: "seasonal_A-H1N1pdm_NA/main/CHANGELOG.md"
       clade_systems:
         subclade:
@@ -106,7 +106,7 @@ builds:
           reference_strain: A/Darwin/6/2021
   vic:
     ha:
-      root: "B/Netherlands/1000/1977"
+      root: "B/Memphis/6/1986"
       changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
       max_branch_length: 0.002
       clade_systems:
@@ -126,11 +126,11 @@ builds:
         KX058884:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
           clade_offset: 0
-          hardmin_date: 2007
+          hardmin_date: 2000
           reference_EPI_ISL: EPI696970
           reference_strain: B/Brisbane/60/2008-egg
     na:
-      root: "B/Memphis/6/1986"
+      root: "B/NewYork/1012/1995"
       changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
       max_branch_length: 0.002
       clade_systems:
@@ -144,7 +144,7 @@ builds:
         CY073894:
           filter: "--min-date 2014 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 2000"
           clade_offset: -30
-          hardmin_date: 2007
+          hardmin_date: 2000
           reference_EPI_ISL: CY073894
           reference_strain: B/Brisbane/60/2008
   b:

@@ -1,0 +1,9 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_002022.1 1 2233
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=211044
+NC_002022.1	RefSeq	region	1	2233	.	+	.	ID=NC_002022.1:1..2233;Dbxref=taxon:211044;Name=3;collection-date=1934;country=Puerto Rico;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Puerto Rico/8/34(H1N1));segment=3;serotype=H1N1;strain=A/Puerto Rico/8/1934
+NC_002022.1	RefSeq	CDS	25	2175	.	+	0	Name=PA;gene=PA;gbkey=CDS;locus_tag=FLUAVs3gp1;protein_id=NP_040986.1;product=polymerase PA;ID=cds-NP_040986.1;Dbxref=GOA:P03433,UniProtKB/Swiss-Prot:P03433,GenBank:NP_040986.1,GeneID:956535
+NC_002022.1	RefSeq	CDS	25	597	.	+	0	Name=PA-X;gbkey=CDS;gene=PA-X;locus_tag=FLUAVs3gp2;product=PA-X protein;protein_id=YP_006495785.1;ID=cds-YP_006495785.1;exception=ribosomal slippage;Dbxref=GenBank:YP_006495785.1,GeneID:13229134
+NC_002022.1	RefSeq	CDS	599	784	.	+	0	Name=PA-X;gbkey=CDS;gene=PA-X;locus_tag=FLUAVs3gp2;product=PA-X protein;protein_id=YP_006495785.1;ID=cds-YP_006495785.1;exception=ribosomal slippage;Dbxref=GenBank:YP_006495785.1,GeneID:13229134

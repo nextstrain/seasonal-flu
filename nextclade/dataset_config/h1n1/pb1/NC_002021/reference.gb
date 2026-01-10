@@ -1,0 +1,102 @@
+LOCUS       NC_002021               2341 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 2, complete
+            sequence.
+ACCESSION   NC_002021
+VERSION     NC_002021.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2341)
+  AUTHORS   Winter,G. and Fields,S.
+  TITLE     Nucleotide sequence of human influenza A/PR/8/34 segment 2
+  JOURNAL   Nucleic Acids Res. 10 (6), 2135-2143 (1982)
+   PUBMED   6281731
+REFERENCE   2  (bases 1 to 2341)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from J02151.
+            [1] compared this sequence with that for p2 and p3 (see separate
+            entries), but found no significant homology between any two of the
+            three sequences. p1 cds determined by consideration of open reading
+            frames and the mw and net charge of the p1 protein. this sequence
+            completes the A/Puerto Rico/8/34 genome; see separate entries for
+            other segments.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2341
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934"
+                     /db_xref="taxon:211044"
+                     /segment="2"
+                     /geo_loc_name="Puerto Rico"
+                     /collection_date="1934"
+                     /serogroup="H1N1"
+     CDS             25..2298
+                     /ID="cds-NP_040985.1"
+                     /Dbxref="GenBank:NP_040985.1,GeneID:956534"
+                     /Name="PB1"
+                     /gbkey="CDS"
+                     /gene="PB1"
+                     /locus_tag="PB1"
+                     /product="polymerase PB1"
+                     /protein_id="NP_040985.1"
+     CDS             119..382
+                     /ID="cds-YP_418248.1"
+                     /Dbxref="GenBank:YP_418248.1,GeneID:3802042"
+                     /Name="PB1-F2"
+                     /gbkey="CDS"
+                     /gene="PB1-F2"
+                     /locus_tag="PB1-F2"
+                     /product="PB1-F2 protein"
+                     /protein_id="YP_418248.1"
+ORIGIN
+        1 agcgaaagca ggcaaaccat ttgaatggat gtcaatccga ccttactttt cttaaaagtg
+       61 ccagcacaaa atgctataag cacaactttc ccttataccg gagaccctcc ttacagccat
+      121 gggacaggaa caggatacac catggatact gtcaacagga cacatcagta ctcagaaaag
+      181 gcaagatgga caacaaacac cgaaactgga gcaccgcaac tcaacccgat tgatgggcca
+      241 ctgccagaag acaatgaacc aagtggttat gcccaaacag attgtgtatt ggaagcaatg
+      301 gctttccttg aggaatccca tcctggtatt tttgaaaact cgtgtattga aacgatggag
+      361 gttgttcagc aaacacgagt agacaagctg acacaaggcc gacagaccta tgactggact
+      421 ttaaatagaa accagcctgc tgcaacagca ttggccaaca caatagaagt gttcagatca
+      481 aatggcctca cggccaatga gtctggaagg ctcatagact tccttaagga tgtaatggag
+      541 tcaatgaaaa aagaagaaat ggggatcaca actcattttc agagaaagag acgggtgaga
+      601 gacaatatga ctaagaaaat gataacacag agaacaatag gtaaaaggaa acagagattg
+      661 aacaaaagga gttatctaat tagagcattg accctgaaca caatgaccaa agatgctgag
+      721 agagggaagc taaaacggag agcaattgca accccaggga tgcaaataag ggggtttgta
+      781 tactttgttg agacactggc aaggagtata tgtgagaaac ttgaacaatc agggttgcca
+      841 gttggaggca atgagaagaa agcaaagttg gcaaatgttg taaggaagat gatgaccaat
+      901 tctcaggaca ccgaactttc tttgaccatc actggagata acaccaaatg gaacgaaaat
+      961 cagaatcctc ggatgttttt ggccatgatc acatatatga ccagaaatca gcccgaatgg
+     1021 ttcagaaatg ttctaagtat tgctccaata atgttctcaa acaaaatggc gagactggga
+     1081 aaagggtata tgtttgagag caagagtatg aaacttagaa ctcaaatacc tgcagaaatg
+     1141 ctagcaagca ttgatttgaa atatttcaat gattcaacaa gaaagaagat tgaaaaaatc
+     1201 cgaccgctct taatagaggg gactgcatca ttgagccctg gaatgatgat gggcatgttc
+     1261 aatatgttaa gcactgtatt aggcgtctcc atcctgaatc ttggacaaaa gagatacacc
+     1321 aagactactt actggtggga tggtcttcaa tcctctgacg attttgctct gattgtgaat
+     1381 gcacccaatc atgaagggat tcaagccgga gtcgacaggt tttatcgaac ctgtaagcta
+     1441 catggaatca atatgagcaa gaaaaagtct tacataaaca gaacaggtac atttgaattc
+     1501 acaagttttt tctatcgtta tgggtttgtt gccaatttca gcatggagct tcccagtttt
+     1561 ggtgtgtctg ggagcaacga gtcagcggac atgagtattg gagttactgt catcaaaaac
+     1621 aatatgataa acaatgatct tggtccagca acagctcaaa tggcccttca gttgttcatc
+     1681 aaagattaca ggtacacgta ccgatgccat agaggtgaca cacaaataca aacccgaaga
+     1741 tcatttgaaa taaagaaact gtgggagcaa acccgttcca aagctggact gctggtctcc
+     1801 gacggaggcc caaatttata caacattaga aatctccaca ttcctgaagt ctgcctaaaa
+     1861 tgggaattga tggatgagga ttaccagggg cgtttatgca acccactgaa cccatttgtc
+     1921 agccataaag aaattgaatc aatgaacaat gcagtgatga tgccagcaca tggtccagcc
+     1981 aaaaacatgg agtatgatgc tgttgcaaca acacactcct ggatccccaa aagaaatcga
+     2041 tccatcttga atacaagtca aagaggagta cttgaagatg aacaaatgta ccaaaggtgc
+     2101 tgcaatttat ttgaaaaatt cttccccagc agttcataca gaagaccagt cgggatatcc
+     2161 agtatggtgg aggctatggt ttccagagcc cgaattgatg cacggattga tttcgaatct
+     2221 ggaaggataa agaaagaaga gttcactgag atcatgaaga tctgttccac cattgaagag
+     2281 ctcagacggc aaaaatagtg aatttagctt gtccttcatg aaaaaatgcc ttgttcctac
+     2341 t
+//

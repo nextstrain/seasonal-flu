@@ -1,0 +1,77 @@
+LOCUS       NC_002016               1027 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 7, complete
+            sequence.
+ACCESSION   NC_002016
+VERSION     NC_002016.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 1027)
+  AUTHORS   Winter,G. and Fields,S.
+  TITLE     Cloning of influenza cDNA ino M13: the sequence of the RNA segment
+            encoding the A/PR/8/34 matrix protein
+  JOURNAL   Nucleic Acids Res. 8 (9), 1965-1974 (1980)
+   PUBMED   6927841
+REFERENCE   2  (bases 1 to 1027)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from V01099.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1027
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934"
+                     /serotype="H1N1"
+                     /db_xref="taxon:211044"
+                     /segment="7"
+                     /geo_loc_name="Puerto Rico"
+                     /collection_date="1934"
+     CDS             join(26..51,740..1007)
+                     /ID="cds-NP_040979.2"
+                     /Dbxref="GOA:P06821,UniProtKB/Swiss-Prot:P06821,GenBank:NP_
+                     040979.2,GeneID:956528"
+                     /Name="M2"
+                     /gbkey="CDS"
+                     /gene="M2"
+                     /locus_tag="M2"
+                     /product="matrix protein 2"
+                     /protein_id="NP_040979.2"
+     CDS             26..784
+                     /ID="cds-NP_040978.1"
+                     /Dbxref="GOA:P03485,UniProtKB/Swiss-Prot:P03485,GenBank:NP_
+                     040978.1,GeneID:956527"
+                     /Name="M1"
+                     /gbkey="CDS"
+                     /gene="M1"
+                     /locus_tag="M1"
+                     /product="matrix protein 1"
+                     /protein_id="NP_040978.1"
+ORIGIN
+        1 agcgaaagca ggtagatatt gaaagatgag tcttctaacc gaggtcgaaa cgtacgttct
+       61 ctctatcatc ccgtcaggcc ccctcaaagc cgagatcgca cagagacttg aagatgtctt
+      121 tgcagggaag aacaccgatc ttgaggttct catggaatgg ctaaagacaa gaccaatcct
+      181 gtcacctctg actaagggga ttttaggatt tgtgttcacg ctcaccgtgc ccagtgagcg
+      241 aggactgcag cgtagacgct ttgtccaaaa tgcccttaat gggaacgggg atccaaataa
+      301 catggacaaa gcagttaaac tgtataggaa gctcaagagg gagataacat tccatggggc
+      361 caaagaaatc tcactcagtt attctgctgg tgcacttgcc agttgtatgg gcctcatata
+      421 caacaggatg ggggctgtga ccactgaagt ggcatttggc ctggtatgtg caacctgtga
+      481 acagattgct gactcccagc atcggtctca taggcaaatg gtgacaacaa ccaacccact
+      541 aatcagacat gagaacagaa tggttttagc cagcactaca gctaaggcta tggagcaaat
+      601 ggctggatcg agtgagcaag cagcagaggc catggaggtt gctagtcagg ctaggcaaat
+      661 ggtgcaagcg atgagaacca ttgggactca tcctagctcc agtgctggtc tgaaaaatga
+      721 tcttcttgaa aatttgcagg cctatcagaa acgaatgggg gtgcagatgc aacggttcaa
+      781 gtgatcctct cgctattgcc gcaaatatca ttgggatctt gcacttgata ttgtggattc
+      841 ttgatcgtct ttttttcaaa tgcatttacc gtcgctttaa atacggactg aaaggagggc
+      901 cttctacgga aggagtgcca aagtctatga gggaagaata tcgaaaggaa cagcagagtg
+      961 ctgtggatgc tgacgatggt cattttgtca gcatagagct ggagtaaaaa actaccttgt
+     1021 ttctact
+//

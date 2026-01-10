@@ -165,3 +165,52 @@ builds:
         NC_007380:
           reference_strain: A/Korea/426/1968
           filter: "--min-date 1957 --max-date 1969 --probabilistic-sampling --group-by year region --min-length 600 --subsample-max-sequences 200"
+  h1n1:
+    pb2:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002023:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 2000 --subsample-max-sequences 500"
+    pb1:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002021:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 2000 --subsample-max-sequences 500"
+    pa:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002022:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 1600 --subsample-max-sequences 500"
+    ha:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002017:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 1300 --subsample-max-sequences 500"
+    np:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002019:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 1000 --subsample-max-sequences 500"
+    na:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002018:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 1000 --subsample-max-sequences 500"
+    mp:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002016:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 800 --subsample-max-sequences 500"
+    ns:
+      root: "A/BrevigMission/1/1918"
+      refs:
+        NC_002020:
+          reference_strain: A/PuertoRico/8/1934
+          filter: "--min-date 1918 --max-date 2009 --probabilistic-sampling --exclude-where host!=human --group-by year --min-length 600 --subsample-max-sequences 500"

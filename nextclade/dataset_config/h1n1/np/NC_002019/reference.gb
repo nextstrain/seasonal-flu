@@ -1,0 +1,94 @@
+LOCUS       NC_002019               1565 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 5, complete
+            sequence.
+ACCESSION   NC_002019
+VERSION     NC_002019.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 1565)
+  AUTHORS   van Rompuy,L., Min,J.W., Huylebroeck,D., Devos,R. and Fiers,W.
+  TITLE     Complete nucleotide sequence of the nucleoprotein gene from the
+            human influenza strain A/PR/8/34 (HON1), Correction
+  JOURNAL   Eur. J. Biochem. 116, 645-645 (1982)
+REFERENCE   2  (bases 1 to 1565)
+  AUTHORS   Winter,G. and Fields,S.
+  TITLE     The structure of the gene encoding the nucleoprotein of human
+            influenza virus A/PR/8/34
+  JOURNAL   Virology 114 (2), 423-428 (1981)
+   PUBMED   7292985
+REFERENCE   3  (bases 1 to 1517)
+  AUTHORS   Van Rompuy,L., Min Jou,W., Huylebroeck,D., Devos,R. and Fiers,W.
+  TITLE     Complete nucleotide sequence of the nucleoprotein gene from the
+            human influenza strain A/PR/8/34 (HON1)
+  JOURNAL   Eur. J. Biochem. 116 (2), 347-353 (1981)
+   PUBMED   6166474
+REFERENCE   4  (bases 1 to 1565)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence is identical to J02147.
+            assignment of coding region by consideration of open reading frames
+            and by comparison of predicted mw to nucleoprotein mw. [Eur. J.
+            Biochem. 116, 645-645 (1981)] is a
+            major revision of [1], so the sequence shown below reflects only
+            [2],[Eur. J. Biochem. 116, 645-645 (1981)]. [1] compared with
+            grantham's data.
+            Complete source information:
+            influenza [2]: A/Puerto Rico/8/34 cdna to rna from human; [1],[Eur.
+            J. Biochem. 116, 645-645 (1981)]:
+            x31 (a laboratory recombinant containing the A/Puerto Rico/8/34
+            nucleoprotein segment) cdna to rna, originally from human.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1565
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934(H1N1)"
+                     /db_xref="taxon:211044"
+                     /segment="5"
+     CDS             46..1542
+                     /ID="cds-NP_040982.1"
+                     /Dbxref="GenBank:NP_040982.1,GeneID:956531"
+                     /Name="NP"
+                     /gbkey="CDS"
+                     /gene="NP"
+                     /locus_tag="NP"
+                     /product="nucleoprotein"
+                     /protein_id="NP_040982.1"
+ORIGIN
+        1 agcaaaagca gggtagataa tcactcactg agtgacatca aaatcatggc gtcccaaggc
+       61 accaaacggt cttacgaaca gatggagact gatggagaac gccagaatgc cactgaaatc
+      121 agagcatccg tcggaaaaat gattggtgga attggacgat tctacatcca aatgtgcaca
+      181 gaacttaaac tcagtgatta tgagggacgg ttgatccaaa acagcttaac aatagagaga
+      241 atggtgctct ctgcttttga cgaaaggaga aataaatacc tggaagaaca tcccagtgcg
+      301 gggaaggatc ctaagaaaac tggaggacct atatacagaa gagtaaacgg aaagtggatg
+      361 agagaactca tcctttatga caaagaagaa ataaggcgaa tctggcgcca agctaataat
+      421 ggtgacgatg caacggctgg tctgactcac atgatgatct ggcattccaa tttgaatgat
+      481 gcaacttatc agaggacaag ggctcttgtt cgcaccggaa tggatcccag gatgtgctct
+      541 ctgatgcaag gttcaactct ccctaggagg tctggagccg caggtgctgc agtcaaagga
+      601 gttggaacaa tggtgatgga attggtcagg atgatcaaac gtgggatcaa tgatcggaac
+      661 ttctggaggg gtgagaatgg acgaaaaaca agaattgctt atgaaagaat gtgcaacatt
+      721 ctcaaaggga aatttcaaac tgctgcacaa aaagcaatga tggatcaagt gagagagagc
+      781 cgggacccag ggaatgctga gttcgaagat ctcacttttc tagcacggtc tgcactcata
+      841 ttgagagggt cggttgctca caagtcctgc ctgcctgcct gtgtgtatgg acctgccgta
+      901 gccagtgggt acgactttga aagagaggga tactctctag tcggaataga ccctttcaga
+      961 ctgcttcaaa acagccaagt gtacagccta atcagaccaa atgagaatcc agcacacaag
+     1021 agtcaactgg tgtggatggc atgccattct gccgcatttg aagatctaag agtattgagc
+     1081 ttcatcaaag ggacgaaggt ggtcccaaga gggaagcttt ccactagagg agttcaaatt
+     1141 gcttccaatg aaaatatgga gactatggaa tcaagtacac ttgaactgag aagcaggtac
+     1201 tgggccataa ggaccagaag tggaggaaac accaatcaac agagggcatc tgcgggccaa
+     1261 atcagcatac aacctacgtt ctcagtacag agaaatctcc cttttgacag aacaaccgtt
+     1321 atggcagcat tcactgggaa tacagagggg agaacatctg acatgaggac cgaaatcata
+     1381 aggatgatgg aaagtgcaag accagaagat gtgtctttcc aggggcgggg agtcttcgag
+     1441 ctctcggacg aaaaggcagc gagcccgatc gtgccttcct ttgacatgag taatgaagga
+     1501 tcttatttct tcggagacaa tgcagaggag tacgacaatt aaagaaaaat acccttgttt
+     1561 ctact
+//
