@@ -60,9 +60,9 @@ checkpoint align:
         "logs/align_{build_name}_{segment}.txt"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
-    threads: 8
+    threads: 1
     resources:
-        mem_mb=16000,
+        mem_mb=2000,
         time="0:30:00",
     shell:
         """
@@ -109,9 +109,9 @@ rule tree:
         method = config.get("tree", {}).get("method", "iqtree"),
         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
-    threads: 8
+    threads: 4
     resources:
-        mem_mb=16000,
+        mem_mb=8000,
         time="2:00:00",
     shell:
         """
