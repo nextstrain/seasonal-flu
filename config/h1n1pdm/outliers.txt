@@ -144,6 +144,7 @@ A/Somalia/7/2021
 A/SouthAfrica/16112/2021
 A/SouthAfrica/16325/2021
 # [update-strains] No match for the following strain, which did exist in fauna:
+# [update-strains] Three strains exist in GISAID (original strain name 'A/South Africa/1857/2013'), all three with different passage history
 A/SouthAfrica/1857/2013
 A/SouthAfrica/NHLS-UCT-GS-0017/2021
 A/SouthAfrica/NHLS-UCT-GS-0034/2021
@@ -183,11 +184,3 @@ A/Tehran/IR-3983/2024
 A/Tehran/IR-12685/2024
 A/Trapani/1/2024
 A/Milan/291/2024
-
-# [update-strains] === Summary ../config/h1n1pdm/outliers.txt ===
-# [update-strains] Direct matches:           147 / 168 (87.5%)
-# [update-strains] Changed via lookup:       4 / 168 (2.4%)
-# [update-strains] Normalized matches:       0 / 168 (0.0%)
-# [update-strains] Fuzzy matches:            0 / 168 (0.0%)
-# [update-strains] Unmatched & not in fauna: 6 / 168 (3.6%)
-# [update-strains] No matches:               11 / 168 (6.5%)

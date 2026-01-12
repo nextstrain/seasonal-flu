@@ -93,15 +93,11 @@ B/Henan-Xigong/1118/2021
 B/Henan-Xigong/1118/2021-egg
 B/Hiroshima-C/1/2025
 B/Hiroshima-C/7/2018
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Hong Kong/02/1993'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.971] B/HongKong/2/1993
+B/HongKong/2/1993
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Hong Kong/03/1992
 B/HongKong/22/1989
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Hong Kong/22/1989'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=1.000] B/HongKong/22/1989
+B/HongKong/22/1989
 B/HongKong/1404/2018
 B/HongKong/269/2017-egg
 B/HongKong/286/2017
@@ -238,15 +234,11 @@ B/RhodeIsland/1/2019-egg
 B/Russia/69
 B/Salalah/52423023/2024
 B/Shandong-Boshan/1321/2024
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Shangdong/7/1997'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.971] B/Shandong/7/1997
+B/Shandong/7/1997
 B/Sichuan-Gaoxin/531/2018
 B/Sichuan-Jingyang/12048/2019
 B/Sichuan-Jingyang/12048/2019-egg
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Singapore/04/1991'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.973] B/Singapore/4/1991
+B/Singapore/4/1991
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Singapore/11/1994
 B/Singapore/KK1035/2018
@@ -285,9 +277,7 @@ B/Townsville/8/2016
 B/Trang/85/2019
 B/Utah/11/2023
 B/Utah/8/2012
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Victoria/02/1987'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.971] B/Victoria/2/1987
+B/Victoria/2/1987
 B/Victoria/1259/2023
 B/Victoria/1459/2023
 B/Victoria/154/2024
@@ -318,11 +308,3 @@ B/Yokohama/1/2020
 B/Yunnan-Chuxiong/1852/2016
 B/Yunnan-Zhaoyang/11160/2016
 B/Zhejiang-Yiwu/1366/2023
-
-# [update-strains] === Summary ../config/vic/reference_strains.txt ===
-# [update-strains] Direct matches:           218 / 266 (82.0%)
-# [update-strains] Changed via lookup:       0 / 266 (0.0%)
-# [update-strains] Normalized matches:       1 / 266 (0.4%)
-# [update-strains] Fuzzy matches:            5 / 266 (1.9%)
-# [update-strains] Unmatched & not in fauna: 42 / 266 (15.8%)
-# [update-strains] No matches:               1 / 266 (0.4%)

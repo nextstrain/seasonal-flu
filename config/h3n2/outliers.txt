@@ -1,11 +1,3 @@
-# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
-29cea8cb-fa93-4c46-8bbc-3d1a51f26391
-# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
-39ff161f-47a4-467d-86f6-eeefafd06ad9
-# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
-51de8816-cadd-4a85-92d9-d69fc945f92c
-# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
-96c78497-90f1-4c9f-ba23-fc1eabd0eeae
 A/Argentina/1434/2019
 A/Asaka/2/2017
 A/Austria/838902/2015
@@ -147,9 +139,7 @@ A/HongKong/HKMA20A/2008
 A/HongKong/HKMA20B/2008
 A/HongKong/HKMA20D/2008
 A/HongKong/HKMA20E/2008
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/HuNan/01/2014'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.966] A/HuNan/1/2014
+A/HuNan/1/2014
 A/HuNan/1/2014
 A/Hungary/100390-UPL25-001871/2025
 A/Hungary/101031-UPL25-001917/2025
@@ -173,16 +163,14 @@ A/India/1132/2021
 A/India/1718/2021
 # [update-strains] No match for the following strain, which did exist in fauna:
 A/India/1759/2021
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/India/2063/2021'. You must manually choose the correct match.
-# [score=0.800] A/Finland/263/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
+A/India/2063/2021
 # [update-strains] No match for the following strain, which did exist in fauna:
 A/India/2100/2021
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/India/244/2021'. You must manually choose the correct match.
-# [score=0.824] A/Finland/244/2021
-# [update-strains] BEST 3 FUZZY MATCHES and their scores. Original strain 'A/India/3/2019'. You must manually choose the correct match.
-# [score=0.933] A/Indiana/3/2019
-# [score=0.839] A/Virginia/3/2019
-# [score=0.828] A/Idaho/30/2019
+# [update-strains] No match for the following strain, which did exist in fauna:
+A/India/244/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
+A/India/3/2019
 # [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3256/2021
 # [update-strains] No match for the following strain, which did exist in fauna:
@@ -198,13 +186,8 @@ A/India/Pun-NIV326980/2021
 A/India/Pun-NIV327049/2021
 A/India/Pun-NIV328238/2021
 A/India/Pune-NIVSARI5334/2021
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/Indiana/06/2013'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.970] A/Indiana/6/2013
-# [update-strains] BEST 2 FUZZY MATCHES and their scores. Original strain 'A/Indiana/08/2012'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.970] A/Indiana/8/2012
-# [score=0.800] A/Louisiana/8/2012
+A/Indiana/6/2013
+A/Indiana/8/2012
 A/Indiana/10/2011
 A/Indiana/10/2011-egg
 A/Indiana/10/2013
@@ -315,9 +298,6 @@ A/Lisbon/172/2024
 A/London/16U363140-91_S43_L001/2016
 A/London/16U948124-66_S18_L001/2016
 A/Louisiana/4/2003
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/Lousiana/4/2003'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.971] A/Louisiana/4/2003
 A/Luxembourg/19008307/2019
 A/Luxembourg/LNS2955091/2024
 A/Luxembourg/LNS3026715/2024
@@ -425,10 +405,7 @@ A/NewMexico/19/2022
 A/NorthDakota/19/2017
 A/Novosibirsk/1/2019
 A/Osaka/31/2005
-# [update-strains] BEST 2 FUZZY MATCHES and their scores. Original strain 'A/OSAKA/31/2005'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=1.000] A/Osaka/31/2005
-# [score=0.812] A/Okinawa/31/2005
+A/Osaka/31/2005
 A/Ohio/13/2012
 A/Ohio/13/2012-egg
 A/Ohio/13/2017
@@ -511,9 +488,7 @@ A/Para/181916-IEC/2021
 A/Paris/89/2015
 A/Parma/3/2021
 A/Parma/4/2021
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/Pennsylvania/09/2011'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.977] A/Pennsylvania/9/2011
+A/Pennsylvania/9/2011
 A/Pennsylvania/11/2011
 A/Pennsylvania/11/2012
 A/Pennsylvania/13/2012
@@ -603,11 +578,3 @@ A/Zhejiang-Yongkang/1137/2018
 A/Zhejiang-Yongkang/1567/2022
 A/Zhejiang-Yongkang/1576/2022
 A/Bari/40/2024
-
-# [update-strains] === Summary ../config/h3n2/outliers.txt ===
-# [update-strains] Direct matches:           517 / 566 (91.3%)
-# [update-strains] Changed via lookup:       21 / 566 (3.7%)
-# [update-strains] Normalized matches:       1 / 566 (0.2%)
-# [update-strains] Fuzzy matches:            9 / 566 (1.6%)
-# [update-strains] Unmatched & not in fauna: 9 / 566 (1.6%)
-# [update-strains] No matches:               10 / 566 (1.8%)

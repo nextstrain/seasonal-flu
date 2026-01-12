@@ -17,6 +17,7 @@ A/Arizona/67/2016
 A/Bangkok/1/1979
 A/Bangladesh/10006/2020
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
+# [update-strains] P.S. non-egg passaged strain exists
 A/Bangladesh/2004/2020-egg
 A/Bangladesh/3005/2020-egg
 A/Bangladesh/4005/2020
@@ -99,6 +100,7 @@ A/Henan-Shihe/1977/2023
 A/Hiroshima/52/2005
 A/HongKong/1/1968
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
+# [update-strains] P.S. egg passaged strain exists
 A/HongKong/1186/2003
 A/HongKong/2286/2017
 A/HongKong/2286/2017-egg
@@ -213,6 +215,7 @@ A/Samoa/34/2024
 A/Santiago/133908/2022
 A/Santiago/133909/2022
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
+# [update-strains] P.S. egg passaged strain exists
 A/Santiago/7981/2006
 A/Sapporo/71/2015
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
@@ -224,10 +227,8 @@ A/Shanghai-Putuo/1727/2023
 A/Shanghai/11/1987
 A/Shizuoka/20/2023
 A/Sichuan/2/1987
-# [update-strains] BEST 2 FUZZY MATCHES and their scores. Original strain 'A/Sidney/7/2014'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.828] A/Maine/7/2014
-# [score=0.800] A/Sweden/7/2014
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
+A/Sidney/7/2014
 A/Sidon/S0212/2022
 A/Sidon/S0213/2022
 A/Singapore/22/2012
@@ -330,11 +331,3 @@ A/Yokohama/145/2017
 A/Yokohama/48/2024
 A/Yokohama/68/2020
 A/Zhejiang-Shangcheng/1895/2024
-
-# [update-strains] === Summary ../config/h3n2/reference_strains.txt ===
-# [update-strains] Direct matches:           308 / 319 (96.6%)
-# [update-strains] Changed via lookup:       0 / 319 (0.0%)
-# [update-strains] Normalized matches:       0 / 319 (0.0%)
-# [update-strains] Fuzzy matches:            1 / 319 (0.3%)
-# [update-strains] Unmatched & not in fauna: 10 / 319 (3.1%)
-# [update-strains] No matches:               0 / 319 (0.0%)

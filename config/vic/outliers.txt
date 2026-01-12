@@ -1,15 +1,11 @@
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/Malaysia/438/2016'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.947] B/Malaysia/438/2016
+B/Malaysia/438/2016
 B/Alagoas/4386/2023
 B/Auckland/1/2008
 B/Bangkok/SI17/2012
 B/Bangkok/SI58/2012
 B/Bari/53/2023
 B/Brisbane/14/2016
-# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Brisbine/33/2008'. You must manually choose the correct match.
-# [update-strains] P.S. Original strain wasn't in fauna!
-# [score=0.944] B/Brisbane/33/2008
+B/Brisbane/33/2008
 B/California/87/2017
 B/Cambodia/26/2011
 B/Cambodia/30/2011
@@ -66,11 +62,3 @@ B/Ukraine/2417/2024
 B/Ukraine/2318/2024 
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ukraine/2319/2024 
-
-# [update-strains] === Summary ../config/vic/outliers.txt ===
-# [update-strains] Direct matches:           54 / 60 (90.0%)
-# [update-strains] Changed via lookup:       1 / 60 (1.7%)
-# [update-strains] Normalized matches:       0 / 60 (0.0%)
-# [update-strains] Fuzzy matches:            3 / 60 (5.0%)
-# [update-strains] Unmatched & not in fauna: 2 / 60 (3.3%)
-# [update-strains] No matches:               0 / 60 (0.0%)
