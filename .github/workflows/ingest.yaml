@@ -23,6 +23,27 @@ on:
         options:
           - "docker"
           - "aws-batch"
+      triggerAvianFlu:
+        description: "Trigger nextstrain/avian-flu GenoFLU workflow"
+        type: boolean
+        required: true
+      artifact-name:
+        description: "Name to use for final artifact uploaded by this action"
+        required: false
+        type: string
+        default: "build-outputs-ingest"
+
+  workflow_call:
+    inputs:
+      triggerAvianFlu:
+        description: "Trigger nextstrain/avian-flu GenoFLU workflow"
+        type: boolean
+        required: true
+      artifact-name:
+        description: "Name to use for final artifact uploaded by this action"
+        required: false
+        type: string
+        default: "build-outputs-ingest"
 
 jobs:
   ingest:
@@ -39,6 +60,7 @@ jobs:
           ingest \
           upload_all \
           --configfile build-configs/nextstrain-automation/config.yaml
+      artifact-name: ${{ inputs.artifact-name }}
       # Explicitly excluding `ingest/data` and `ingest/fauna/data`
       # since this is private data and should not available through the public artifacts
       artifact-paths: |
@@ -47,3 +69,21 @@ jobs:
         ingest/build.log
         ingest/logs/
         ingest/benchmarks/
+
+  trigger:
+    needs: [ingest]
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ inputs.triggerAvianFlu }}
+        name: Trigger avian-flu/genoflu-gisaid.yaml
+        # TODO XXX - drop --ref once https://github.com/nextstrain/avian-flu/pull/158 is merged
+        # Remove -f once we have switched over to this workflow for avian-flu
+        run: |
+          gh workflow run \
+            genoflu-gisaid.yaml \
+            --repo nextstrain/avian-flu \
+            --ref james/seasonal-flu-ingest \
+            -f trial_name=genoflu-gisaid
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
+            
