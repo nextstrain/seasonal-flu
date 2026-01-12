@@ -13,14 +13,17 @@ A/Bangkok/P1600/2023
 A/Bangladesh/2021/2012
 A/Bari/166/2016
 A/Bari/167/2016
-A/Beijing/1/2009-egg
+A/Beijing/1/2009
 A/Belgium/G0027/2016
 A/Bolivia/2325/2018
 A/Bolivia/346/2017
 A/Bolivia/492/2017
 A/Brest/1161/2014
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/California/07/2009NYMC-X18113/198
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/Cherkessk/2/2016
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Christchurch/16/2010NIB-74xp13/202
 A/Colorado/84/2022
 A/Dakar/3/2014
@@ -40,22 +43,32 @@ A/HongKong/H090-751-V3/2009
 A/HongKong/H090-770-V10/2009
 A/HongKong/H090-771-V1/2009
 A/HongKong/H090-774-V1/2009
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Hungary/02/2013
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Hungary/16/2013
 A/Illinois/9/2007
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/1627/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3483/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3546/2021
 A/India/4101/2015
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/4552/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/4562/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/8484/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/9324/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/9825/2021
 A/India/CT-AIIMSR-266/2022
 A/India/Pun1418633/2014
 A/India/TS-NIV2019nCoV177/2020
-A/Indonesia/NIHRD-IBJM1244/2022
+A/Indonesia/BIOKES-IBJM1244/2022
 A/Iowa/1/2006
 A/Iowa/1/2006-egg
 A/Iowa/2/2009
@@ -79,6 +92,7 @@ A/Missouri/12/2012
 A/Montpellier/F_004_091_MB/2020
 A/Montpellier/F_004_100_PD/2020
 A/Montpellier/F_004_122_JL/2020
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/Netherlands/10407/2018
 A/Netherlands/11985/2022
 A/Netherlands/2425/2018
@@ -100,8 +114,9 @@ A/Parana/22972/2022
 A/Paris/2603/2020
 A/Paris/2604/2020
 A/Paris/28350/2021
-A/Petrozavodsk/CRIE/489/2023
+A/Petrozavodsk/489/2023
 A/Philippines/8/2018
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Poland/16/2013
 A/Rennes/F_006_029_CT/2020
 A/Rennes/F_006_031_MA/2020
@@ -128,6 +143,7 @@ A/Somalia/6/2021
 A/Somalia/7/2021
 A/SouthAfrica/16112/2021
 A/SouthAfrica/16325/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/SouthAfrica/1857/2013
 A/SouthAfrica/NHLS-UCT-GS-0017/2021
 A/SouthAfrica/NHLS-UCT-GS-0034/2021
@@ -141,8 +157,9 @@ A/Tasmania/8/2017
 A/Texas/14/2008
 A/Toledo/Parana_10835/2021
 A/Toledo/Parana_20675/2022
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Tomsk/273-MA1/2010
-A/Tyumen/1V/2018
+A/Tyumen/1/2018
 A/Vietnam/102/2015
 A/Wisconsin/28/2011
 A/Wisconsin/87/2005
@@ -166,3 +183,11 @@ A/Tehran/IR-3983/2024
 A/Tehran/IR-12685/2024
 A/Trapani/1/2024
 A/Milan/291/2024
+
+# [update-strains] === Summary ../config/h1n1pdm/outliers.txt ===
+# [update-strains] Direct matches:           147 / 168 (87.5%)
+# [update-strains] Changed via lookup:       4 / 168 (2.4%)
+# [update-strains] Normalized matches:       0 / 168 (0.0%)
+# [update-strains] Fuzzy matches:            0 / 168 (0.0%)
+# [update-strains] Unmatched & not in fauna: 6 / 168 (3.6%)
+# [update-strains] No matches:               11 / 168 (6.5%)

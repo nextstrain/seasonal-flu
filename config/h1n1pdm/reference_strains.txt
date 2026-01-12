@@ -16,7 +16,9 @@ A/Bolivia/559/2013
 A/Brisbane/181/2015
 A/Brisbane/2/2018
 A/Brisbane/2/2018-egg
-A/Brisbane/28/2013
+# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'A/Brisbane/28/2013'. You must manually choose the correct match.
+# [update-strains] P.S. Original strain wasn't in fauna!
+# [score=0.824] A/Israel/28/2013
 A/Brisbane/37/2017
 A/Brisbane/96/2012
 A/Bulgaria/1413/2023
@@ -53,6 +55,7 @@ A/Florida/62/2014
 A/Florida/85/2018-egg
 A/Fukui/12/2023
 A/Georgia/12/2022
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Ghana/1894/2021-egg
 A/Greece/144/2019-egg
 A/Guangdong-Dongwanbendi/SWL2511/2024
@@ -149,6 +152,7 @@ A/Ontario/RV2293/2017
 A/Panama/318595/2016
 A/Paris/1447/2017
 A/Pennsylvania/2/2021
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Pennsylvania/2/2021-egg
 A/Perth/10/2017
 A/Perth/103/2015
@@ -161,11 +165,13 @@ A/Singapore/KK1423/2024
 A/Slovenia/2903/2015-egg
 A/SouthAfrica/3626/2013
 A/SouthDakota/31/2023
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/StPetersburg/61/2015
 A/StPetersburg/61/2015-egg
 A/Stockholm/10/2021
 A/Switzerland/2656/2017-egg
 A/Switzerland/3330/2017-egg
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Switzerland/4217/2019-egg
 A/Sydney/1356/2024
 A/Sydney/178/2022
@@ -202,6 +208,7 @@ A/Victoria/2570/2019-egg
 A/Victoria/317/2024
 A/Victoria/3263/2024
 A/Victoria/3370/2024
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Victoria/367/2012
 A/Victoria/42/2025
 A/Victoria/4897/2022
@@ -217,3 +224,11 @@ A/Wisconsin/67/2022
 A/Wisconsin/67/2024
 A/Yamaguchi/35/2019
 A/Yokohama/26/2024
+
+# [update-strains] === Summary ../config/h1n1pdm/reference_strains.txt ===
+# [update-strains] Direct matches:           213 / 219 (97.3%)
+# [update-strains] Changed via lookup:       0 / 219 (0.0%)
+# [update-strains] Normalized matches:       0 / 219 (0.0%)
+# [update-strains] Fuzzy matches:            1 / 219 (0.5%)
+# [update-strains] Unmatched & not in fauna: 5 / 219 (2.3%)
+# [update-strains] No matches:               0 / 219 (0.0%)

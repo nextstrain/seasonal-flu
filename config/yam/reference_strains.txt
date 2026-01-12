@@ -6,6 +6,7 @@ B/California/12/2015
 B/Canterbury/5/2017
 B/Darwin/58/2019
 B/Florida/4/2006
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Guangdong-Liwan/1133/2014
 B/Guyane/5/2018
 B/Guyane/5/2018-egg
@@ -31,3 +32,11 @@ B/Utah/9/2014
 B/Wellington/40/2017
 B/Wisconsin/1/2010
 B/Yokohama/9/2019
+
+# [update-strains] === Summary ../config/yam/reference_strains.txt ===
+# [update-strains] Direct matches:           32 / 33 (97.0%)
+# [update-strains] Changed via lookup:       0 / 33 (0.0%)
+# [update-strains] Normalized matches:       0 / 33 (0.0%)
+# [update-strains] Fuzzy matches:            0 / 33 (0.0%)
+# [update-strains] Unmatched & not in fauna: 1 / 33 (3.0%)
+# [update-strains] No matches:               0 / 33 (0.0%)

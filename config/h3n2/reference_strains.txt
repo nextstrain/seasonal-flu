@@ -16,6 +16,7 @@ A/Antananarivo/1067/2016-egg
 A/Arizona/67/2016
 A/Bangkok/1/1979
 A/Bangladesh/10006/2020
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Bangladesh/2004/2020-egg
 A/Bangladesh/3005/2020-egg
 A/Bangladesh/4005/2020
@@ -34,6 +35,7 @@ A/Brisbane/117/2018
 A/Brisbane/273/2023
 A/Brisbane/318/2016
 A/Brisbane/321/2016
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Brisbane/45/2015
 A/Brunei/111/2023
 A/BurkinaFaso/3131/2023
@@ -72,6 +74,7 @@ A/Delaware/39/2019
 A/DistrictOfColumbia/27/2023
 A/England/214191723/2021
 A/England/42/1972
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/England/496/1980
 A/Fiji/2/2015
 A/Fiji/295/2024
@@ -95,6 +98,7 @@ A/Hawaii/47/2014
 A/Henan-Shihe/1977/2023
 A/Hiroshima/52/2005
 A/HongKong/1/1968
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/HongKong/1186/2003
 A/HongKong/2286/2017
 A/HongKong/2286/2017-egg
@@ -156,9 +160,11 @@ A/Netherlands/1/1995
 A/Netherlands/10685/2024
 A/Netherlands/172/1996
 A/Netherlands/18/1994
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Netherlands/218/1995
 A/Netherlands/330/1985
 A/Netherlands/450/1988
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Netherlands/524/2014
 A/Netherlands/620/1989
 A/Nevada/22/2016
@@ -177,7 +183,9 @@ A/NorthCarolina/4/2016
 A/NorthCarolina/4/2017
 A/Norway/3806/2016-egg
 A/Norway/4465/2016-egg
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Norway/4465/2017
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Norway/4465/2017-egg
 A/Norway/466/2014
 A/Oklahoma/5/2024
@@ -204,8 +212,10 @@ A/Saitama/103/2014-egg
 A/Samoa/34/2024
 A/Santiago/133908/2022
 A/Santiago/133909/2022
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Santiago/7981/2006
 A/Sapporo/71/2015
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Scotland/840/1974
 A/Sendai/45/2023
 A/Shandong/9/1993
@@ -214,7 +224,10 @@ A/Shanghai-Putuo/1727/2023
 A/Shanghai/11/1987
 A/Shizuoka/20/2023
 A/Sichuan/2/1987
-A/Sidney/7/2014
+# [update-strains] BEST 2 FUZZY MATCHES and their scores. Original strain 'A/Sidney/7/2014'. You must manually choose the correct match.
+# [update-strains] P.S. Original strain wasn't in fauna!
+# [score=0.828] A/Maine/7/2014
+# [score=0.800] A/Sweden/7/2014
 A/Sidon/S0212/2022
 A/Sidon/S0213/2022
 A/Singapore/22/2012
@@ -317,3 +330,11 @@ A/Yokohama/145/2017
 A/Yokohama/48/2024
 A/Yokohama/68/2020
 A/Zhejiang-Shangcheng/1895/2024
+
+# [update-strains] === Summary ../config/h3n2/reference_strains.txt ===
+# [update-strains] Direct matches:           308 / 319 (96.6%)
+# [update-strains] Changed via lookup:       0 / 319 (0.0%)
+# [update-strains] Normalized matches:       0 / 319 (0.0%)
+# [update-strains] Fuzzy matches:            1 / 319 (0.3%)
+# [update-strains] Unmatched & not in fauna: 10 / 319 (3.1%)
+# [update-strains] No matches:               0 / 319 (0.0%)
