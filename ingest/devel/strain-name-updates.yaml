@@ -1,0 +1,40 @@
+
+strain-lists:
+    h3n2:
+        "outliers.txt": "../config/h3n2/outliers.txt"
+        "reference_strains.txt": "../config/h3n2/reference_strains.txt"
+        "ha_prioritised_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
+        "references_to_include_in_titer_plots_h3n2.txt": "../config/references_to_include_in_titer_plots_h3n2.txt"
+        "references_to_exclude_in_titer_plots_h3n2.txt": "../config/references_to_exclude_in_titer_plots_h3n2.txt"
+        "cell_hi.txt": "../config/references_for_titer_plots/h3n2/cell_hi.txt"
+        "egg_hi.txt": "../config/references_for_titer_plots/h3n2/egg_hi.txt"
+        "cell_fra.txt": "../config/references_for_titer_plots/h3n2/cell_fra.txt"
+        "egg_fra.txt": "../config/references_for_titer_plots/h3n2/egg_fra.txt"
+        "vaccine.json": "../config/h3n2/vaccine.json"
+        # NOTE: all segments have the following file, or at least a subset of it.
+        "prioritized_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
+
+        
+    vic:
+        "outliers.txt": "../config/vic/outliers.txt"
+        "reference_strains.txt": "../config/vic/reference_strains.txt"
+        "references_to_include_in_titer_plots_vic.txt": "../config/references_to_include_in_titer_plots_vic.txt"
+        "references_to_exclude_in_titer_plots_vic.txt": "../config/references_to_exclude_in_titer_plots_vic.txt"
+        "vaccine.json": "../config/vic/vaccine.json"
+        # Note: all priorised strain TSVs empty
+        "cell_hi.txt": "../config/references_for_titer_plots/vic/cell_hi.txt"
+        "egg_hi.txt": "../config/references_for_titer_plots/vic/egg_hi.txt"
+
+    yam:
+        "outliers.txt": "../config/yam/outliers.txt"
+        "reference_strains.txt": "../config/yam/reference_strains.txt"
+        "vaccine.json": "../config/yam/vaccine.json"
+
+    h1n1pdm:
+        "outliers.txt": "../config/h1n1pdm/outliers.txt"
+        "reference_strains.txt": "../config/h1n1pdm/reference_strains.txt"
+        "references_to_include_in_titer_plots_h1n1pdm.txt": "../config/references_to_include_in_titer_plots_h1n1pdm.txt"
+        "references_to_exclude_in_titer_plots_h1n1pdm.txt": "../config/references_to_exclude_in_titer_plots_h1n1pdm.txt"
+        "cell_hi.txt": "../config/references_for_titer_plots/h1n1pdm/cell_hi.txt"
+        "egg_hi.txt": "../config/references_for_titer_plots/h1n1pdm/egg_hi.txt"
+        "vaccine.json": "../config/h1n1pdm/vaccine.json"
