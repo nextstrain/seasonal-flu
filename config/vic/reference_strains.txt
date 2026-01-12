@@ -1,7 +1,9 @@
 B/AbuDhabi/27/2019
 B/Aichi/62/2013
 B/Alabama/7/2023
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Alaska/03/1992
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ann Arbor/1994
 B/Argentina/2802/2019
 B/Arkansas/6/2016
@@ -10,13 +12,18 @@ B/Austria/1359417/2021-egg
 B/Ayutthaya/118/2019
 B/Bahrain/232/2019
 B/Bahrain/652/2018
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Bangkok/141/1994
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Bangkok/143/1994
 B/Bangkok/147/2018
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Bangkok/153/1990
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Bangkok/163/1990
 B/Bangladesh/3004/2017
 B/Bangladesh/9004/2018
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Beijing/184/93
 B/Bhutan/2139/2025
 B/Bolivia/663/2019
@@ -29,6 +36,7 @@ B/Brisbane/46/2015-egg
 B/Brisbane/60/2008
 B/Brunei/1/2019
 B/Burgos/4810/2023
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/California/02/1994
 B/California/9/2023
 B/Cambodia/c1115376/2018
@@ -44,8 +52,10 @@ B/Colombia/7472/2020
 B/Colorado/5/2022
 B/Colorado/6/2017
 B/Colorado/6/2017-egg
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Connecticut/07/1993
 B/Connecticut/5/2019
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Cordoba/2979/1991
 B/CoteDIvoire/1795/2019
 B/CoteDIvoire/948/2020
@@ -56,7 +66,9 @@ B/Darwin/20/2024
 B/Darwin/6/2024
 B/Darwin/772/2023
 B/ElSalvador/875/2018
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/England/66/1994
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/England/72/1994
 B/Florida/33/2014
 B/Florida/78/2015
@@ -64,12 +76,14 @@ B/Florida/78/2015-egg
 B/Florida/9/2020
 B/Fujian-Yanping/11766/2018
 B/Ghana/828/2024
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Great Lakes/1739/1954
 B/Guangdong-Dongwanbendi/2973/2023
 B/Guangdong-Nanshan/36/2018
 B/Guangdong/SZ1/1994
 B/Guangdong/SZ45/1994
 B/Guangxi-Beiliu/2298/2023
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Harbin/7/1994
 B/Hebei-Cixian/149/2018-egg
 B/Henan-Hualong/131/2019
@@ -79,9 +93,11 @@ B/Henan-Xigong/1118/2021
 B/Henan-Xigong/1118/2021-egg
 B/Hiroshima-C/1/2025
 B/Hiroshima-C/7/2018
-B/Hong Kong/02/1993
+B/HongKong/2/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Hong Kong/03/1992
-B/Hong Kong/22/1989
+B/HongKong/22/1989
+B/HongKong/22/1989
 B/HongKong/1404/2018
 B/HongKong/269/2017-egg
 B/HongKong/286/2017
@@ -94,6 +110,7 @@ B/Iceland/56/2015
 B/Indiana/25/2015
 B/Iowa/6/2017
 B/Ireland/3154/2016
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Johannesburg/06/1994
 B/Kagawa/18162/2018
 B/Kanagawa/AC1623/2017
@@ -109,8 +126,10 @@ B/Kentucky/27/2018
 B/Kuwait/8794/2018
 B/Lao/F1664/2017
 B/Lebanon/16/2020
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Lee/1940
 B/Liaoning-Yinzhou/1221/2024
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Lisbon/02/1994
 B/Louisiana/10/2017
 B/Louisiana/16/2019
@@ -126,10 +145,13 @@ B/Maryland/1/2021-egg
 B/Maryland/15/2016
 B/Maryland/15/2016-egg
 B/Maryland/24/2019
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Michigan/1/1971
 B/Michigan/1/2021
 B/Michigan/1/2021-egg
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Mie/01/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Minnesota/1/1985
 B/Missouri/3/2024
 B/Missouri/9/2016
@@ -143,22 +165,35 @@ B/Neimenggu-Donghe/1313/2019
 B/Netherlands/1000/1962
 B/Netherlands/1000/1966
 B/Netherlands/1000/1969
+# [update-strains] No match for the following strain, which did exist in fauna:
 B/Netherlands/1000/1977
 B/Netherlands/1000/1989
 B/Netherlands/1000/1990
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/1001/1979
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/1001/1982
 B/Netherlands/1003/1974
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/223/1981
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/25/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/32/1994
 B/Netherlands/353/1985
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/802/1991
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/1000/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/1001/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/1002/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/1003/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/24/1993
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/39/1991
 B/NewHampshire/1/2021
 B/NewHampshire/1/2021-egg
@@ -174,11 +209,14 @@ B/Norway/10979/2023
 B/Norway/2115/2019
 B/Norway/2409/2017
 B/Norway/6685/2024
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ohio/1/2005
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Oita/15/1992
 B/Oita/3/2018
 B/Oman/5030/2018
 B/Osaka/1/2023
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Panama/45/1990
 B/Parana/1316/2018
 B/Paris/9878/2020
@@ -192,14 +230,16 @@ B/PrachuapKhiriKhan/315/2018
 B/Ranong/373/2023
 B/RhodeIsland/1/2019
 B/RhodeIsland/1/2019-egg
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Russia/69
 B/Salalah/52423023/2024
 B/Shandong-Boshan/1321/2024
-B/Shangdong/7/1997
+B/Shandong/7/1997
 B/Sichuan-Gaoxin/531/2018
 B/Sichuan-Jingyang/12048/2019
 B/Sichuan-Jingyang/12048/2019-egg
-B/Singapore/04/1991
+B/Singapore/4/1991
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Singapore/11/1994
 B/Singapore/KK1035/2018
 B/Singapore/TT1243/2015
@@ -219,8 +259,10 @@ B/Sweden/60/2018
 B/Switzerland/329/2024
 B/Sydney/339/2023
 B/Sydney/8/2017
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Taiwan/1197/1994
 B/Tasmania/31/2025
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Texas/14/1991
 B/Texas/19/2024
 B/Texas/2/2013
@@ -235,7 +277,7 @@ B/Townsville/8/2016
 B/Trang/85/2019
 B/Utah/11/2023
 B/Utah/8/2012
-B/Victoria/02/1987
+B/Victoria/2/1987
 B/Victoria/1259/2023
 B/Victoria/1459/2023
 B/Victoria/154/2024
@@ -257,8 +299,10 @@ B/Wakayama/112/2018
 B/Washington/2/2019
 B/Washington/2/2019-egg
 B/Washington/3/2014
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Wellington/01/1994
 B/Wisconsin/44/2016
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Yamagata/16/1988
 B/Yokohama/1/2020
 B/Yunnan-Chuxiong/1852/2016

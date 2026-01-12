@@ -6,6 +6,8 @@ B/California/12/2015
 B/Canterbury/5/2017
 B/Darwin/58/2019
 B/Florida/4/2006
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
+# [update-strains] Note: "B/Guangdong-Liwan/1133/2014-egg" exists
 B/Guangdong-Liwan/1133/2014
 B/Guyane/5/2018
 B/Guyane/5/2018-egg

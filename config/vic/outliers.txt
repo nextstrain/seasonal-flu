@@ -1,12 +1,12 @@
-A/Malaysia/438/2016
+B/Malaysia/438/2016
 B/Alagoas/4386/2023
 B/Auckland/1/2008
 B/Bangkok/SI17/2012
 B/Bangkok/SI58/2012
 B/Bari/53/2023
 B/Brisbane/14/2016
-B/Brisbine/33/2008
-B/California/87/2017-egg
+B/Brisbane/33/2008
+B/California/87/2017
 B/Cambodia/26/2011
 B/Cambodia/30/2011
 B/Cambodia/62/2011
@@ -18,7 +18,9 @@ B/Guizhou-Bijiang/1344/2022
 B/Hunan-Wuling/11182/2021
 B/Jiangsu-Suzhou/7-1123A11/2021
 B/Jiangsu-Suzhou/7-1123A14/2021
-B/Kol/2024/2008
+# [update-strains] BEST 1 FUZZY MATCHES and their scores. Original strain 'B/Kol/2024/2008'. You must manually choose the correct match.
+# [update-strains] P.S. Original strain wasn't in fauna!
+# [score=0.882] B/Kolkata/2024/2008
 B/Kolkata/1373/2008
 B/Kolkata/2024/2008
 B/Kolkata/372/2010
@@ -51,10 +53,12 @@ B/Zhejiang-Yiwu/1168/2020
 B/Zhejiang-Yiwu/1226/2021
 B/Zhejiang-Yongkang/1274/2021
 B/Ukraine/2194/2024 
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ukraine/2308/2024 
 B/Ukraine/2309/2024 
 B/Ukraine/2270/2024 
 B/Ukraine/2276/2024 
 B/Ukraine/2417/2024 
 B/Ukraine/2318/2024 
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ukraine/2319/2024 

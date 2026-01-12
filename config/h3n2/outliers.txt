@@ -1,7 +1,3 @@
-29cea8cb-fa93-4c46-8bbc-3d1a51f26391
-39ff161f-47a4-467d-86f6-eeefafd06ad9
-51de8816-cadd-4a85-92d9-d69fc945f92c
-96c78497-90f1-4c9f-ba23-fc1eabd0eeae
 A/Argentina/1434/2019
 A/Asaka/2/2017
 A/Austria/838902/2015
@@ -11,9 +7,10 @@ A/Bahia/12607/2024
 A/Bangladesh/3010/2020
 A/Bangladesh/icddrb-2240410032/2024
 A/Bari/32/2024
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/Belgium/S03941/2023
 A/Bhutan/1908/2024
-A/BosniaandHerzegovia/288G/2019
+A/BosniaHerzegovina/288G/2019
 A/Brazil/BA-LACEN-BA053-292045410/2022
 A/Brazil/BA-LACEN-BA071-292012660/2021
 A/Brazil/BA-LACEN-BA123-292029844/2021
@@ -29,7 +26,7 @@ A/Cambodia/NHRCC00008/2009
 A/Cambodia/NHRCC00010/2009
 A/Cambodia/NHRCC00011/2009
 A/CastillaLaMancha/4214/2022
-A/Catalonia/NSVH100533399/2017
+A/Catalonia/NSVH100533399/2016
 A/Catalonia/NSVH100560486/2017
 A/Catalonia/NSVH100570896/2017
 A/Catalonia/NSVH100731127/2017
@@ -58,6 +55,7 @@ A/CoteDIvoire/4610/2024
 A/Cyprus/F83/2017
 A/Dakar/35/2024
 A/Dakar/922/2022
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/Darwin/143/2020
 A/Delaware/3/2011
 A/Delaware/33/2017
@@ -141,7 +139,7 @@ A/HongKong/HKMA20A/2008
 A/HongKong/HKMA20B/2008
 A/HongKong/HKMA20D/2008
 A/HongKong/HKMA20E/2008
-A/HuNan/01/2014
+A/HuNan/1/2014
 A/HuNan/1/2014
 A/Hungary/100390-UPL25-001871/2025
 A/Hungary/101031-UPL25-001917/2025
@@ -159,17 +157,28 @@ A/Illinois/11/2012
 A/Illinois/14/2012
 A/Illinois/3/2013
 A/Illinois/9/2012
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/1132/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/1718/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/1759/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/2063/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/2100/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/244/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3/2019
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3256/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/3835/2021
 A/India/6352/2012
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/8154/2021
+# [update-strains] No match for the following strain, which did exist in fauna:
 A/India/9083/2021
 A/India/D0512577/2005
 A/India/Kerala-NIVQC475/2021
@@ -177,8 +186,8 @@ A/India/Pun-NIV326980/2021
 A/India/Pun-NIV327049/2021
 A/India/Pun-NIV328238/2021
 A/India/Pune-NIVSARI5334/2021
-A/Indiana/06/2013
-A/Indiana/08/2012
+A/Indiana/6/2013
+A/Indiana/8/2012
 A/Indiana/10/2011
 A/Indiana/10/2011-egg
 A/Indiana/10/2013
@@ -264,10 +273,15 @@ A/Ireland/53051/2017
 A/Ireland/61097/2017
 A/Ireland/61451/2017
 A/Ireland/62518/2017
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Jiangsu-Chongchuan/12179/2014
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Jiangsu-Chongchuan/12714/2015
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Jiangsu-Chongchuan/12908/2015
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Jiangsu-Chongchuan/1830/2014
+# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 A/Jiangsu-Tianning/1707/2013
 A/Kansas/13/2009
 A/Kentucky/11/2012
@@ -284,7 +298,6 @@ A/Lisbon/172/2024
 A/London/16U363140-91_S43_L001/2016
 A/London/16U948124-66_S18_L001/2016
 A/Louisiana/4/2003
-A/Lousiana/4/2003
 A/Luxembourg/19008307/2019
 A/Luxembourg/LNS2955091/2024
 A/Luxembourg/LNS3026715/2024
@@ -347,21 +360,21 @@ A/Michigan/93/2016
 A/Michigan/94/2016
 A/Michigan/95/2016
 A/Michigan/96/2016
-A/Michigan/UOM10045561000/2020
-A/Michigan/UOM10045571700/2020
-A/Michigan/UOM10045573029/2020
-A/Michigan/UOM10045582390/2020
-A/Michigan/UOM10045583980/2020
-A/Michigan/UOM10045586861/2020
-A/Michigan/UOM10045599236/2020
-A/Michigan/UOM10045621291/2020
-A/Michigan/UOM10045628539/2020
-A/Michigan/UOM10045630989/2020
-A/Michigan/UOM10045650349/2020
-A/Michigan/UOM10045651468/2020
-A/Michigan/UOM10045655748/2020
-A/Michigan/UOM10045667760/2020
-A/Michigan/UOM10045676784/2020
+A/Michigan/UOM10045561000/2022
+A/Michigan/UOM10045571700/2022
+A/Michigan/UOM10045573029/2022
+A/Michigan/UOM10045582390/2022
+A/Michigan/UOM10045583980/2022
+A/Michigan/UOM10045586861/2022
+A/Michigan/UOM10045599236/2022
+A/Michigan/UOM10045621291/2022
+A/Michigan/UOM10045628539/2022
+A/Michigan/UOM10045630989/2022
+A/Michigan/UOM10045650349/2022
+A/Michigan/UOM10045651468/2022
+A/Michigan/UOM10045655748/2022
+A/Michigan/UOM10045667760/2022
+A/Michigan/UOM10045676784/2022
 A/Michigan/UOM10047284024/2022
 A/Minnesota/100/2024
 A/Minnesota/101/2024
@@ -376,7 +389,7 @@ A/Moldova/36605/2024
 A/Moldova/40696/2025
 A/Moldova/40818/2025
 A/Montpellier/F_004_107_MF/2020
-A/Moscow/CRIE/415/2019
+A/Moscow/415/2019
 A/Myanmar/18M090/2018
 A/Nagano-C/69/2023
 A/Nanjing/1/2010
@@ -391,7 +404,8 @@ A/NewJersey/53/2015
 A/NewMexico/19/2022
 A/NorthDakota/19/2017
 A/Novosibirsk/1/2019
-A/OSAKA/31/2005
+A/Osaka/31/2005
+A/Osaka/31/2005
 A/Ohio/13/2012
 A/Ohio/13/2012-egg
 A/Ohio/13/2017
@@ -464,7 +478,7 @@ A/Ohio/87/2012
 A/Ohio/88/2012
 A/Ohio/90/2012
 A/Ohio/91/2012
-A/Okahoma/5909/2017
+A/Oklahoma/5909/2017
 A/Ontario/1252/2007
 A/Ontario/RV1273/2005
 A/Ontario/RV3236/2016
@@ -474,7 +488,7 @@ A/Para/181916-IEC/2021
 A/Paris/89/2015
 A/Parma/3/2021
 A/Parma/4/2021
-A/Pennsylvania/09/2011
+A/Pennsylvania/9/2011
 A/Pennsylvania/11/2011
 A/Pennsylvania/11/2012
 A/Pennsylvania/13/2012
@@ -526,7 +540,7 @@ A/SouthCarolina/NHRC0001/2011
 A/SriLanka/217/2023
 A/SriLanka/35/2018
 A/StPetersburg/5/2009
-A/StPetersburg/5/2009-egg
+A/StPetersburg/5/2009
 A/StPetersburg/RII-2415S/2021
 A/Sydney/53/2015
 A/Sydney/75/2025
@@ -563,4 +577,4 @@ A/Zhejiang-Wuxin/1916/2018
 A/Zhejiang-Yongkang/1137/2018
 A/Zhejiang-Yongkang/1567/2022
 A/Zhejiang-Yongkang/1576/2022
-B/Bari/40/2024
+A/Bari/40/2024
