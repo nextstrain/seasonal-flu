@@ -5,12 +5,8 @@ A/Sydney/124/2025-egg # D.3.1
 A/Switzerland/6849/2025-egg # D.3.1:113K
 A/California/177/2024-egg # C.1.9.1
 A/Victoria/42/2025-egg # C.1.9.3
-# [update-strains] No match for the following strain, which did exist in fauna:
-# [update-strains] (the non-egg-passaged strain does exist)
 A/Norway/10655/2024-egg # C.1.9.3:35N
 #A/Washington/310/2024-egg # C.1.9.3:166V
-# [update-strains] No match for the following strain, which did exist in fauna:
-# [update-strains] (the non-egg-passaged strain does exist)
 A/Caerphilly/5142/2024-egg # C.1.9.3:120T,137S,166V
 # A/Singapore/SAR3644/2024-egg # Missing?
 A/Iceland/34025/2024-egg # D.5
