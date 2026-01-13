@@ -195,3 +195,35 @@ rule select_titers_by_host:
         """
         tsv-filter -H {params.host_query} {input.titers} > {output.titers} 2> {log}
         """
+
+
+def _stats(wildcards):
+    """
+    Collect all the relevant (titer-matching) stats JSONs for the requested wildcards.lineage
+    """
+    stats = set()
+    matching_builds = [build for build in config["builds"].values() if build['lineage']==wildcards.lineage]
+    for build in matching_builds:
+        for collection in build['titer_collections']:
+            center, _host, passage, assay = collection['name'].split('_')
+            stats.add(f"data/{wildcards.lineage}/{center}_{passage}_{assay}_matching-stats.json")
+    return sorted(list(stats))
+
+rule visualise_titer_matches:
+    """
+    Visualise the titer matche stats produced by the remap_titer_strain_names
+    rule above. This script will _always_ exit 0 and produce the output file
+    to avoid viz errors terminating the pipeline
+    """
+    input:
+        stats = _stats
+    output:
+        png = "data/{lineage}/titer-matches.png"
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/visualise_titer_matches_{lineage}.txt"
+    shell:
+        """
+        ./scripts/titer-matching-viz.py --stats {input.stats} --output {output.png} 2> {log}
+        """
+
