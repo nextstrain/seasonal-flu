@@ -5,6 +5,4 @@ A/Wisconsin/114/2025 # K
 A/Darwin/1415/2025 # K
 A/Norway/8765/2025 # K
 A/England/174/2025 # J.2.2:65K
-A/Pennsylvania/234/2024 # J.2.2:65K
-A/Minnesota/97/2024 # J.2.2:65K,145N
 A/Alaska/8/2025 # J.2.3
