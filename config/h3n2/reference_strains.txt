@@ -32,6 +32,7 @@ A/Bretagne/1565/2017-egg
 A/Brisbane/1/2018
 A/Brisbane/1/2018-egg
 A/Brisbane/10/2007
+A/Brisbane/10/2007-egg
 A/Brisbane/117/2018
 A/Brisbane/273/2023
 A/Brisbane/318/2016
@@ -324,6 +325,7 @@ A/Wisconsin/3/2007
 A/Wisconsin/327/2017
 A/Wisconsin/66/2015
 A/Wisconsin/67/2005
+A/Wisconsin/67/2005-egg
 A/Wyoming/3/2003
 A/Xinjiang-Changji/1952/2025
 A/Yamaguchi/77/2024
