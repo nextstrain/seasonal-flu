@@ -14,7 +14,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     n_colors = len(args.values)
-    sorted_values = sorted(args.values)
 
     # Load and validate the input Auspice config JSON.
     with open(args.auspice_config, "r", encoding="utf-8") as fh:
@@ -38,7 +37,7 @@ if __name__ == '__main__':
     # Add the color scale to the config.
     color_scale = [
         [value, color]
-        for value, color in zip(sorted_values, colors)
+        for value, color in zip(args.values, colors)
     ]
     for coloring in auspice_config["colorings"]:
         if coloring["key"] == args.coloring_field:
