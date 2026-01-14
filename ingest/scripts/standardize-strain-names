@@ -327,6 +327,21 @@ def flu_fix_patterns(name: str, seasonal: bool) -> str:
             name = re.match(r'([\w\s\-/]+)/([0-9][0-9])$', name).group(1) + "/19" + year
     return name
 
+punctuation = ['/','_', '(', ')', ',', '-', ' ', ';', '.']
+def simplify_strain(s: str) -> str:
+    """
+    Normalize string for more fuzzy-like matching. If a simplified titer strain
+    matches a simplified metadata strain this is considered a "maybe" match.
+    Simplification means: lowercase, punctuation removed, leading zeros removed from numbers,
+    and some other ad-hoc fixes.
+    """
+    s = s.lower()
+    # Remove leading zeros after slashes (e.g., /01 -> /1) before punctuation is stripped
+    s = re.sub(r'/0+(\d)', r'/\1', s)
+    for char in punctuation:
+        s = s.replace(char, '')
+    s = s.replace("a/a/", "a/")
+    return s
 
 
 if __name__ == '__main__':
@@ -368,3 +383,20 @@ if __name__ == '__main__':
             duplicates.add(strain_name)
     if len(duplicates):
         print_err(f"{len(duplicates):,} duplicate strain names (after correction)")
+
+    # TMP TMP TMP
+    #  observed_strains[new_strain].append((record.get('gisaid_epi_isl', '[unknown EPI ISL]'), gisaid_strain))
+    # Log pseudo-duplicates, as they should probably be "fixed" to be real duplicates and thus (eventually) de-duped
+    # observed_strains.keys() is the unique (corrected) strain names
+
+    simplified: defaultdict[str, list[tuple[str, list[str]]]] = defaultdict(list)
+    #                       simpl           str   EPIs                
+
+    for strain_name, details in observed_strains.items():
+        epi_isls = [el[0] for el in details]
+        s = simplify_strain(strain_name)
+        simplified[s].append( (strain_name, epi_isls) )
+
+    for name, data in simplified.items():
+        if len(data)>1:
+            print_err(f"Duplicate when simplified {name!r}. " + ", ".join(f"{d[0]!r} [{', '.join(d[1])}]" for d in data))
