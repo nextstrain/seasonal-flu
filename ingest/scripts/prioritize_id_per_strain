@@ -76,16 +76,60 @@ def determine_prioritized_ids(records: Iterable[dict],
         if sequences is None:
             raise Exception(f"Records must have the expected sequences field {seq_field!r}")
 
-        # Compare against already prioritized id
-        if prioritized_ids.get(strain):
-            continue
+        # Compare against already prioritized record
+        if prioritized := prioritized_ids.get(strain):
+            new_reasons = get_reasons(sequences, first_record = False)
+            if use_new_record(prioritized["reasons"], new_reasons):
+                prioritized_ids[strain] = {
+                    "id": record_id,
+                    "reasons": new_reasons
+                }
         else:
             prioritized_ids[strain] = {
                 "id": record_id,
-                "reasons": {Prioritization.FIRST_RECORD}
+                "reasons": get_reasons(sequences, first_record = True)
             }
 
     return prioritized_ids
+
+
+def get_reasons(sequences: dict, first_record: bool) -> set:
+    """
+    Parse record *sequences* to create of set of `Prioritization` reasons.
+    """
+    reasons = set()
+
+    if first_record:
+        reasons.add(Prioritization.FIRST_RECORD)
+
+    if len(sequences.get("ha", [])) > 0:
+        reasons.add(Prioritization.HAS_HA)
+
+    if len(sequences.get("na", [])) > 0:
+        reasons.add(Prioritization.HAS_NA)
+
+    return reasons
+
+
+def use_new_record(old_reasons: set, new_reasons: set) -> bool:
+    """
+    Compare provided *old_reasons* and *new_reasons*.
+    Returns True if *new_reasons* has higher priority
+    """
+    # Always prioritize old record if it's hardcoded
+    if Prioritization.HARDCODED in old_reasons:
+        return False
+
+    # New record has HA but the old one does not
+    if Prioritization.HAS_HA in new_reasons and Prioritization.HAS_HA not in old_reasons:
+        return True
+
+    # New record has NA but the old one does not
+    if Prioritization.HAS_NA in new_reasons and Prioritization.HAS_NA not in old_reasons:
+        return True
+
+    # If everything is equal, keep the old record
+    return False
 
 
 if __name__ == "__main__":
