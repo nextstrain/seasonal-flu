@@ -5,7 +5,7 @@ force_run_nextclade: true
 # date corresponds to the reporting period of the upcoming vaccine composition
 # meeting. For the VCM in September, we tend to report on data from February of
 # that year.
-min_date: &min_date 2025-02-01
+min_date: &min_date 2025-05-01
 
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
