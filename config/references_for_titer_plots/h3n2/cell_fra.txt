@@ -1,14 +1,7 @@
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
-A/Wisconsin/154/2024 # J.2:135K
-A/Catalonia/NSVH102423723/2024 # J.2:135K, Crick
-A/Michigan/32/2024 # J.2:145N
-A/Colorado/209/2024 # J.2:223I
-#A/Victoria/488/2024 # J.2:207R
-A/Colorado/6/2024 # J.2.1
+A/Sydney/1359/2024 # J.2.4, vaccine strain
+A/Wisconsin/114/2025 # K
+A/Pennsylvania/234/2024 # J.2.2:65K
+#A/England/174/2025 # J.2.2:65K
 A/Minnesota/97/2024 # J.2.2:65K,145N
-A/Alaska/8/2025 # J.2.3, CDC
-A/Netherlands/10685/2024 # J.2.3
-A/Valladolid/1187/2025 # J.2.4 (189R + 135K), Crick
-A/Mississippi/37/2025 # J.2.4, CDC
-A/Sydney/1359/2024 # J.2.4
-A/Kentucky/29/2024 # J.2.5
+A/Alaska/8/2025 # J.2.3

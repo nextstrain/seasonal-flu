@@ -1,18 +1,8 @@
 A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
 A/DistrictOfColumbia/27/2023-egg # J.2:145N, vaccine strain
-A/Idaho/69/2023-egg # J.2:145N
-A/Oregon/266/2024-egg # J.2:135K
-A/Catalonia/NSVH102423723/2024-egg # J.2:135K
-A/Oklahoma/5/2024-egg # J.2:158K
-A/Norway/423/2024-egg # J.2:158K
-A/Iowa/12/2024-egg # J.2:104N,145N
-A/Netherlands/2093/2024-egg # J.2.3
-A/Netherlands/2093/2025-egg # J.2.3:195Y
-A/Michigan/73/2025-egg # J.2.3:195Y
-A/Nepal/N042/2025-egg # J.2.4
-A/Valladolid/1187/2025-egg # J.2.4
-A/Singapore/GP20238/2024-egg # J.2.4
-A/NewJersey/16/2025-egg # J.2.5
-#A/Idaho/47/2023-egg # J.1.1:214T
-A/Minnesota/117/2024-egg # Missing
-A/Wisconsin/160/2024-egg # Missing
+A/Singapore/GP20238/2024-egg # J.2.4, vaccine strain
+A/Michigan/105/2025-egg # K:195Y
+A/Darwin/1454/2025-egg # K:195Y
+A/Minnesota/117/2024-egg # J.2.2:65K,145N, Missing
+A/Netherlands/2093/2024-egg # J.2.3:195Y
+#A/Wisconsin/160/2024-egg # Missing
