@@ -3,5 +3,5 @@ A/Sydney/1359/2024 # J.2.4, vaccine strain
 A/Wisconsin/114/2025 # K
 A/Darwin/1415/2025 # K
 A/Norway/8765/2025 # K
-A/England/174/2025 # J.2.2:65K
-A/Alaska/8/2025 # J.2.3
+A/Sydney/853/2025 # K
+A/Tokyo/EIS13-355/2025 # K:265G
