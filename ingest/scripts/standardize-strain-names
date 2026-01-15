@@ -76,11 +76,13 @@ def standardize_record_strains(records: Iterable,
     Yields the modified records.
     """
     strain_replacements: dict[str,str] = {}
-    location_replacements = {}
+    location_replacements, location_replacements_simplified = {}, {}
     for strain_replacements_file in strain_replacements_files:
         strain_replacements = define_strain_fixes(strain_replacements_file, strain_replacements)
     if location_replacements_file:
         location_replacements = define_location_label_fixes(location_replacements_file)
+        location_replacements_simplified = {value.lower():value for value in location_replacements.values()}
+
 
     for record in records:
         record = record.copy()
@@ -94,7 +96,7 @@ def standardize_record_strains(records: Iterable,
         if passage_category is None:
             raise Exception(f"Records must have the expected passage category field: {passage_field!r}")
 
-        new_strain = fix_name(gisaid_strain[:], strain_replacements, location_replacements, seasonal)
+        new_strain = fix_name(gisaid_strain[:], strain_replacements, location_replacements, location_replacements_simplified, seasonal)
 
         # Mirrors the changes to the strain name in nextstrain/fauna/vdb/download.py
         # <https://github.com/nextstrain/fauna/blob/fbdc393581b1859ac817403d8f43e114d7edbc60/vdb/download.py#L326-L327>
@@ -141,7 +143,7 @@ def define_strain_fixes(fname: str, fix_whole_name:dict[str,str]) -> dict[str,st
     return fix_whole_name
 
 
-def define_location_label_fixes(fname: str) -> dict:
+def define_location_label_fixes(fname: str) -> dict[str,str]:
     """
     Open strain name location label fixing file and return dict of
     location label fixes.
@@ -161,11 +163,14 @@ def define_location_label_fixes(fname: str) -> dict:
         #         continue
         #     print_err("conflicting duplicate location label replacement. " +
         #               f"Original location: '{old_name}'. Proposed new locations: '{label_to_fix[old_name]}' and '{new_name}'. Using the second.")
+        if not new_name:
+            print_err("WTF?", line)
+            continue
         label_to_fix[old_name] = new_name
     return label_to_fix
 
 
-def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict, seasonal:bool) -> str:
+def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict[str,str], lowercase_labels: dict[str,str], seasonal:bool) -> str:
     """
     Fix strain names
 
@@ -218,8 +223,17 @@ def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict, seasonal:bool)
     # TODO: why do we check all parts and not just the canonical "location" part
     split_name = name.split('/')
     for index, label in enumerate(split_name):
+        # Subsequent label.replace (n=2) should be unnecessary since `name` should have no spaces by this point?
         if label.replace(' ', '').lower() in label_to_fix:
             split_name[index] = label_to_fix[label.replace(' ', '').lower()]
+
+        # Correct capitlization automagically?
+        label_simple = label.lower().replace("_", '').replace("-", "")
+        if label_fixed:=lowercase_labels.get(label_simple):
+            if label_fixed!=label:
+                split_name[index] = label_fixed
+                print_err(f"CHECK! Index {index} {label!r} -> {label_fixed!r}")
+
     name = '/'.join(split_name)
 
     name = flu_fix_patterns(name, seasonal)
