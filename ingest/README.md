@@ -14,12 +14,12 @@ own data.
 ## Workflow Usage
 
 Manually download the metadata and sequences from GISAID.
-Save the XLS metadata file as `ingest/data/gisaid_epiflu_isolates.xls`.
+Save the XLS metadata file as `ingest/data/YYYY-MM-DD-N-metadata.xls`.
 Make sure the sequences includes all segments and the FASTA header is set to
 ```
 DNA Accession no. | Submitting lab  | Originating lab
 ```
-Save the FASTA file as `ingest/data/gisaid_epiflu_sequence.fasta`.
+Save the FASTA file as `ingest/data/YYYY-MM-DD-N-sequences.fasta`.
 
 The workflow can be run from the top level pathogen repo directory:
 ```
