@@ -197,13 +197,15 @@ def fix_name(name: str, fix_whole_name: dict, label_to_fix: dict, seasonal:bool)
     # and similarly, drop the ends of strain names which detail the subtype, e.g. <name>(H7N9)
     if match:=re.match(r'(.+)\(?H\dN\d\)?$', name):
         name = match.group(1)
+    # Convert trailing "(Mixed)" or "(Mixed-HxNx)" -- note that the latter has been converted by 
+    # previous regex to "(Mixed-"
+    name = name.replace('(Mixed)', '/Mixed').replace("(Mixed-", "/Mixed")
 
     # Generic find-and-replace
     name = name.replace('H1N1', '').replace('H5N6', '').replace('H3N2', '')\
         .replace('Human', '').replace('human', '')\
         .replace('//', '/').replace('.', '').replace(',', '').replace('&', '').replace(' ', '')\
         .replace('\'', '').replace('>', '').replace('-like', '').replace('+', '')\
-        .replace('(Mixed)', '/Mixed')\
         .replace('/H7N9/', '/')
     name = name.lstrip('-').lstrip('_').lstrip(')').lstrip('(')
     name = name.lstrip('-').rstrip('_').rstrip(')').rstrip('(')
