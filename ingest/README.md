@@ -12,7 +12,6 @@ own data.
 > for more details.
 
 ## Workflow Usage
-
 Manually download the metadata and sequences from GISAID.
 Save the XLS metadata file as `ingest/data/YYYY-MM-DD-N-metadata.xls`.
 Make sure the sequences includes all segments and the FASTA header is set to
@@ -32,11 +31,22 @@ This produces the default outputs of the ingest workflow:
 - sequences     = results/<lineage>/<segment>.fasta
 
 
-If your downloaded data only includes a subset of lineages, e.g. no "yam" lineages,
-then you can override the default with:
+If your downloaded data only includes a subset of lineages, e.g. only include h3n2,
+then you can disable lineages by providing a custom config
+
+```yaml
+filtering:
+  h1n1pdm: ~
+  vic: ~
+  yam: ~
+  b: ~
+  h1n1: ~
+  h2n2: ~
+  avian-flu: ~
+```
 
 ```
-nextstrain build ingest --config 'lineages=["h1n1pdm", "h3n2", "vic"]'
+nextstrain build ingest --configfile custom-config.yaml
 ```
 
 
