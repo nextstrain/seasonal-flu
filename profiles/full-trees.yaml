@@ -77,9 +77,9 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
-        - name: kikawa_2025
+        - name: kikawa_2025b
           data: "profiles/full-trees/h3n2_all_human_prevax_2025.tsv"
-          prefix: kikawa_2025_
+          prefix: kikawa_2025b_
           genes: ["HA1"]
       frequencies: &frequencies
         narrow_bandwidth: 0.02
@@ -121,9 +121,9 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
-        - name: kikawa_2025
+        - name: kikawa_2025b
           data: "profiles/full-trees/h1n1pdm_all_human_prevax_2025.tsv"
-          prefix: kikawa_2025_
+          prefix: kikawa_2025b_
           genes: ["HA1"]
       frequencies: *frequencies
     full-vic:

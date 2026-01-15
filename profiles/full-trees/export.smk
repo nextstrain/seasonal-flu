@@ -2,7 +2,7 @@ ruleorder: export_full_trees > export
 
 rule calculate_human_antigenic_distance_to_the_future:
     input:
-        titer_model="builds/{build_name}/ha/titers-sub-model/kikawa_2025.json",
+        titer_model="builds/{build_name}/ha/titers-sub-model/kikawa_2025b.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
         forecasts=lambda wildcards: f"../forecasts-flu/results/gisaid/emerging_haplotype/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/freq_forecast.tsv",
         tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
