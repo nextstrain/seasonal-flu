@@ -55,8 +55,12 @@ jobs:
       runtime: ${{ inputs.runtime }}
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+        SLACK_CHANNELS: ${{ vars.SLACK_CHANNELS }}
+      # SLACK_TOKEN is a secret that is automatically passed via `inherit`
       run: |
         nextstrain build \
+          --env SLACK_CHANNELS \
+          --env SLACK_TOKEN \
           ingest \
           upload_all \
           --configfile build-configs/nextstrain-automation/config.yaml
