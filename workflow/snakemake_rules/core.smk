@@ -109,9 +109,9 @@ rule tree:
         method = config.get("tree", {}).get("method", "iqtree"),
         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
-    threads: 4
+    threads: 1
     resources:
-        mem_mb=8000,
+        mem_mb=4000,
         time="2:00:00",
     shell:
         """
