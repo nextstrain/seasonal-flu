@@ -21,7 +21,7 @@ jobs:
       run: |
         nextstrain build \
           --detach \
-          --cpus 36 \
+          --cpus 16 \
           --memory 72gib \
           --env NEXTSTRAIN_USERNAME \
           --env NEXTSTRAIN_PASSWORD \
