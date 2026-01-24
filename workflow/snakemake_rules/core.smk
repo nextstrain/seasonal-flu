@@ -111,7 +111,7 @@ rule tree:
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
     threads: 1
     resources:
-        mem_mb=2000,
+        mem_mb=lambda wildcards, input: 40 * int(input.alignment.size_mb),
         time="2:00:00",
     shell:
         """
@@ -242,7 +242,7 @@ rule refine:
     log:
         "logs/refine_{build_name}_{segment}.txt"
     resources:
-        mem_mb=2000,
+        mem_mb=lambda wildcards, input: 40 * int(input.alignment.size_mb),
         time="2:00:00",
     shell:
         """

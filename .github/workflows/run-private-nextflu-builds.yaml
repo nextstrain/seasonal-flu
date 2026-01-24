@@ -26,7 +26,7 @@ jobs:
       run: |
         nextstrain build \
           --detach \
-          --cpus 36 \
+          --cpus 16 \
           --memory 72gib \
           . \
           all_who \
