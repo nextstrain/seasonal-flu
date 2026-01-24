@@ -111,7 +111,7 @@ rule tree:
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
     threads: 1
     resources:
-        mem_mb=lambda wildcards, input: 40 * int(input.size_mb),
+        mem_mb=4000,
         time="2:00:00",
     shell:
         """
@@ -151,7 +151,7 @@ rule prune_outliers:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
         cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
     resources:
-        mem_mb=lambda wildcards, input: 40 * int(input.size_mb),
+        mem_mb=2000,
     shell:
         """
         python3 scripts/flag_outliers.py \
@@ -175,7 +175,7 @@ rule sanitize_trees:
     log:
         "logs/sanitize_trees_{build_name}.txt"
     resources:
-        mem_mb=lambda wildcards, input: 40 * int(input.size_mb),
+        mem_mb=2000,
     shell:
         """
         python3 scripts/sanitize_trees.py \
@@ -246,7 +246,7 @@ rule refine:
     log:
         "logs/refine_{build_name}_{segment}.txt"
     resources:
-        mem_mb=lambda wildcards, input: 100 * int(input.size_mb),
+        mem_mb=4000,
         time="2:00:00",
     shell:
         """

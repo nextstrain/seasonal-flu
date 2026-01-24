@@ -21,8 +21,8 @@ jobs:
       run: |
         nextstrain build \
           --detach \
-          --cpus 36 \
-          --memory 72gib \
+          --cpus 16 \
+          --memory 64gib \
           . \
           deploy_all \
           -p \
