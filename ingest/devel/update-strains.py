@@ -111,7 +111,7 @@ def parse_strain_map(fname:str|None) -> dict[str,str]:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--curated-strains", required=True, help="Text file with curated strain names")
-    parser.add_argument("--fauna-strains", required=True, help="Text file with fauna strain names")
+    parser.add_argument("--fauna-strains", required=False, help="Text file with fauna strain names")
     parser.add_argument("--query-strains", required=True, help="Text file with query strain names (e.g. include.txt)")
     parser.add_argument("--strain-map", required=False, nargs='*', help="Hardcoded map of old to new strain names, where known")
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     curated_strains = read_strains(args.curated_strains)
     curated_strains_set = set(curated_strains)
 
-    fauna_strains = read_strains(args.fauna_strains)
+    fauna_strains = read_strains(args.fauna_strains) if args.fauna_strains else []
 
     curated_strains_normalized = {normalize_for_matching(w):w for w in curated_strains}
     # curated_strains_normalized_set = set(curated_strains_normalized.keys())
@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
     for idx, line in enumerate(query_lines):
         if idx and idx%100==0:
-            print(f"[progress] {idx:,}/{len(query_lines):,}", file=sys.stderr)
+            print(f"[update-strains] [progress] {idx:,}/{len(query_lines):,}", file=sys.stderr)
 
         # strain can be thought of as fauna strain
         strain = extract_strain(line, is_tsv)
@@ -186,23 +186,28 @@ if __name__ == '__main__':
             stats['fuzzy_matches'] += 1
             best = find_highest(similarities, 3)
             print(f"# [update-strains] BEST {len(best)} FUZZY MATCHES and their scores. Original strain {strain!r}. You must manually choose the correct match.")
-            if not exists_in_fauna:
+            if len(fauna_strains) and not exists_in_fauna:
                 print(f"# [update-strains] P.S. Original strain wasn't in fauna!")
             for candidate in best:
-                print(f"# [score={candidate['score']:.3f}] " + replace_strain(strain, candidate['strain'], line), end="")
+                print(f"# [update-strains] [score={candidate['score']:.3f}] " + replace_strain(strain, candidate['strain'], line), end="")
+            print(line, end="")
             continue
         
         # Now is the time to admit we failed!
         # ...but wait - was it even in fauna?
-        if strain not in fauna_strains:
-            print("# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:")
-            print(line, end="")
-            stats['no_matches_and_missing_from_fauna']+=1
+        if len(fauna_strains):
+            if strain not in fauna_strains:
+                print("# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:")
+                print(line, end="")
+                stats['no_matches_and_missing_from_fauna']+=1
+            else:
+                print("# [update-strains] No match for the following strain, which did exist in fauna:")
+                print(line, end="")
+                stats['no_matches']+=1
         else:
-            print("# [update-strains] No match for the following strain, which did exist in fauna:")
+            print("# [update-strains] No match for the following strain")
             print(line, end="")
             stats['no_matches']+=1
-
 
     def _stats_str(a:str, b:str)->str:
         aa = stats[a]

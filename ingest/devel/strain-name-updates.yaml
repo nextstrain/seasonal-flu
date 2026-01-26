@@ -1,40 +1,68 @@
 
-strain-lists:
-    h3n2:
-        "outliers.txt": "../config/h3n2/outliers.txt"
-        "reference_strains.txt": "../config/h3n2/reference_strains.txt"
-        "ha_prioritised_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
-        "references_to_include_in_titer_plots_h3n2.txt": "../config/references_to_include_in_titer_plots_h3n2.txt"
-        "references_to_exclude_in_titer_plots_h3n2.txt": "../config/references_to_exclude_in_titer_plots_h3n2.txt"
-        "cell_hi.txt": "../config/references_for_titer_plots/h3n2/cell_hi.txt"
-        "egg_hi.txt": "../config/references_for_titer_plots/h3n2/egg_hi.txt"
-        "cell_fra.txt": "../config/references_for_titer_plots/h3n2/cell_fra.txt"
-        "egg_fra.txt": "../config/references_for_titer_plots/h3n2/egg_fra.txt"
-        "vaccine.json": "../config/h3n2/vaccine.json"
-        # NOTE: all segments have the following file, or at least a subset of it.
-        "prioritized_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
+# strain-lists:
+#     h3n2:
+#         "outliers.txt": "../config/h3n2/outliers.txt"
+#         "reference_strains.txt": "../config/h3n2/reference_strains.txt"
+#         "ha_prioritised_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
+#         "references_to_include_in_titer_plots_h3n2.txt": "../config/references_to_include_in_titer_plots_h3n2.txt"
+#         "references_to_exclude_in_titer_plots_h3n2.txt": "../config/references_to_exclude_in_titer_plots_h3n2.txt"
+#         "cell_hi.txt": "../config/references_for_titer_plots/h3n2/cell_hi.txt"
+#         "egg_hi.txt": "../config/references_for_titer_plots/h3n2/egg_hi.txt"
+#         "cell_fra.txt": "../config/references_for_titer_plots/h3n2/cell_fra.txt"
+#         "egg_fra.txt": "../config/references_for_titer_plots/h3n2/egg_fra.txt"
+#         "vaccine.json": "../config/h3n2/vaccine.json"
+#         # NOTE: all segments have the following file, or at least a subset of it.
+#         "prioritized_seqs_file.tsv": "../config/h3n2/ha/prioritized_seqs_file.tsv"
 
         
-    vic:
-        "outliers.txt": "../config/vic/outliers.txt"
-        "reference_strains.txt": "../config/vic/reference_strains.txt"
-        "references_to_include_in_titer_plots_vic.txt": "../config/references_to_include_in_titer_plots_vic.txt"
-        "references_to_exclude_in_titer_plots_vic.txt": "../config/references_to_exclude_in_titer_plots_vic.txt"
-        "vaccine.json": "../config/vic/vaccine.json"
-        # Note: all priorised strain TSVs empty
-        "cell_hi.txt": "../config/references_for_titer_plots/vic/cell_hi.txt"
-        "egg_hi.txt": "../config/references_for_titer_plots/vic/egg_hi.txt"
+#     vic:
+#         "outliers.txt": "../config/vic/outliers.txt"
+#         "reference_strains.txt": "../config/vic/reference_strains.txt"
+#         "references_to_include_in_titer_plots_vic.txt": "../config/references_to_include_in_titer_plots_vic.txt"
+#         "references_to_exclude_in_titer_plots_vic.txt": "../config/references_to_exclude_in_titer_plots_vic.txt"
+#         "vaccine.json": "../config/vic/vaccine.json"
+#         # Note: all priorised strain TSVs empty
+#         "cell_hi.txt": "../config/references_for_titer_plots/vic/cell_hi.txt"
+#         "egg_hi.txt": "../config/references_for_titer_plots/vic/egg_hi.txt"
 
-    yam:
-        "outliers.txt": "../config/yam/outliers.txt"
-        "reference_strains.txt": "../config/yam/reference_strains.txt"
-        "vaccine.json": "../config/yam/vaccine.json"
+#     yam:
+#         "outliers.txt": "../config/yam/outliers.txt"
+#         "reference_strains.txt": "../config/yam/reference_strains.txt"
+#         "vaccine.json": "../config/yam/vaccine.json"
 
-    h1n1pdm:
-        "outliers.txt": "../config/h1n1pdm/outliers.txt"
-        "reference_strains.txt": "../config/h1n1pdm/reference_strains.txt"
-        "references_to_include_in_titer_plots_h1n1pdm.txt": "../config/references_to_include_in_titer_plots_h1n1pdm.txt"
-        "references_to_exclude_in_titer_plots_h1n1pdm.txt": "../config/references_to_exclude_in_titer_plots_h1n1pdm.txt"
-        "cell_hi.txt": "../config/references_for_titer_plots/h1n1pdm/cell_hi.txt"
-        "egg_hi.txt": "../config/references_for_titer_plots/h1n1pdm/egg_hi.txt"
-        "vaccine.json": "../config/h1n1pdm/vaccine.json"
+#     h1n1pdm:
+#         "outliers.txt": "../config/h1n1pdm/outliers.txt"
+#         "reference_strains.txt": "../config/h1n1pdm/reference_strains.txt"
+#         "references_to_include_in_titer_plots_h1n1pdm.txt": "../config/references_to_include_in_titer_plots_h1n1pdm.txt"
+#         "references_to_exclude_in_titer_plots_h1n1pdm.txt": "../config/references_to_exclude_in_titer_plots_h1n1pdm.txt"
+#         "cell_hi.txt": "../config/references_for_titer_plots/h1n1pdm/cell_hi.txt"
+#         "egg_hi.txt": "../config/references_for_titer_plots/h1n1pdm/egg_hi.txt"
+#         "vaccine.json": "../config/h1n1pdm/vaccine.json"
+
+
+strain-lists:
+    avian-flu:
+        # config/h5n1-cattle-outbreak
+        # NONE! All NCBI
+        #
+        # config/h5n1-d1.1
+        # NONE! All NCBI
+        #
+        # config/h5n1
+        # dropped strains only used for GISAID builds (the pattern is in NCBI, but that's the above subtypes only)
+        "dropped_strains_h5n1.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/dropped_strains_h5n1.txt"
+        "include_strains_h5n1_2y.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/include_strains_h5n1_2y.txt"
+        "include_strains_h5n1_all-time.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5n1/include_strains_h5n1_all-time.txt"
+        #
+        # config/h5nx
+        "dropped_strains_h5nx.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/dropped_strains_h5nx.txt"
+        "include_strains_h5nx_2y.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/include_strains_h5nx_2y.txt"
+        "include_strains_h5nx_all-time.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h5nx/include_strains_h5nx_all-time.txt"    
+        #
+        # config/h7n9
+        "dropped_strains_h7n9.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h7n9/dropped_strains_h7n9.txt"
+        "include_strains_h7n9_all-time.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h7n9/include_strains_h7n9_all-time.txt"    
+        #
+        # config/h9n2
+        "dropped_strains_h9n2.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h9n2/dropped_strains_h9n2.txt"
+        "include_strains_h9n2_all-time.txt": "https://raw.githubusercontent.com/nextstrain/avian-flu/refs/heads/master/config/h9n2/include_strains_h9n2_all-time.txt"    
