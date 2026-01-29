@@ -18,11 +18,14 @@ jobs:
       runtime: aws-batch
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+      # Aiming to use c5.9xlarge instances with 36 CPUs and 72GiB memory
+      # We need to define a lower amount of memory since the instance requires some overhead memory.
+      # See <https://github.com/nextstrain/seasonal-flu/pull/298#discussion_r2729308445>
       run: |
         nextstrain build \
           --detach \
-          --cpus 8 \
-          --memory 32gib \
+          --cpus 36 \
+          --memory 64gib \
           --env NEXTSTRAIN_USERNAME \
           --env NEXTSTRAIN_PASSWORD \
           . \
