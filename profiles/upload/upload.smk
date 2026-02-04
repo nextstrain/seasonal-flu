@@ -36,11 +36,12 @@ rule upload_raw_sequences:
         flag="data/upload/s3/raw_sequences_{lineage}_{segment}.done",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_raw_sequences_{lineage}_{segment}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/raw_sequences.fasta.xz 2>&1 | tee {output.flag}
@@ -53,11 +54,12 @@ rule upload_sequences:
         flag="data/upload/s3/sequences_{lineage}_{segment}.done",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_sequences_{lineage}_{segment}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.lineage}/{wildcards.segment}/sequences.fasta.xz 2>&1 | tee {output.flag}
@@ -70,11 +72,12 @@ rule upload_metadata:
         flag="data/upload/s3/metadata_{lineage}.done",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_metadata_{lineage}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
             {params.s3_dst:q}/{wildcards.lineage}/metadata.tsv.xz 2>&1 | tee {output.flag}
@@ -93,11 +96,12 @@ rule upload_titers:
     params:
         s3_dst=config["s3_dst"],
         lineage=lambda wildcards: config["builds"][wildcards.build_name]["lineage"],
+        vendored_scripts=f"{workflow.current_basedir}/../../shared/vendored/scripts",
     log:
         "logs/upload_titers_{build_name}_{titer_collection}.txt"
     shell:
         """
-        ./ingest/vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.titers:q} \
             {params.s3_dst:q}/{params.lineage}/{wildcards.titer_collection}_titers.tsv.gz 2>&1 | tee {output.flag}

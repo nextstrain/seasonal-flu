@@ -13,10 +13,11 @@ rule notify_on_record_change:
     input:
         ndjson="data/gisaid.ndjson",
     params:
-        ndjson_on_s3 = f"{config['s3_src']}/gisaid.ndjson.zst"
+        ndjson_on_s3 = f"{config['s3_src']}/gisaid.ndjson.zst",
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     output:
         touch("data/notify-on-record-change.done")
     shell:
         """
-        ./vendored/notify-on-record-change {input.ndjson} {params.ndjson_on_s3} "GISAID cache"
+        {params.vendored_scripts:q}/notify-on-record-change {input.ndjson} {params.ndjson_on_s3} "GISAID cache"
         """
