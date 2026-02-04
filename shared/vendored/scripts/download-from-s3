@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bin="$(dirname "$0")"
+
+main() {
+    local src="${1:?A source s3:// URL is required as the first argument.}"
+    local dst="${2:?A destination file path is required as the second argument.}"
+    # How many lines to subsample to. 0 means no subsampling. Optional.
+    # It is not advised to use this for actual subsampling! This is intended to be
+    # used for debugging workflows with large datasets such as ncov-ingest as
+    # described in https://github.com/nextstrain/ncov-ingest/pull/367
+
+    # Uses `tsv-sample` to subsample, so it will not work as expected with files
+    # that have a single record split across multiple lines (i.e. FASTA sequences)
+    local n="${3:-0}"
+
+    local s3path="${src#s3://}"
+    local bucket="${s3path%%/*}"
+    local key="${s3path#*/}"
+
+    local src_hash dst_hash no_hash=0000000000000000000000000000000000000000000000000000000000000000
+    dst_hash="$("$bin/sha256sum" < "$dst" || true)"
+    src_hash="$(aws s3api head-object --bucket "$bucket" --key "$key" --query Metadata.sha256sum --output text 2>/dev/null || echo "$no_hash")"
+
+    echo "[ INFO] Downloading $src → $dst"
+    if [[ $src_hash != "$dst_hash" ]]; then
+        aws s3 cp --no-progress "$src" - |
+        if [[ "$src" == *.gz ]]; then
+            gunzip -cfq
+        elif  [[ "$src" == *.xz ]]; then
+            xz -T0 -dcq
+        elif [[ "$src" == *.zst ]]; then
+            zstd -T0 -dcq
+        else
+            cat
+        fi |
+        if [[ "$n" -gt 0 ]]; then
+            tsv-sample -H -i -n "$n"
+        else
+            cat
+        fi >"$dst"
+    else
+        echo "[ INFO] Files are identical, skipping download"
+    fi
+}
+
+main "$@"
