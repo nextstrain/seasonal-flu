@@ -196,9 +196,35 @@ rule filter_curated_data:
         """
 
 
+rule prioritize_id_per_strain:
+    input:
+        curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_ids=lambda w: config["filtering"][w.dataset].get('prioritized_strain_ids', []),
+    output:
+        prioritized_ids="data/{dataset}/prioritized_ids_per_strain.tsv",
+    log:
+        "logs/{dataset}/prioritize_id_by_strain.txt"
+    params:
+        strain_field=config["curate"]["new_strain_field"],
+        id_field=config["curate"]["gisaid_id_field"],
+        seq_field="sequences",
+        prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_ids),
+    shell:
+        r"""
+        (zstdcat {input.curated_ndjson:q} \
+            | ./scripts/prioritize_id_per_strain \
+                --strain-field {params.strain_field:q} \
+                --id-field {params.id_field:q} \
+                --seq-field {params.seq_field:q} \
+                {params.prioritized_strain_ids:q} \
+                --output {output.prioritized_ids:q}) 2> {log:q}
+        """
+
+
 rule deduplicate_ndjson_by_strain:
     input:
         curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_ids="data/{dataset}/prioritized_ids_per_strain.tsv",
     output:
         deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
     log:
@@ -206,15 +232,13 @@ rule deduplicate_ndjson_by_strain:
     params:
         strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
-        # TODO XXX - can we make this an input to get snakemake's file checking?
-        prioritized_strain_ids=lambda w: conditional('--prioritized-ids', config["filtering"][w.dataset].get('prioritized_strain_ids', None)),
     shell:
         r"""
          (zstdcat {input.curated_ndjson:q} \
             | ./scripts/dedup-by-strain \
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
-                {params.prioritized_strain_ids:q} \
+                --prioritized-ids {input.prioritized_ids:q} \
             | zstd -T0 -c > {output.deduped_ndjson:q}) 2> {log:q}
         """
 
