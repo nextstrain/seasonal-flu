@@ -9,6 +9,8 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
 
+import json
+
 # Limit the number of concurrent fauna connections so that we are less likely
 # to overwhelm the rethinkdb server.
 # Inspired by the ncov's limit on concurrent deploy jobs
@@ -86,6 +88,38 @@ rule download_sequences:
             --fstem {wildcards.lineage}/raw_{wildcards.segment} 2>&1 | tee {log}
         """
 
+S3_PATH = config.get("s3_path", "s3://nextstrain-data-private/files/workflows/seasonal-flu")
+
+# This is almost identical to `download_parsed_metadata` in `download_from_s3.smk` however
+# we include it here so that fauna (titer) workflows can access it. If we import the
+# rules file we get a number of rule name & file name clashes which I (James) don't
+# want to resolve! Note that this rule only works (conceptually) since we have switched
+# our "source of truth" metadata from fauna to the new curation pipeline.
+rule download_curated_metadata:
+    output:
+        metadata="data/{lineage}/curated-metadata-for-titer-matching.tsv.xz",
+    params:
+        s3_path=S3_PATH + "/{lineage}/metadata.tsv.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        aws s3 cp {params.s3_path} - > {output.metadata}
+        """
+
+# The fauna strain map is a TSV linking (fauna) strain name to EPI ISL.
+# It was manually created from a fauna download on 2026-01-12, after
+# which time no more sequence data will be added.
+rule download_fauna_strain_map:
+    output:
+        metadata="data/{lineage}/fauna-strain-map.tsv.xz",
+    params:
+        s3_path=S3_PATH + "/{lineage}/fauna-strain-map.tsv.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        aws s3 cp {params.s3_path} - > {output.metadata}
+        """
+
 rule download_titers:
     output:
         titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
@@ -111,6 +145,32 @@ rule download_titers:
             --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
         """
 
+rule remap_titer_strain_names:
+    input:
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv",
+        fauna_strain_map = "data/{lineage}/fauna-strain-map.tsv.xz",
+        curated_metadata = "data/{lineage}/curated-metadata-for-titer-matching.tsv.xz",
+    output:
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers-strains-remapped.tsv",
+        stats = "data/{lineage}/{center}_{passage}_{assay}_matching-stats.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/remap_titer_strain_names_{lineage}_{center}_{passage}_{assay}.txt"
+    log:
+        "logs/remap_titer_strain_names_{lineage}_{center}_{passage}_{assay}.txt"
+    params:
+        stats_metadata = lambda w: json.dumps({'lineage': w.lineage, 'center': w.center, 'passage': w.passage, 'assay': w.assay})
+    shell:
+        """
+        scripts/remap-titer-strain-names.py \
+            --fauna-strain-map {input.fauna_strain_map} \
+            --metadata {input.curated_metadata} \
+            --titers {input.titers} \
+            --output {output.titers} \
+            --stats-metadata {params.stats_metadata:q} \
+            --stats {output.stats} 2> {log}
+        """
+
 def get_host_query(wildcards):
     query_by_host = {
         "ferret": "--istr-not-in-fld serum_id:mouse --istr-not-in-fld serum_id:human",
@@ -121,7 +181,7 @@ def get_host_query(wildcards):
 
 rule select_titers_by_host:
     input:
-        titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv",
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers-strains-remapped.tsv",
     output:
         titers = "data/{lineage}/{center}_{host}_{passage}_{assay}_titers.tsv",
     conda: "../envs/nextstrain.yaml"
@@ -135,3 +195,35 @@ rule select_titers_by_host:
         """
         tsv-filter -H {params.host_query} {input.titers} > {output.titers} 2> {log}
         """
+
+
+def _stats(wildcards):
+    """
+    Collect all the relevant (titer-matching) stats JSONs for the requested wildcards.lineage
+    """
+    stats = set()
+    matching_builds = [build for build in config["builds"].values() if build['lineage']==wildcards.lineage]
+    for build in matching_builds:
+        for collection in build['titer_collections']:
+            center, _host, passage, assay = collection['name'].split('_')
+            stats.add(f"data/{wildcards.lineage}/{center}_{passage}_{assay}_matching-stats.json")
+    return sorted(list(stats))
+
+rule visualise_titer_matches:
+    """
+    Visualise the titer matche stats produced by the remap_titer_strain_names
+    rule above. This script will _always_ exit 0 and produce the output file
+    to avoid viz errors terminating the pipeline
+    """
+    input:
+        stats = _stats
+    output:
+        png = "data/{lineage}/titer-matches.png"
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/visualise_titer_matches_{lineage}.txt"
+    shell:
+        """
+        ./scripts/titer-matching-viz.py --stats {input.stats} --output {output.png} 2> {log}
+        """
+
