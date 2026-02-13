@@ -3,17 +3,32 @@ import argparse
 import json
 import sys
 
+import pandas as pd
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--auspice-config", required=True, help="Auspice config JSON with coloring entry to have scale added to")
     parser.add_argument("--coloring-field", required=True, help="name of the coloring field in the Auspice config JSON")
-    parser.add_argument("--values", nargs="+", required=True, help="list of values to assign colors to")
+    parser.add_argument("--values", nargs="+", help="list of values to assign colors to")
+    parser.add_argument("--values-table", help="TSV file with values in the first column in the order they should appear in the Auspice config JSON output")
     parser.add_argument("--color-schemes", required=True, help="file with color schemes with N tab-delimited colors on row N")
     parser.add_argument("--output", required=True, help="Auspice config JSON with scale added to the requested coloring")
     args = parser.parse_args()
 
-    n_colors = len(args.values)
+    if args.values:
+        values = args.values
+    elif args.values_table:
+        values_table = pd.read_csv(args.values_table, sep="\t")
+        values = [value for value in values_table.iloc[:, 0].drop_duplicates().values if value != ""]
+    else:
+        print(
+            "ERROR: You must provide a list of values through `--values` or `--values-table` arguments.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    n_colors = len(values)
 
     # Load and validate the input Auspice config JSON.
     with open(args.auspice_config, "r", encoding="utf-8") as fh:
@@ -37,7 +52,7 @@ if __name__ == '__main__':
     # Add the color scale to the config.
     color_scale = [
         [value, color]
-        for value, color in zip(args.values, colors)
+        for value, color in zip(values, colors)
     ]
     for coloring in auspice_config["colorings"]:
         if coloring["key"] == args.coloring_field:
