@@ -54,16 +54,10 @@ if __name__ == '__main__':
         "location",
         "variant",
     ]).first().query(
-        "median > 0"
+        "mean > 0"
     ).reset_index()
     forecasts["region_haplotype"] = forecasts.apply(lambda record: f"{record['location']}/{record['variant']}", axis=1)
-
-    # Normalize future frequencies to sum to 100% to account for the common
-    # issue that the median posterior frequency estimates for all variants do
-    # not sum to 100% per location.
-    total_frequency_by_region = forecasts.groupby("location").aggregate(total_frequency=("median", "sum"))
-    forecasts = forecasts.merge(total_frequency_by_region, on="location")
-    forecasts["frequency"] = forecasts["median"] / forecasts["total_frequency"]
+    forecasts["frequency"] = forecasts["mean"]
 
     print(forecasts)
     future_frequency_by_region_haplotype = dict(forecasts.loc[:, ["region_haplotype", "frequency"]].values)
