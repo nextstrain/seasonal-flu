@@ -4,8 +4,9 @@ Annotate derived haplotypes per node from annotated clades and store as node dat
 import argparse
 from collections import Counter
 
+from augur.io import write_json
 from augur.reconstruct_sequences import load_alignments
-from augur.utils import annotate_parents_for_tree, read_node_data, read_tree, write_json
+from augur.utils import annotate_parents_for_tree, read_node_data, read_tree
 
 
 if __name__ == '__main__':

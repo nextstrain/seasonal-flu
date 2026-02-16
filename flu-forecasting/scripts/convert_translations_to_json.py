@@ -3,7 +3,7 @@ Convert translation FASTA to a node data JSON
 """
 import argparse
 from augur.reconstruct_sequences import load_alignments
-from augur.utils import write_json
+from augur.io import write_json
 import Bio.Phylo
 
 

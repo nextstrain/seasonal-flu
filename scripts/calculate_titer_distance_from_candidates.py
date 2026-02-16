@@ -1,5 +1,5 @@
 import argparse
-from augur.utils import write_json
+from augur.io import write_json
 import Bio.SeqIO
 import datetime
 import json

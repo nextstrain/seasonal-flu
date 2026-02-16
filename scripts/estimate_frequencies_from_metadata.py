@@ -5,8 +5,7 @@ import numpy as np
 from augur.dates import get_numerical_dates, numeric_date_type
 from augur.frequencies import format_frequencies
 from augur.frequency_estimators import get_pivots, KdeFrequencies
-from augur.io import read_metadata
-from augur.utils import write_json
+from augur.io import read_metadata, write_json
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 """Calculate weighted distances to the future between a given set of tip attributes and a given set of forecasted tip attributes.
 """
 import argparse
-from augur.utils import write_json
+from augur.io import write_json
 import numpy as np
 import pandas as pd
 import sys

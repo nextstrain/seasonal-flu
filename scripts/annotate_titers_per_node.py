@@ -1,8 +1,9 @@
 """Annotate number of titers per node in node data JSON format for auspice.
 """
 import argparse
+from augur.io import write_json
 from augur.titer_model import TiterCollection
-from augur.utils import read_tree, write_json
+from augur.utils import read_tree
 from collections import defaultdict
 import pandas as pd
 
