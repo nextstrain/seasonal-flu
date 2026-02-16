@@ -234,13 +234,18 @@
       "type": "continuous"
     },
     {
+      "key": "kikawa_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026)",
+      "type": "continuous"
+    },
+    {
       "key": "kikawa_2025b_cTiterSub",
-      "title": "Antigenic advance (sub, Kikawa 2025b)",
+      "title": "Antigenic advance (sub, Kikawa 2025)",
       "type": "continuous"
     },
     {
       "key": "kikawa_2025a_cTiterSub",
-      "title": "Antigenic advance (sub, Kikawa 2025a)",
+      "title": "Antigenic advance (sub, Kikawa 2023)",
       "type": "continuous"
     },
     {
