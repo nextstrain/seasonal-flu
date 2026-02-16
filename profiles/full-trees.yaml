@@ -61,6 +61,8 @@ builds:
           filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude config/{lineage}/outliers.txt
         bloom_lab_strains:
           filters: --exclude-all --include profiles/full-trees/h3n2_titer_strains.txt
+        context:
+          filters: --query "(passage_category != 'egg') & (\`qc.overallStatus\` == 'good')" --group-by year month --subsample-max-sequences 300 --min-date 2Y --max-date {min_date} --exclude config/{lineage}/outliers.txt
       titer_collections:
         - name: cell_fra
           data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
