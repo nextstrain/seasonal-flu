@@ -105,6 +105,7 @@ array-builds:
         - h1n1pdm
         - vic
       resolution:
+        - 1
         - 2
         - 6
     build_name: "{lineage}_europe_{resolution}y"
@@ -131,12 +132,12 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 2000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       gishn:
-          filters: --group-by country year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'gishn_sample=False'
+          filters: --group-by country year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'gishn_sample=False'
       country:
-          filters: "--group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          filters: "--group-by country year month --subsample-max-sequences 4500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
           priorities: "titers"
   countries:
     patterns:
@@ -194,7 +195,7 @@ array-builds:
           filters: "--group-by division year month --subsample-max-sequences 500 --min-date {min_date} --max-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
       country2:
-          filters: "--group-by division year month --subsample-max-sequences 1500 --min-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
+          filters: "--group-by division year month --subsample-max-sequences 3000 --min-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
 
 
