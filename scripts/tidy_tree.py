@@ -11,12 +11,14 @@ import argparse
 import io
 import subprocess
 import tempfile
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 import pandas as pd
 from Bio import SeqIO, Phylo
 from Bio.SeqRecord import SeqRecord
 
+sys.setrecursionlimit(10000)
 
 class LineageNode:
     """Represents a node in the lineage guide tree."""
@@ -88,7 +90,7 @@ def parse_arguments():
     )
     parser.add_argument(
         '--iqtree-args',
-        default='--ninit 2 -n 2 --epsilon 0.05',
+        default='--ninit 2 -n 2 -czb --epsilon 0.05',
         help='Additional arguments to pass to IQ-TREE'
     )
     parser.add_argument(
