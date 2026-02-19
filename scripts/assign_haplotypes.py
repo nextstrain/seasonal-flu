@@ -230,11 +230,6 @@ if __name__ == '__main__':
         sep="\t",
         index=True,
         header=True,
-        columns=[
-            "date",
-            "region",
-            args.haplotype_column_name,
-        ],
     )
 
     if args.output_node_data:
