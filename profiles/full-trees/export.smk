@@ -23,13 +23,35 @@ rule calculate_antigenic_advance_from_human_titers:
             --output-node-data {output.antigenic_advance} 2>&1 | tee {log}
         """
 
-# TODO: Replace hardcoded local path for MLR forecasts with rules to download MLR JSONs
-# and parse locally.
+rule download_mlr_json:
+    output:
+        mlr="builds/{build_name}/ha/mlr/model.json",
+    params:
+        model_url=lambda wildcards: f"https://data.nextstrain.org/files/workflows/forecasts-flu/gisaid/emerging_haplotype/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/MLR_results.json",
+    shell:
+        r"""
+        curl --compressed -o {output.mlr:q} {params.model_url:q}
+        """
+
+rule parse_frequencies_and_ga_from_mlr_json:
+    input:
+        mlr="builds/{build_name}/ha/mlr/model.json",
+    output:
+        forecasts="builds/{build_name}/ha/mlr/freq_forecast.tsv",
+        fitnesses="builds/{build_name}/ha/mlr/fitnesses.tsv",
+    shell:
+        r"""
+        python scripts/parse-json.py \
+            --input {input.mlr} \
+            --outfreqforecast {output.forecasts} \
+            --outga {output.fitnesses}
+        """
+
 rule calculate_human_antigenic_distance_to_the_future:
     input:
         titer_model="builds/{build_name}/ha/titers-sub-human/kikawa_2025_2026.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
-        forecasts=lambda wildcards: f"../forecasts-flu/results/gisaid/emerging_haplotype/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/freq_forecast.tsv",
+        forecasts="builds/{build_name}/ha/mlr/freq_forecast.tsv",
         tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
         ha1_sequences_dir="builds/{build_name}/ha/translations",
     output:
@@ -59,7 +81,7 @@ rule calculate_ferret_antigenic_distance_to_the_future:
     input:
         titer_model="builds/{build_name}/ha/titers-sub-model/cell_hi.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
-        forecasts=lambda wildcards: f"../forecasts-flu/results/gisaid/emerging_haplotype/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/freq_forecast.tsv",
+        forecasts="builds/{build_name}/ha/mlr/freq_forecast.tsv",
         tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
         ha1_sequences_dir="builds/{build_name}/ha/translations",
     output:
