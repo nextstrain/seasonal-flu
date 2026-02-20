@@ -2,5 +2,6 @@ A/Wisconsin/67/2022 # C.1.1, vaccine strain
 A/Missouri/11/2025 # D.3.1, vaccine strain
 A/Darwin/1015/2025 # D.3.1:113K,139D,283K
 A/Michigan/103/2025 # D.3.1.1
-A/Iowa/110/2024 # C.1.9.3:166V
-A/Victoria/42/2025 # C.1.9.3:137S,155E,166V
+A/Tokyo/EIS13-602/2025 # D.3.1.1
+A/Tokyo/EIS13-863/2025 # D.3.1.1
+A/Tokyo/EIS13-961/2025 # D.3.1.1:155E

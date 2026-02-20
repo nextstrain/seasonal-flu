@@ -2,3 +2,4 @@ A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
 A/Sydney/1359/2024 # J.2.4, vaccine strain
 A/Wisconsin/114/2025 # K
 A/Darwin/1415/2025 # K
+A/Norway/8765/2025 # K

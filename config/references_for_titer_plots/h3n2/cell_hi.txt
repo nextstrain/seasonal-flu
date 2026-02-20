@@ -1,4 +1,5 @@
 A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
+A/Alaska/8/2025 # J.2.3
 A/Sydney/1359/2024 # J.2.4, vaccine strain
 A/Mississippi/37/2025 # J.2.4, CDC's A/Sydney/1359/2024-like virus
 A/Wisconsin/114/2025 # K

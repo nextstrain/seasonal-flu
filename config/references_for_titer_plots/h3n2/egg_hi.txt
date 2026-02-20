@@ -1,4 +1,5 @@
 A/Croatia/10136RV/2023-egg # J.2:145N, vaccine strain
+A/Michigan/73/2025-egg # J.2.3
 A/Singapore/GP20238/2024-egg # J.2.4, vaccine strain
 A/Minnesota/15/2025-egg # J.2.4, CDC's A/Singapore/GP20238/2024-like
 A/Michigan/105/2025-egg # K:195Y

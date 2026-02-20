@@ -2,5 +2,4 @@ A/Victoria/4897/2022-egg # D, vaccine strain
 A/Missouri/11/2025-egg # D.3.1
 A/Switzerland/6849/2025-egg # D.3.1:113K
 A/Sydney/124/2025-egg # D.3.1:223R
-A/Victoria/42/2025-egg # C.1.9.3:137S,155E,166V
 # A/Maryland/8/2025
