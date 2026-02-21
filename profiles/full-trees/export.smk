@@ -111,7 +111,7 @@ def get_antigenic_advance_from_human_titers(wildcards):
     if "vic" not in wildcards.build_name and wildcards.segment == "ha":
         return [
             f"builds/{wildcards.build_name}/{wildcards.segment}/titers-sub-human/{titer_collection}.json"
-            for titer_collection in ["kikawa_2025", "kikawa_2025_2026"]
+            for titer_collection in ["kikawa_2025", "kikawa_2025_2026", "kikawa_2025_2026_SCH"]
         ]
     else:
         return []
