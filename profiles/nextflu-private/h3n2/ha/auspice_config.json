@@ -234,6 +234,11 @@
       "type": "continuous"
     },
     {
+      "key": "who_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, WHO 2025-2026)",
+      "type": "continuous"
+    },
+    {
       "key": "kikawa_2025_2026_cTiterSub",
       "title": "Antigenic advance (sub, Kikawa 2025-2026)",
       "type": "continuous"
