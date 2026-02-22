@@ -79,6 +79,11 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
+        - name: who_2025_2026
+          data: "data/h3n2/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
+          genes: ["HA1"]
       frequencies: &frequencies
         narrow_bandwidth: 0.02
         pivot_interval: 1
@@ -119,6 +124,11 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
+        - name: who_2025_2026
+          data: "data/h1n1pdm/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
+          genes: ["HA1"]
       frequencies: *frequencies
     full-vic:
       lineage: vic
@@ -153,5 +163,10 @@ builds:
           data: "data/vic/who_ferret_egg_hi_titers.tsv"
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
+          genes: ["HA1"]
+        - name: who_2025_2026
+          data: "data/vic/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
           genes: ["HA1"]
       frequencies: *frequencies
