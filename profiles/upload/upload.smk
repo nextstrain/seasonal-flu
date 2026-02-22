@@ -27,6 +27,22 @@ rule upload_all_titers:
             "data/upload/s3/titers/{build_name}/{titer_collection}.done".format(build_name=build_name, titer_collection=titer_collection["name"])
             for build_name, build_params in config["builds"].items()
             for titer_collection in build_params["titer_collections"]
+        ],
+        titer_matching_viz=lambda wildcards: [
+            f"data/upload/s3/titers/{lineage}_viz.done" for lineage in set([build['lineage'] for build in config["builds"].values()])
+        ]
+
+
+# Development-only rule which is the same as `upload_all_titers` without the actual uploading! 
+rule dev_only_all_titers:
+    input:
+        titers=lambda wildcards: [
+            "data/{build_name}/{titer_collection}_titers.tsv".format(build_name=build_name.split('_')[0], titer_collection=titer_collection["name"])
+            for build_name, build_params in config["builds"].items()
+            for titer_collection in build_params["titer_collections"]
+        ],
+        titer_matching_viz=lambda wildcards: [
+            f"data/{lineage}/titer-matches.png" for lineage in set([build['lineage'] for build in config["builds"].values()])
         ]
 
 rule upload_raw_sequences:
@@ -101,4 +117,20 @@ rule upload_titers:
             --quiet \
             {input.titers:q} \
             {params.s3_dst:q}/{params.lineage}/{wildcards.titer_collection}_titers.tsv.gz 2>&1 | tee {output.flag}
+        """
+
+rule upload_titer_match_viz:
+    input:
+        png="data/{lineage}/titer-matches.png",
+    output:
+        flag="data/upload/s3/titers/{lineage}_viz.done",
+    params:
+        s3_dst=config["s3_dst"],
+        lineage="{lineage}"
+    shell:
+        """
+        ./ingest/vendored/upload-to-s3 \
+            --quiet \
+            {input.png:q} \
+            {params.s3_dst:q}/{params.lineage}/titer-matches.png 2>&1 | tee {output.flag}
         """
