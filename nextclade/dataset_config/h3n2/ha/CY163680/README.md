@@ -13,6 +13,7 @@
 This dataset uses an older reference sequence (A/Wisconsin/67/2005) and recent sequences will differ at a large number of positions from this reference.
 For the analysis of currently circulating viruses, the dataset using A/Darwin/6/2021 as reference might be more appropriate.
 
+
 ## Features
 This dataset supports
 
@@ -31,6 +32,12 @@ In addition to these clades, "subclades" are defined to break down diversity at 
 These follow a Pango-like nomenclature consisting of a letter followed by a numbers separated by periods as in `G.1.3.1`.
 The leading letter is an alias of a previous name.
 Details of the nomenclature system can be found at [github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/](https://github.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/).
+
+The nomenclature system is described in the following paper
+
+[**Nomenclature for Tracking of Genetic Variation of Seasonal Influenza Viruses**](https://dx.doi.org/10.1111/irv.70230)
+
+_Neher et al. Influenza and Other Respiratory Viruses, vol 20(2), 2026_
 
 ## What is Nextclade dataset
 
