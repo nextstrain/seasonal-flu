@@ -3,12 +3,7 @@ B/Aichi/62/2013
 B/Alabama/7/2023
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Alaska/03/1992
-<<<<<<< HEAD
 B/AnnArbor/1994
-=======
-# [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
-B/Ann Arbor/1994
->>>>>>> master
 B/Argentina/2802/2019
 B/Arkansas/6/2016
 B/Austria/1359417/2021
@@ -97,15 +92,10 @@ B/Henan-Xigong/1118/2021
 B/Henan-Xigong/1118/2021-egg
 B/Hiroshima-C/1/2025
 B/Hiroshima-C/7/2018
-<<<<<<< HEAD
-B/HongKong/02/1993
-B/HongKong/03/1992
-=======
 B/HongKong/2/1993
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Hong Kong/03/1992
 B/HongKong/22/1989
->>>>>>> master
 B/HongKong/22/1989
 B/HongKong/1404/2018
 B/HongKong/269/2017-egg
@@ -154,11 +144,8 @@ B/Maryland/1/2021-egg
 B/Maryland/15/2016
 B/Maryland/15/2016-egg
 B/Maryland/24/2019
-<<<<<<< HEAD
 B/Memphis/6/1986
-=======
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
->>>>>>> master
 B/Michigan/1/1971
 B/Michigan/1/2021
 B/Michigan/1/2021-egg
@@ -196,14 +183,12 @@ B/Netherlands/32/1994
 B/Netherlands/353/1985
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Netherlands/802/1991
-<<<<<<< HEAD
 B/NewYork/1000/1993
 B/NewYork/1001/1993
 B/NewYork/1002/1993
 B/NewYork/1003/1993
 B/NewYork/24/1993
 B/NewYork/39/1991
-=======
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/1000/1993
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
@@ -216,7 +201,6 @@ B/New York/1003/1993
 B/New York/24/1993
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/New York/39/1991
->>>>>>> master
 B/NewHampshire/1/2021
 B/NewHampshire/1/2021-egg
 B/NewJersey/4/2017
