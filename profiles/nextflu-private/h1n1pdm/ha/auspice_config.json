@@ -108,30 +108,34 @@
       "scale": [
         [
           "C.1.9",
-          "#4272CE"
+          "#4068CF"
         ],
         [
           "C.1.9.3",
-          "#58A2AC"
+          "#5098B9"
         ],
         [
           "D.3.1",
-          "#7DB877"
-        ],
-        [
-          "D.3.1.1",
-          "#AEBD50"
-        ],
-        [
-          "D.3.1.1:205K",
-          "#D8AE3E"
-        ],
-        [
-          "D.3.1:157L",
-          "#E67A32"
+          "#6CB28C"
         ],
         [
           "D.3.1:270A",
+          "#94BD62"
+        ],
+        [
+          "D.3.1.1",
+          "#BFBB47"
+        ],
+        [
+          "D.3.1.1:139N",
+          "#DFA53B"
+        ],
+        [
+          "D.3.1.1:155E",
+          "#E67131"
+        ],
+        [
+          "D.3.1.1:205K",
           "#DB2823"
         ]
       ]
@@ -149,6 +153,26 @@
     {
       "key": "cell_hi_cTiterSub",
       "title": "Antigenic advance (sub, ferret cell HI)",
+      "type": "continuous"
+    },
+    {
+      "key": "who_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, WHO 2025-2026)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_SCH_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026, SCH)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_PENN_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026, PENN)",
       "type": "continuous"
     },
     {

@@ -2,7 +2,8 @@
 """
 import argparse
 from augur.frequency_estimators import float_to_datestring, timestamp_to_float
-from augur.utils import annotate_parents_for_tree, read_node_data, write_json
+from augur.io import write_json
+from augur.utils import annotate_parents_for_tree, read_node_data
 import Bio.Phylo
 import json
 import numpy as np

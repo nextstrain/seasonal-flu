@@ -2,7 +2,7 @@
 """
 import argparse
 from augur.frequency_estimators import TreeKdeFrequencies
-from augur.utils import write_json
+from augur.io import write_json
 import Bio.Phylo
 from collections import defaultdict
 import json

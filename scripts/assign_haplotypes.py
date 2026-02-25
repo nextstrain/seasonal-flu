@@ -4,9 +4,8 @@ from collections import defaultdict
 from functools import partial
 import sys
 
-from augur.io import read_metadata
+from augur.io import read_metadata, write_json
 from augur.io.file import PANDAS_READ_CSV_OPTIONS
-from augur.utils import write_json
 import pandas as pd
 
 

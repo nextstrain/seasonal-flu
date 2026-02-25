@@ -1,7 +1,7 @@
 import argparse
 from augur.frequency_estimators import logit_transform, TreeKdeFrequencies
 from augur.lbi import select_nodes_in_season
-from augur.utils import write_json
+from augur.io import write_json
 from collections import defaultdict
 import numpy as np
 import os

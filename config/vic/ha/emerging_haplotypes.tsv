@@ -1,13 +1,20 @@
 haplotype	gene	site	alt
 C.3	clade	C.3
+
+C.3:255P-197N	clade	C.3
+C.3:255P-197N	HA1	255	P
+C.3:255P-197N	HA1	197	N
+
 C.3.1	clade	C.3.1
 C.5.1	clade	C.5.1
 C.5.6	clade	C.5.6
-C.5.6.1	clade	C.5.6.1
-C.5.7	clade	C.5.7
 
 C.5.6:75E	clade	C.5.6
 C.5.6:75E	HA1	75	E
 
-C.5.6:189A	clade	C.5.6
-C.5.6:189A	HA1	189	A
+C.5.6.1	clade	C.5.6.1
+
+C.5.6.1:241Q	clade	C.5.6
+C.5.6.1:241Q	HA1	241	Q
+
+C.5.7	clade	C.5.7

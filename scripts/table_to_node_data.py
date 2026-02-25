@@ -2,7 +2,7 @@
 """
 import argparse
 import pandas as pd
-from augur.utils import write_json
+from augur.io import write_json
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ force_run_nextclade: true
 # date corresponds to the reporting period of the upcoming vaccine composition
 # meeting. For the VCM in September, we tend to report on data from February of
 # that year.
-min_date: &min_date 2025-02-01
+min_date: &min_date 2025-05-01
 
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
@@ -61,6 +61,8 @@ builds:
           filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude config/{lineage}/outliers.txt
         bloom_lab_strains:
           filters: --exclude-all --include profiles/full-trees/h3n2_titer_strains.txt
+        context:
+          filters: --query "(passage_category != 'egg') & (\`qc.overallStatus\` == 'good')" --group-by year month --subsample-max-sequences 300 --min-date 2Y --max-date {min_date} --exclude config/{lineage}/outliers.txt
       titer_collections:
         - name: cell_fra
           data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
@@ -77,9 +79,10 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
-        - name: kikawa_2025
-          data: "profiles/full-trees/h3n2_all_human_prevax_2025.tsv"
-          prefix: kikawa_2025_
+        - name: who_2025_2026
+          data: "data/h3n2/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
           genes: ["HA1"]
       frequencies: &frequencies
         narrow_bandwidth: 0.02
@@ -121,9 +124,10 @@ builds:
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
           genes: ["HA1"]
-        - name: kikawa_2025
-          data: "profiles/full-trees/h1n1pdm_all_human_prevax_2025.tsv"
-          prefix: kikawa_2025_
+        - name: who_2025_2026
+          data: "data/h1n1pdm/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
           genes: ["HA1"]
       frequencies: *frequencies
     full-vic:
@@ -159,5 +163,10 @@ builds:
           data: "data/vic/who_ferret_egg_hi_titers.tsv"
           prefix: egg_hi_
           title: "Egg-passaged HI titers from ferret sera"
+          genes: ["HA1"]
+        - name: who_2025_2026
+          data: "data/vic/who_2025_2026_hi_titers.tsv"
+          prefix: who_2025_2026_
+          title: "WHO HI titers from human sera against cell-passaged viruses"
           genes: ["HA1"]
       frequencies: *frequencies

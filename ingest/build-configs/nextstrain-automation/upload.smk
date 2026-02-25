@@ -28,6 +28,8 @@ rule upload_all:
 
 rule upload_gisaid_ndjson:
     input:
+        # Upload after notify is done so that we compare against the old cache
+        notify="data/notify-on-record-change.done",
         ndjson="data/gisaid.ndjson",
     output:
         flag="results/upload/gisaid.ndjson.upload",

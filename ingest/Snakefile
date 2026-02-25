@@ -8,7 +8,11 @@ workdir: workflow.current_basedir
 # Use default configuration values. Override with Snakemake's --configfile/--config options.
 configfile: "defaults/config.yaml"
 
-VALID_DATASETS = list(config['filtering'].keys())
+VALID_DATASETS = list(
+    key
+    for key, value in config['filtering'].items()
+    if isinstance(value, dict)
+)
 
 wildcard_constraints:
     # Expected datasets should match the standardized outputs of the `filtering` block

@@ -14,7 +14,7 @@ segments:
 
 tree:
   method: iqtree
-  tree-builder-args: "'-ninit 10 -n 4 -czb -nt AUTO'"
+  tree-builder-args: "'--pathogen-force -ninit 2 -n 2 --epsilon 0.05 -czb -T AUTO --redo'"
   override_default_args: true
 
 refine:

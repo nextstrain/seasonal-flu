@@ -189,7 +189,7 @@ rule tidytree:
         root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
     threads: 1
     resources:
-        mem_mb=2000,
+        mem_mb=4000,
         time="2:00:00",
     shell:
         """
@@ -217,6 +217,8 @@ rule prune_outliers:
     params:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
         cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
+    resources:
+        mem_mb=2000,
     shell:
         """
         python3 scripts/flag_outliers.py \
@@ -239,6 +241,8 @@ rule sanitize_trees:
         "benchmarks/sanitize_trees_{build_name}.txt"
     log:
         "logs/sanitize_trees_{build_name}.txt"
+    resources:
+        mem_mb=2000,
     shell:
         """
         python3 scripts/sanitize_trees.py \
@@ -309,7 +313,7 @@ rule refine:
     log:
         "logs/refine_{build_name}_{segment}.txt"
     resources:
-        mem_mb=2000,
+        mem_mb=4000,
         time="2:00:00",
     shell:
         """

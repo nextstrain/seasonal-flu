@@ -1,7 +1,8 @@
 """Summarize coverage of haplotypes by titers.
 """
 import argparse
-from augur.utils import read_node_data, write_json
+from augur.io import write_json
+from augur.utils import read_node_data
 import json
 import pandas as pd
 

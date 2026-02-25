@@ -2,6 +2,7 @@ lineage	segment	compare_to	attribute	distance_map
 h3n2	ha	root	ep	wolf
 h3n2	ha	root	ne	wolf_nonepitope
 h3n2	ha	root	rb	koel
+h3n2	ha	root	kikawa_2025a_cTiterSub	kikawa_2025a
 h3n2	ha	ancestor	ne_star	luksza_nonepitope
 h3n2	ha	ancestor	cell_entry	Yu_et_al_2025_cell_entry
 h3n2	ha	ancestor	ph_stability	Yu_et_al_2025_ph_stability

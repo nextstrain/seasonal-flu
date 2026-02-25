@@ -152,50 +152,38 @@
       "scale": [
         [
           "J.2",
-          "#403CC5"
+          "#3E5DD0"
         ],
         [
           "J.2.2",
-          "#4067CF"
+          "#4A8CC2"
         ],
         [
           "J.2.3",
-          "#4A8BC3"
+          "#60AA9E"
         ],
         [
           "J.2.4",
-          "#5AA4A9"
-        ],
-        [
-          "J.2.4:160K",
-          "#6FB488"
-        ],
-        [
-          "J.2.4:62R-158D-160K-328A",
-          "#8BBB69"
-        ],
-        [
-          "J.2.4:79V-144N-158D-160K-328A",
-          "#A9BD53"
+          "#80B974"
         ],
         [
           "K",
-          "#C7B944"
-        ],
-        [
-          "K:145N",
-          "#DDA93C"
-        ],
-        [
-          "K:272T",
-          "#E68A35"
+          "#A6BE55"
         ],
         [
           "K:80K",
-          "#E35C2C"
+          "#CBB742"
         ],
         [
-          "K:88I",
+          "K:145N",
+          "#E29D39"
+        ],
+        [
+          "K:223I",
+          "#E56A2F"
+        ],
+        [
+          "K:328S",
           "#DB2823"
         ]
       ]
@@ -246,8 +234,33 @@
       "type": "continuous"
     },
     {
+      "key": "who_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, WHO 2025-2026)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_SCH_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026, SCH)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025_2026_PENN_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2025-2026, PENN)",
+      "type": "continuous"
+    },
+    {
       "key": "kikawa_2025_cTiterSub",
       "title": "Antigenic advance (sub, Kikawa 2025)",
+      "type": "continuous"
+    },
+    {
+      "key": "kikawa_2025a_cTiterSub",
+      "title": "Antigenic advance (sub, Kikawa 2023)",
       "type": "continuous"
     },
     {
