@@ -62,6 +62,8 @@ A/Croatia/10136RV/2023
 A/Croatia/10136RV/2023-egg
 A/Darwin/1067/2024
 A/Darwin/11/2021
+A/Darwin/1415/2025
+A/Darwin/1454/2025-egg
 A/Darwin/24/2021
 A/Darwin/24/2021-egg
 A/Darwin/36/2021

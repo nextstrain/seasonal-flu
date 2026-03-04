@@ -29,6 +29,16 @@
             "vaccine": {
                 "selection_date": "2021-09-24"
             }
+        },
+        "B/Pennsylvania/14/2025": {
+            "vaccine": {
+                "selection_date": "2026-02-27"
+            }
+        },
+        "B/Tokyo/EIS13-175/2025-egg": {
+            "vaccine": {
+                "selection_date": "2026-02-27"
+            }
         }
     }
 }
