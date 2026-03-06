@@ -57,7 +57,7 @@
         ]
       }
     ],
-    "mutLabelMap":{
+    "mutLabels":{
       "aaMutLabelMap":{
         "NA:119":["NAI"],
         "NA:136":["NAI"],
