@@ -62,6 +62,34 @@ default_CDS = {
     "ns": "NS1"
 }
 
+def privateMutationQC(lineage, segment):
+    if lineage in ['h3n2', 'h1n1pdm'] and segment in ['ha', 'na']:
+        return {
+                 "enabled": True,
+                 "typical": 5,
+                 "cutoff": 15,
+                 "weightLabeledSubstitutions": 2,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
+    elif segment in ['pb1', 'pb2', 'pa']:
+        return {
+                 "enabled": True,
+                 "typical": 10,
+                 "cutoff": 50,
+                 "weightLabeledSubstitutions": 1,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
+    else:
+        return {
+                 "enabled": True,
+                 "typical": 10,
+                 "cutoff": 30,
+                 "weightLabeledSubstitutions": 1,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
 
 
 if __name__=="__main__":
@@ -100,6 +128,8 @@ if __name__=="__main__":
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
             get_clade_configs(c) for c in args.clades if c not in ['default']
         ]
+
+    pathogen_json['qc']['privateMutations'] = privateMutationQC(args.lineage, args.segment)
 
     if args.segment in ['ha', 'na']:
         auspice_json['display_defaults'] = {

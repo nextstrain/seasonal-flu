@@ -180,7 +180,7 @@ rule align:
     threads: 3
     shell:
         """
-        seqkit rmdup {input.sequences} {input.reference_strains} | \
+        seqkit rmdup  {input.reference} {input.reference_strains} {input.sequences} | \
         {params.nextclade_bin} run \
             --jobs={threads} \
             --input-ref {input.reference} \
