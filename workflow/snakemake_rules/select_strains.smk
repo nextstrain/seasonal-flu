@@ -278,15 +278,53 @@ def get_metadata_for_nextclade_merge(wildcards):
 def get_nextclade_for_subsampling(wildcards):
     return f"data/{config['builds'][wildcards.build_name]['lineage']}/ha/nextclade.tsv.xz"
 
-rule merge_nextclade_with_metadata:
+rule get_nextclade_subclade:
+    input:
+        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+    output:
+        nextclade_subclade="data/{lineage}/{segment}/nextclade_subclades.tsv",
+    shell:
+        r"""
+        xz -c -d {input.nextclade} \
+            | tsv-select -H -f seqName,clade \
+            | csvtk rename -t -f seqName,clade -n strain,'subclade_nextclade_{wildcards.segment}' > {output.nextclade_subclade}
+        """
+
+def get_nextclade_subclades(wildcards):
+    return [f"data/{config['builds'][wildcards.build_name]['lineage']}/{segment}/nextclade_subclades.tsv" for segment in config["segments"]]
+
+rule merge_nextclade_subclades_with_metadata:
     """
     Nextclade data is either merged with regular metadata (1) or titered metadata (2), see functions above
     """
     input:
+        # augur merge requires 2 or more input files, so merging metadata with 1
+        # or more Nextclade files per segment should always work.
         metadata=get_metadata_for_nextclade_merge,
+        nextclade_subclades=get_nextclade_subclades,
+    output:
+        merged = "builds/{build_name}/metadata_with_nextclade_subclades.tsv",
+    params:
+        # augur merge requires named inputs, so we name each path by the segment.
+        nextclade_subclades_named=lambda wildcards, input: [f"{segment}={segment_path}" for segment, segment_path in zip(config["segments"], input.nextclade_subclades)],
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/{build_name}/merge_nextclade_with_metadata.txt"
+    shell:
+        r"""
+        augur merge \
+           --metadata \
+             metadata={input.metadata} \
+             {params.nextclade_subclades_named} \
+           --output-metadata {output.merged} 2> {log}
+        """
+
+rule merge_nextclade_with_metadata:
+    input:
+        metadata="builds/{build_name}/metadata_with_nextclade_subclades.tsv",
         nextclade=get_nextclade_for_subsampling,
     output:
-        merged = "{build_dir}/{build_name}/metadata_with_nextclade.tsv"
+        merged = "{build_dir}/{build_name}/metadata_with_nextclade.tsv",
     params:
         metadata_id="strain",
         nextclade_id="seqName",
