@@ -2,7 +2,16 @@ haplotype	gene	site	alt
 J.2	clade	J.2
 J.2.2	clade	J.2.2
 J.2.3	clade	J.2.3
+
 J.2.4	clade	J.2.4
+
+J.2.4:79V	clade	J.2.4
+J.2.4:79V	HA1	79	V
+J.2.4:79V	HA1	144	N
+J.2.4:79V	HA1	158	D
+J.2.4:79V	HA1	160	K
+J.2.4:79V	HA1	328	A
+
 K	clade	K
 
 K:80K	clade	K
