@@ -199,6 +199,7 @@ rule filter_curated_data:
 rule deduplicate_ndjson_by_strain:
     input:
         curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_strain_ids=lambda w: config["filtering"][w.dataset].get('prioritized_strain_ids', []),
     output:
         deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
     log:
@@ -206,8 +207,7 @@ rule deduplicate_ndjson_by_strain:
     params:
         strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
-        # TODO XXX - can we make this an input to get snakemake's file checking?
-        prioritized_strain_ids=lambda w: conditional('--prioritized-ids', config["filtering"][w.dataset].get('prioritized_strain_ids', None)),
+        prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_strain_ids),
     shell:
         r"""
          (zstdcat {input.curated_ndjson:q} \
