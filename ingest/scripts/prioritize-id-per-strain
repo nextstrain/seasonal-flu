@@ -21,6 +21,8 @@ class PriorityReason(Enum):
     - First record of strain
     """
     HARDCODED = "hardcoded"
+    HAS_HA = "has HA"
+    HAS_NA = "has NA"
     FIRST_RECORD = "first record"
 
 
@@ -62,6 +64,7 @@ def load_prioritized_ids(prioritized_ids_file: str) -> dict:
 def track_ids_per_strain(records: Iterable[dict],
                          strain_field: str,
                          id_field: str,
+                         seq_field: str,
                          hardcoded_ids: dict) -> dict[str, list[StrainRecord]]:
     """
     Iterate over *records* to make list of StrainRecords per strain.
@@ -71,12 +74,16 @@ def track_ids_per_strain(records: Iterable[dict],
     for record in records:
         strain = record.get(strain_field)
         record_id = record.get(id_field)
+        sequences = record.get(seq_field)
 
         if strain is None:
             raise Exception(f"Records must have the expected strain field {strain_field!r}")
 
         if record_id is None:
             raise Exception(f"Records must have the expected id field {id_field!r}")
+
+        if sequences is None:
+            raise Exception(f"Records must have the expected sequences field {seq_field!r}")
 
         strain_record = StrainRecord(record_id)
 
@@ -86,6 +93,12 @@ def track_ids_per_strain(records: Iterable[dict],
         if hardcoded_id := hardcoded_ids.get(strain):
             if hardcoded_id == record_id:
                 strain_record.reasons.add(PriorityReason.HARDCODED)
+
+        if len(sequences.get("ha", [])) > 0:
+            strain_record.reasons.add(PriorityReason.HAS_HA)
+
+        if len(sequences.get("na", [])) > 0:
+            strain_record.reasons.add(PriorityReason.HAS_NA)
 
         ids_per_strain[strain].append(strain_record)
 
@@ -118,6 +131,24 @@ def compare_priority(record1: StrainRecord, record2: StrainRecord):
     if PriorityReason.HARDCODED in record1.reasons:
         return -1
     if PriorityReason.HARDCODED in record2.reasons:
+        return 1
+
+    # Prioritize the record that has HA segment only if the other record
+    # does not have HA
+    if (PriorityReason.HAS_HA in record1.reasons and
+        PriorityReason.HAS_HA not in record2.reasons):
+        return -1
+    if (PriorityReason.HAS_HA in record2.reasons and
+        PriorityReason.HAS_HA not in record1.reasons):
+        return 1
+
+    # Prioritize the record that has NA segment only if the other record
+    # does not have NA
+    if (PriorityReason.HAS_NA in record1.reasons and
+        PriorityReason.HAS_NA not in record2.reasons):
+        return -1
+    if (PriorityReason.HAS_NA in record2.reasons and
+        PriorityReason.HAS_NA not in record1.reasons):
         return 1
 
     # Prioritize the first record in the NDJSON
@@ -158,6 +189,9 @@ if __name__ == "__main__":
              "If providing the `--prioritized-ids` file, then this id field " + \
              "will be used to match the prioritized ids. " + \
              "Also included in the warning logs for records with duplicate strains.")
+    parser.add_argument("--seq-field", default="sequences",
+        help="The record field containing the sequences." + \
+             "Allows the script to prioritize the records with HA and NA segments." )
     parser.add_argument("--prioritized-ids",
         help="An optional TSV file with prioritized ids for specific strains. " + \
              "The file is expected to have the columns `strain` and `id` " + \
@@ -178,6 +212,7 @@ if __name__ == "__main__":
         records,
         args.strain_field,
         args.id_field,
+        args.seq_field,
         hardcoded_prioritized_ids)
 
     prioritized_ids = pick_id_per_strain(ids_per_strain)

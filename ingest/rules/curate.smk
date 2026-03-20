@@ -207,6 +207,7 @@ rule prioritize_id_per_strain:
     params:
         strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
+        seq_field="sequences",
         prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_strain_ids),
     shell:
         r"""
@@ -214,6 +215,7 @@ rule prioritize_id_per_strain:
             | ./scripts/prioritize-id-per-strain \
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
+                --seq-field {params.seq_field:q} \
                 {params.prioritized_strain_ids:q} \
                 --output {output.prioritized_ids:q}) 2> {log:q}
         """
