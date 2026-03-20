@@ -33,3 +33,6 @@ jobs:
           all_report_outputs \
           -p \
           --configfile profiles/nextflu-private.yaml
+      # Specifically exclude auspice directory since these are private builds
+      artifact-paths: |
+        !auspice/

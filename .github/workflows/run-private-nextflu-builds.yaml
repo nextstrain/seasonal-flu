@@ -35,7 +35,10 @@ jobs:
           all_who \
           -p \
           --configfile profiles/private.nextflu.org.yaml
-
+      # Specifically exclude auspice directory since these are private builds
+      artifact-paths: |
+        !auspice/
+        
   deploy-private-nextflu:
     needs: [run-build]
     runs-on: ubuntu-latest
