@@ -196,14 +196,14 @@ rule filter_curated_data:
         """
 
 
-rule deduplicate_ndjson_by_strain:
+rule prioritize_id_per_strain:
     input:
         curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
         prioritized_strain_ids=lambda w: config["filtering"][w.dataset].get('prioritized_strain_ids', []),
     output:
-        deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
+        prioritized_ids="data/{dataset}/prioritized_ids.txt",
     log:
-        "logs/{dataset}/deduplicate_ndjson_by_strain.txt"
+        "logs/{dataset}/prioritize_id_per_strain.txt"
     params:
         strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
@@ -211,10 +211,30 @@ rule deduplicate_ndjson_by_strain:
     shell:
         r"""
          (zstdcat {input.curated_ndjson:q} \
-            | ./scripts/dedup-by-strain \
+            | ./scripts/prioritize-id-per-strain \
                 --strain-field {params.strain_field:q} \
                 --id-field {params.id_field:q} \
                 {params.prioritized_strain_ids:q} \
+                --output {output.prioritized_ids:q}) 2> {log:q}
+        """
+
+
+rule deduplicate_ndjson_by_strain:
+    input:
+        curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_ids="data/{dataset}/prioritized_ids.txt",
+    output:
+        deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
+    log:
+        "logs/{dataset}/deduplicate_ndjson_by_strain.txt"
+    params:
+        id_field=config["curate"]["gisaid_id_field"],
+    shell:
+        r"""
+         (zstdcat {input.curated_ndjson:q} \
+            | ./scripts/filter-ndjson-by-value \
+                --field {params.id_field:q} \
+                --include {input.prioritized_ids:q} \
             | zstd -T0 -c > {output.deduped_ndjson:q}) 2> {log:q}
         """
 
