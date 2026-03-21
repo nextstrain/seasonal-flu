@@ -128,7 +128,6 @@ def get_node_data(w):
     return node_data
 
 
-
 rule export:
     message:
         "Exporting data files for auspice"
@@ -140,8 +139,8 @@ rule export:
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields="strain region country date gisaid_epi_isl accession_{segment}",
-        select_fields = ','.join(["strain", "region", "country", "date", "gisaid_epi_isl", "accession_{segment}"]),
+        fields= lambda w: " " + ",".join(get_metadata_fields(w)),
+        select_fields = lambda w:','.join(get_metadata_fields(w)),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """

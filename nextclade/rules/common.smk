@@ -20,6 +20,25 @@ def genes(w):
         'ns': ["NEP", "NS1"]
     }.get(w.segment, [])
 
+
+def get_metadata_fields(w):
+    fields = [
+        "strain",
+        "region",
+        "country",
+        "date",
+        "gisaid_epi_isl",
+        f"accession_{w.segment}",
+    ]
+    if w.lineage in ['h3n2', 'h1n1', 'b', 'vic']:
+        if w.segment != 'ha':
+            fields.append(f"clade_ha")
+        if w.segment != 'na':
+            fields.append(f"clade_na")
+    return fields
+
+
+
 rule download_sequences:
     output:
         sequences="data/{lineage}/{segment}/sequences.fasta",
@@ -66,7 +85,7 @@ rule run_nextclade:
 
 
 def get_clade_columns(w):
-    return ",".join(["seqName", "qc.overallStatus"] + {
+    return " ".join(["seqName", "qc.overallStatus"] + {
         'h3n2_ha':["clade", "subclade"],
         'h1n1pdm_ha':["clade", "subclade"],
         'vic_ha':["clade", "subclade"]
@@ -76,17 +95,37 @@ def get_clade_columns(w):
 rule combined_with_metadata:
     input:
         nextclade="data/{lineage}/{segment}/nextclade.tsv",
-        metadata="data/{lineage}/{segment}/metadata-raw.tsv"
+        metadata="data/{lineage}/{segment}/metadata-raw.tsv",
+        nextclade_ha="data/{lineage}/ha/nextclade.tsv",
+        nextclade_na="data/{lineage}/na/nextclade.tsv"
     output:
         metadata="data/{lineage}/{segment}/metadata.tsv"
     params:
         nextclade_columns=get_clade_columns
+    # merge nextclade output with metadata. For add HA and NA clades as separate columns for non HA/NA segments
     shell:
         """
-        tsv-select -H -f {params.nextclade_columns} {input.nextclade} \
-            | csvtk join -t --fields "strain;seqName" {input.metadata} /dev/stdin > {output.metadata}
+        python3 scripts/combine_metadata.py \
+            --nextclade {input.nextclade} \
+            --metadata-raw {input.metadata} \
+            --nextclade-ha {input.nextclade_ha} \
+            --nextclade-na {input.nextclade_na} \
+            --nextclade-columns {params.nextclade_columns} \
+            --lineage {wildcards.lineage} --segment {wildcards.segment} \
+            --output {output.metadata}
         """
+    # run:
+    #     import pandas as pd
+    #     nextclade_df = pd.read_csv(input.nextclade, sep='\t', usecols=params.nextclade_columns.split(",")).set_index('seqName')
+    #     metadata_df = pd.read_csv(input.metadata, sep='\t').set_index('strain')
+    #     metadata_df.join(nextclade_df, on='seqName', how='left')
+    #     if wildcards.lineage not in ['h3n2', 'h1n1pdm', 'vic', 'b']:
+    #         for other_seqment in ['ha', 'na']:
+    #             if other_seqment != wildcards.segment:
+    #                 nextclade_other_df = pd.read_csv(input.nextclade_ha if other_seqment == 'ha' else input.nextclade_na, sep='\t').set_index('seqName')
+    #                 metadata_df.join(nextclade_other_df[['HA_clade' if other_seqment == 'ha' else 'NA_clade']], on='seqName', how='left')
 
+    #     metadata_df.reset_index().to_csv(output.metadata, sep='\t', index=False)
 
 rule download_changelog_dataset:
     message:
