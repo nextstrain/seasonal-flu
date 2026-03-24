@@ -1,4 +1,5 @@
 custom_rules:
+  - workflow/snakemake_rules/download_from_s3.smk
   - profiles/upload/upload.smk
 
 s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu"
