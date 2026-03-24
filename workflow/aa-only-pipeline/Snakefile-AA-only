@@ -1,0 +1,158 @@
+
+rule nextclade:
+    input:
+        seqs = "results/nuc/sequences.fasta",
+        ref = "config/reference.fasta",
+    output:
+        nuc = "results/nuc/aligned.fasta",
+        ha1 = "results/HA1/aligned.fasta",
+        ha2 = "results/HA2/aligned.fasta",
+        sigpep = "results/SigPep/aligned.fasta",
+    shell:
+        r"""
+        nextclade3 run {input.seqs} \
+            -r config/reference.fasta --include-reference \
+            -m config/genemap.gff --cds-selection SigPep,HA1,HA2 \
+            --gap-alignment-side right \
+            --jobs 1 \
+            --output-fasta {output.nuc} \
+            --output-translations "results/{{cds}}/aligned.fasta"
+        """
+
+# We don't do a mafft alignment as nextclade aligns things for us, but you can if you want! `augur align --method mafft` Just Works
+
+rule combine_alignments:
+    input:
+        alignments = ["results/HA1/aligned.fasta", "results/HA2/aligned.fasta"] # parameterise if you want to generalise
+    output:
+        alignment = "results/{build}/aligned.fasta"    
+    wildcard_constraints:
+        build = "HA12"
+    run:
+        from Bio import SeqIO
+        alignments = [SeqIO.to_dict(SeqIO.parse(f, "fasta")) for f in input.alignments]
+        names = [set(a.keys()) for a in alignments]
+        if names[0] != names[1]:
+            only_in_first = names[0] - names[1]
+            only_in_second = names[1] - names[0]
+            raise ValueError(f"Sequence names differ between alignments. Only in {input.alignments[0]}: {only_in_first}. Only in {input.alignments[1]}: {only_in_second}.")
+        with open(output.alignment, "w") as fh:
+            for name in alignments[0]:
+                seq = str(alignments[0][name].seq) + str(alignments[1][name].seq)
+                fh.write(f">{name}\n{seq}\n")
+
+rule tree:
+    input:
+        seqs = "results/{build}/aligned.fasta",
+    output:
+        tree = "results/{build}/tree_raw.nwk",
+    params:
+        args = lambda w: "--method iqtree" if w.build=='nuc' else "--method iqtree --substitution-model poisson --tree-builder-args '--seqtype AA'"
+    shell:
+        r"""
+        augur tree --alignment {input.seqs} {params.args} --output {output.tree}
+        """
+
+rule refine:
+    input:
+        alignment = "results/{build}/aligned.fasta",
+        metadata = "results/metadata.tsv",
+        tree =  "results/{build}/tree_raw.nwk",
+    output:
+        tree = "results/{build}/tree.nwk",
+        node_data = "results/{build}/branch_lengths.json",
+    params:
+        args = lambda w: "" if w.build=='nuc' else "--aa",
+    shell:
+        r"""
+        augur refine --alignment {input.alignment} --metadata {input.metadata} --tree {input.tree} \
+            --timetree --root best --clock-filter-iqd 1 --date-confidence \
+            --verbosity 1 \
+            {params.args} \
+            --branch-length-inference marginal \
+            --seed 123 \
+            --output-tree {output.tree} --output-node-data {output.node_data}
+        """
+
+rule ancestral_nuc:
+    input:
+        tree = "results/{build}/tree.nwk",
+        alignment = "results/{build}/aligned.fasta",
+        genemap = "config/genemap.gff",
+    output:
+        node_data = "results/{build}/muts.json",
+    params:
+        translations = "results/%GENE/aligned.fasta",
+        genes = ["HA1", "HA2", "SigPep"]
+    wildcard_constraints:
+        build = "nuc",
+    shell:
+        r"""
+        augur ancestral \
+            --tree {input.tree} --alignment {input.alignment} --translations {params.translations} \
+            --annotation {input.genemap} --genes {params.genes} \
+            --output-node-data {output.node_data} \
+            --report-inconsistent-translation
+        """
+
+rule ancestral_single_protein:
+    input:
+        tree = "results/{build}/tree.nwk",
+        genemap = "config/genemap.gff",
+        translations = "results/{build}/aligned.fasta",
+    output:
+        node_data = "results/{build}/muts.json",
+    params:
+        genes = lambda w: w.build
+    wildcard_constraints:
+        build = "HA1|HA2|SigPep",
+    shell:
+        r"""
+        augur ancestral \
+            --tree {input.tree} --translations {input.translations} \
+            --annotation {input.genemap} --genes {params.genes} \
+            --output-node-data {output.node_data}
+        """
+
+rule ancestral_individual_proteins:
+    input:
+        tree = "results/{build}/tree.nwk",
+        genemap = "config/genemap.gff",
+        translations = ["results/HA1/aligned.fasta", "results/HA2/aligned.fasta"],
+    output:
+        node_data = "results/{build}/muts.json",
+    params:
+        genes = ["HA1", "HA2"],
+        translations = "results/%GENE/aligned.fasta",
+    wildcard_constraints:
+        build = "HA12",
+    shell:
+        r"""
+        augur ancestral \
+            --tree {input.tree} --translations {params.translations} \
+            --annotation {input.genemap} --genes {params.genes} \
+            --output-node-data {output.node_data}
+        """
+
+rule export:
+    input:
+        metadata = "results/metadata.tsv",
+        tree = "results/{build}/tree.nwk",
+        node_data = [
+            "results/{build}/branch_lengths.json",
+            "results/{build}/muts.json",
+        ]
+    output:
+        json = "auspice/{build}.json",
+    shell:
+        r"""
+        augur export v2 \
+            --node-data {input.node_data} --metadata {input.metadata} --tree {input.tree} \
+            --no-minify-json \
+            --output {output.json}
+        """
+
+
+### TODO XXX - export --include-root-sequence
+### TODO XXX - the above but also inferring nuc mutations? What's the point of this
+### TODO XXX - allow `augur ancestral` to not need a genemap for single case
