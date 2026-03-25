@@ -18,6 +18,45 @@ import dataclasses
 from datetime import date
 import re
 
+HARDCODED_CASE_CHANGES: dict[str,str] = {
+    # (incorrect) titer strain substring, corrected strain substring
+    "/Americansamoa/":  "/AmericanSamoa/",
+    "/Angthong/":  "/AngThong/",
+    "/AnNahdah/":  "/An_Nahdah/",
+    "/BayofPlenty/":  "/BayOfPlenty/",
+    "/Chiangmai/":  "/ChiangMai/",
+    "/Chiangrai/":  "/ChiangRai/",
+    "/ChristChurch/":  "/Christchurch/",
+    "/DistrictofColumbia/":  "/DistrictOfColumbia/",
+    "/Dominicanrepublic/":  "/DominicanRepublic/",
+    "/GansuBaiyin/":  "/Gansu-Baiyin/",
+    "/Hawkesbay/":  "/HawkesBay/",
+    "/IledeFrance/":  "/IleDeFrance/",
+    "/Kyrgyzstan-Bishkek/":  "/Kyrgyzstan_Bishkek/",
+    "/Kyrgyzstan-Osh/":  "/Kyrgyzstan_Osh/",
+    "/Naknonsithammarat/":  "/NaknonSiThammarat/",
+    "/NetherLands/":  "/Netherlands/",
+    "/Newcaledonia/":  "/NewCaledonia/",
+    "/Newhampshire/":  "/NewHampshire/",
+    "/Newjersey/":  "/NewJersey/",
+    "/Newmexico/":  "/NewMexico/",
+    "/Newyork/":  "/NewYork/",
+    "/Northcarolina/":  "/NorthCarolina/",
+    "/Northwestauckland/":  "/NorthWestAuckland/",
+    "/Papuanewguinea/":  "/PapuaNewGuinea/",
+    "/PaysdeLoire/":  "/PaysDeLoire/",
+    "/Phranakhonsiayutthaya/":  "/PhraNakhonSiAyutthaya/",
+    "/Saopaulo/":  "/SaoPaulo/",
+    "/Solomonislands/":  "/SolomonIslands/",
+    "/South-Africa/":  "/SouthAfrica/",
+    "/Southafrica/":  "/SouthAfrica/",
+    "/Southauckland/":  "/SouthAuckland/",
+    "/southAuckland/":  "/SouthAuckland/",
+    "/Southaustralia/":  "/SouthAustralia/",
+    "/Southcarolina/":  "/SouthCarolina/",
+    "/Srilanka/":  "/SriLanka/",
+    "/Timor-Leste/":  "/TimorLeste/",    
+}
 
 def read_titers(fname: str) -> list[dict[str, str]]:
     with open_file(fname) as f:
@@ -106,6 +145,7 @@ class Match:
     original_name: str
     new_name: str
     new_name_matching_when_simplified: bool|str = False # if set implies found_in_metadata=False
+    name_changed_via_pattern_match: bool = False
 
 def match(titer_strain: str,
           fauna_map: dict[str,str],
@@ -141,6 +181,16 @@ def match(titer_strain: str,
             in_metadata = True # epi_isl_to_strain is from the metadata
             curated_strain = epi_isl_to_strain[epi_isl]
             return Match(in_metadata=in_metadata,  original_name=titer_strain, new_name=curated_strain)
+
+    # Update via hardcoded pattern lookup. One day we'll have a complete pipeline for this, but for
+    # now we use a very thin layer to capture some obvious missing strains
+    case_corrected_strain = titer_strain
+    for case_correction in HARDCODED_CASE_CHANGES.items():
+        if case_correction[0] in case_corrected_strain:
+            case_corrected_strain = case_corrected_strain.replace(case_correction[0], case_correction[1])
+    if case_corrected_strain != titer_strain and case_corrected_strain in metadata:
+        return Match(in_metadata=True, original_name=titer_strain, new_name=case_corrected_strain,
+            name_changed_via_pattern_match=True)
 
     # If we've reached this part then we haven't been able to confidently match strains.
     # See if it's possible to match using simplified names, but don't actually
@@ -401,6 +451,9 @@ if __name__ == '__main__':
     # update the curated metadata to match the titers or remap the titer strain to match.
     for pair, count in matching_if_simplified_strain_pairs.items():
         print(f"[POTENTIAL MATCH] Titer strain {pair[0]!r} would match curated strain {pair[1]!r} if simplified. Strain appears {count:,} times", file=sys.stderr)
+
+    # Log out how many strain names were changed due to application of pattern matching
+    print(f"Changed {sum([m.name_changed_via_pattern_match for pair in measurement_matches for m in pair])} titer strain names via (hardcoded) pattern-matches", file=sys.stderr)
 
     process_measurement_pairs(measurement_matches, metadata, args.stats_metadata, args.stats)
     
