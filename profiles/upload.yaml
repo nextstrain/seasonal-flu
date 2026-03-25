@@ -76,7 +76,8 @@ titer_strain_maps:
   h1n1pdm: "config/h1n1pdm/titer-strain-map.tsv"
   h3n2: "config/h3n2/titer-strain-map.tsv"
   vic: "config/vic/titer-strain-map.tsv"
-  
+  yam: "config/yam/titer-strain-map.tsv"
+
 builds:
   h1n1pdm_2y:
     lineage: h1n1pdm
