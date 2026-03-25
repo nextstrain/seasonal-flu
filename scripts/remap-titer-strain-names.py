@@ -287,6 +287,58 @@ def process_measurement_pairs(match_pairs: list[tuple[Match,Match]],
     print(f"Potential matching (unique) strains:    {stats_str(strain_matches_per_year['total'].potential_match, strain_matches_per_year['total'].total)}", file=sys.stderr)
     print(f"Potential matching (unique) measurement pairs: {stats_str(measurement_matches_per_year['total'].potential_match, measurement_matches_per_year['total'].total)}", file=sys.stderr)
 
+
+@dataclasses.dataclass
+class StrainCounter:
+    n_virus_strain: int = 0
+    n_serum_strain: int = 0
+    potential_match: str = ""
+    year: str = ""
+
+def print_missing_measurements(match_pairs: list[tuple[Match,Match]],
+        metadata: Metadata,
+        additional_stats_data: str,
+        fname: str
+        ) -> None:
+    print(f"Printing unmatched strains to {fname!r}", file=sys.stderr)
+    counts = defaultdict(lambda: StrainCounter(n_virus_strain=0, n_serum_strain=0))
+    for pair in match_pairs:
+        virus_match, serum_match = pair
+        
+        if not virus_match.in_metadata:
+            counts[virus_match.original_name].n_virus_strain += 1
+            counts[virus_match.original_name].year = get_year(virus_match, metadata)
+            if virus_match.new_name_matching_when_simplified:
+                counts[virus_match.original_name].potential_match = str(virus_match.new_name_matching_when_simplified)
+    
+        if not serum_match.in_metadata:
+            counts[serum_match.original_name].n_serum_strain += 1
+            counts[serum_match.original_name].year = get_year(serum_match, metadata)
+            if serum_match.new_name_matching_when_simplified:
+                counts[serum_match.original_name].potential_match = str(serum_match.new_name_matching_when_simplified)
+    
+    # hardcoded header information as we expect certain information in --stats-metadata
+    header = ['titer_strain', 'year', 'virus_strain_count', 'serum_strain_count', 'potential_matching_strain',
+        'lineages', 'centers', 'passages', 'assays']
+    
+    extra_data = json.loads(additional_stats_data)
+    
+    with open(fname, 'w') as fh:
+        writer = csv.writer(fh, delimiter='\t')
+        writer.writerow(header)
+        for titer_strain, counter in counts.items():
+            writer.writerow([
+                titer_strain, counter.year,
+                counter.n_virus_strain, counter.n_serum_strain,
+                counter.potential_match,
+                extra_data.get('lineage', 'unknown'),
+                extra_data.get('center', 'unknown'),
+                extra_data.get('passage', 'unknown'),
+                extra_data.get('assay', 'unknown'),
+            ])
+        
+    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--titers", required=True, metavar='TSV',
@@ -303,6 +355,8 @@ if __name__ == '__main__':
                         help="matching stats")
     parser.add_argument("--stats-metadata", required=True, metavar='JSON_STRING',
                         help="JSON-formatted data to export in the stats JSON")
+    parser.add_argument("--missing-strains", required=False, metavar='TSV',
+                        help="Write out information on unmatched strain names")
 
     args = parser.parse_args()
 
@@ -349,3 +403,6 @@ if __name__ == '__main__':
         print(f"[POTENTIAL MATCH] Titer strain {pair[0]!r} would match curated strain {pair[1]!r} if simplified. Strain appears {count:,} times", file=sys.stderr)
 
     process_measurement_pairs(measurement_matches, metadata, args.stats_metadata, args.stats)
+    
+    if args.missing_strains:
+        print_missing_measurements(measurement_matches, metadata, args.stats_metadata, args.missing_strains)

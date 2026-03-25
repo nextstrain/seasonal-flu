@@ -101,6 +101,7 @@ rule remap_titer_strain_names:
     output:
         titers = "data/{lineage}/{center}_{passage}_{assay}_titers-strains-remapped.tsv",
         stats = "data/{lineage}/{center}_{passage}_{assay}_matching-stats.json",
+        missing_strains = "data/{lineage}/{center}_{passage}_{assay}_unmatched-strains.tsv",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/remap_titer_strain_names_{lineage}_{center}_{passage}_{assay}.txt"
@@ -117,6 +118,7 @@ rule remap_titer_strain_names:
             --titers {input.titers} \
             --output {output.titers} \
             --stats-metadata {params.stats_metadata:q} \
+            --missing-strains {output.missing_strains:q} \
             --stats {output.stats} 2> {log}
         """
 
@@ -176,3 +178,28 @@ rule visualise_titer_matches:
         ./scripts/titer-matching-viz.py --stats {input.stats} --output {output.png} 2> {log}
         """
 
+
+def _get_titer_missing_strains_tsvs(wildcards):
+    """
+    Collect all the relevant missing-strains TSVs produced by rule remap_titer_strain_names
+    """
+    tsvs = set()
+    for build in config["builds"].values():
+        lineage = build['lineage']
+        for collection in build['titer_collections']:
+            center, _host, passage, assay = collection['name'].split('_')
+            tsvs.add(f"data/{lineage}/{center}_{passage}_{assay}_unmatched-strains.tsv")
+    return sorted(list(tsvs))
+
+rule combine_missing_strain_tsvs:
+    input:
+        tsvs = _get_titer_missing_strains_tsvs
+    output:
+        tsv = "data/missing-titer-strains.tsv"
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/combine-missing-titer-strains-tsvs.txt"
+    shell:
+        """
+        ./scripts/combine-missing-titer-strains-tsvs.py --input {input.tsvs} --output {output.tsv} 2> {log}
+        """

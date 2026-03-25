@@ -30,7 +30,8 @@ rule upload_all_titers:
         ],
         titer_matching_viz=lambda wildcards: [
             f"data/upload/s3/titers/{lineage}_viz.done" for lineage in set([build['lineage'] for build in config["builds"].values()])
-        ]
+        ],
+        titer_missing_strains="data/upload/s3/titers/missing-titer-strains.done",
 
 
 # Development-only rule which is the same as `upload_all_titers` without the actual uploading! 
@@ -43,7 +44,8 @@ rule dev_only_all_titers:
         ],
         titer_matching_viz=lambda wildcards: [
             f"data/{lineage}/titer-matches.png" for lineage in set([build['lineage'] for build in config["builds"].values()])
-        ]
+        ],
+        titer_missing_strains="data/missing-titer-strains.tsv",
 
 rule upload_raw_sequences:
     input:
@@ -133,4 +135,19 @@ rule upload_titer_match_viz:
             --quiet \
             {input.png:q} \
             {params.s3_dst:q}/{params.lineage}/titer-matches.png 2>&1 | tee {output.flag}
+        """
+
+rule upload_titer_missing_strains_tsv:
+    input:
+        tsv="data/missing-titer-strains.tsv",
+    output:
+        flag="data/upload/s3/titers/missing-titer-strains.done",
+    params:
+        s3_dst=config["s3_dst"],
+    shell:
+        """
+        ./ingest/vendored/upload-to-s3 \
+            --quiet \
+            {input.tsv:q} \
+            {params.s3_dst:q}/missing-titer-strains.tsv 2>&1 | tee {output.flag}
         """
