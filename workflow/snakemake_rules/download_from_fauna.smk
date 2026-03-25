@@ -12,8 +12,9 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 # Limit the number of concurrent fauna connections so that we are less likely
 # to overwhelm the rethinkdb server.
 # Inspired by the ncov's limit on concurrent deploy jobs
-# <https://github.com/nextstrain/ncov/blob/20f5fc3c7032f4575a99745cee3238ecbeebb6e0/workflow/snakemake_rules/export_for_nextstrain.smk#L340-L362>
-workflow.global_resources.setdefault("concurrent_fauna", 2)
+# <https://github.com/nextstrain/ncov/blob/36de9576d228fa53ebe127ff800a693de60cee0c/workflow/snakemake_rules/export_for_nextstrain.smk#L332-L355>
+if "concurrent_fauna" not in workflow.global_resources:
+    workflow.global_resources["concurrent_fauna"] = 2
 
 # fields that will be canonicized by augur parse (upper/lower casing etc)
 
