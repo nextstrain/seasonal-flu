@@ -1,4 +1,5 @@
 custom_rules:
+  - workflow/snakemake_rules/download_from_s3.smk
   - profiles/upload/upload.smk
 
 s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu"
@@ -70,6 +71,12 @@ recency:
   date_bins: [7, 30, 90]
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
+
+titer_strain_maps:
+  h1n1pdm: "config/h1n1pdm/titer-strain-map.tsv"
+  h3n2: "config/h3n2/titer-strain-map.tsv"
+  vic: "config/vic/titer-strain-map.tsv"
+  yam: "config/yam/titer-strain-map.tsv"
 
 builds:
   h1n1pdm_2y:
@@ -216,4 +223,38 @@ builds:
         data: "data/vic/vidrl_ferret_cell_hi_titers.tsv"
       - name: vidrl_ferret_egg_hi
         data: "data/vic/vidrl_ferret_egg_hi_titers.tsv"
+    subsamples: *representative-subsampling-scheme
+  yam_2y:
+    lineage: yam
+    reference: "config/yam/{segment}/reference.fasta"
+    annotation: "config/yam/{segment}/genemap.gff"
+    tree_exclude_sites: "config/yam/{segment}/exclude-sites.txt"
+    clades: "config/yam/ha/clades.tsv"
+    auspice_config: "config/yam/auspice_config.json"
+    min_date: "2Y"
+    reference_min_date: "8Y"
+    include: "config/yam/reference_strains.txt"
+    exclude: "config/yam/outliers.txt"
+    vaccines: "config/yam/vaccine.json"
+    titer_collections:
+      - name: who_ferret_cell_hi
+        data: "data/yam/who_ferret_cell_hi_titers.tsv"
+      - name: who_ferret_egg_hi
+        data: "data/yam/who_ferret_egg_hi_titers.tsv"
+      - name: cdc_ferret_cell_hi
+        data: "data/yam/cdc_ferret_cell_hi_titers.tsv"
+      - name: cdc_ferret_egg_hi
+        data: "data/yam/cdc_ferret_egg_hi_titers.tsv"
+      - name: crick_ferret_cell_hi
+        data: "data/yam/crick_ferret_cell_hi_titers.tsv"
+      - name: crick_ferret_egg_hi
+        data: "data/yam/crick_ferret_egg_hi_titers.tsv"
+      - name: niid_ferret_cell_hi
+        data: "data/yam/niid_ferret_cell_hi_titers.tsv"
+      - name: niid_ferret_egg_hi
+        data: "data/yam/niid_ferret_egg_hi_titers.tsv"
+      - name: vidrl_ferret_cell_hi
+        data: "data/yam/vidrl_ferret_cell_hi_titers.tsv"
+      - name: vidrl_ferret_egg_hi
+        data: "data/yam/vidrl_ferret_egg_hi_titers.tsv"
     subsamples: *representative-subsampling-scheme

@@ -9,6 +9,8 @@ titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
 
 '''
 
+import json
+
 # Limit the number of concurrent fauna connections so that we are less likely
 # to overwhelm the rethinkdb server.
 # Inspired by the ncov's limit on concurrent deploy jobs
@@ -19,7 +21,11 @@ if "concurrent_fauna" not in workflow.global_resources:
 # fields that will be canonicized by augur parse (upper/lower casing etc)
 
 path_to_fauna = '../fauna'
-localrules: download_sequences, download_titers, parse
+localrules: download_titers_from_fauna, parse
+
+ruleorder: download_titers_from_fauna > download_titers
+ruleorder: select_titers_by_host > download_titers
+
 #
 # Define titer data sets to be used.
 #
@@ -48,46 +54,21 @@ def _get_virus_passage_category(wildcards):
     else:
         return ""
 
-def _get_prioritized_seqs_file(wildcards):
-    prioritized_seqs_file = []
-    for build_name, build_params in config["builds"].items():
-        if build_params["lineage"] == wildcards.lineage:
-            prioritized_seqs_file = build_params.get('prioritized_seqs_file', prioritized_seqs_file)
-            break
-    return prioritized_seqs_file
-
-rule download_sequences:
-    input:
-        prioritized_seqs_file = _get_prioritized_seqs_file,
+# The fauna strain map is a TSV linking (fauna) strain name to EPI ISL.
+# It was manually created from a fauna download on 2026-01-12, after
+# which time no more sequence data will be added.
+rule download_fauna_strain_map:
     output:
-        sequences = "data/{lineage}/raw_{segment}.fasta"
+        metadata="data/{lineage}/fauna-strain-map.tsv.xz",
     params:
-        fasta_fields = config["fauna_fasta_fields"],
-        prioritized_seqs_file = lambda wildcards, input:
-            f"--prioritized_seqs_file {input.prioritized_seqs_file!r}"
-            if input.prioritized_seqs_file
-            else ""
-    resources:
-        concurrent_fauna = 1
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/download_sequences_{lineage}_{segment}.txt"
-    log:
-        "logs/download_sequences_{lineage}_{segment}.txt"
+        s3_path=config["s3_dst"] + "/{lineage}/fauna-strain-map.tsv.xz"
+    conda: "../../workflow/envs/nextstrain.yaml"
     shell:
-        r"""
-        python3 {path_to_fauna}/vdb/download.py \
-            --database vdb \
-            --virus flu \
-            --fasta_fields {params.fasta_fields} \
-            --resolve_method split_passage \
-            --select locus:{wildcards.segment} lineage:seasonal_{wildcards.lineage} \
-            {params.prioritized_seqs_file} \
-            --path data \
-            --fstem {wildcards.lineage}/raw_{wildcards.segment} 2>&1 | tee {log}
+        """
+        aws s3 cp {params.s3_path} - > {output.metadata}
         """
 
-rule download_titers:
+rule download_titers_from_fauna:
     output:
         titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv"
     params:
@@ -112,6 +93,36 @@ rule download_titers:
             --fstem {wildcards.lineage}/{wildcards.center}_{wildcards.passage}_{wildcards.assay} 2>&1 | tee {log}
         """
 
+rule remap_titer_strain_names:
+    input:
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv",
+        fauna_strain_map = "data/{lineage}/fauna-strain-map.tsv.xz",
+        curated_metadata = "data/{lineage}/metadata.tsv",
+        hardcoded_strain_map = lambda w: config['titer_strain_maps'][w.lineage],
+    output:
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers-strains-remapped.tsv",
+        stats = "data/{lineage}/{center}_{passage}_{assay}_matching-stats.json",
+        missing_strains = "data/{lineage}/{center}_{passage}_{assay}_unmatched-strains.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/remap_titer_strain_names_{lineage}_{center}_{passage}_{assay}.txt"
+    log:
+        "logs/remap_titer_strain_names_{lineage}_{center}_{passage}_{assay}.txt"
+    params:
+        stats_metadata = lambda w: json.dumps({'lineage': w.lineage, 'center': w.center, 'passage': w.passage, 'assay': w.assay})
+    shell:
+        """
+        scripts/remap-titer-strain-names.py \
+            --fauna-strain-map {input.fauna_strain_map} \
+            --hardcoded-strain-map {input.hardcoded_strain_map} \
+            --metadata {input.curated_metadata} \
+            --titers {input.titers} \
+            --output {output.titers} \
+            --stats-metadata {params.stats_metadata:q} \
+            --missing-strains {output.missing_strains:q} \
+            --stats {output.stats} 2> {log}
+        """
+
 def get_host_query(wildcards):
     query_by_host = {
         "ferret": "--istr-not-in-fld serum_id:mouse --istr-not-in-fld serum_id:human",
@@ -122,7 +133,7 @@ def get_host_query(wildcards):
 
 rule select_titers_by_host:
     input:
-        titers = "data/{lineage}/{center}_{passage}_{assay}_titers.tsv",
+        titers = "data/{lineage}/{center}_{passage}_{assay}_titers-strains-remapped.tsv",
     output:
         titers = "data/{lineage}/{center}_{host}_{passage}_{assay}_titers.tsv",
     conda: "../envs/nextstrain.yaml"
@@ -135,4 +146,61 @@ rule select_titers_by_host:
     shell:
         """
         tsv-filter -H {params.host_query} {input.titers} > {output.titers} 2> {log}
+        """
+
+
+def _get_titer_matching_stats(wildcards):
+    """
+    Collect all the relevant (titer-matching) stats JSONs for the requested wildcards.lineage
+    """
+    stats = set()
+    matching_builds = [build for build in config["builds"].values() if build['lineage']==wildcards.lineage]
+    for build in matching_builds:
+        for collection in build['titer_collections']:
+            center, _host, passage, assay = collection['name'].split('_')
+            stats.add(f"data/{wildcards.lineage}/{center}_{passage}_{assay}_matching-stats.json")
+    return sorted(list(stats))
+
+rule visualise_titer_matches:
+    """
+    Visualise the titer matche stats produced by the remap_titer_strain_names
+    rule above. This script will _always_ exit 0 and produce the output file
+    to avoid viz errors terminating the pipeline
+    """
+    input:
+        stats = _get_titer_matching_stats
+    output:
+        png = "data/{lineage}/titer-matches.png"
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/visualise_titer_matches_{lineage}.txt"
+    shell:
+        """
+        ./scripts/titer-matching-viz.py --stats {input.stats} --output {output.png} 2> {log}
+        """
+
+
+def _get_titer_missing_strains_tsvs(wildcards):
+    """
+    Collect all the relevant missing-strains TSVs produced by rule remap_titer_strain_names
+    """
+    tsvs = set()
+    for build in config["builds"].values():
+        lineage = build['lineage']
+        for collection in build['titer_collections']:
+            center, _host, passage, assay = collection['name'].split('_')
+            tsvs.add(f"data/{lineage}/{center}_{passage}_{assay}_unmatched-strains.tsv")
+    return sorted(list(tsvs))
+
+rule combine_missing_strain_tsvs:
+    input:
+        tsvs = _get_titer_missing_strains_tsvs
+    output:
+        tsv = "data/missing-titer-strains.tsv"
+    conda: "../envs/nextstrain.yaml"
+    log:
+        "logs/combine-missing-titer-strains-tsvs.txt"
+    shell:
+        """
+        ./scripts/combine-missing-titer-strains-tsvs.py --input {input.tsvs} --output {output.tsv} 2> {log}
         """
