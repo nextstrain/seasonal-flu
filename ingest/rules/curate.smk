@@ -338,7 +338,7 @@ rule subset_metadata:
     input:
         metadata=metadata_selector,
     output:
-        subset_metadata="results/{dataset}/metadata.tsv",
+        subset_metadata="data/{dataset}/subset_metadata.tsv",
     params:
         metadata_fields=metadata_fields,
     shell:

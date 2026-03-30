@@ -238,3 +238,53 @@ filtering:
   #   additional_field: host
   #   additional_field_values: human
 
+# Used to determine which dataset and segments will include Nextclade annotations
+# First level of keys are dataset names, they should matching the `filtering` keys above.
+# Second levele of keys are segments, they will only get used if the segment is
+# also included in the top level `segments` config.
+nextclade:
+  h3n2:
+    ha:
+      dataset_name: nextstrain/flu/h3n2/ha
+      # Field used to merge with the metdata.
+      id_field: seqName
+      # Used to rename fields and only listed fields will be merged with the
+      # metadata in final output. Must include the id_field defined above.
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/h3n2/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
+  h1n1pdm:
+    ha:
+      dataset_name: nextstrain/flu/h1n1pdm/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/h1n1pdm/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
+  vic:
+    ha:
+      dataset_name: nextstrain/flu/vic/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/vic/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
