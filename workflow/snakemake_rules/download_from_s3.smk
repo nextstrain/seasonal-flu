@@ -1,6 +1,3 @@
-ruleorder: download_parsed_sequences > parse
-ruleorder: download_parsed_metadata > annotate_metadata_with_reference_strains
-
 S3_PATH = config.get("s3_path", "s3://nextstrain-data-private/files/workflows/seasonal-flu")
 
 rule download_titers:

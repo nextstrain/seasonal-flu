@@ -3,12 +3,9 @@ This file contains rules that select strains for a build, extracts the sequences
 and the meta data subset.
 
 input:
- - "data/{lineage}/raw_{segment}.fasta" # e.g., from fauna or GISAID download with metadata in FASTA headers.
- - "data/{lineage}/{center}_{passage}_{assay}_titers.tsv" # e.g., from fauna
-
-intermediate files:
  - "data/{lineage}/metadata.tsv"
  - "data/{lineage}/{segment}.fasta"
+ - "data/{lineage}/{center}_{passage}_{assay}_titers.tsv" # e.g., from fauna
 
 output:
  - builds/{build_name}/strains.txt
@@ -21,120 +18,6 @@ localrules: titer_priorities, select_titers
 
 build_dir = config.get("build_dir", "builds")
 
-rule parse:
-    message: "Parsing fasta into sequences and metadata"
-    input:
-        sequences = "data/{lineage}/raw_{segment}.fasta",
-    output:
-        sequences = "data/{lineage}/{segment}.fasta",
-        metadata = "data/{lineage}/metadata_{segment}.tsv",
-    params:
-        fasta_fields=config.get("fasta_fields", ""),
-        prettify_fields_arg=lambda wildcards: f"--prettify-fields {' '.join(config['prettify_fields'])}" if "prettify_fields" in config else "",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/parse_{lineage}_{segment}.txt"
-    log:
-        "logs/parse_{lineage}_{segment}.txt"
-    shell:
-        """
-        augur parse \
-            --sequences {input.sequences} \
-            --output-sequences {output.sequences} \
-            --output-metadata {output.metadata} \
-            --fields {params.fasta_fields} \
-            {params.prettify_fields_arg} 2>&1 | tee {log}
-        """
-
-rule join_metadata:
-    input:
-        segment_metadata=lambda w: [f"data/{w.lineage}/metadata_{segment}.tsv" for segment in config['segments']],
-    output:
-        metadata="data/{lineage}/metadata_joined.tsv",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/join_metadata_{lineage}.txt"
-    log:
-        "logs/join_metadata_{lineage}.txt"
-    params:
-        segments=lambda w: config['segments'],
-        segment_columns=["accession"],
-        how="outer",
-    shell:
-        """
-        python3 scripts/join_metadata.py \
-            --metadata {input.segment_metadata:q} \
-            --segments {params.segments:q} \
-            --segment-columns {params.segment_columns:q} \
-            --how {params.how:q} \
-            --output {output.metadata:q} 2>&1 | tee {log}
-        """
-
-# Annotate strains in the metadata that have "GIHSN" in the strain name to
-# indicate whether it was collected as part of the Global Influenza Hospital
-# Surveillance Network (GIHSN)
-rule annotate_metadata_with_gihsn:
-    input:
-        metadata="data/{lineage}/metadata_joined.tsv",
-    output:
-        metadata=temp("data/{lineage}/metadata_with_gihsn.tsv"),
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/annotate_metadata_with_gihsn_{lineage}.txt"
-    log:
-        "logs/annotate_metadata_with_gihsn_{lineage}.txt"
-    shell:
-        """
-        csvtk --tabs mutate2 \
-            --expression '${{strain}}=~"(GIHSN)" ? "True" : "False"' \
-            --name gihsn_sample \
-            {input.metadata} > {output.metadata}
-        """
-
-rule build_reference_strains_table:
-    input:
-        references="config/{lineage}/reference_strains.txt",
-    output:
-        references="data/{lineage}/reference_strains.tsv",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/build_reference_strains_table_{lineage}.txt"
-    log:
-        "logs/build_reference_strains_table_{lineage}.txt"
-    shell:
-        """
-        csvtk add-header \
-            --names strain \
-            {input.references} \
-            | csvtk uniq \
-            | csvtk --out-tabs mutate2 \
-                --name is_reference \
-                --expression "'True'" > {output.references}
-        """
-
-# Annotate strains in the metadata based on whether they are reference strains
-# or not, so we can subsample these strains by attribute from augur filter
-# later.
-rule annotate_metadata_with_reference_strains:
-    input:
-        metadata="data/{lineage}/metadata_with_gihsn.tsv",
-        references="data/{lineage}/reference_strains.tsv",
-    output:
-        metadata="data/{lineage}/metadata.tsv",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/annotate_metadata_with_reference_strains_{lineage}.txt"
-    log:
-        "logs/annotate_metadata_with_reference_strains_{lineage}.txt"
-    shell:
-        """
-        csvtk --tabs join \
-            --left-join \
-            --na "False" \
-            -f "strain" \
-            {input.metadata} \
-            {input.references} > {output.metadata}
-        """
 
 rule concat_titers_for_build:
     input:
