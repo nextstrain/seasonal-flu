@@ -1,0 +1,16 @@
+strain	virus	accession_ha	date	date_submitted	region	country	division	location	passage_category	originating_lab	submitting_lab	age	gender	ha	na	accession_na	gihsn_sample	is_reference
+A/Alabama/5/2010	flu	EPI287084	2010-07-13	2016-09-03	North America	Usa	Alabama	Alabama	cell	U.s. Air Force School Of Aerospace Medicine	National Institute For Medical Research	?	?	True	False	N/A	False	False
+A/Brisbane/10/2007	flu	EPI545338	2007-XX-XX	2016-09-03	Oceania	Australia	Queensland	Brisbane	cell	Queensland Health Scientific Services	Other Database Import	1y	female	True	True	EPI385929	False	True
+A/CzechRepublic/119/2012	flu	EPI398605	2012-02-28	2016-09-03	Europe	Czech Republic	Czech Republic	Czech Republic	cell	?	Other Database Import	?	?	True	True	EPI398607	False	False
+A/Delhi/1720/2013	flu	EPI527682	2013-02-20	2016-09-03	South Asia	India	Delhi	Delhi	undetermined	?	Other Database Import	?	?	True	True	EPI527734	False	False
+A/Helsinki/942/2013	flu	EPI489613	2013-02-27	2016-09-03	Europe	Finland	Uusimaa	Helsinki	cell	?	Other Database Import	?	?	True	True	EPI489611	False	False
+A/Hyogo/10K034/2011	flu	EPI340514	2011-01-17	2016-09-03	Japan Korea	Japan	Hyogo	Hyogo	undetermined	?	Other Database Import	?	?	True	True	EPI340629	False	False
+A/Perth/10/2010	flu	EPI276906	2010-05-25	2016-09-03	Oceania	Australia	Western Australia	Perth	cell	Pathwest Qe Ii Medical Centre	Who Collaborating Centre For Reference And Research On Influenza	72y	female	True	False	N/A	False	True
+A/Perth/16/2009	flu	EPI182941	2009-04-07	2016-09-03	Oceania	Australia	Western Australia	Perth	cell	Pathwest Qe Ii Medical Centre	Who Collaborating Centre For Reference And Research On Influenza	6y	male	True	True	EPI182942	False	True
+A/Peru/PER272/2010	flu	EPI496744	2010-10-16	2016-09-03	South America	Peru	Peru	Peru	undetermined	?	Other Database Import	17y	female	True	True	EPI496750	False	False
+A/RhodeIsland/1/2010	flu	EPI270360	2010-01-26	2016-09-03	North America	Usa	Rhode Island	Rhode Island	unpassaged	Rhode Island Department Of Health	Centers For Disease Control And Prevention	93y	male	True	False	N/A	False	False
+A/SaudiArabia/6/2014	flu	EPI966136	2014-10-02	2017-12-14	West Asia	Saudi Arabia	Saudi Arabia	Saudi Arabia	undetermined	?	Other Database Import	?	?	True	True	EPI966185	False	False
+A/Tehran/1219/2012	flu	EPI446792	2012-01-28	2016-09-03	West Asia	Iran	Tehran	Tehran	undetermined	?	Other Database Import	?	?	True	True	EPI446793	False	False
+A/Victoria/208/2009	flu	EPI272062	2009-06-02	2016-09-03	Oceania	Australia	Victoria	Victoria	cell	Victorian Infectious Diseases Reference Laboratory 	Who Collaborating Centre For Reference And Research On Influenza	?	?	True	False	N/A	False	True
+A/Victoria/210/2009	flu	EPI269899	2009-06-02	2016-09-03	Oceania	Australia	Victoria	Victoria	cell	Victorian Infectious Diseases Reference Laboratory 	Who Collaborating Centre For Reference And Research On Influenza	?	?	True	False	N/A	False	True
+A/Wisconsin/67/2005	flu	EPI367110	2005-XX-XX	2016-09-03	North America	Usa	Wisconsin	Wisconsin	cell	?	Other Database Import	?	?	True	True	EPI367112	False	True
