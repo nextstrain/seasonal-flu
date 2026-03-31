@@ -1,22 +1,6 @@
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
 
-fauna_fasta_fields:
-  - strain
-  - virus
-  - locus
-  - accession
-  - collection_date
-  - virus_inclusion_date
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
 fasta_fields:
   - strain
   - virus
