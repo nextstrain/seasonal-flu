@@ -1,53 +1,9 @@
 custom_rules:
   - workflow/snakemake_rules/download_from_s3.smk
+  - workflow/snakemake_rules/download_from_fauna.smk
   - profiles/upload/upload.smk
 
 s3_dst: "s3://nextstrain-data-private/files/workflows/seasonal-flu"
-
-data_source: fauna
-fauna_fasta_fields:
-  - strain
-  - virus
-  - locus
-  - isolate_id
-  - accession
-  - collection_date
-  - submission_date
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
-  - gisaid_strain
-fasta_fields:
-  - strain
-  - virus
-  - segment
-  - gisaid_epi_isl
-  - accession
-  - date
-  - date_submitted
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
-  - gisaid_strain
-prettify_fields:
-  - region
-  - country
-  - division
-  - location
-  - originating_lab
-  - submitting_lab
 
 lat-longs: "config/lat_longs.tsv"
 

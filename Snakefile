@@ -50,9 +50,6 @@ subclade_url_by_lineage_and_segment = {
 
 include: "workflow/snakemake_rules/common.smk"
 
-if "data_source" in config and config["data_source"]=='fauna':
-    include: "workflow/snakemake_rules/download_from_fauna.smk"
-
 include: "workflow/snakemake_rules/array_builds.smk"
 
 include: "workflow/snakemake_rules/select_strains.smk"

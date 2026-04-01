@@ -7,6 +7,20 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 1 April 2026
+
+- *MAJOR CHANGE* Modified the default workflow to start from a single `metadata.tsv`
+and one or more `<segment>.fasta` files. The workflow no longer accepts just a single
+FASTA file with metadata in the sequence headers. The Quickstart GISAID build
+_has not_ been affected by this change and will continue to support the Excel
+metadata file.
+- Removed the following top level config params. They were mostly used by
+Nextstrain internal workflows and should not affect external users.
+    - fauna_fasta_fields
+    - fasta_fields
+    - prettify_fields
+    - data_source
+
 # 9 March 2026
 
 - Export Nextclade subclade columns for each segment to the build metadata (e.g., `subclade_nextclade_ha`, `subclade_nextclade_na`, etc.), allowing any segment's tree to color tips by any other segment's clade annotation. See [#258](https://github.com/nextstrain/seasonal-flu/pull/258) for details.
