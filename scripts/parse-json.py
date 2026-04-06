@@ -75,12 +75,31 @@ def parse_json(input_file, output_ga, output_rf, output_freq, output_raw, output
          # Parse ga (MLR model)
         if model_version == "MLR":
             print("Parsing ga (growth advantage) from MLR model results.")
+            # The pivot is the last variant in the list, by design.
+            pivot_variant = data["metadata"]["variants"][-1]
+            pivot_variant_in_data = False
+
             for record in data["data"]:
                 if record["site"] == "ga" and record["ps"] in sites_to_parse:
+                    if record["variant"] == pivot_variant:
+                        pivot_variant_in_data = True
+
                     key = (record["location"], record["variant"])
                     if key not in grouped_ga:
                         grouped_ga[key] = {"location": record["location"], "variant": record["variant"]}
                     grouped_ga[key][record["ps"]] = record["value"]
+
+            # If pivot variant isn't in the data, add records for the pivot at
+            # each location. This check guards against upstream changes to the
+            # JSON that include records for the pivot in the future.
+            if not pivot_variant_in_data:
+                for location in data["metadata"]["location"]:
+                    grouped_ga[(location, pivot_variant)] = {
+                        "location": location,
+                        "variant": pivot_variant,
+                    }
+                    for site in sites_to_parse:
+                        grouped_ga[(location, pivot_variant)][site] = 1.0
 
             # Write output mlr/ga.tsv
             write_outfile(output_ga, grouped_ga)
