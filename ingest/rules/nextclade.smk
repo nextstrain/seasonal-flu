@@ -50,9 +50,41 @@ rule run_nextclade:
         """
 
 
-rule nextclade_metadata:
+rule add_derived_haplotypes:
     input:
         nextclade="results/{dataset}/{segment}/nextclade.tsv",
+    output:
+        haplotypes="results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv",
+    params:
+        genes=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["genes"],
+        clade_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["clade_column"],
+        mutations_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["mutations_column"],
+        derived_haplotype_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["derived_haplotype_column"],
+    benchmark:
+        "benchmarks/{dataset}/{segment}/add_derived_haplotypes.txt"
+    log:
+        "logs/{dataset}/{segment}/add_derived_haplotypes.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        python3 ../scripts/add_derived_haplotypes.py \
+            --nextclade {input.nextclade:q} \
+            --genes {params.genes:q} \
+            --strip-genes \
+            --clade-column {params.clade_column:q} \
+            --mutations-column {params.mutations_column:q} \
+            --attribute-name {params.derived_haplotype_column:q} \
+            --output {output.haplotypes:q}
+        """
+
+
+rule nextclade_metadata:
+    input:
+        nextclade=lambda w: (
+            "results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv"
+            if _get_nextclade_config(w).get("derived_haplotypes")
+            else "results/{dataset}/{segment}/nextclade.tsv"),
     output:
         nextclade_metadata=temp("results/{dataset}/{segment}/nextclade_metadata.tsv"),
     params:

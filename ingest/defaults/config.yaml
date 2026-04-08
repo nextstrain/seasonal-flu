@@ -246,6 +246,14 @@ nextclade:
   h3n2:
     ha:
       dataset_name: nextstrain/flu/h3n2/ha
+      # Add derived haplotypes to the Nextclade annotations
+      # Uses the original columns from the Nextclade TSV
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
       # Field used to merge with the metdata.
       id_field: seqName
       # Used to rename fields and only listed fields will be merged with the
@@ -254,6 +262,7 @@ nextclade:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
+        subclade_haplotype_ha: subclade_haplotype_ha
     na:
       dataset_name: nextstrain/flu/h3n2/na
       id_field: seqName
@@ -263,11 +272,18 @@ nextclade:
   h1n1pdm:
     ha:
       dataset_name: nextstrain/flu/h1n1pdm/ha
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
       id_field: seqName
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
+        subclade_haplotype_ha: subclade_haplotype_ha
     na:
       dataset_name: nextstrain/flu/h1n1pdm/na
       id_field: seqName
@@ -277,11 +293,18 @@ nextclade:
   vic:
     ha:
       dataset_name: nextstrain/flu/vic/ha
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
       id_field: seqName
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
+        subclade_haplotype_ha: subclade_haplotype_ha
     na:
       dataset_name: nextstrain/flu/vic/na
       id_field: seqName
