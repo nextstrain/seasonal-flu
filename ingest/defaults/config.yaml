@@ -128,6 +128,8 @@ filtering:
     metadata_columns: &seasonal-flu-metadata-columns
       - strain
       - gisaid_epi_isl
+      - vtype
+      - lineage
       - date
       - date_submitted
       - region
@@ -169,6 +171,8 @@ filtering:
     metadata_columns: &flu-metadata-columns
       - strain
       - gisaid_epi_isl
+      - vtype
+      - lineage
       - date
       - date_submitted
       - region
@@ -202,6 +206,8 @@ filtering:
       - h9n2
     metadata_columns: # <https://github.com/nextstrain/avian-flu/blob/f963447179c2b500b5598f056054374d3c9557a0/ingest/rules/ingest_fauna.smk#L37>
       - strain
+      - vtype
+      - lineage
       # Note: Fauna's 'virus' field (always "avian-flu") dropped
       # Note: Fauna's 'isolate_id' remapped to 'accession_ha'
       - date
