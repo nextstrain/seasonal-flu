@@ -264,12 +264,12 @@ nextclade:
       id_field: seqName
       # Used to rename fields and only listed fields will be merged with the
       # metadata in final output. Must include the id_field defined above.
+      # The dervied_haplotype_column and emerging_haplotype_column are automatically
+      # added if not defined in the field map.
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
-        subclade_haplotype_ha: subclade_haplotype_ha
-        emerging_haplotype_ha: emerging_haplotype_ha
     na:
       dataset_name: nextstrain/flu/h3n2/na
       id_field: seqName
@@ -294,8 +294,6 @@ nextclade:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
-        subclade_haplotype_ha: subclade_haplotype_ha
-        emerging_haplotype_ha: emerging_haplotype_ha
     na:
       dataset_name: nextstrain/flu/h1n1pdm/na
       id_field: seqName
@@ -320,8 +318,6 @@ nextclade:
         seqName: seqName
         clade: subclade_nextclade_ha
         qc.overallStatus: qc.overallStatus
-        subclade_haplotype_ha: subclade_haplotype_ha
-        emerging_haplotype_ha: emerging_haplotype_ha
     na:
       dataset_name: nextstrain/flu/vic/na
       id_field: seqName

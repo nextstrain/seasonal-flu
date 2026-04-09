@@ -123,6 +123,26 @@ def _get_nextclade(wildcards):
         return "results/{dataset}/{segment}/nextclade.tsv"
 
 
+def _get_nextclade_field_map(wildcards):
+    """
+    Automatically adds the emerging_haplotype column and derived haplotype
+    column to the field map if they were provided in the config and were not
+    already defined in the field map.
+    """
+    nextclade_config = _get_nextclade_config(wildcards)
+    field_map = nextclade_config["field_map"].copy()
+
+    if emerging_haplotype_field := nextclade_config.get("emerging_haplotypes", {}).get("emerging_haplotype_column"):
+        if emerging_haplotype_field not in field_map:
+            field_map[emerging_haplotype_field] = emerging_haplotype_field
+
+    if derived_haplotype_field := nextclade_config.get("derived_haplotypes", {}).get("derived_haplotype_column"):
+        if derived_haplotype_field not in field_map:
+            field_map[derived_haplotype_field] = derived_haplotype_field
+
+    return field_map
+
+
 rule nextclade_metadata:
     input:
         nextclade=_get_nextclade,
@@ -130,8 +150,8 @@ rule nextclade_metadata:
         nextclade_metadata=temp("results/{dataset}/{segment}/nextclade_metadata.tsv"),
     params:
         nextclade_id_field=lambda w: _get_nextclade_config(w)["id_field"],
-        nextclade_field_map=lambda w: [f"{old}={new}" for old, new in _get_nextclade_config(w)["field_map"].items()],
-        nextclade_fields=lambda w: ",".join(_get_nextclade_config(w)["field_map"].values()),
+        nextclade_field_map=lambda w: [f"{old}={new}" for old, new in _get_nextclade_field_map(w).items()],
+        nextclade_fields=lambda w: ",".join(_get_nextclade_field_map(w).values()),
     benchmark:
         "benchmarks/{dataset}/{segment}/nextclade_metadata.txt"
     log:
