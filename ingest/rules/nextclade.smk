@@ -79,12 +79,53 @@ rule add_derived_haplotypes:
         """
 
 
-rule nextclade_metadata:
+rule add_emerging_haplotypes:
     input:
+        # Adds to derived haplotypes file if it was also requested
         nextclade=lambda w: (
             "results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv"
             if _get_nextclade_config(w).get("derived_haplotypes")
             else "results/{dataset}/{segment}/nextclade.tsv"),
+        haplotypes=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["haplotypes"],
+    output:
+        haplotypes="results/{dataset}/{segment}/nextclade_with_emerging_haplotypes.tsv",
+    params:
+        clade_column=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["clade_column"],
+        emerging_haplotype_column=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["emerging_haplotype_column"],
+    benchmark:
+        "benchmarks/{dataset}/{segment}/add_emerging_haplotypes.txt"
+    log:
+        "logs/{dataset}/{segment}/add_emerging_haplotypes.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        python ../scripts/assign_haplotypes.py \
+            --substitutions {input.nextclade:q} \
+            --haplotypes {input.haplotypes:q} \
+            --clade-column {params.clade_column:q} \
+            --haplotype-column-name {params.emerging_haplotype_column:q} \
+            --output-table {output.haplotypes:q}
+        """
+
+
+def _get_nextclade(wildcards):
+    """
+    The Nextclade file used depends on whether haplotypes were requested.
+    Emerging haplotypes get added to the derived haplotypes file if both were
+    requested, so just use the emerging haplotypes file.
+    """
+    if _get_nextclade_config(wildcards).get("emerging_haplotypes"):
+        return "results/{dataset}/{segment}/nextclade_with_emerging_haplotypes.tsv"
+    elif _get_nextclade_config(wildcards).get("derived_haplotypes"):
+        return "results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv"
+    else:
+        return "results/{dataset}/{segment}/nextclade.tsv"
+
+
+rule nextclade_metadata:
+    input:
+        nextclade=_get_nextclade,
     output:
         nextclade_metadata=temp("results/{dataset}/{segment}/nextclade_metadata.tsv"),
     params:
