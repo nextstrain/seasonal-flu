@@ -30,12 +30,14 @@ rule link_gisaid_metadata_and_fasta:
     priority: 50
     params:
         fasta_fields=["segment_accession", "Submitting_Lab", "Originating_Lab"],
+        required_segments=config["segments"],
     shell:
         r"""
         (./scripts/link-gisaid-metadata-and-fasta \
             --metadata {input.metadata:q} \
             --sequences {input.sequences:q} \
             --fasta-fields {params.fasta_fields:q} \
+            --required-segments {params.required_segments:q} \
             | zstd -T0 -c > {output.ndjson:q}) 2> {log:q}
         """
 
