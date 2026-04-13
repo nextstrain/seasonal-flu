@@ -182,14 +182,18 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                 "WARNING: Could not match segment accessions for record",
                 f"{record_id!r} for the following segments: {unmatched_accessions!r}"
             )
-            records_without_accessions += 1
+            # Track records without _any_ accessions
+            if len(unmatched_accessions) == len(SEGMENT_COLUMNS):
+                records_without_accessions += 1
 
         if len(unmatched_sequences):
             print_err(
                 f"WARNING: Could not find sequences for record {record_id!r}",
                 f"for the following segment accessions: {unmatched_sequences}"
             )
-            records_without_sequences += 1
+            # Track records without _any_ sequences
+            if len(unmatched_sequences) == len(SEGMENT_COLUMNS):
+                records_without_sequences += 1
 
         linked_record[OUTPUT_SEQUENCE_FIELD] = record_seqs
 
