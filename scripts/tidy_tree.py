@@ -275,6 +275,8 @@ def run_iqtree(
             return None
 
         tree = Phylo.read(str(tree_file), 'newick')
+        print(f"Rooting tree with {root}")
+        Phylo.write(tree, str('temp_tree.nwk'), 'newick')  # Write intermediate tree for debugging
         tree.root_with_outgroup(root)
         return tree
 
