@@ -30,7 +30,7 @@ def get_metadata_fields(w):
         "gisaid_epi_isl",
         f"accession_{w.segment}",
     ]
-    if w.lineage in ['h3n2', 'h1n1', 'b', 'vic']:
+    if w.lineage in ['h3n2', 'h1n1pdm', 'b', 'vic']:
         if w.segment != 'ha':
             fields.append(f"clade_ha")
         if w.segment != 'na':
@@ -43,7 +43,7 @@ rule download_sequences:
     output:
         sequences="data/{lineage}/{segment}/sequences.fasta",
     params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest/{lineage}/{segment}/sequences.fasta.xz",
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/sequences.fasta.xz",
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
@@ -53,18 +53,28 @@ rule download_metadata:
     output:
         metadata="data/{lineage}/{segment}/metadata-raw.tsv",
     params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest/{lineage}/metadata.tsv.xz",
+        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/metadata.tsv.xz",
     shell:
         """
         aws s3 cp {params.s3_path} - | xz -c -d > {output.metadata}
         """
+
+
+def get_nextclade_dataset_name(w):
+    if w.segment in ['ha', 'na']:
+        if w.lineage=='vic':
+            return f"flu_b_{w.segment}"
+        else:
+            return f"flu_{w.lineage}_{w.segment}"
+    else:
+        return f"nextstrain/flu/{w.lineage}/{w.segment}"
 
 rule get_nextclade_dataset:
     output:
         "nextclade/{lineage}_{segment}/reference.fasta",
     threads: 1
     params:
-        nextclade_dataset_name=lambda w: f"flu_{w.lineage}_{w.segment}" if w.segment in ['ha', 'na'] else f"nextstrain/flu/{w.lineage}/{w.segment}"
+        nextclade_dataset_name=get_nextclade_dataset_name
     shell:
         """
         nextclade3 dataset get -n {params.nextclade_dataset_name} --output-dir nextclade/{wildcards.lineage}_{wildcards.segment}
@@ -76,6 +86,8 @@ rule run_nextclade:
         reference="nextclade/{lineage}_{segment}/reference.fasta",
     output:
         "data/{lineage}/{segment}/nextclade.tsv",
+    params:
+        dataset_dir=lambda w: f"nextclade/b_{w.segment}" if w.lineage=='vic' else f"nextclade/{w.lineage}_{w.segment}",
     threads: workflow.cores
     shell:
         """
@@ -88,7 +100,7 @@ def get_clade_columns(w):
     return " ".join(["seqName", "qc.overallStatus"] + {
         'h3n2_ha':["clade", "subclade"],
         'h1n1pdm_ha':["clade", "subclade"],
-        'vic_ha':["clade", "subclade"]
+        'vic_ha':["clade"]
     }.get(f"{w.lineage}_{w.segment}", ["clade"]))
 
 

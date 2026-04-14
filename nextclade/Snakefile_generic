@@ -139,7 +139,7 @@ rule export:
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields= lambda w: " " + ",".join(get_metadata_fields(w)),
+        fields= lambda w: " " + "  ".join(get_metadata_fields(w)),
         select_fields = lambda w:','.join(get_metadata_fields(w)),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:

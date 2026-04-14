@@ -1,7 +1,7 @@
 clade_repo: "https://raw.githubusercontent.com/influenza-clade-nomenclature/"
 dataset_repo: "https://raw.githubusercontent.com/nextstrain/nextclade_data/release/data/nextstrain/flu"
 
-changelog: "- addition of trees to datasets for internal segments of Influenza A and B viruses"
+changelog: "- updates to reference trees\n - added coloring by HA and NA clades by isolate"
 
 
 builds:

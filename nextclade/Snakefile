@@ -101,7 +101,7 @@ def get_root_lineage(w):
 
 def get_explicit_root(w):
     if "root" in config["builds"][w.lineage][w.segment]:
-        return f" --explicit-root {config['builds'][w.lineage][w.segment]['root']}"
+        return f" --explicit-root '{config['builds'][w.lineage][w.segment]['root']}'"
     else:
         return ""
 
@@ -115,7 +115,7 @@ rule tidytree:
         tree="build/{lineage}/{segment}/{reference}/tidytree.nwk"
     threads: 2
     params:
-        clade_name = lambda w: 'subclade' if w.segment=='ha' and w.lineage!='b' else 'clade',
+        clade_name = lambda w: 'subclade' if w.segment=='ha' and w.lineage not in ['b', 'vic'] else 'clade',
         explicit_root = get_explicit_root,
         root_lineage = get_root_lineage
     resources:
@@ -377,5 +377,6 @@ rule clean_all:
         rm -rf build
         rm -rf auspice
         rm -rf datasets
+        rm -rf nextclade
         rm -rf data/
         """
