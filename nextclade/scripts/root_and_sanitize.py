@@ -7,7 +7,8 @@ if __name__ == "__main__":
     parser.add_argument("--input-tree", required=True, help="Input Newick tree file")
     parser.add_argument("--output-tree", required=True, help="Output rooted and sanitized Newick tree file")
     parser.add_argument("--root", required=False, help="Name of the reference sequence to root the tree on")
-    parser.add_argument("--prune-length", type=float, default=0.03, help="Maximum branch length to retain (branches longer than this will be pruned)")
+    parser.add_argument("--prune-length", type=float, default=0.03, help="Maximum branch length pre child to retain (branches longer than this will be pruned)")
+    parser.add_argument("--prune-length-max", type=float, default=0.1, help="Maximum branch length to retain (branches longer than this will be pruned)")
     args = parser.parse_args()
 
     # Load the tree
@@ -23,7 +24,7 @@ if __name__ == "__main__":
             node.total_length_per_child =  node.branch_length
             node.descendants = 1
         else:
-            total_length = 0.0
+            total_length = node.branch_length if node.branch_length else 0
             total_descendants = 0
             for child in node.clades:
                 total_length += child.total_length_per_child
@@ -31,7 +32,7 @@ if __name__ == "__main__":
                 child.parent = node
             node.descendants = total_descendants
             node.total_length_per_child = total_length/total_descendants
-        if node.total_length_per_child > args.prune_length:
+        if node.total_length_per_child > args.prune_length or node.branch_length > args.prune_length_max:
             to_prune.append(node)
 
 
