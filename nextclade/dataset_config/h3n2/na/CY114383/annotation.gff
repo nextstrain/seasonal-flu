@@ -1,0 +1,3 @@
+##gff-version 3
+##sequence-region CY114383 1 1436
+CY114383	feature	gene	4	1413	.	+	.	gene_name="NA"
