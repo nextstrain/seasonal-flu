@@ -15,3 +15,18 @@ B/Colorado/46/2025
 B/NewYork/1012/1995
 B/Victoria/2/1987-egg
 B/Memphis/6/1986
+
+
+B/Illinois/13/2005-egg
+B/California/4/2005
+B/California/4/2005
+B/NewYork/1096/2006
+
+# subclade B
+B/Missouri/1/2009
+B/Milan/30/2010
+B/Massachusetts/1/2010
+B/Hawaii/8/2010
+B/Washington/2/2009
+
+

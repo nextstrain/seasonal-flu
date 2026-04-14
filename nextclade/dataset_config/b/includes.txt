@@ -27,3 +27,12 @@ B/Thailand/2062
 B/Yamagata/16/1988
 B/Yamagata/1/1973
 B/Victoria/2/1987
+
+
+# subclade B
+B/Missouri/1/2009
+B/Milan/30/2010
+B/Massachusetts/1/2010
+B/Hawaii/8/2010
+B/Washington/2/2009
+
