@@ -41,7 +41,7 @@ send_slack_message() {
 
         cat /dev/stdin > "$upload_file"
         # printf used to strip whitespace from output of macOS/BSD wc
-        # See <https://github.com/nextstrain/ingest/pull/47#discussion_r1974802967>
+        # See <https://github.com/nextstrain/shared/pull/47#discussion_r1974802967>
         length=$(printf '%d' "$(<"$upload_file" wc -c)")
 
         upload_info=$(curl https://slack.com/api/files.getUploadURLExternal \
