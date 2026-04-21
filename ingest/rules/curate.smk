@@ -298,12 +298,16 @@ rule annotate_metadata_with_reference_strains:
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""
-        csvtk -t join \
-            --left-join \
-            --na "False" \
-            -f {params.id_field:q} \
-            {input.metadata:q} \
-            {input.references:q} > {output.metadata:q}
+        if [[ -s {input.metadata:q} ]]; then
+            csvtk -t join \
+                --left-join \
+                --na "False" \
+                -f {params.id_field:q} \
+                {input.metadata:q} \
+                {input.references:q} > {output.metadata:q}
+        else
+            touch {output.metadata:q}
+        fi
         """
 
 
@@ -338,7 +342,7 @@ rule subset_metadata:
     input:
         metadata=metadata_selector,
     output:
-        subset_metadata="results/{dataset}/metadata.tsv",
+        subset_metadata="data/{dataset}/subset_metadata.tsv",
     params:
         metadata_fields=metadata_fields,
     shell:

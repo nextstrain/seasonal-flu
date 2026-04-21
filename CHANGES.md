@@ -7,6 +7,12 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 21 April 2026
+
+- The ingest workflow now supports starting from a subset of segments defined by the `segments` config param.
+- The ingest workflow now supports running Nextclade and adding haplotype annotations to the metadata.
+  See the [default config](./ingest/defaults/config.yaml) for the config params for Nextclade and haplotypes.
+
 # 1 April 2026
 
 - *MAJOR CHANGE* Modified the default workflow to start from a single `metadata.tsv`

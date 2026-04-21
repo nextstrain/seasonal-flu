@@ -128,6 +128,8 @@ filtering:
     metadata_columns: &seasonal-flu-metadata-columns
       - strain
       - gisaid_epi_isl
+      - vtype
+      - lineage
       - date
       - date_submitted
       - region
@@ -169,6 +171,8 @@ filtering:
     metadata_columns: &flu-metadata-columns
       - strain
       - gisaid_epi_isl
+      - vtype
+      - lineage
       - date
       - date_submitted
       - region
@@ -202,6 +206,8 @@ filtering:
       - h9n2
     metadata_columns: # <https://github.com/nextstrain/avian-flu/blob/f963447179c2b500b5598f056054374d3c9557a0/ingest/rules/ingest_fauna.smk#L37>
       - strain
+      - vtype
+      - lineage
       # Note: Fauna's 'virus' field (always "avian-flu") dropped
       # Note: Fauna's 'isolate_id' remapped to 'accession_ha'
       - date
@@ -232,3 +238,89 @@ filtering:
   #   additional_field: host
   #   additional_field_values: human
 
+# Used to determine which dataset and segments will include Nextclade annotations
+# First level of keys are dataset names, they should matching the `filtering` keys above.
+# Second levele of keys are segments, they will only get used if the segment is
+# also included in the top level `segments` config.
+nextclade:
+  h3n2:
+    ha:
+      dataset_name: nextstrain/flu/h3n2/ha
+      # Add derived haplotypes to the Nextclade annotations
+      # Uses the original columns from the Nextclade TSV
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
+      # Add predefined haplotypes to the Nextclade annotations
+      # Uses the original columns from the Nextclade TSV
+      emerging_haplotypes:
+        haplotypes: ../config/h3n2/ha/emerging_haplotypes.tsv
+        clade_column: clade
+        emerging_haplotype_column: emerging_haplotype_ha
+      # Field used to merge with the metdata.
+      id_field: seqName
+      # Used to rename fields and only listed fields will be merged with the
+      # metadata in final output. Must include the id_field defined above.
+      # The dervied_haplotype_column and emerging_haplotype_column are automatically
+      # added if not defined in the field map.
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/h3n2/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
+  h1n1pdm:
+    ha:
+      dataset_name: nextstrain/flu/h1n1pdm/ha
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
+      emerging_haplotypes:
+        haplotypes: ../config/h1n1pdm/ha/emerging_haplotypes.tsv
+        clade_column: clade
+        emerging_haplotype_column: emerging_haplotype_ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/h1n1pdm/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
+  vic:
+    ha:
+      dataset_name: nextstrain/flu/vic/ha
+      derived_haplotypes:
+        genes:
+          - HA1
+        clade_column: clade
+        mutations_column: "founderMuts['clade'].aaSubstitutions"
+        derived_haplotype_column: subclade_haplotype_ha
+      emerging_haplotypes:
+        haplotypes: ../config/vic/ha/emerging_haplotypes.tsv
+        clade_column: clade
+        emerging_haplotype_column: emerging_haplotype_ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus
+    na:
+      dataset_name: nextstrain/flu/vic/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na

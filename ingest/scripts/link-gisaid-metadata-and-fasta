@@ -127,7 +127,8 @@ ALL_EXPECTED_FIELDS = set([RECORD_ID_COLUMN, OUTPUT_SEQUENCE_FIELD]).union(ADDIT
 
 def link_metadata_and_sequences(metadata: Iterable[dict],
                                 sequences: pyfastx.Fasta,
-                                fasta_fields: Optional[list[str]]) -> Iterable[dict]:
+                                fasta_fields: Optional[list[str]],
+                                required_segments: Optional[list[str]]) -> Iterable[dict]:
     """
     Link records in the provided *metadata* with segment sequences in the
     provided *sequences*. Drops the segment fields and adds a "sequences"
@@ -136,7 +137,12 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
     If *fasta_fields* are provided, then will try to parse the fields from
     the `sequence.description` and replaces the metadata record field with the
     description values.
+
+    If *required_segments* are provided, then output warnings and error only for
+    the provided segments.
     """
+    qc_segments = set(required_segments or SEGMENTS)
+    records_without_segments = 0
     records_without_accessions = 0
     records_without_sequences = 0
     total_records = 0
@@ -157,6 +163,7 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
 
         record_seqs = {}
         seq_metadata = defaultdict(dict)
+        unmatched_segments = set()
         unmatched_accessions = defaultdict(list)
         unmatched_sequences = defaultdict(list)
         for segment, segment_column in SEGMENT_COLUMNS.items():
@@ -172,24 +179,39 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
                             if fasta_fields:
                                 for field, field_value in parse_sequence_metadata_fields(sequence, fasta_fields).items():
                                     seq_metadata[field].update({accession: field_value})
-                        else:
+                        elif segment in qc_segments:
                             unmatched_sequences[segment].append(accession)
-                    else:
+                    elif segment in qc_segments:
                         unmatched_accessions[segment].append(segment_id)
+            elif segment in qc_segments:
+                unmatched_segments.add(segment)
+
+        if len(unmatched_segments):
+            print_err(
+                f"WARNING: record {record_id!r} did not have sequence ids for",
+                f"the following segments: {unmatched_segments!r}"
+            )
+            # Track records without _any_ segments
+            if len(unmatched_segments) == len(qc_segments):
+                records_without_segments += 1
 
         if len(unmatched_accessions):
             print_err(
                 "WARNING: Could not match segment accessions for record",
                 f"{record_id!r} for the following segments: {unmatched_accessions!r}"
             )
-            records_without_accessions += 1
+            # Track records without _any_ accessions
+            if len(unmatched_accessions) == len(qc_segments):
+                records_without_accessions += 1
 
         if len(unmatched_sequences):
             print_err(
                 f"WARNING: Could not find sequences for record {record_id!r}",
                 f"for the following segment accessions: {unmatched_sequences}"
             )
-            records_without_sequences += 1
+            # Track records without _any_ sequences
+            if len(unmatched_sequences) == len(qc_segments):
+                records_without_sequences += 1
 
         linked_record[OUTPUT_SEQUENCE_FIELD] = record_seqs
 
@@ -202,7 +224,7 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
             if field not in ALL_EXPECTED_FIELDS:
                 unexpected_fields.add(field)
                 del linked_record[field]
-                 
+
         # Fill in empty values for additional metadata columns
         for column in ADDITIONAL_METADATA_COLUMNS:
             if linked_record.get(column) is None:
@@ -211,6 +233,10 @@ def link_metadata_and_sequences(metadata: Iterable[dict],
 
         total_records += 1
         yield linked_record
+
+    assert total_records != records_without_segments, \
+        "All records are missing segment ids.\n" + \
+        "Verify the provided GISAID Excel file and FASTA file contain the required segments."
 
     assert total_records != records_without_accessions, \
         "All records are missing segment accessions.\n" + \
@@ -335,7 +361,18 @@ if __name__ == '__main__':
             overwrite the fields from the metadata file.
             """))
 
+    parser.add_argument("--required-segments", required=False, nargs="+",
+        help=dedent(f"""\
+            Optionally provide required segments that are subset of the expected
+            segments ({SEGMENTS!r}) to limit the warning and error messages to
+            just these segments. Note this does not affect the output records,
+            which will still keep all segments since this scripts aims to keep
+            all data that was available in the input files.
+            """))
+
     args = parser.parse_args()
+    if unexpected_segments := set(args.required_segments) - set(SEGMENTS):
+        raise ValueError(f"Provided unexpected segments: {unexpected_segments!r}.")
 
     metadata = read_table_to_dict(
         table=args.metadata,
@@ -352,7 +389,11 @@ if __name__ == '__main__':
         pass
 
     sequences = pyfastx.Fasta(args.sequences)
-    linked_records = link_metadata_and_sequences(metadata, sequences, args.fasta_fields)
+    linked_records = link_metadata_and_sequences(
+        metadata,
+        sequences,
+        args.fasta_fields,
+        args.required_segments)
     dump_ndjson(linked_records)
 
     # Remove Pyfastx index to save disk space
