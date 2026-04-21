@@ -64,15 +64,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
      
-  run-nextclade:
-    needs: [ingest]
-    permissions:
-      id-token: write
-    uses: ./.github/workflows/run-nextclade.yaml
-    with:
-      artifact-name: build-outputs-nextclade
-    secrets: inherit
-
   upload_titers:
     # Depends on ingest since titer should be checked against sequence strains
     needs: [ingest]
@@ -93,7 +84,7 @@ jobs:
           --configfile profiles/upload.yaml
 
   trigger:
-    needs: [run-nextclade, upload_titers]
+    needs: [upload_titers]
     strategy:
       matrix:
         include:
