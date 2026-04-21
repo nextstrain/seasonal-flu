@@ -39,12 +39,14 @@ rule run_nextclade:
         "benchmarks/run_nextclade/{dataset}/{segment}.txt"
     log:
         "logs/run_nextclade/{dataset}/{segment}.txt"
+    threads: 1
     shell:
         r"""
         exec &> >(tee {log:q})
 
         nextclade3 run \
             {input.sequences:q} \
+            --jobs {threads} \
             --input-dataset {input.dataset:q} \
             --output-tsv {output.nextclade:q}
         """
