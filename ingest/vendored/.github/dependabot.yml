@@ -4,7 +4,7 @@
 # Each ecosystem is checked on a scheduled interval defined below.  To trigger
 # a check manually, go to
 #
-#   https://github.com/nextstrain/ingest/network/updates
+#   https://github.com/nextstrain/shared/network/updates
 #
 # and look for a "Check for updates" button.  You may need to click around a
 # bit first.
