@@ -145,19 +145,19 @@ def _get_nextclade_field_map(wildcards):
     return field_map
 
 
-rule nextclade_metadata:
+rule subset_nextclade:
     input:
         nextclade=_get_nextclade,
     output:
-        nextclade_metadata=temp("results/{dataset}/{segment}/nextclade_metadata.tsv"),
+        subset_nextclade=temp("results/{dataset}/{segment}/subset_nextclade.tsv"),
     params:
         nextclade_id_field=lambda w: _get_nextclade_config(w)["id_field"],
         nextclade_field_map=lambda w: [f"{old}={new}" for old, new in _get_nextclade_field_map(w).items()],
         nextclade_fields=lambda w: ",".join(_get_nextclade_field_map(w).values()),
     benchmark:
-        "benchmarks/{dataset}/{segment}/nextclade_metadata.txt"
+        "benchmarks/{dataset}/{segment}/subset_nextclade.txt"
     log:
-        "logs/{dataset}/{segment}/nextclade_metadata.txt"
+        "logs/{dataset}/{segment}/subset_nextclade.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -168,13 +168,13 @@ rule nextclade_metadata:
             --field-map {params.nextclade_field_map:q} \
             --output-metadata - \
         | csvtk cut -t --fields {params.nextclade_fields:q} \
-        > {output.nextclade_metadata:q}
+        > {output.subset_nextclade:q}
         """
 
 
-def _get_nextclade_metadata(wildcards):
+def _get_subset_nextclade(wildcards):
     return {
-        segment: f"results/{wildcards.dataset}/{segment}/nextclade_metadata.tsv"
+        segment: f"results/{wildcards.dataset}/{segment}/subset_nextclade.tsv"
         for segment in config["segments"]
         if segment in config["nextclade"][wildcards.dataset]
     }
@@ -182,14 +182,14 @@ def _get_nextclade_metadata(wildcards):
 
 rule join_metadata_and_nextclade:
     input:
-        unpack(_get_nextclade_metadata),
+        unpack(_get_subset_nextclade),
         metadata="data/{dataset}/subset_metadata.tsv",
     output:
         metadata="data/{dataset}/metadata_with_nextclade.tsv",
     params:
         metadata_id_field=config["curate"]["output_id_field"],
         # augur merge requires named inputs
-        named_nextclade_metadata=lambda w, input: (
+        named_subset_nextclade=lambda w, input: (
             f"{segment}={path}"
             for segment, path in input.items()
             if segment != "metadata"
@@ -210,7 +210,7 @@ rule join_metadata_and_nextclade:
         augur merge \
             --metadata \
                 metadata={input.metadata:q} \
-                {params.named_nextclade_metadata} \
+                {params.named_subset_nextclade} \
             --metadata-id-columns \
                 metadata={params.metadata_id_field:q} \
                 {params.nextclade_id_fields} \
