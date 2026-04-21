@@ -24,6 +24,11 @@ rule upload_all:
                          dataset=list(config['filtering'].keys()),
                          segment=config["segments"]),
         mv_processed=all_processed_gisaid_pairs,
+        nextclade=[
+            f"results/upload/{dataset}/{segment}/nextclade.tsv.upload"
+            for dataset in (set(config["filtering"].keys()) & set(config["nextclade"].keys()))
+            for segment in (set(config["segments"]) & set(config["nextclade"][dataset].keys()))
+        ],
 
 
 rule upload_gisaid_ndjson:
@@ -104,4 +109,22 @@ rule upload_sequences:
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.dataset}/{wildcards.segment}/sequences.fasta.xz \
             2>&1 | tee {output.flag:q}
+        """
+
+
+rule upload_nextclade:
+    input:
+        nextclade=_get_nextclade,
+    output:
+        flag="results/upload/{dataset}/{segment}/nextclade.tsv.upload",
+    params:
+        s3_dst=config["s3_dst"],
+    shell:
+        r"""
+        exec &> >(tee {output.flag:q})
+
+        ./vendored/upload-to-s3 \
+            --quiet \
+            {input.nextclade:q} \
+            {params.s3_dst:q}/{wildcards.dataset}/{wildcards.segment}/nextclade.tsv.xz
         """
