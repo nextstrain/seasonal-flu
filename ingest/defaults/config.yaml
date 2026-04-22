@@ -269,13 +269,14 @@ nextclade:
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
-        qc.overallStatus: qc.overallStatus
+        qc.overallStatus: qc.overallStatus_ha
     na:
       dataset_name: nextstrain/flu/h3n2/na
       id_field: seqName
       field_map:
         seqName: seqName
         clade: subclade_nextclade_na
+        qc.overallStatus: qc.overallStatus_na
   h1n1pdm:
     ha:
       dataset_name: nextstrain/flu/h1n1pdm/ha
@@ -293,13 +294,14 @@ nextclade:
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
-        qc.overallStatus: qc.overallStatus
+        qc.overallStatus: qc.overallStatus_ha
     na:
       dataset_name: nextstrain/flu/h1n1pdm/na
       id_field: seqName
       field_map:
         seqName: seqName
         clade: subclade_nextclade_na
+        qc.overallStatus: qc.overallStatus_na
   vic:
     ha:
       dataset_name: nextstrain/flu/vic/ha
@@ -317,10 +319,11 @@ nextclade:
       field_map:
         seqName: seqName
         clade: subclade_nextclade_ha
-        qc.overallStatus: qc.overallStatus
+        qc.overallStatus: qc.overallStatus_ha
     na:
       dataset_name: nextstrain/flu/vic/na
       id_field: seqName
       field_map:
         seqName: seqName
         clade: subclade_nextclade_na
+        qc.overallStatus: qc.overallStatus_na
