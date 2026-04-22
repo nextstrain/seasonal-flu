@@ -435,3 +435,161 @@ nextclade:
       field_map:
         seqName: seqName
         qc.overallStatus: qc.overallStatus_ns
+  yam:
+    ha:
+      dataset_name: nextstrain/flu/yam/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: clade_nextclade_ha
+        qc.overallStatus: qc.overallStatus_ha
+  b:
+    ha:
+      dataset_name: nextstrain/flu/b/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        lineage: lineage_nextclade_ha
+        clade: subclade_nextclade_ha
+        qc.overallStatus: qc.overallStatus_ha
+    na:
+      dataset_name: nextstrain/flu/b/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        clade: subclade_nextclade_na
+        qc.overallStatus: qc.overallStatus_na
+    pb2:
+      dataset_name: nextstrain/flu/b/pb2
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb2
+    pb1:
+      dataset_name: nextstrain/flu/b/pb1
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb1
+    pa:
+      dataset_name: nextstrain/flu/b/pa
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pa
+    np:
+      dataset_name: nextstrain/flu/b/np
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_np
+    mp:
+      dataset_name: nextstrain/flu/b/mp
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_mp
+    ns:
+      dataset_name: nextstrain/flu/b/ns
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_ns
+  h1n1:
+    ha:
+      dataset_name: nextstrain/flu/h1n1/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_ha
+    na:
+      dataset_name: nextstrain/flu/h1n1/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_na
+    pb2:
+      dataset_name: nextstrain/flu/h1n1/pb2
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb2
+    pb1:
+      dataset_name: nextstrain/flu/h1n1/pb1
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb1
+    pa:
+      dataset_name: nextstrain/flu/h1n1/pa
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pa
+    np:
+      dataset_name: nextstrain/flu/h1n1/np
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_np
+    mp:
+      dataset_name: nextstrain/flu/h1n1/mp
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_mp
+    ns:
+      dataset_name: nextstrain/flu/h1n1/ns
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_ns
+  h2n2:
+    ha:
+      dataset_name: nextstrain/flu/h2n2/ha
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_ha
+    na:
+      dataset_name: nextstrain/flu/h2n2/na
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_na
+    pb2:
+      dataset_name: nextstrain/flu/h2n2/pb2
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb2
+    pb1:
+      dataset_name: nextstrain/flu/h2n2/pb1
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pb1
+    pa:
+      dataset_name: nextstrain/flu/h2n2/pa
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_pa
+    np:
+      dataset_name: nextstrain/flu/h2n2/np
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_np
+    mp:
+      dataset_name: nextstrain/flu/h2n2/mp
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_mp
+    ns:
+      dataset_name: nextstrain/flu/h2n2/ns
+      id_field: seqName
+      field_map:
+        seqName: seqName
+        qc.overallStatus: qc.overallStatus_ns
