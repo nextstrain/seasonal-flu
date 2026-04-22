@@ -222,7 +222,7 @@
       "type": "categorical"
     },
     {
-      "key": "qc.overallStatus",
+      "key": "qc.overallStatus_ha",
       "title": "Nextclade QC(overallStatus)",
       "type": "categorical"
     }
