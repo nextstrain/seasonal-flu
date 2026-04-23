@@ -90,7 +90,7 @@
       "type": "categorical"
     },
     {
-      "key": "emerging_haplotype",
+      "key": "emerging_haplotype_ha",
       "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [

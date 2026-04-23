@@ -42,7 +42,6 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/h3n2/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_glycosylation: true
@@ -94,7 +93,6 @@ builds:
       tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
       clades: "config/h1n1pdm/ha/clades.tsv"
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/h1n1pdm/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
       vaccines: "config/h1n1pdm/vaccine.json"
       enable_glycosylation: true
@@ -136,7 +134,6 @@ builds:
       tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
       clades: "config/vic/ha/clades.tsv"
       subclades: "config/vic/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/vic/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
       vaccines: "config/vic/vaccine.json"
       enable_glycosylation: true
