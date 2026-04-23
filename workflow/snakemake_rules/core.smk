@@ -425,30 +425,6 @@ rule import_clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-rule emerging_haplotypes:
-    input:
-        nextclade=build_dir + "/{build_name}/metadata.tsv",
-        haplotypes=lambda wildcards: config["builds"][wildcards.build_name].get("emerging_haplotypes"),
-    output:
-        haplotypes_table=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
-        node_data=build_dir + "/{build_name}/{segment}/emerging_haplotypes.json",
-    params:
-        clade_column="clade",
-        membership_name="emerging_haplotype",
-    conda: "../envs/nextstrain.yaml"
-    log:
-        "logs/emerging_haplotypes_{build_name}_{segment}.txt"
-    shell:
-        r"""
-        python scripts/assign_haplotypes.py \
-            --substitutions {input.nextclade:q} \
-            --haplotypes {input.haplotypes:q} \
-            --clade-column {params.clade_column:q} \
-            --haplotype-column-name {params.membership_name:q} \
-            --output-table {output.haplotypes_table:q} \
-            --output-node-data {output.node_data:q} 2>&1 | tee {log}
-        """
-
 rule annotate_derived_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
