@@ -16,13 +16,6 @@ on:
         description: "Specific container image to use for build (will override the default of `nextstrain build`)"
         required: false
         type: string
-      runtime:
-        description: "Nextstrain runtime"
-        type: choice
-        default: "docker"
-        options:
-          - "docker"
-          - "aws-batch"
       triggerAvianFlu:
         description: "Trigger nextstrain/avian-flu GenoFLU workflow"
         type: boolean
@@ -52,7 +45,7 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
     secrets: inherit
     with:
-      runtime: ${{ inputs.runtime }}
+      runtime: aws-batch
       env: |
         NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
         SLACK_CHANNELS: ${{ vars.SLACK_CHANNELS }}
@@ -61,8 +54,12 @@ jobs:
         nextstrain build \
           --env SLACK_CHANNELS \
           --env SLACK_TOKEN \
+          --detach \
+          --cpus 36 \
+          --memory 64gib \
           ingest \
           upload_all \
+          --set-threads run_nextclade=12 \
           --configfile build-configs/nextstrain-automation/config.yaml
       artifact-name: ${{ inputs.artifact-name }}
       # Explicitly excluding `ingest/data` and `ingest/fauna/data`

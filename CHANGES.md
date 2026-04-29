@@ -7,6 +7,12 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 29 April 2026
+
+- The default ingest config produces metadata with multiple segment QC columns,
+  e.g. `qc.overallStatus_ha`. If you are using the ingest workflow metadata output
+  for filtering, make sure to update your filter query columns to match the new QC columns.
+
 # 21 April 2026
 
 - The ingest workflow now supports starting from a subset of segments defined by the `segments` config param.
