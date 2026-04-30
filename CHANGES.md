@@ -7,6 +7,14 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# XX May 2026
+
+- *MAJOR CHANGE* The steps for running Nextclade and adding haplotype annotations
+  have been removed from the core workflow. If you would like to include
+  Nextclade and haplotype annotations in your build, then run the ingest workflow
+  first and use the outputs as inputs for the core workflow.
+  The Quickstart for GISAID has been updated to reflect this change.
+
 # 29 April 2026
 
 - The default ingest config produces metadata with multiple segment QC columns,
