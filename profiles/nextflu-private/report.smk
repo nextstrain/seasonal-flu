@@ -126,7 +126,7 @@ rule summarize_derived_haplotypes:
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
             if "ferret" in collection["data"]
         ],
-        haplotype_column="subtype_haplotype_ha",
+        haplotype_column="subclade_haplotype_ha",
     shell:
         """
         python3 scripts/summarize_haplotypes.py \
