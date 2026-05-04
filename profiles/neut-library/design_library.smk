@@ -20,9 +20,25 @@ rule parse_frequencies_and_ga_from_mlr_json:
             --outga {output.fitnesses}
         """
 
-rule annotate_metadata_with_library_haplotypes:
+rule merge_metadata_and_nextclade_for_library_design:
     input:
         metadata="builds/{build_name}/metadata.tsv",
+        nextclade="data/{build_name}/ha/nextclade.tsv",
+    output:
+        metadata="builds/{build_name}/metadata_with_nextclade.tsv",
+    shell:
+        r"""
+        augur merge \
+            --metadata metadata={input.metadata} \
+                       nextclade={input.nextclade} \
+            --metadata-id-columns metadata=strain \
+                                  nextclade=seqName \
+            --output-metadata {output.metadata}
+        """
+
+rule annotate_metadata_with_library_haplotypes:
+    input:
+        metadata="builds/{build_name}/metadata_with_nextclade.tsv",
         distance_maps=lambda wildcards: config["builds"][wildcards.build_name]["distance_maps"],
         recurrent_substitutions_map=lambda wildcards: config["builds"][wildcards.build_name]["recurrent_substitutions_map"],
         translations_dir=directory(build_dir + "/{build_name}/ha/translations"),

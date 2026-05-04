@@ -49,11 +49,12 @@ nextstrain view auspice/
 
 Navigate to [GISAID](http://gisaid.org).
 Select the "EpiFlu" link in the top navigation bar and then select "Search" from the EpiFlu navigation bar.
-From the search interface, select A/H3N2 human samples collected in the last six months, as shown in the example below.
+From the search interface, select A/H3N2 human samples collected in your time period of interest.
+Under the "Required Segments" section at the bottom of the page, select "HA".
+Check "exclude" TPE submissions to exclude restricted data, as shown in the example below.
 
 ![Search for recent A/H3N2 data](images/01-search-gisaid-for-h3n2.png)
 
-Also, under the "Required Segments" section at the bottom of the page, select "HA".
 Then select the "Search" button.
 Select the checkbox in the top-left corner of the search results (the same row with the column headings), to select all matching records as shown below.
 
@@ -67,22 +68,47 @@ From the "Download" window that appears, select "Isolates as XLS (virus metadata
 Create a new directory for these data in the `seasonal-flu` working directory.
 
 ``` bash
-mkdir -p data/h3n2/
+mkdir -p ingest/data/
 ```
 
-Save the XLS file you downloaded (e.g., `gisaid_epiflu_isolates.xls`) as `data/h3n2/metadata.xls`.
+Save the XLS file you downloaded as `ingest/data/<YYYY-MM-DD-N>-metadata.xls`.
+  - `<YYYY-MM-DD>` is the date the files were downloaded from GISAID.
+  - `<N>` is the number of the download to support multiple downloads in the
+    same day since GISAID limits the number of records per download.
+  - For example, if you had to split the data between two downloads on 2025-04-11,
+    then save the files as
+      - `2025-04-11-01-metadata.xls`
+      - `2025-04-11-02-metadata.xls`
+
 Return to the GISAID "Download" window, and select "Sequences (DNA) as FASTA".
 In the "DNA" section, select the checkbox for "HA".
-In the "FASTA Header" section, enter only `Virus name`.
+In the "FASTA Header" section, enter
+```
+DNA Accession no. | Submitting lab  | Originating lab
+```
 Uncheck both boxes related to spaces in the FASTA header.
 Your settings should look like those shown in the screenshot below.
 
 ![Download sequences](images/04-download-sequences.png)
 
 Select the "Download" button.
-Save the FASTA file you downloaded (e.g., `gisaid_epiflu_sequences.fasta`) as `data/h3n2/raw_sequences_ha.fasta`.
+Save the FASTA file you downloaded `ingest/data/<YYYY-MM-DD-N>-sequences.fasta`.
 
-Run the Nextstrain workflow for these data to produce an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
+Run the Nextstrain ingest workflow for these data to produce the clean input for
+the phylogenetic workflow with the following command.
+
+```bash
+nextstrain build ingest --configfile build-configs/gisaid/config.yaml
+```
+
+Copy the ingest outputs to the top level data folder
+
+```
+mkdir data
+cp -r ingest/results/* data/
+```
+
+Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
 
 ``` bash
 nextstrain build . --configfile profiles/gisaid/builds.yaml

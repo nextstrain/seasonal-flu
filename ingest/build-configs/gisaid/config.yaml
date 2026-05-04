@@ -1,0 +1,11 @@
+segments:
+  - ha
+
+filtering:
+  h1n1pdm: ~
+  vic: ~
+  yam: ~
+  b: ~
+  h1n1: ~
+  h2n2: ~
+  avian-flu: ~

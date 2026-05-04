@@ -13,13 +13,12 @@ own data.
 
 ## Workflow Usage
 Manually download the metadata and sequences from GISAID.
-Save the XLS metadata file as `ingest/data/YYYY-MM-DD-N-metadata.xls`.
-Make sure the sequences includes all segments and the FASTA header is set to
+Save the XLS metadata file as `ingest/data/<YYYY-MM-DD-N>-metadata.xls`.
+Select the segments that you are interested in and set the FASTA header is set to
 ```
 DNA Accession no. | Submitting lab  | Originating lab
 ```
-Save the FASTA file as `ingest/data/YYYY-MM-DD-N-sequences.fasta`.
-
+Save the FASTA file as `ingest/data/<YYYY-MM-DD-N>-sequences.fasta`.
 The workflow can be run from the top level pathogen repo directory:
 ```
 nextstrain build ingest
@@ -27,26 +26,16 @@ nextstrain build ingest
 
 This produces the default outputs of the ingest workflow:
 
-- metadata      = results/<lineage>/metadata.tsv
-- sequences     = results/<lineage>/<segment>.fasta
+- metadata      = `results/<lineage>/metadata.tsv`
+- sequences     = `results/<lineage>/<segment>.fasta`
 
 
-If your downloaded data only includes a subset of lineages, e.g. only include h3n2,
-then you can disable lineages by providing a custom config
-
-```yaml
-filtering:
-  h1n1pdm: ~
-  vic: ~
-  yam: ~
-  b: ~
-  h1n1: ~
-  h2n2: ~
-  avian-flu: ~
-```
+If your downloaded data only includes a subset of segments and lineages,
+e.g. only include HA segment for h3n2, then you can providing a custom config
+similar to [./build-configs/gisaid/config.yaml](./build-configs/gisaid/config.yaml).
 
 ```
-nextstrain build ingest --configfile custom-config.yaml
+nextstrain build ingest --configfile build-configs/gisaid/config.yaml
 ```
 
 
