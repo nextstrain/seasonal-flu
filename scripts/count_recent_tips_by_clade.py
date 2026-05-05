@@ -2,7 +2,6 @@
 Count recent tips by clade for reporting.
 """
 import argparse
-from augur.utils import read_node_data
 import pandas as pd
 
 
@@ -11,22 +10,18 @@ if __name__ == '__main__':
         description="Count the number of recent sequences per clade",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("--recency", help="recency annotations in node data JSON format based on submission date of all sequences", required=True)
+    parser.add_argument("--recency", help="recency annotations in TSV format based on submission date of all sequences", required=True)
     parser.add_argument("--clades", help="clade annotations from a Nextclade TSV", required=True)
     parser.add_argument("--clade-column", default="subclade", help="name of the column to use for clade annotations in the given Nextclade TSV")
-    parser.add_argument("--recency-values", nargs="+", default=["last week", "last month"], help="values in the 'recency' annotation to use for counting recent sequences")
     parser.add_argument("--output", help="Markdown file with list of recent sequence counts per clade", required=True)
     args = parser.parse_args()
 
     # Load recency annotations.
-    recency = read_node_data(args.recency)
-
-    # Find all nodes with recency values that match the requested values.
-    recent_tips = {
-        node_name
-        for node_name, node_data in recency["nodes"].items()
-        if node_data.get("recency") in args.recency_values
-    }
+    recency = pd.read_csv(
+        args.recency,
+        sep="\t",
+    )
+    recent_tips = set(recency["strain"].values)
 
     # Load clade labels per sequence.
     clades = pd.read_csv(

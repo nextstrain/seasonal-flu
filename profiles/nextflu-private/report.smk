@@ -36,6 +36,7 @@ rule annotate_recency_of_all_submissions:
         metadata = "data/{lineage}/metadata.tsv",
     output:
         node_data = "tables/{lineage}/recency.json",
+        table = "tables/{lineage}/recency.tsv",
     params:
         submission_date_field=config.get("submission_date_field"),
         date_bins=config.get("recency", {}).get("date_bins"),
@@ -54,7 +55,22 @@ rule annotate_recency_of_all_submissions:
             --date-bins {params.date_bins} \
             --date-bin-labels {params.date_bin_labels:q} \
             --upper-bin-label {params.upper_bin_label} \
-            --output {output.node_data} 2>&1 | tee {log}
+            --output {output.node_data} \
+            --output-table {output.table} 2>&1 | tee {log}
+        """
+
+rule filter_recency_values:
+    input:
+        recency="tables/{lineage}/recency.tsv",
+    output:
+        recency="tables/{lineage}/filtered_recency.tsv",
+    shell:
+        r"""
+        tsv-filter \
+            -H \
+            --or \
+            --str-eq "recency:last week" \
+            --str-eq "recency:last month" {input.recency} > {output.recency}
         """
 
 rule filter_metadata_by_qc:
@@ -70,7 +86,7 @@ rule filter_metadata_by_qc:
 
 rule count_recent_tips_by_clade:
     input:
-        recency="tables/{lineage}/recency.json",
+        recency="tables/{lineage}/filtered_recency.tsv",
         clades="data/{lineage}/metadata_without_bad_qc.tsv",
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
