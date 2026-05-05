@@ -14,6 +14,7 @@ rule get_nextclade_dataset:
         dataset="data/nextclade/{dataset}/{segment}.zip",
     params:
         nextclade_dataset=lambda w: _get_nextclade_config(w)["dataset_name"],
+        dataset_tag=lambda w: _get_nextclade_config(w).get("dataset_tag", "latest"),
     benchmark:
         "benchmarks/get_nextclade_dataset/{dataset}/{segment}.txt"
     log:
@@ -24,6 +25,7 @@ rule get_nextclade_dataset:
 
         nextclade3 dataset get \
             --name={params.nextclade_dataset:q} \
+            --tag={params.dataset_tag:q} \
             --output-zip={output.dataset:q} \
             --verbose
         """
