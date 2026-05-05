@@ -1,7 +1,25 @@
+# The `segments` param defines the list segments of segments that are required
+# in the results. The workflow will output separate FASTA files per segement
+# for each lineage included below, e.g. results/h3n2/ha.fasta.
+# The default config includes all 8 segments, but this config only includes
+# the HA segment. Uncomment any additional segments that you want to include.
 segments:
+  # - pb2
+  # - pb1
+  # - pa
   - ha
+  # - np
+  # - na
+  # - mp
+  # - ns
 
+# The `filtering` param defines the dict of lineages to include in the results.
+# The workflow will output separate metadata TSV files per lineage,
+# e.g. results/h3n2/metadata.tsv.
+# The default config defines multiple lineages, but this config disables all
+# lineages except H3N2. Comment out any additional lineages that you want to include.
 filtering:
+  # h3n2: ~
   h1n1pdm: ~
   vic: ~
   yam: ~

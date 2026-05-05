@@ -31,7 +31,7 @@ This produces the default outputs of the ingest workflow:
 
 
 If your downloaded data only includes a subset of segments and lineages,
-e.g. only include HA segment for h3n2, then you can providing a custom config
+e.g. only include HA segment for H3N2, then you can providing a custom config
 similar to [./build-configs/gisaid/config.yaml](./build-configs/gisaid/config.yaml).
 
 ```

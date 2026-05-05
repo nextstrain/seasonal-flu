@@ -101,6 +101,13 @@ the phylogenetic workflow with the following command.
 nextstrain build ingest --configfile build-configs/gisaid/config.yaml
 ```
 
+Explore the configuration file for this workflow by opening `ingest/build-configs/gisaid/config.yaml`
+in your favorite text editor. This configuration file determines the outputs
+of the workflow, including the lineages and segments. If you would like to
+create builds for other lineages and/or segments, make sure to download the data
+from GISAID then edit the config file to rerun ingest and create outputs for
+your data of interest.
+
 Copy the ingest outputs to the top level data folder
 
 ```
