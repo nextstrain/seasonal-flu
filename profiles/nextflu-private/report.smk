@@ -65,8 +65,7 @@ rule filter_metadata_by_qc:
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """
-        xz -c -d {input.metadata} \
-            | tsv-filter -H --str-ne "qc.overallStatus:bad" > {output.metadata}
+        tsv-filter -H --str-ne "qc.overallStatus_ha:bad" {input.metadata} > {output.metadata}
         """
 
 rule count_recent_tips_by_clade:
