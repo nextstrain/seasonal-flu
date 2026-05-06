@@ -83,6 +83,52 @@ rule titers_tree:
             --output {output.titers_model} 2>&1 | tee {log}
         """
 
+rule subset_metadata_emerging_haplotypes:
+    input:
+        metadata=build_dir + "/{build_name}/metadata.tsv",
+    output:
+        emerging_haplotypes=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
+    benchmark:
+        "benchmarks/subset_metadata_emerging_haplotypes_{build_name}_{segment}.txt"
+    log:
+        "logs/subset_metadata_emerging_haplotypes_{build_name}_{segment}.txt"
+    conda: "../envs/nextstrain.yaml"
+    params:
+        id_column="strain",
+        field_map=lambda w: f"emerging_haplotype_{w.segment}=emerging_haplotype",
+        columns_to_keep=",".join(["strain", "emerging_haplotype"]),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        augur curate rename \
+            --metadata {input.metadata:q} \
+            --field-map {params.field_map} \
+            --output-metadata - \
+            | csvtk cut -t -f {params.columns_to_keep:q} \
+            > {output.emerging_haplotypes:q}
+        """
+
+rule convert_emerging_haplotypes_to_json:
+    input:
+        emerging_haplotypes=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
+    output:
+        emerging_haplotypes=build_dir + "/{build_name}/{segment}/emerging_haplotypes.json",
+    benchmark:
+        "benchmarks/converting_emerging_haplotypes_to_json_{build_name}_{segment}.txt"
+    log:
+        "logs/converting_emerging_haplotypes_to_json_{build_name}_{segment}.txt"
+    conda: "../envs/nextstrain.yaml"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        python3 scripts/table_to_node_data.py \
+            --table {input.emerging_haplotypes:q} \
+            --delimiter "\t" \
+            --output {output.emerging_haplotypes:q}
+        """
+
 rule antigenic_distances_between_strains:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",

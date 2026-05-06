@@ -1,5 +1,4 @@
 #s3_path: s3://nextstrain-data-private/files/workflows/seasonal-flu/trials/ingest
-force_run_nextclade: true
 
 # Define the earliest date to select all available sequences per subtype. This
 # date corresponds to the reporting period of the upcoming vaccine composition
@@ -43,7 +42,6 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/h3n2/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_glycosylation: true
@@ -54,7 +52,7 @@ builds:
       include: "config/h3n2/reference_strains.txt"
       subsamples:
         all_good_sequences:
-            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+            filters: --min-date {min_date} --query "\`qc.overallStatus_ha\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
         titer_reference_strains:
           # We allow egg-passage strains when they have titer measurements,
           # enabling titer models to be fit to egg-passaged data.
@@ -62,7 +60,7 @@ builds:
         bloom_lab_strains:
           filters: --exclude-all --include profiles/full-trees/h3n2_titer_strains.txt
         context:
-          filters: --query "(passage_category != 'egg') & (\`qc.overallStatus\` == 'good')" --group-by year month --subsample-max-sequences 300 --min-date 2Y --max-date {min_date} --exclude config/{lineage}/outliers.txt
+          filters: --query "(passage_category != 'egg') & (\`qc.overallStatus_ha\` == 'good')" --group-by year month --subsample-max-sequences 300 --min-date 2Y --max-date {min_date} --exclude config/{lineage}/outliers.txt
       titer_collections:
         - name: cell_fra
           data: "data/h3n2/who_ferret_cell_fra_titers.tsv"
@@ -95,7 +93,6 @@ builds:
       tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
       clades: "config/h1n1pdm/ha/clades.tsv"
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/h1n1pdm/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
       vaccines: "config/h1n1pdm/vaccine.json"
       enable_glycosylation: true
@@ -106,7 +103,7 @@ builds:
       include: "config/h1n1pdm/reference_strains.txt"
       subsamples:
         all_good_sequences:
-            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+            filters: --min-date {min_date} --query "\`qc.overallStatus_ha\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
         titer_reference_strains:
           # We allow egg-passage strains when they have titer measurements,
           # enabling titer models to be fit to egg-passaged data.
@@ -137,7 +134,6 @@ builds:
       tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
       clades: "config/vic/ha/clades.tsv"
       subclades: "config/vic/{segment}/subclades.tsv"
-      emerging_haplotypes: "config/vic/{segment}/emerging_haplotypes.tsv"
       auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
       vaccines: "config/vic/vaccine.json"
       enable_glycosylation: true
@@ -148,7 +144,7 @@ builds:
       include: "config/vic/reference_strains.txt"
       subsamples:
         all_good_sequences:
-            filters: --min-date {min_date} --query "\`qc.overallStatus\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
+            filters: --min-date {min_date} --query "\`qc.overallStatus_ha\` == 'good'" --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True' --exclude config/{lineage}/outliers.txt
         titer_reference_strains:
           # We allow egg-passage strains when they have titer measurements,
           # enabling titer models to be fit to egg-passaged data.

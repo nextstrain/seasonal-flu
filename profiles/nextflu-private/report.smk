@@ -36,6 +36,7 @@ rule annotate_recency_of_all_submissions:
         metadata = "data/{lineage}/metadata.tsv",
     output:
         node_data = "tables/{lineage}/recency.json",
+        table = "tables/{lineage}/recency.tsv",
     params:
         submission_date_field=config.get("submission_date_field"),
         date_bins=config.get("recency", {}).get("date_bins"),
@@ -54,53 +55,44 @@ rule annotate_recency_of_all_submissions:
             --date-bins {params.date_bins} \
             --date-bin-labels {params.date_bin_labels:q} \
             --upper-bin-label {params.upper_bin_label} \
-            --output {output.node_data} 2>&1 | tee {log}
+            --output {output.node_data} \
+            --output-table {output.table} 2>&1 | tee {log}
         """
 
-rule filter_nextclade_by_qc:
+rule filter_recency_values:
     input:
-        nextclade="data/{lineage}/{segment}/nextclade.tsv.xz",
+        recency="tables/{lineage}/recency.tsv",
     output:
-        nextclade="data/{lineage}/{segment}/nextclade_without_bad_qc.tsv",
-    conda: "../../workflow/envs/nextstrain.yaml"
-    shell:
-        """
-        xz -c -d {input.nextclade} \
-            | tsv-filter -H --str-ne "qc.overallStatus:bad" > {output.nextclade}
-        """
-
-rule annotate_haplotypes_for_all_nextclade_data:
-    input:
-        nextclade="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
-        haplotypes="config/{lineage}/ha/emerging_haplotypes.tsv",
-    output:
-        haplotypes="data/{lineage}/ha/nextclade_with_haplotypes.tsv",
-    params:
-        clade_column="clade",
-        membership_name="emerging_haplotype",
-    conda: "../../workflow/envs/nextstrain.yaml"
-    log:
-        "logs/annotate_haplotypes_for_all_nextclade_data_{lineage}_ha.txt"
+        recency="tables/{lineage}/filtered_recency.tsv",
     shell:
         r"""
-        python scripts/assign_haplotypes.py \
-            --substitutions {input.nextclade:q} \
-            --haplotypes {input.haplotypes:q} \
-            --clade-column {params.clade_column:q} \
-            --haplotype-column-name {params.membership_name:q} \
-            --use-clade-as-default-haplotype \
-            --output-table {output.haplotypes:q} 2>&1 | tee {log}
+        tsv-filter \
+            -H \
+            --or \
+            --str-eq "recency:last week" \
+            --str-eq "recency:last month" {input.recency} > {output.recency}
+        """
+
+rule filter_metadata_by_qc:
+    input:
+        metadata="data/{lineage}/metadata.tsv",
+    output:
+        metadata="data/{lineage}/metadata_without_bad_qc.tsv",
+    conda: "../../workflow/envs/nextstrain.yaml"
+    shell:
+        """
+        tsv-filter -H --str-ne "qc.overallStatus_ha:bad" {input.metadata} > {output.metadata}
         """
 
 rule count_recent_tips_by_clade:
     input:
-        recency="tables/{lineage}/recency.json",
-        clades="data/{lineage}/ha/nextclade_with_haplotypes.tsv",
+        recency="tables/{lineage}/filtered_recency.tsv",
+        clades="data/{lineage}/metadata_without_bad_qc.tsv",
     output:
         counts="tables/{lineage}/counts_of_recent_sequences_by_clade.md",
     conda: "../../workflow/envs/nextstrain.yaml"
     params:
-        clade_column="emerging_haplotype",
+        clade_column="emerging_haplotype_ha",
     shell:
         """
         python3 scripts/count_recent_tips_by_clade.py \
@@ -110,44 +102,9 @@ rule count_recent_tips_by_clade:
             --output {output.counts}
         """
 
-rule get_derived_haplotypes:
-    input:
-        nextclade="data/{lineage}/ha/nextclade_without_bad_qc.tsv",
-    output:
-        haplotypes="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
-    conda: "../../workflow/envs/nextstrain.yaml"
-    params:
-        genes=["HA1"],
-        clade_column="clade",
-        mutations_column="founderMuts['clade'].aaSubstitutions",
-        derived_haplotype_column="derived_haplotype",
-    shell:
-        """
-        python3 scripts/add_derived_haplotypes.py \
-            --nextclade {input.nextclade} \
-            --genes {params.genes:q} \
-            --strip-genes \
-            --clade-column {params.clade_column:q} \
-            --mutations-column {params.mutations_column:q} \
-            --attribute-name {params.derived_haplotype_column:q} \
-            --output {output.haplotypes}
-        """
-
-rule join_metadata_and_nextclade:
-    input:
-        metadata="data/{lineage}/metadata.tsv",
-        nextclade="data/{lineage}/nextclade_with_derived_haplotypes.tsv",
-    output:
-        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
-    conda: "../../workflow/envs/nextstrain.yaml"
-    shell:
-        """
-        tsv-join -H -f {input.nextclade} -a derived_haplotype -k seqName -d strain {input.metadata} > {output.metadata}
-        """
-
 rule estimate_derived_haplotype_frequencies:
     input:
-        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+        metadata="data/{lineage}/metadata_without_bad_qc.tsv",
     output:
         frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
     conda: "../../workflow/envs/nextstrain.yaml"
@@ -167,7 +124,7 @@ rule estimate_derived_haplotype_frequencies:
 
 rule summarize_derived_haplotypes:
     input:
-        metadata="data/{lineage}/metadata_with_derived_haplotypes.tsv",
+        metadata="data/{lineage}/metadata_without_bad_qc.tsv",
         frequencies="tables/{lineage}/derived_haplotype_frequencies.json",
         titers=lambda wildcards: [
             collection["data"]
@@ -184,7 +141,7 @@ rule summarize_derived_haplotypes:
             for collection in config["builds"][f"{wildcards.lineage}_2y_titers"]["titer_collections"]
             if "ferret" in collection["data"]
         ],
-        haplotype_column="derived_haplotype",
+        haplotype_column="subclade_haplotype_ha",
     shell:
         """
         python3 scripts/summarize_haplotypes.py \

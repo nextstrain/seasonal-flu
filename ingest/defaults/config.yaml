@@ -264,7 +264,7 @@ nextclade:
       id_field: seqName
       # Used to rename fields and only listed fields will be merged with the
       # metadata in final output. Must include the id_field defined above.
-      # The dervied_haplotype_column and emerging_haplotype_column are automatically
+      # The derived_haplotype_column and emerging_haplotype_column are automatically
       # added if not defined in the field map.
       field_map:
         seqName: seqName

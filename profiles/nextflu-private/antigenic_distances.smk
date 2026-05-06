@@ -30,7 +30,7 @@ rule plot_antigenic_distances_between_strains:
         min_test_date=2025.33,
         title=get_titer_collection_title,
         clade_color_field="emerging_haplotype_test",
-        auspice_config_color_field="emerging_haplotype",
+        auspice_config_color_field="emerging_haplotype_ha",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """

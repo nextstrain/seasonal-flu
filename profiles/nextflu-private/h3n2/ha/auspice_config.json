@@ -146,7 +146,7 @@
       ]
     },
     {
-      "key": "emerging_haplotype",
+      "key": "emerging_haplotype_ha",
       "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [
@@ -598,7 +598,7 @@
       "type": "categorical"
     },
     {
-      "key": "qc.overallStatus",
+      "key": "qc.overallStatus_ha",
       "title": "Nextclade QC(overallStatus)",
       "type": "categorical"
     },
@@ -625,7 +625,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "emerging_haplotype",
+    "color_by": "emerging_haplotype_ha",
     "branch_label": "Subclade"
   },
   "filters": [

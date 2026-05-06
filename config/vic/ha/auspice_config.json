@@ -94,7 +94,7 @@
       "type": "categorical"
     },
     {
-      "key": "emerging_haplotype",
+      "key": "emerging_haplotype_ha",
       "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [
@@ -222,7 +222,7 @@
       "type": "categorical"
     },
     {
-      "key": "qc.overallStatus",
+      "key": "qc.overallStatus_ha",
       "title": "Nextclade QC(overallStatus)",
       "type": "categorical"
     }

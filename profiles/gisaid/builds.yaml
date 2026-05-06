@@ -1,20 +1,3 @@
-custom_rules:
-  - profiles/gisaid/prepare_data.smk
-
-metadata_fields:
-  - Isolate_Name
-  - Isolate_Id
-  - Passage_History
-  - Location
-  - Collection_Date
-  - Submission_Date
-renamed_metadata_fields:
-  - strain
-  - accession
-  - passage
-  - full_location
-  - date
-  - date_submitted
 
 lat-longs: "config/lat_longs.tsv"
 
