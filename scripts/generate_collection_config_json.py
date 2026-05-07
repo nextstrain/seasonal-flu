@@ -71,23 +71,26 @@ if __name__ == '__main__':
     }
 
     # Read collection.
-    collection_df = pd.read_csv(args.collection, sep="\t", usecols=args.groupings + ["reference_date", "clade_reference"])
+    collection_df = pd.read_csv(args.collection, sep="\t", usecols=args.groupings)
 
     # Map y-axis positions in the phylogeny to reference strains.
     collection_df["y_axis_position_in_phylogeny"] = collection_df["reference_strain"].map(y_axis_positions_per_tip_name)
 
-    # Find minimum y-axis position for reference strains within each clade. This
-    # position represents the earliest instance of the clade in the tree.
-    min_y_axis_position_by_reference_clade = collection_df.groupby("subclade_reference")["y_axis_position_in_phylogeny"].min().reset_index().rename(
-        columns={"y_axis_position_in_phylogeny": "min_y_axis_position_in_phylogeny"}
-    )
+    if "subclade_reference" in collection_df.columns:
+        # Find minimum y-axis position for reference strains within each clade. This
+        # position represents the earliest instance of the clade in the tree.
+        min_y_axis_position_by_reference_clade = collection_df.groupby("subclade_reference")["y_axis_position_in_phylogeny"].min().reset_index().rename(
+            columns={"y_axis_position_in_phylogeny": "min_y_axis_position_in_phylogeny"}
+        )
 
-    # Annotate min y-axis position per clade to collection.
-    collection_df = collection_df.merge(
-        min_y_axis_position_by_reference_clade,
-        on="subclade_reference",
-        how="left",
-    )
+        # Annotate min y-axis position per clade to collection.
+        collection_df = collection_df.merge(
+            min_y_axis_position_by_reference_clade,
+            on="subclade_reference",
+            how="left",
+        )
+    else:
+        collection_df["min_y_axis_position_in_phylogeny"] = collection_df["y_axis_position_in_phylogeny"]
 
     # Sort collection by y-axis position.
     sorted_df = collection_df.sort_values(
