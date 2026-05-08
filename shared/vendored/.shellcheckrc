@@ -1,0 +1,6 @@
+# Use of this file requires Shellcheck v0.7.0 or newer.
+#
+# SC2064 - We intentionally want variables to expand immediately within traps
+#          so the trap can not fail due to variable interpolation later.
+#
+disable=SC2064

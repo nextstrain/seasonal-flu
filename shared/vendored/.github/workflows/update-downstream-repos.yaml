@@ -1,0 +1,143 @@
+name: Update downstream repos
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build-downstream-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      downstream-matrix: ${{ steps.downstream-matrix.outputs.downstream-matrix }}
+    steps:
+      - id: downstream-matrix
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+        # Create an array of potential repos to update that will be used as the
+        # matrix to the next job.
+        # [
+        #   { "repo": "nextstrain/zika", "path": "shared/vendored"},
+        #   { "repo": "nextstrain/mpox", "path": "shared/vendored"},
+        #   ...
+        # ]
+        run: |
+          shared_matrix=$(gh api --paginate --slurp -X GET search/code \
+            -f q='org:nextstrain filename:.gitrepo "remote = https://github.com/nextstrain/shared"' \
+            | jq -c '
+                [.[].items[] | {
+                  "repo": .repository.full_name,
+                  "path": (.path | split("/")[0:-1] | join("/"))
+                }]
+              ')
+
+          # I was unable to get the 'OR' syntax to work with the search/code API,
+          # so making a separate query for the old nextstrain/ingest repo name.
+          # -Jover, 14 Apr 2026.
+          ingest_matrix=$(gh api --paginate --slurp -X GET search/code \
+            -f q='org:nextstrain filename:.gitrepo "remote = https://github.com/nextstrain/ingest"' \
+            | jq -c '
+                [.[].items[] | {
+                  "repo": .repository.full_name,
+                  "path": (.path | split("/")[0:-1] | join("/"))
+                }]
+              ')
+
+          # Deduplicate by repo since each repo should only have a single copy
+          # of the vendored repo. In cases where a repo has both,
+          # we are prioritizing the nextstrain/shared remote since that is
+          # the newer repo.
+          # -Jover, 15 Apr 2026.
+          matrix=$(jq -n \
+            --argjson matrix1 "$shared_matrix" \
+            --argjson matrix2 "$ingest_matrix" \
+            -c '$matrix1 + $matrix2 | unique_by(.repo)')
+
+          echo "downstream-matrix=$matrix" | tee -a "$GITHUB_OUTPUT"
+  update-downstream:
+    name: update-downstream (${{ matrix.repo }}, ${{ matrix.path }})
+    needs: [build-downstream-matrix]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.build-downstream-matrix.outputs.downstream-matrix) }}
+    env:
+      GIT_SUBREPO_DIR: .git/git-subrepo
+      VENDORED_PATH: ${{ matrix.path }}
+      branch: nextstrain-bot/update-vendored
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ matrix.repo }}
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ matrix.repo }}
+          # Fetch all history since `git subrepo pull` needs to check history
+          # to validate the parent commit
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+        # Checkout git-subrepo _after_ the downstream repo to ensure that we
+        # keep it in a path within the downstream repo that does not interfere
+        # with the subrepo changes
+      - name: Checkout git-subrepo
+        uses: actions/checkout@v6
+        with:
+          repository: "ingydotnet/git-subrepo"
+          path: ${{ env.GIT_SUBREPO_DIR }}
+      - name: Add git-subrepo to PATH
+        run: echo "$GIT_SUBREPO_DIR/lib" >> "$GITHUB_PATH"
+      - name: Update vendored path
+        run: |
+          git config user.name "${{ vars.GIT_USER_NAME_NEXTSTRAIN_BOT }}"
+          git config user.email "${{ vars.GIT_USER_EMAIL_NEXTSTRAIN_BOT }}"
+
+          # Default branch as the default parent
+          parent=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+          # Fetch remote branch if it exists and switch to the branch
+          # Otherwise just create the branch locally
+          if git fetch origin "$branch" 2>/dev/null; then
+            parent="origin/$branch"
+            git switch "$branch"
+          else
+            git switch -c "$branch"
+          fi
+
+          git subrepo pull "$VENDORED_PATH"
+
+          # Check for changes to determine if we need to create/update PRs
+          changes=$(git rev-list --count "$parent".."$branch")
+          echo "changes=$changes" | tee -a "$GITHUB_ENV"
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_REPO }}
+          # Define env to appease shellcheck
+          changes: ${{ env.changes }}
+          title: '[bot] Update ${{ env.VENDORED_PATH }}'
+          body: |
+            This PR was automatically created by https://github.com/nextstrain/shared/actions/runs/${{ github.run_id }}
+            to update the vendored subrepo in ${{ env.VENDORED_PATH }}.
+
+            Subrepo changes may break workflows and require manual updates to
+            fix errors. It is safe to add manual updates directly to this PR
+            since they will not be overwritten by future automatic updates.
+        run: |
+          if [[ "$changes" == "1" ]]; then
+            git push origin HEAD
+            pr_url=$(gh pr list --head "$branch" --json url | jq -r '.[0].url')
+
+            if [[ "$pr_url" == "null" ]]; then
+              pr_url="$(gh pr create --head "$branch" --title "$title" --body "$body")"
+              echo "Pull request created: $pr_url" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Pull request updated: $pr_url" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          elif [[ "$changes" == "0" ]]; then
+            echo "No pull request created or updated because no changes were made" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ERROR: Encountered an unexpected number of changes: $changes"
+            exit 1
+          fi

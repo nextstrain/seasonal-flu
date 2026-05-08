@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""
+Fetch metadata and nucleotide sequences from NCBI Entrez and output to a GenBank file.
+"""
+import json
+import argparse
+from Bio import SeqIO, Entrez
+
+# To use the efetch API, the docs indicate only around 10,000 records should be fetched per request
+# https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
+# However, in my testing with HepB, the max records returned was 9,999
+#   - Jover, 16 August 2023
+BATCH_SIZE = 9999
+
+Entrez.email = "hello@nextstrain.org"
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--term', required=True, type=str,
+        help='Genbank search term. Replace spaces with "+", e.g. "Hepatitis+B+virus[All+Fields]complete+genome[All+Fields]"')
+    parser.add_argument('--output', required=True, type=str, help='Output file (Genbank)')
+    return parser.parse_args()
+
+
+def get_esearch_history(term):
+    """
+    Search for the provided *term* via ESearch and store the results using the
+    Entrez history server.¹
+
+    Returns the total count of returned records, query key, and web env needed
+    to access the records from the server.
+
+    ¹ https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Using_the_Entrez_History_Server
+    """
+    handle = Entrez.esearch(db="nucleotide", term=term, retmode="json", usehistory="y", retmax=0)
+    esearch_result = json.loads(handle.read())['esearchresult']
+    print(f"Search term {term!r} returned {esearch_result['count']} IDs.")
+    return {
+        "count": int(esearch_result["count"]),
+        "query_key": esearch_result["querykey"],
+        "web_env": esearch_result["webenv"]
+    }
+
+
+def fetch_from_esearch_history(count, query_key, web_env):
+    """
+    Fetch records in batches from Entrez history server using the provided
+    *query_key* and *web_env* and yields them as a BioPython SeqRecord iterator.
+    """
+    print(f"Fetching GenBank records in batches of n={BATCH_SIZE}")
+
+    for start in range(0, count, BATCH_SIZE):
+        handle = Entrez.efetch(
+            db="nucleotide",
+            query_key=query_key,
+            webenv=web_env,
+            retstart=start,
+            retmax=BATCH_SIZE,
+            rettype="gb",
+            retmode="text")
+
+        yield SeqIO.parse(handle, "genbank")
+
+
+if __name__=="__main__":
+    args = parse_args()
+
+    with open(args.output, "w") as output_handle:
+        for batch_results in fetch_from_esearch_history(**get_esearch_history(args.term)):
+            SeqIO.write(batch_results, output_handle, "genbank")
