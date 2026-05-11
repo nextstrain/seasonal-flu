@@ -1,7 +1,7 @@
 ---
 title: "Nextstrain seasonal influenza report for {{long_month}} {{year}}"
 date: "{{long_month}} {{day}}, {{year}}"
-dataset: https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree&label=clade:5a.2a&p=full
+dataset: https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree&label=clade:5a.2a&p=full
 abstract: TKTK
 ---
 
@@ -25,13 +25,13 @@ abstract: TKTK
 ![Vic genome sequence counts per region](../figures/total-sample-count_vic.png)
 ```
 
-# [Recent H1N1pdm submissions](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:5a.2a&p=grid)
+# [Recent H1N1pdm submissions](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree,map&f_recency=last%20month,last%20week&label=clade:5a.2a&p=grid)
 
 Counts reflect all sequences submitted in the last month and with a Nextclade QC value better than "bad".
 
 {{h1n1pdm_clade_counts}}
 
-# [Global H1N1pdm circulation](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=grid)
+# [Global H1N1pdm circulation](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=grid)
 
 # [Location-specific H1N1pdm clade frequencies and growth advantages](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?branchLabel=Subclade&c=subclade&d=tree,map,frequencies&f_year_month={{year_month_filter}}&p=grid&label=clade:5a.2a)
 
@@ -65,19 +65,19 @@ The "delta frequency" is the change in frequency between the current frequency a
 
 # [H1N1pdm antigenic distances by ferret cell HI](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h1n1pdm/2y/titers/ha?d=tree,measurements&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=grid)
 
-# [H1N1pdm antigenic advance](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h1n1pdm/2y/titers/ha?branchLabel=none&c=emerging_haplotype&d=tree&f_year_month={{year_month_filter}}&l=scatter&label=clade:5a.2a&p=full&scatterX=emerging_haplotype&scatterY=cell_hi_cTiterSub)
+# [H1N1pdm antigenic advance](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h1n1pdm/2y/titers/ha?branchLabel=none&c=emerging_haplotype_ha&d=tree&f_year_month={{year_month_filter}}&l=scatter&label=clade:5a.2a&p=full&scatterX=emerging_haplotype_ha&scatterY=cell_hi_cTiterSub)
 
-# [H1N1pdm HA/NA reassortment](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:D.3&scatterX=emerging_haplotype&scatterY=subclade_nextclade_na)
+# [H1N1pdm HA/NA reassortment](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:D.3&scatterX=emerging_haplotype_ha&scatterY=subclade_nextclade_na)
 
 # [H1N1pdm local branching index](https://nextstrain.org/seasonal-flu/h1n1pdm/ha/2y@{{date}}:/seasonal-flu/h1n1pdm/na/2y@{{date}}?branchLabel=aa&c=lbi&d=tree&f_year_month={{year_month_filter}}&label=clade:5a.2a&p=full&transmissions=hide&m=div)
 
-# [Recent H3N2 submissions](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:2a.3a&p=grid)
+# [Recent H3N2 submissions](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree,map&f_recency=last%20month,last%20week&label=clade:2a.3a&p=grid)
 
 Counts reflect all sequences submitted in the last month and with a Nextclade QC value better than "bad".
 
 {{h3n2_clade_counts}}
 
-# [Global H3N2 circulation](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:2a.3a&p=grid)
+# [Global H3N2 circulation](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree,map,frequencies&f_year_month={{year_month_filter}}&label=clade:2a.3a&p=grid)
 
 # [Location-specific H3N2 clade frequencies and growth advantages](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?branchLabel=Subclade&c=subclade&d=tree,map,frequencies&f_year_month={{year_month_filter}}&p=grid)
 
@@ -118,11 +118,11 @@ The measurements panel shows antigenic distances for test viruses grouped by sub
 The measurements panel shows antigenic distances for recent test viruses collected grouped by subclade.
 These HI data show similar pattern of coverage as the FRA measurements.
 
-# [H3N2 ferret-based antigenic advance from cell-based FRA data](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype&scatterY=cell_fra_cTiterSub)
+# [H3N2 ferret-based antigenic advance from cell-based FRA data](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype_ha&scatterY=cell_fra_cTiterSub)
 
-# [H3N2 ferret-based antigenic advance from cell-based HI data](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype&scatterY=cell_hi_cTiterSub)
+# [H3N2 ferret-based antigenic advance from cell-based HI data](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype_ha&scatterY=cell_hi_cTiterSub)
 
-# [H3N2 HA/NA reassortment](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype&scatterY=subclade_nextclade_na)
+# [H3N2 HA/NA reassortment](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:J.2&scatterX=emerging_haplotype_ha&scatterY=subclade_nextclade_na)
 
 # [H3N2 local branching index](https://nextstrain.org/seasonal-flu/h3n2/ha/2y@{{date}}:/seasonal-flu/h3n2/na/2y@{{date}}?branchLabel=aa&c=lbi&d=tree&f_year_month={{year_month_filter}}&label=clade:2a.3a&p=full&transmissions=hide&m=div)
 
@@ -130,7 +130,7 @@ These HI data show similar pattern of coverage as the FRA measurements.
 
 # [H3N2 forecasts for human antigenic model and LBI model](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/h3n2/2y/titers/ha?branchLabel=Emerging%20subclade&c=emerging_subclade&d=tree&l=scatter&label=clade:2a.3a.1&p=full&p=full&regression=show&scatterX=weighted_distance_to_future_by_human_cell_fra_cTiter_x-ne_star&scatterY=weighted_distance_to_future_by_ne_star-lbi)
 
-# [Recent Vic submissions](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype&d=tree,map&f_recency=last%20month,last%20week&label=clade:V1A.3&p=grid)
+# [Recent Vic submissions](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}?branchLabel=Subclade&c=emerging_haplotype_ha&d=tree,map&f_recency=last%20month,last%20week&label=clade:V1A.3&p=grid)
 
 Counts reflect all sequences submitted in the last month and with a Nextclade QC value better than "bad".
 
@@ -172,6 +172,6 @@ The "delta frequency" is the change in frequency between the current frequency a
 
 # [Vic antigenic advance](https://nextstrain.org/groups/nextflu-private/flu/seasonal/{{date}}/vic/2y/titers/ha?branchLabel=none&c=subclade&d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:C&p=full&scatterX=subclade&scatterY=cell_hi_cTiterSub)
 
-# [Vic HA/NA reassortment](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:C&scatterX=emerging_haplotype&scatterY=subclade_nextclade_na)
+# [Vic HA/NA reassortment](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}?d=tree&f_year_month={{year_month_filter}}&l=scatter&label=Subclade:C&scatterX=emerging_haplotype_ha&scatterY=subclade_nextclade_na)
 
 # [Vic local branching index](https://nextstrain.org/seasonal-flu/vic/ha/2y@{{date}}:/seasonal-flu/vic/na/2y@{{date}}?branchLabel=aa&c=lbi&d=tree&f_year_month={{year_month_filter}}&label=Subclade:C&p=full&transmissions=hide&m=div)
