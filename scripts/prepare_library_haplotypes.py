@@ -108,13 +108,23 @@ def main(args):
                 )
             )
 
-    metadata["HA1_coverage"] = metadata["cdsCoverage"].apply(
-        lambda coverage: float(
-            dict(
-                gene_coverage.split(":") for gene_coverage in coverage.split(",")
-            ).get("HA1", 0)
-        )
-    )
+    def get_ha1_coverage(coverage):
+        """Parse coverage string like "HA1:1,HA2:0.9954954954954955,SigPep:1"
+        to just HA1 coverage value.
+
+        """
+        coverages = coverage.split(",")
+        ha1_coverage = 0.0
+
+        for coverage in coverages:
+            if ":" in coverage:
+                gene, gene_coverage = coverage.split(":")
+                if gene == "HA1":
+                    ha1_coverage = float(gene_coverage)
+
+        return ha1_coverage
+
+    metadata["HA1_coverage"] = metadata["cdsCoverage"].apply(get_ha1_coverage)
 
     for gene in alignment_by_gene_and_strain:
         metadata[f"{gene}_sequence"] = metadata["strain"].map(
