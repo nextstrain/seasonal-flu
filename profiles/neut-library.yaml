@@ -28,8 +28,8 @@ builds:
         recurrent_substitutions: 2
         wolf_mutations: 2
         koel_mutations: 3
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
+      reference: "profiles/neut-library/nextclade_h3n2/reference.fasta"
+      annotation: "profiles/neut-library/nextclade_h3n2/genome_annotation.gff3"
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
@@ -46,8 +46,8 @@ builds:
         HA1_mutations: 1
         recurrent_substitutions: 2
         canton_mutations: 2
-      reference: "config/h1n1pdm/{segment}/reference.fasta"
-      annotation: "config/h1n1pdm/{segment}/genemap.gff"
+      reference: "profiles/neut-library/nextclade_h1n1pdm/reference.fasta"
+      annotation: "profiles/neut-library/nextclade_h1n1pdm/genome_annotation.gff3"
       clades: "config/h1n1pdm/ha/clades.tsv"
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
       auspice_config: "config/h1n1pdm/{segment}/auspice_config.json"
