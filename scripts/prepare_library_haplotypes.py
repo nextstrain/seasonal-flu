@@ -36,6 +36,11 @@ def main(args):
         dtype="str",
         na_filter=False,
     )
+
+    # Drop records missing an accession. This can happen when we have Nextclade
+    # annotations for a sequence but no metadata.
+    metadata = metadata[metadata["accession_ha"] != ""].copy()
+
     alignments = load_alignments(
         args.alignments,
         args.gene_names,

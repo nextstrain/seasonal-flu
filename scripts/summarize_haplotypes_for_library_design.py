@@ -64,6 +64,12 @@ def main(args):
         na_filter=False,
     )
 
+    # Apply a minimum coverage threshold to focus on haplotypes with more
+    # complete HA1 sequences.
+    data_frame_by_lineage = data_frame_by_lineage[
+        data_frame_by_lineage["HA1_coverage"] >= args.min_ha1_coverage
+    ].copy()
+
     # We allow records with collection dates that have ambiguous days (e.g.,
     # 2020-01-XX), so we need to convert those ambiguous characters to valid
     # date strings. We might prefer haplotypes with more recent collection
@@ -177,6 +183,7 @@ if __name__ == '__main__':
     parser.add_argument("--metadata", required=True, help="TSV of metadata for potential library strains with derived haplotypes and scores annotated")
     parser.add_argument("--fitnesses", help="TSV of fitnesses per derived haplotype")
     parser.add_argument("--mutation-weights", nargs="+", help="key/value pairs of columns in the metadata to score and their corresponding weight (e.g., 'koel_mutations=3 wolf_mutations=2 HA1_mutations=1')")
+    parser.add_argument("--min-ha1-coverage", type=float, default=0.75, help="minimum coverage for HA1 as a proportion of the full amino acid sequence length")
     parser.add_argument("--output", required=True, help="TSV of derived haplotypes summaries with representative strains/sequences and scores")
 
     args = parser.parse_args()

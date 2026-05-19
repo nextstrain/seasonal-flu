@@ -15,6 +15,8 @@ recency:
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
+min_ha1_coverage: 0.75
+
 builds:
     h3n2:
       lineage: h3n2
@@ -35,7 +37,7 @@ builds:
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       subsamples: &subsampling
         global:
-            filters: --min-date 2025-07-01 --exclude-ambiguous-dates-by month --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus_ha\` == 'good'"
+            filters: --min-date 2025-12-01 --exclude-ambiguous-dates-by month --exclude config/{lineage}/outliers.txt --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus_ha\` == 'good'"
     h1n1pdm:
       lineage: h1n1pdm
       distance_maps:

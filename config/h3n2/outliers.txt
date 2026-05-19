@@ -3,6 +3,7 @@ A/Asaka/2/2017
 A/Austria/838902/2015
 A/Austria/839669/2015
 A/Austria/839906/2015
+A/Austria/1870384/2025
 A/Bahia/12607/2024
 A/Bangladesh/3010/2020
 A/Bangladesh/icddrb-2240410032/2024

@@ -69,12 +69,14 @@ rule design_library:
             f"{mutation_name}={mutation_weight}"
             for mutation_name, mutation_weight in config["builds"][wildcards.build_name]["mutation_weights"].items()
         ]),
+        min_ha1_coverage=config["min_ha1_coverage"],
     shell:
         r"""
         python scripts/summarize_haplotypes_for_library_design.py \
             --metadata {input.metadata} \
             --fitnesses {input.fitnesses} \
             --mutation-weights {params.mutation_weights} \
+            --min-ha1-coverage {params.min_ha1_coverage} \
             --output {output.library_design}
         """
 
