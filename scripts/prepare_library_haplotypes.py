@@ -105,7 +105,7 @@ def main(args):
         for subclade, subclade_substitutions in recurrent_substitutions_by_clade.items():
             metadata.loc[metadata["clade"] == subclade, "recurrent_substitutions"] = metadata.loc[
                 metadata["clade"] == subclade,
-                "founder_ha1_substitutions"
+                "all_ha1_substitutions"
             ].apply(
                 lambda subs: sum(
                     sub in subclade_substitutions
