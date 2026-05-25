@@ -55,8 +55,8 @@ jobs:
           --env SLACK_CHANNELS \
           --env SLACK_TOKEN \
           --detach \
-          --cpus 32 \
-          --memory 60GiB \
+          --cpus 16 \
+          --memory 28GiB \
           ingest \
           upload_all \
           --set-threads run_nextclade=12 \
