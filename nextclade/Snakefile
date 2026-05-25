@@ -65,7 +65,7 @@ rule run_nextclade:
         reference="nextclade/{lineage}_{segment}/reference.fasta",
     output:
         "data/{lineage}_{segment}_nextclade.tsv",
-    threads: workflow.cores
+    threads: 2
     shell:
         """
         nextclade3 run -j {threads} -D nextclade/{wildcards.lineage}_{wildcards.segment} \
@@ -222,7 +222,7 @@ rule align:
     params:
         outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{cds}}.fasta",
         nextclade_bin = "nextclade3"
-    threads: 3
+    threads: 2
     shell:
         """
         {params.nextclade_bin} run \
@@ -242,7 +242,7 @@ rule tree:
         alignment=rules.align.output.alignment,
     output:
         tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
-    threads: 3
+    threads: 2
     shell:
         """
         augur tree \
@@ -484,7 +484,7 @@ rule translate_clade_founders:
     params:
         outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
         nextclade_bin = "nextclade3"
-    threads: 3
+    threads: 2
     shell:
         """
         {params.nextclade_bin} run \
