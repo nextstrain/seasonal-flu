@@ -19,7 +19,7 @@ rule fetch_gisaid_ndjson:
             aws s3 cp {params.s3_file:q} {output.ndjson:q}
         else
             echo "{params.s3_file:q} does not exist, creating empty file."
-            touch {output.ndjson:q}
+            cat /dev/null | zstd -c > {output.ndjson:q}
         fi
         """
 
