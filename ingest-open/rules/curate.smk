@@ -3,8 +3,7 @@ This part of the workflow handles the curation of the open data
 
 REQUIRED INPUTS:
 
-    metadata      = data/{lineage}/metadata.tsv
-    sequences     = data/{lineage}/{segment}.fasta
+    ndjson = "data/{lineage}/open.ndjson.zst"
 
 OUTPUTS:
 
@@ -22,14 +21,14 @@ def format_field_map(field_map: dict[str, str]) -> list[str]:
     """
     return [f'{key}={value}' for key, value in field_map.items()]
 
-            
+
 rule curate:
     input:
-        metadata="data/{lineage}/metadata.tsv",
+        ndjson="data/{lineage}/open.ndjson.zst",
         geolocation_rules=config["curate"]["local_geolocation_rules"],
         annotations=config["curate"]["annotations"],
     output:
-        metadata="data/{lineage}/curated_metadata.tsv",
+        ndjson="data/{lineage}/curated.ndjson.zst",
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
         date_fields=config["curate"]["date_fields"],
@@ -51,9 +50,9 @@ rule curate:
         r"""
         exec &> >(tee {log:q})
 
-        augur curate rename \
-            --metadata {input.metadata:q} \
-            --field-map {params.field_map:q} \
+        zstdcat {input.ndjson:q} \
+            | augur curate rename \
+                --field-map {params.field_map:q} \
             | augur curate normalize-strings \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
@@ -76,7 +75,7 @@ rule curate:
             | augur curate apply-record-annotations \
                 --annotations {input.annotations:q} \
                 --id-field {params.annotations_id:q} \
-                --output-metadata {output.metadata:q}
+            | zstd -T0 -c > {output.ndjson:q}
         """
 
 
