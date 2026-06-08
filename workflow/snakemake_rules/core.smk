@@ -317,7 +317,7 @@ rule traits:
     output:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
     params:
-        columns = "region"
+        columns = config.get("traits", {}).get("columns", "region"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/traits_{build_name}_{segment}.txt"
