@@ -15,6 +15,27 @@ segments:
   - mp
   - ns
 
+genspectrum_metadata_fields:
+  - accession
+  - accessionVersion
+  - specimenCollectorSampleId
+  - sampleCollectionDate
+  - ncbiReleaseDate
+  - country
+  - division
+  - authors
+  - authorAffiliations
+  - insdcAccessionBase_seg1
+  - insdcAccessionBase_seg2
+  - insdcAccessionBase_seg3
+  - insdcAccessionBase_seg4
+  - insdcAccessionBase_seg5
+  - insdcAccessionBase_seg6
+  - insdcAccessionBase_seg7
+  - insdcAccessionBase_seg8
+
+genspectrum_fastaHeaderTemplate: "{accession}_{.segment}"  # e.g. GS_00BCP0A_seg4
+
 curate:
   field_map:
     accession: accession
@@ -26,14 +47,6 @@ curate:
     division: division
     authors: full_authors
     authorAffiliations: institution
-    insdcAccessionBase_seg1: accession_pb2
-    insdcAccessionBase_seg2: accession_pb1
-    insdcAccessionBase_seg3: accession_pa
-    insdcAccessionBase_seg4: accession_ha
-    insdcAccessionBase_seg5: accession_np
-    insdcAccessionBase_seg6: accession_na
-    insdcAccessionBase_seg7: accession_mp
-    insdcAccessionBase_seg8: accession_ns
 
   date_fields:
     - date

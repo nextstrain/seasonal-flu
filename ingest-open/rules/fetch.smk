@@ -4,8 +4,7 @@ open data sources.
 
 OUTPUTS:
 
-    metadata      = data/{lineage}/metadata.tsv
-    sequences     = data/{lineage}/{segment}.fasta
+    ndjson = "data/{lineage}/open.ndjson.zst"
 
 """
 from urllib.parse import urlencode
@@ -13,7 +12,7 @@ from urllib.parse import urlencode
 
 def _genspectrum_lapis_url(wildcards):
     """
-    Returns the URL for the GenSpectrum LAPIS query engine for 
+    Returns the URL for the GenSpectrum LAPIS query engine for
     the provided *wildcards.lineage*.
 
     See <https://loculus.genspectrum.org/api-documentation>
@@ -35,7 +34,7 @@ def _genspectrum_lapis_url(wildcards):
 
 def _genspectrum_metadata_url(wildcards):
     """
-    Returns the URL for downloading the metadata TSV. 
+    Returns the URL for downloading the metadata TSV.
 
     See <https://api.loculus.genspectrum.org/b-victoria/swagger-ui/index.html#/lapis-controller/getDetailsAsCsv>
     """
@@ -43,6 +42,8 @@ def _genspectrum_metadata_url(wildcards):
     params = {
         "dataFormat": "TSV",
         "versionStatus": "LATEST_VERSION",
+        "compression": "zstd",
+        "fields": config["genspectrum_metadata_fields"],
     }
     query = urlencode(params, doseq=True, encoding="utf-8")
     return f"{endpoint}?{query}"
@@ -51,33 +52,17 @@ def _genspectrum_metadata_url(wildcards):
 def _genspectrum_sequences_url(wildcards):
     """
     Returns the URL for downloading the sequences FASTA per *wildcards.segment*.
-    Only includes the LATEST_VERSION of GenSpectrum records and uses the 
+    Only includes the LATEST_VERSION of GenSpectrum records and uses the
     GenSpectrum accession field as the FASTA header.
 
     See <https://api.loculus.genspectrum.org/b-victoria/swagger-ui/index.html#/multi-segmented-sequence-controller/getUnalignedNucleotideSequence>
     """
-    # Map wildcards.segment to GenSpectrum segments
-    SEGMENT_MAP = {
-        "pb2": "seg1",
-        "pb1": "seg2",
-        "pa":  "seg3",
-        "ha":  "seg4",
-        "np":  "seg5",
-        "na":  "seg6",
-        "mp":  "seg7",
-        "ns":  "seg8",
-    }
-
-    if (segment := SEGMENT_MAP.get(wildcards.segment)) is None:
-        raise InvalidConfigError(
-            f"Encountered unsupported segment {wildcards.segment!r}. "
-            f"Segment must be one of {list(SEGMENT_MAP.keys())}")
-
-    endpoint = f"{_genspectrum_lapis_url(wildcards)}/sample/unalignedNucleotideSequences/{segment}"
+    endpoint = f"{_genspectrum_lapis_url(wildcards)}/sample/unalignedNucleotideSequences"
     params = {
         "dataFormat": "FASTA",
-        "fastaHeaderTemplate": "{accession}",
-        "versionStatus": "LATEST_VERSION"
+        "fastaHeaderTemplate": config["genspectrum_fastaHeaderTemplate"],
+        "versionStatus": "LATEST_VERSION",
+        "compression": "zstd",
     }
     query = urlencode(params, doseq=True, encoding="utf-8")
     return f"{endpoint}?{query}"
@@ -86,7 +71,7 @@ def _genspectrum_sequences_url(wildcards):
 # Fetch metadata from GenSpectrum
 rule download_genspectrum_metadata:
     output:
-        metadata = "data/{lineage}/metadata.tsv",
+        metadata = "data/{lineage}/metadata.tsv.zst",
     retries: 5
     benchmark:
         "benchmarks/{lineage}/download_genspectrum_metadata.txt",
@@ -105,12 +90,12 @@ rule download_genspectrum_metadata:
 # Fetch sequences from GenSpectrum
 rule download_genspectrum_sequences:
     output:
-        sequences = "data/{lineage}/{segment}.fasta",
+        sequences = "data/{lineage}/sequences.fasta.zst",
     retries: 5
     benchmark:
-        "benchmarks/{lineage}/{segment}/download_genspectrum_sequences.txt",
+        "benchmarks/{lineage}/download_genspectrum_sequences.txt",
     log:
-        "logs/{lineage}/{segment}/download_genspectrum_sequences.txt",
+        "logs/{lineage}/download_genspectrum_sequences.txt",
     params:
         sequences_url = lambda w: _genspectrum_sequences_url(w)
     shell:
@@ -121,7 +106,37 @@ rule download_genspectrum_sequences:
         """
 
 
-# Pull out GenBank accessions from GenSpectrum metadata
-# Fetch from Entrez
-# Merge and collapse segment Entrez metadata with GenSpectrum metadata
-# Produce 1 metadata TSV and 8 segment FASTA
+rule decompress_sequences:
+    input:
+        sequences = "data/{lineage}/sequences.fasta.zst"
+    output:
+        sequences = temp("data/{lineage}/sequences.fasta")
+    benchmark:
+        "benchmarks/{lineage}/decompress_sequences.txt",
+    log:
+        "logs/{lineage}/decompress_sequences.txt",
+    shell:
+        r"""
+        zstd -dcq {input.sequences:q} > {output.sequences:q}
+        """
+
+
+rule link_metadata_and_sequences:
+    input:
+        metadata = "data/{lineage}/metadata.tsv.zst",
+        sequences = "data/{lineage}/sequences.fasta",
+    output:
+        ndjson = "data/{lineage}/open.ndjson.zst",
+    benchmark:
+        "benchmarks/{lineage}/link_metadata_and_sequences.txt",
+    log:
+        "logs/{lineage}/link_metadata_and_sequences.txt",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        {workflow.basedir}/scripts/link-metadata-and-sequences \
+            --metadata {input.metadata:q} \
+            --sequences {input.sequences:q} \
+            | zstd -T0 -c > {output.ndjson:q}
+        """

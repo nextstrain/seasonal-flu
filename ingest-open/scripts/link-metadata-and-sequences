@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""
+Links the records in the downloaded files from GenSpectrum.
+Metadata TSV records are linked with segment sequences in the FASTA and
+output as NDJSON to stdout.
+
+Each record represents a single record, formatted as:
+
+    {
+        […metadata fields…],
+        “sequences”: {
+            "ha": [
+                {
+                    “accession”: “...”,
+                    “sequence”: “...”
+                }
+            ],
+            "na": [
+                {
+                    "accession": "...",
+                    "sequence": "..."
+                }
+            ],
+            […other 6 segments…]
+        }
+    }
+
+Segments without any sequences will be represented as an empty list.
+
+Note: GenSpectrum records should only have one sequence per segment, but keeping
+as a list here to match the data model of the GISAID ingest pipeline so that we can
+use the same scripts for filtering.
+"""
+import argparse
+import os
+import pyfastx
+from collections import defaultdict
+from textwrap import dedent
+from typing import Iterable, Optional
+from augur.io.json import dump_ndjson
+from augur.io.metadata import DEFAULT_DELIMITERS, read_table_to_dict
+from augur.io.print import print_err
+
+
+SEGMENT_MAP = {
+    "seg1": "pb2",
+    "seg2": "pb1",
+    "seg3": "pa",
+    "seg4": "ha",
+    "seg5": "np",
+    "seg6": "na",
+    "seg7": "mp",
+    "seg8": "ns",
+}
+
+RECORD_ID_COLUMN = "accession"
+SEGMENT_COLUMNS = {
+    segment: f"insdcAccessionBase_{segment}"
+    for segment in SEGMENT_MAP.keys()
+}
+
+OUTPUT_SEQUENCE_FIELD = "sequences"
+
+
+def link_metadata_and_sequences(metadata: Iterable[dict],
+                                sequences: pyfastx.Fasta) -> Iterable[dict]:
+    """
+    Link records in the provided *metadata* with segment sequences in the
+    provided *sequences*. Drops the segment fields and adds a "sequences"
+    field, which is an array of all of the segments.
+    """
+    total_records = 0
+    for record in metadata:
+        linked_record = record.copy()
+        record_id = linked_record[RECORD_ID_COLUMN]
+
+        # Verify that all the expected segment columns are present in
+        # the first record since all records should have the same columns
+        if total_records == 0:
+            assert all(
+                column in linked_record
+                for column in SEGMENT_COLUMNS.values()), \
+                f"The metadata does not include all expected segment columns: {SEGMENT_COLUMNS.values()!r}.\n" + \
+                "The expected `SEGMENTS` or `SEGMENT_COLUMNS` might need to be updated."
+
+        record_seqs = {}
+        for segment, segment_column in SEGMENT_COLUMNS.items():
+            mapped_segment = SEGMENT_MAP[segment]
+            record_seqs[mapped_segment] = []
+            if accession := linked_record.pop(segment_column):
+                # This should match fastaHeaderTemplate for GenSpectrum
+                sequence_id = f"{record_id}_{segment}"
+                if sequence := get_sequence_record(sequences, sequence_id):
+                    record_seqs[mapped_segment].append({
+                        "accession": accession,
+                        "sequence": str(sequence.seq).upper()
+                    })
+                else:
+                    print_err(
+                        f"WARNING: Did not find matching sequence for {sequence_id}"
+                    )
+
+        linked_record[OUTPUT_SEQUENCE_FIELD] = record_seqs
+        yield linked_record
+
+
+def get_sequence_record(sequences: pyfastx.Fasta, accession: str) -> Optional[pyfastx.Sequence]:
+    """
+    Gets the sequence record matching the provided *accession* from the indexed
+    *sequences. If there is not matching sequence, returns None.
+    """
+    sequence = None
+
+    # try/except was consistently faster than checking accession is in sequences
+    #   -Jover, 11 February 2025
+    try:
+        sequence = sequences[accession]
+    except KeyError:
+        pass
+
+    return sequence
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--metadata", metavar="<TSV>",
+        help=dedent(f"""\
+            GenSpectrum metadata TSV file, which is expected to have the
+            record id column {RECORD_ID_COLUMN!r} and the segment ID columns
+            {[SEGMENT_COLUMNS.values()]!r}.
+            """))
+
+    parser.add_argument("--sequences", metavar="<fasta>",
+        help=dedent("""\
+            GenSpectrum FASTA file, where the headers are expected to be
+            created with the fastaHeaderTemplate `{accession}_{.segment}`
+            """))
+
+    args = parser.parse_args()
+
+    metadata = read_table_to_dict(
+        table=args.metadata,
+        delimiters=DEFAULT_DELIMITERS,
+        id_column=RECORD_ID_COLUMN
+    )
+
+    # Remove the old Pyfastx index to force rebuild of index
+    # so we don't have to worry about a stale cached index
+    #   -Jover, 11 February 2025
+    try:
+        os.remove(f"{args.sequences}.fxi")
+    except FileNotFoundError:
+        pass
+
+    sequences = pyfastx.Fasta(args.sequences)
+    linked_records = link_metadata_and_sequences(
+        metadata,
+        sequences)
+    dump_ndjson(linked_records)
+
+    # Remove Pyfastx index to save disk space
+    os.remove(f"{args.sequences}.fxi")
