@@ -20,6 +20,9 @@ embedding:
   # Set lower value of perplexity when sample size is small.
   perplexity: 9
 
+traits:
+  columns: "region subclade_nextclade_{segment}"
+
 builds:
     "ci_build":
       lineage: h3n2
