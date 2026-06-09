@@ -24,7 +24,7 @@ dst_record_count="$(aws s3api head-object --bucket "$bucket" --key "$key" --quer
 if [[ -z "$dst_record_count" ]]; then
   # This object doesn't have the record count stored as metadata
   # We have to download it and count the lines locally
-  dst_record_count="$(wc -l < <(aws s3 cp --no-progress "$dst" - | xz -T0 -dcfq))"
+  dst_record_count="$(wc -l < <(aws s3 cp --no-progress "$dst" - | zstd -T0 -dcq))"
 fi
 
 added_records="$(( src_record_count - dst_record_count ))"
