@@ -48,6 +48,11 @@ curate:
     authors: full_authors
     authorAffiliations: institution
 
+  # TODO: add stricter regex
+  strain_regex: '^(A|B)/.+/.+$'
+  # Back up strain name field to use if 'strain' doesn't match regex above
+  strain_backup_fields: ['accession']
+
   date_fields:
     - date
     - date_released
@@ -80,6 +85,9 @@ curate:
 
   annotations: 'defaults/annotations.tsv'
   annotations_id: 'strain'
+
+  record_id_field: 'accession'
+  strain_field: 'strain'
 
   metadata_columns:
     - accession

@@ -31,6 +31,8 @@ rule curate:
         ndjson="data/{lineage}/curated.ndjson.zst",
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
+        strain_regex=config["curate"]["strain_regex"],
+        strain_backup_fields=config["curate"]["strain_backup_fields"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         division_field=config["curate"]["genspectrum_division_field"],
@@ -54,6 +56,9 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map:q} \
             | augur curate normalize-strings \
+            | augur curate transform-strain-name \
+                --strain-regex {params.strain_regex:q} \
+                --backup-fields {params.strain_backup_fields:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -79,6 +84,80 @@ rule curate:
         """
 
 
+# Copied from
+# <https://github.com/nextstrain/zika/blob/4d8d8c452b8f3f50b771d95a17662c88818b6048/phylogenetic/rules/annotate_phylogeny.smk#L81-L97>
+def conditional(option, argument):
+    """Used for config-defined arguments whose presence necessitates a command-line option
+    (e.g. --foo) prepended and whose absence should result in no option/arguments in the CLI command.
+    *argument* can be falsey, in which case an empty string is returned (i.e. "don't pass anything
+    to the CLI"), or a *list* or *string* or *number* in which case a flat list of options/args is returned,
+    or *True* in which case a list of a single element (the option) is returned.
+    Any other argument type is a WorkflowError
+    """
+    if not argument:
+        return ""
+    if argument is True: # must come before `isinstance(argument, int)` as bool is a subclass of int
+        return [option]
+    if isinstance(argument, list):
+        return [option, *argument]
+    if isinstance(argument, int) or isinstance(argument, float) or isinstance(argument, str):
+        return [option, argument]
+    raise WorkflowError(f"Workflow function conditional() received an argument value of unexpected type: {type(argument).__name__}")
+
+
+rule prioritize_id_per_strain:
+    input:
+        curated_ndjson="data/{lineage}/curated.ndjson.zst",
+        prioritized_strain_ids=lambda w: config["curate"].get("prioritized_strain_ids", {}).get(w.lineage, []),
+    output:
+        prioritized_ids="data/{lineage}/prioritized_ids.txt",
+    benchmark:
+        "benchmarks/{lineage}/prioritize_id_per_strain.txt"
+    log:
+        "logs/{lineage}/prioritize_id_per_strain.txt"
+    params:
+        strain_field=config["curate"]["strain_field"],
+        id_field=config["curate"]["record_id_field"],
+        seq_field="sequences",
+        prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_strain_ids),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.curated_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/prioritize-id-per-strain \
+                --strain-field {params.strain_field:q} \
+                --id-field {params.id_field:q} \
+                --seq-field {params.seq_field:q} \
+                {params.prioritized_strain_ids:q} \
+                --output {output.prioritized_ids:q}
+        """
+
+
+rule deduplicate_ndjson_by_strain:
+    input:
+        curated_ndjson="data/{lineage}/curated.ndjson.zst",
+        prioritized_ids="data/{lineage}/prioritized_ids.txt",
+    output:
+        deduped_ndjson=temp("data/{lineage}/deduped_curated.ndjson.zst"),
+    benchmark:
+        "benchmarks/{lineage}/deduplicate_ndjson_by_strain.txt"
+    log:
+        "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
+    params:
+        id_field=config["curate"]["record_id_field"],
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.curated_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/filter-ndjson-by-value \
+                --field {params.id_field:q} \
+                --include {input.prioritized_ids:q} \
+            | zstd -T0 -c > {output.deduped_ndjson:q}
+        """
+
+
 rule subset_metadata:
     input:
         metadata="data/{lineage}/curated_metadata.tsv",
@@ -97,7 +176,3 @@ rule subset_metadata:
         csvtk cut -t -f {params.metadata_fields:q} \
             {input.metadata:q} > {output.subset_metadata:q}
         """
-
-# Deduplicate by strain
-# Filter FASTAs by deduped metadata
-# Replace seq ids in FASTAs with strain
