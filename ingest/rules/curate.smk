@@ -261,7 +261,7 @@ rule split_ndjson_by_segment:
     shell:
         r"""
         zstdcat {input.deduped_ndjson:q} \
-            | ./scripts/split-gisaid-ndjson-by-segment \
+            | ./scripts/split-ndjson-by-segment \
                 --segments {params.segments:q} \
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
@@ -331,7 +331,7 @@ def metadata_selector(wildcards):
 def metadata_fields(wildcards) -> str:
     """
     Returns config defined columns and any additional segment
-    columns added by ./scripts/split-gisaid-ndjson-by-segment
+    columns added by ./scripts/split-ndjson-by-segment
     """
     metadata_columns = config["filtering"][wildcards.dataset]["metadata_columns"].copy()
     for segment in config["segments"]:
