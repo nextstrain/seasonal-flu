@@ -253,11 +253,13 @@ rule split_ndjson_by_segment:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
         id_field=config["curate"]["output_id_field"],
+        select_seq="gisaid",
     shell:
         r"""
         zstdcat {input.deduped_ndjson:q} \
             | ./scripts/split-ndjson-by-segment \
                 --segments {params.segments:q} \
+                --select-seq {params.select_seq:q} \
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
                 --output-id-field {params.id_field:q} 2> {log:q}
