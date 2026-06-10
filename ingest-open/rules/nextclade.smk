@@ -5,20 +5,20 @@ and sequences.
 
 
 def _get_nextclade_config(wildcards):
-    return config["nextclade"][wildcards.dataset][wildcards.segment]
+    return config["nextclade"][wildcards.lineage][wildcards.segment]
 
 
 rule get_nextclade_dataset:
     """Download Nextclade dataset"""
     output:
-        dataset="data/nextclade/{dataset}/{segment}.zip",
+        dataset="data/{lineage}/{segment}/nextclade.zip",
     params:
         nextclade_dataset=lambda w: _get_nextclade_config(w)["dataset_name"],
         dataset_tag=lambda w: _get_nextclade_config(w).get("dataset_tag", "latest"),
     benchmark:
-        "benchmarks/get_nextclade_dataset/{dataset}/{segment}.txt"
+        "benchmarks/{lineage}/{segment}/get_nextclade_dataset.txt"
     log:
-        "logs/get_nextclade_dataset/{dataset}/{segment}.txt"
+        "logs/{lineage}/{segment}/get_nextclade_dataset.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -33,14 +33,14 @@ rule get_nextclade_dataset:
 
 rule run_nextclade:
     input:
-        dataset="data/nextclade/{dataset}/{segment}.zip",
-        sequences="results/{dataset}/{segment}.fasta",
+        dataset="data/{lineage}/{segment}/nextclade.zip",
+        sequences="results/{lineage}/{segment}.fasta",
     output:
-        nextclade="results/{dataset}/{segment}/nextclade.tsv",
+        nextclade="results/{lineage}/{segment}/nextclade.tsv",
     benchmark:
-        "benchmarks/run_nextclade/{dataset}/{segment}.txt"
+        "benchmarks/{lineage}/{segment}/run_nextclade.txt"
     log:
-        "logs/run_nextclade/{dataset}/{segment}.txt"
+        "logs/{lineage}/{segment}/run_nextclade.txt"
     threads: 1
     shell:
         r"""
@@ -56,23 +56,23 @@ rule run_nextclade:
 
 rule add_derived_haplotypes:
     input:
-        nextclade="results/{dataset}/{segment}/nextclade.tsv",
+        nextclade="results/{lineage}/{segment}/nextclade.tsv",
     output:
-        haplotypes="results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv",
+        haplotypes="results/{lineage}/{segment}/nextclade_with_derived_haplotypes.tsv",
     params:
         genes=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["genes"],
         clade_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["clade_column"],
         mutations_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["mutations_column"],
         derived_haplotype_column=lambda w: _get_nextclade_config(w)["derived_haplotypes"]["derived_haplotype_column"],
     benchmark:
-        "benchmarks/{dataset}/{segment}/add_derived_haplotypes.txt"
+        "benchmarks/{lineage}/{segment}/add_derived_haplotypes.txt"
     log:
-        "logs/{dataset}/{segment}/add_derived_haplotypes.txt"
+        "logs/{lineage}/{segment}/add_derived_haplotypes.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
 
-        python3 ../scripts/add_derived_haplotypes.py \
+        python3 {workflow.basedir}/../scripts/add_derived_haplotypes.py \
             --nextclade {input.nextclade:q} \
             --genes {params.genes:q} \
             --strip-genes \
@@ -87,24 +87,24 @@ rule add_emerging_haplotypes:
     input:
         # Adds to derived haplotypes file if it was also requested
         nextclade=lambda w: (
-            "results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv"
+            "results/{lineage}/{segment}/nextclade_with_derived_haplotypes.tsv"
             if _get_nextclade_config(w).get("derived_haplotypes")
-            else "results/{dataset}/{segment}/nextclade.tsv"),
-        haplotypes=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["haplotypes"],
+            else "results/{lineage}/{segment}/nextclade.tsv"),
+        haplotypes=lambda w: resolve_config_path(_get_nextclade_config(w)["emerging_haplotypes"]["haplotypes"]),
     output:
-        haplotypes="results/{dataset}/{segment}/nextclade_with_emerging_haplotypes.tsv",
+        haplotypes="results/{lineage}/{segment}/nextclade_with_emerging_haplotypes.tsv",
     params:
         clade_column=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["clade_column"],
         emerging_haplotype_column=lambda w: _get_nextclade_config(w)["emerging_haplotypes"]["emerging_haplotype_column"],
     benchmark:
-        "benchmarks/{dataset}/{segment}/add_emerging_haplotypes.txt"
+        "benchmarks/{lineage}/{segment}/add_emerging_haplotypes.txt"
     log:
-        "logs/{dataset}/{segment}/add_emerging_haplotypes.txt"
+        "logs/{lineage}/{segment}/add_emerging_haplotypes.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
 
-        python ../scripts/assign_haplotypes.py \
+        python {workflow.basedir}/../scripts/assign_haplotypes.py \
             --substitutions {input.nextclade:q} \
             --haplotypes {input.haplotypes:q} \
             --clade-column {params.clade_column:q} \
@@ -120,11 +120,11 @@ def _get_nextclade(wildcards):
     requested, so just use the emerging haplotypes file.
     """
     if _get_nextclade_config(wildcards).get("emerging_haplotypes"):
-        return "results/{dataset}/{segment}/nextclade_with_emerging_haplotypes.tsv"
+        return "results/{lineage}/{segment}/nextclade_with_emerging_haplotypes.tsv"
     elif _get_nextclade_config(wildcards).get("derived_haplotypes"):
-        return "results/{dataset}/{segment}/nextclade_with_derived_haplotypes.tsv"
+        return "results/{lineage}/{segment}/nextclade_with_derived_haplotypes.tsv"
     else:
-        return "results/{dataset}/{segment}/nextclade.tsv"
+        return "results/{lineage}/{segment}/nextclade.tsv"
 
 
 def _get_nextclade_field_map(wildcards):
@@ -151,15 +151,15 @@ rule subset_nextclade:
     input:
         nextclade=_get_nextclade,
     output:
-        subset_nextclade=temp("results/{dataset}/{segment}/subset_nextclade.tsv"),
+        subset_nextclade=temp("results/{lineage}/{segment}/subset_nextclade.tsv"),
     params:
         nextclade_id_field=lambda w: _get_nextclade_config(w)["id_field"],
         nextclade_field_map=lambda w: [f"{old}={new}" for old, new in _get_nextclade_field_map(w).items()],
         nextclade_fields=lambda w: ",".join(_get_nextclade_field_map(w).values()),
     benchmark:
-        "benchmarks/{dataset}/{segment}/subset_nextclade.txt"
+        "benchmarks/{lineage}/{segment}/subset_nextclade.txt"
     log:
-        "logs/{dataset}/{segment}/subset_nextclade.txt"
+        "logs/{lineage}/{segment}/subset_nextclade.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -176,20 +176,20 @@ rule subset_nextclade:
 
 def _get_subset_nextclade(wildcards):
     return {
-        segment: f"results/{wildcards.dataset}/{segment}/subset_nextclade.tsv"
+        segment: f"results/{wildcards.lineage}/{segment}/subset_nextclade.tsv"
         for segment in config["segments"]
-        if segment in config["nextclade"][wildcards.dataset]
+        if segment in config["nextclade"][wildcards.lineage]
     }
 
 
 rule join_metadata_and_nextclade:
     input:
         unpack(_get_subset_nextclade),
-        metadata="data/{dataset}/subset_metadata.tsv",
+        metadata="data/{lineage}/subset_metadata.tsv",
     output:
-        metadata="data/{dataset}/metadata_with_nextclade.tsv",
+        metadata="data/{lineage}/metadata_with_nextclade.tsv",
     params:
-        metadata_id_field=config["curate"]["output_id_field"],
+        metadata_id_field=config["curate"]["record_id_field"],
         # augur merge requires named inputs
         named_subset_nextclade=lambda w, input: (
             f"{segment}={path}"
@@ -197,14 +197,14 @@ rule join_metadata_and_nextclade:
             if segment != "metadata"
         ),
         nextclade_id_fields=lambda w, input: (
-            f"{segment}={config['nextclade'][w.dataset][segment]['id_field']}"
+            f"{segment}={config['nextclade'][w.lineage][segment]['id_field']}"
             for segment in input.keys()
             if segment != "metadata"
         )
     benchmark:
-        "benchmarks/{dataset}/join_metadata_and_nextclade.txt"
+        "benchmarks/{lineage}/join_metadata_and_nextclade.txt"
     log:
-        "logs/{dataset}/join_metadata_and_nextclade.txt"
+        "logs/{lineage}/join_metadata_and_nextclade.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
