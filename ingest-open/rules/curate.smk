@@ -158,13 +158,57 @@ rule deduplicate_ndjson_by_strain:
         """
 
 
+rule split_ndjson_by_segment:
+    input:
+        deduped_ndjson="data/{lineage}/deduped_curated.ndjson.zst",
+    output:
+        metadata="data/{lineage}/curated_metadata.tsv",
+        sequences=expand("results/{{lineage}}/{segment}.fasta", segment=config["segments"]),
+    benchmark:
+        "benchmarks/{lineage}/split_ndjson_by_segment.txt"
+    log:
+        "logs/{lineage}/split_ndjson_by_segment.txt"
+    params:
+        segments=config["segments"],
+        seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
+        id_field=config["curate"]["record_id_field"],
+        select_seq="error",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.deduped_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/split-ndjson-by-segment \
+                --segments {params.segments:q} \
+                --select-seq {params.select_seq:q} \
+                --output-metadata {output.metadata:q} \
+                --sequences-output-dir {params.seq_output_dir:q} \
+                --output-id-field {params.id_field:q}
+        """
+
+
+def metadata_fields(wildcards) -> str:
+    """
+    Returns config defined columns and any additional segment
+    columns added by ./scripts/split-ndjson-by-segment
+    """
+    metadata_columns = config["curate"]["metadata_columns"].copy()
+    for segment in config["segments"]:
+        metadata_columns.extend([
+            segment,
+            f"accession_{segment}",
+        ])
+    metadata_columns.append("n_segments")
+    return ",".join(metadata_columns)
+
+
 rule subset_metadata:
     input:
         metadata="data/{lineage}/curated_metadata.tsv",
     output:
         subset_metadata="results/{lineage}/metadata.tsv",
     params:
-        metadata_fields=",".join(config["curate"]["metadata_columns"]),
+        metadata_fields=metadata_fields,
     benchmark:
         "benchmarks/{lineage}/subset_metadata.txt"
     log:

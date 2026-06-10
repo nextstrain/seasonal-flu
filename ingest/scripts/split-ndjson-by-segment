@@ -125,6 +125,8 @@ def select_seq(seqs: list[dict], select_seq_type:str) -> dict:
     * "gisaid" - selects longest sequence then the latest accession, with latest
     accession represented by having the biggest integer after the "EPI" prefix
     in the accession.
+
+    * "error" - raise an error if there are multiple sequences per segment.
     """
     if select_seq_type == "gisaid":
         sorted_seqs = sorted(
@@ -133,6 +135,9 @@ def select_seq(seqs: list[dict], select_seq_type:str) -> dict:
             key=lambda s: (len(s["sequence"]), int(s["accession"].removeprefix("EPI"))),
             reverse=True)
         return sorted_seqs[0]
+    elif select_seq_type == "error":
+        assert len(seqs) <= 1, "There should only be one sequence per segment"
+        return seqs[0]
 
     raise ValueError(f"Encountered unexpected `select_seq_type`: {select_seq_type}")
 
@@ -160,7 +165,7 @@ if __name__ == '__main__':
         help="Segments to include in output directory.")
     parser.add_argument("--sequences-field", default="sequences",
         help="The record field that contains the segment sequences array.")
-    parser.add_argument("--select-seq", choices=["gisaid"],
+    parser.add_argument("--select-seq", choices=["gisaid", "error"],
         help=dedent("""\
             Rules for selecting sequence if there are multiple sequences for the
             same segment of the same record.
