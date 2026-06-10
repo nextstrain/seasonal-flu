@@ -81,9 +81,9 @@ curate:
   # Name to use for the generated abbreviated authors field
   abbr_authors_field: "authors"
 
-  local_geolocation_rules: ../ingest/defaults/geolocation_rules.tsv
+  local_geolocation_rules: ../../ingest/defaults/geolocation_rules.tsv
 
-  annotations: 'defaults/annotations.tsv'
+  annotations: 'annotations.tsv'
   annotations_id: 'strain'
 
   record_id_field: 'accession'

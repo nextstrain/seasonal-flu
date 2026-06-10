@@ -25,8 +25,8 @@ def format_field_map(field_map: dict[str, str]) -> list[str]:
 rule curate:
     input:
         ndjson="data/{lineage}/open.ndjson.zst",
-        geolocation_rules=config["curate"]["local_geolocation_rules"],
-        annotations=config["curate"]["annotations"],
+        geolocation_rules=resolve_config_path(config["curate"]["local_geolocation_rules"]),
+        annotations=resolve_config_path(config["curate"]["annotations"]),
     output:
         ndjson="data/{lineage}/curated.ndjson.zst",
     params:
@@ -105,10 +105,15 @@ def conditional(option, argument):
     raise WorkflowError(f"Workflow function conditional() received an argument value of unexpected type: {type(argument).__name__}")
 
 
+def get_prioritized_id_file(wildcards):
+    if prioritized_id_file := config["curate"].get("prioritized_strain_ids", {}).get(wildcards.lineage):
+        return resolve_config_path(prioritized_id_file)
+    return []
+
 rule prioritize_id_per_strain:
     input:
         curated_ndjson="data/{lineage}/curated.ndjson.zst",
-        prioritized_strain_ids=lambda w: config["curate"].get("prioritized_strain_ids", {}).get(w.lineage, []),
+        prioritized_strain_ids=get_prioritized_id_file,
     output:
         prioritized_ids="data/{lineage}/prioritized_ids.txt",
     benchmark:

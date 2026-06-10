@@ -11,3 +11,7 @@ workflows:
   ingest/build-configs/manual-upload:
     compatibility:
       nextstrain run: true
+
+  ingest-open:
+    compatibility:
+      nextstrain run: true
