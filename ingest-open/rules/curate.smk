@@ -7,7 +7,7 @@ REQUIRED INPUTS:
 
 OUTPUTS:
 
-    metadata      = results/{lineage}/metadata.tsv
+    metadata      = data/{lineage}/subset_metadata.tsv
     sequences     = results/{lineage}/{segment}.fasta
 
 """
@@ -211,7 +211,7 @@ rule subset_metadata:
     input:
         metadata="data/{lineage}/curated_metadata.tsv",
     output:
-        subset_metadata="results/{lineage}/metadata.tsv",
+        subset_metadata="data/{lineage}/subset_metadata.tsv",
     params:
         metadata_fields=metadata_fields,
     benchmark:

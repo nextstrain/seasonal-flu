@@ -28,6 +28,7 @@ rule all:
 
 include: "rules/fetch.smk"
 include: "rules/curate.smk"
+include: "rules/nextclade.smk"
 
 
 if "custom_rules" in config:
