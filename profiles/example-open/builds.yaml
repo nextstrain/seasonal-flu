@@ -1,0 +1,26 @@
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_released
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+builds:
+    "example_build":
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      lineage: "h3n2"
+      auspice_config: "config/h3n2/{segment}/auspice_config.json"
+      subsamples:
+        global:
+            filters: "--exclude-where 'ha!=True' 'na!=True'"
