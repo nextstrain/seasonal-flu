@@ -1,0 +1,404 @@
+host	common_name	taxonomic_order
+accipitercooperii	Cooper’s Hawk	Accipitriformes
+accipitergentilis	Northern Goshawk	Accipitriformes
+accipiternisus	Eurasian Sparrowhawk	Accipitriformes
+accipitertrivirgatus	Crested Goshawk	Accipitriformes
+aixsponsa	Wood Duck	Anseriformes
+african__stonechat	African Stonechat	Passeriformes
+aixgalericulata	Mandarin Duck	Anseriformes
+alectorischukar	Chukar Partridge	Galliformes
+american__black__duck	American Black Duck	Anseriformes
+americanpelican	American White Pelican	Pelecaniformes
+american__wigeon	American Wigeon	Anseriformes
+americanwigeon	American Wigeon	Anseriformes
+anade	Unknown	Anseriformes
+anassibilatrix	Chiloe Wigeon	Anseriformes
+anasboschas	Mallard (obsolete synonym)	Anseriformes
+anasacuta	Northern Pintail	Anseriformes
+anasamericana	American Wigeon	Anseriformes
+anasfalcata	Falcated Duck	Anseriformes
+anaspenelope	Eurasian Wigeon	Anseriformes
+anasflavirostris	Yellow-billed Teal	Anseriformes
+ansersp.	Unspecified goose (Anser sp.)	Anseriformes
+anseriformessp.	Unspecified waterfowl (Anseriformes)	Anseriformes
+anasquerquedula	Garganey	Anseriformes
+anseranserdomesticus	Domestic Goose	Anseriformes
+anserbrachyrhynchus	Pink-footed Goose	Anseriformes
+ansercanagica	Emperor Goose	Anseriformes
+ansercaerulescens	Snow Goose	Anseriformes
+ansercygnoides	Swan Goose	Anseriformes
+anasplatyrhynchosf.domestica	Domestic Duck	Anseriformes
+anas_platyrhynchos	Mallard	Anseriformes
+anascarolinensis	Green-winged Teal	Anseriformes
+anasclypeata	Northern Shoveler	Anseriformes
+anascrecca	Eurasian Teal	Anseriformes
+anascyanoptera	Cinnamon Teal	Anseriformes
+anasdiscors	Blue-winged Teal	Anseriformes
+anasgeorgica	Yellow-billed Pintail	Anseriformes
+anasformosa	Baikal Teal	Anseriformes
+anasplatyrhynchos	Mallard	Anseriformes
+anaspoecilorhyncha	Indian Spot-billed Duck	Anseriformes
+anasrubripes	American Black Duck	Anseriformes
+anassp.	Unspecified duck (Anas sp.)	Anseriformes
+anasstrepera	Gadwall	Anseriformes
+anasplatyrhynchosvar.domesticus	Domestic Duck	Anseriformes
+anasundalata	Yellow-billed Teal (South American form)	Anseriformes
+anseranser	Greylag Goose	Anseriformes
+anserfabalis	Bean Goose	Anseriformes
+anseralbifrons	Greater White-fronted Goose	Anseriformes
+anthropoidesvirgo	Demoiselle Crane	Gruiformes
+anserindicus	Bar-headed Goose	Anseriformes
+arenariainterpres	Ruddy Turnstone	Charadriiformes
+ardeacinerea	Grey Heron	Pelecaniformes
+anaszonorhyncha	Eastern Spot-billed Duck	Anseriformes
+aythyaaffinis	Lesser Scaup	Anseriformes
+anserrossii	Ross’s Goose	Anseriformes
+aythyamarila	Greater Scaup	Anseriformes
+aythyafuligula	Tufted Duck	Anseriformes
+aythyaamericana	Redhead	Anseriformes
+aythya_americana	Redhead	Anseriformes
+aythyanyroca	Ferruginous Duck	Anseriformes
+aythyacollaris	Ring-necked Duck	Anseriformes
+aythyaferina	Common Pochard	Anseriformes
+avian	Bird (unspecified)	Unknown
+anascastanea	Chestnut Teal	Anseriformes
+americanblackduck	American Black Duck	Anseriformes
+anasplatalea	Northern Shoveler (synonym/mislabel)	Anseriformes
+accipiter	Accipiter hawks (genus)	Accipitriformes
+anassuperciliosa	Pacific Black Duck	Anseriformes
+anasgracilis	Grey Teal	Anseriformes
+anaserythrorhyncha	Red-billed Teal	Anseriformes
+anassmithii	Pintail-type duck (obsolete/uncertain taxon)	Anseriformes
+ansererythropus	Lesser White-fronted Goose	Anseriformes
+anoustenuirostris	Slender-billed Gull	Charadriiformes
+aythyavalisineria	Canvasback	Anseriformes
+anasplatyrhynchosxanasacuta	Mallard × Northern Pintail (hybrid)	Anseriformes
+baldeagle	Bald Eagle	Accipitriformes
+bar__headed__goose	Bar-headed Goose	Anseriformes
+barnacle_goose	Barnacle Goose	Anseriformes
+beangoose	Bean Goose	Anseriformes
+bird	Bird (unspecified)	Unknown
+barn__swallow	Barn Swallow	Passeriformes
+blackvulture	Black Vulture	Accipitriformes
+black vulture	Black Vulture	Accipitriformes
+brantabernicla	Brent Goose	Anseriformes
+brown__headed__gull	Brown-headed Gull	Charadriiformes
+bucephalaclangula	Common Goldeneye	Anseriformes
+buteo	Buteo hawks (genus)	Accipitriformes
+baikal__teal	Baikal Teal	Anseriformes
+bewick's__swan	Bewick’s Swan	Anseriformes
+black__billed__magpie	Black-billed Magpie	Passeriformes
+babbler	Babbler (unspecified)	Passeriformes
+black-headedgull	Black-headed Gull	Charadriiformes
+buteobuteo	Common Buzzard	Accipitriformes
+buteojamaicensis	Red-tailed Hawk	Accipitriformes
+buteojaponicus	Eastern Buzzard	Accipitriformes
+blue__winged__teal	Blue-winged Teal	Anseriformes
+blue-wingedteal	Blue-winged Teal	Anseriformes
+bluegoose	Snow Goose (blue morph)	Anseriformes
+brantahutchinsii	Cackling Goose	Anseriformes
+brantacanadensis	Canada Goose	Anseriformes
+brantaleucopsis	Barnacle Goose	Anseriformes
+buteolineatus	Red-shouldered Hawk	Accipitriformes
+buteoaugur	Augur Buzzard	Accipitriformes
+baikalteal	Baikal Teal	Anseriformes
+bucephalaalbeola	Bufflehead	Anseriformes
+cairinamoschata	Muscovy Duck	Anseriformes
+calidrisalba	Sanderling	Charadriiformes
+calidris_canutus	Red Knot	Charadriiformes
+calidriscanutus	Red Knot	Charadriiformes
+calidrisminutilla	Least Sandpiper	Charadriiformes
+canada__goose	Canada goose	Anseriformes
+chencaerulescens	Snow Goose	Anseriformes
+chencanagica	Emperor Goose	Anseriformes
+chicken	Domestic Chicken	Galliformes
+chukar	Chukar Partridge	Galliformes
+chroicocephalusridibundus	Black-headed Gull	Charadriiformes
+ciconiaciconia	White Stork	Ciconiiformes
+common__pochard	Common Pochard	Anseriformes
+common__goldeneye	Common Goldeneye	Anseriformes
+common__coot	Eurasian Coot	Gruiformes
+common__pheasant	Common Pheasant	Galliformes
+commonteal	Eurasian Teal	Anseriformes
+common_teal	Eurasian Teal	Anseriformes
+condor	Condor (unspecified)	Accipitriformes
+cooper'shawk	Cooper’s Hawk	Accipitriformes
+cormorant	Cormorant (unspecified)	Suliformes
+corvus	Crows (Corvus genus)	Passeriformes
+copsychussaularis	Oriental Magpie-Robin	Passeriformes
+corvusmacrorhynchos	Large-billed Crow	Passeriformes
+coturnix	Old World quails (Coturnix genus)	Galliformes
+coturnixsp.	Unspecified quail (Coturnix sp.)	Galliformes
+coturniccoturnix	Common Quail	Galliformes
+coturnixjaponica	Japanese Quail	Galliformes
+chlidoniashybridus	Whiskered Tern	Charadriiformes
+crane	Crane (unspecified)	Gruiformes
+crow	Crow (unspecified)	Passeriformes
+cygnus	Swans (Cygnus genus)	Anseriformes
+cyrtonyxmontezumai	Montezuma Quail	Galliformes
+curlew	Curlew (unspecified)	Charadriiformes
+cygnusatratus	Black Swan	Anseriformes
+chinese__francolin	Chinese Francolin	Galliformes
+chroicocephaluscirrocephalus	Grey-headed Gull	Charadriiformes
+corvusfrugilegus	Rook	Passeriformes
+circusaeruginosus	Western Marsh Harrier	Accipitriformes
+corvussplendens	House Crow	Passeriformes
+cygnuscolumbianus	Tundra Swan	Anseriformes
+cygnuscygnus	Whooper Swan	Anseriformes
+cygnus_cygnus	Whooper Swan	Anseriformes
+cygnusolor	Mute Swan	Anseriformes
+calidrispusilla	Semipalmated Sandpiper	Charadriiformes
+cinnamonteal	Cinnamon Teal	Anseriformes
+calidrisruficollis	Red-necked Stint	Charadriiformes
+clangulahyemalis	Long-tailed Duck	Anseriformes
+combduck	Knob-billed Duck	Anseriformes
+chroicocephalus	Masked/Brown-headed gull group (genus)	Charadriiformes
+cygnusmelancoryphus	Black-necked Swan	Anseriformes
+calidrisfuscicollis	White-rumped Sandpiper	Charadriiformes
+catoptrophorussemipalmatus	Willet	Charadriiformes
+columbaguinea	Speckled Pigeon	Columbiformes
+calidrisalpina	Dunlin	Charadriiformes
+circus	Harriers (Circus genus)	Accipitriformes
+dabblingduck	Dabbling duck (ecological group)	Anseriformes
+dendrocygnaviduata	White-faced Whistling Duck	Anseriformes
+dendrocygnaautumnalis	Black-bellied Whistling Duck	Anseriformes
+domesticgoose	Domestic Goose	Anseriformes
+duck	Duck (unspecified)	Anseriformes
+dove	Dove (unspecified)	Columbiformes
+eagle	Eagle (unspecified)	Accipitriformes
+egret	Egret (unspecified)	Pelecaniformes
+egyptiangoose	Egyptian Goose	Anseriformes
+eurasiancurlew	Eurasian Curlew	Charadriiformes
+eurasian__eagel__owl	Eurasian Eagle-Owl	Strigiformes
+emperorgoose	Emperor Goose	Anseriformes
+eurasian__wigeon	Eurasian Wigeon	Anseriformes
+easterncurlew	Far Eastern Curlew	Charadriiformes
+falco	Falcons (Falco genus)	Falconiformes
+falcon	Falcon (unspecified)	Falconiformes
+falcoperegrinus	Peregrine faclon	Falconiformes
+finch	Finch (unspecified)	Passeriformes
+francolinus	Francolins (Francolinus genus)	Galliformes
+fowl	Fowl (unspecified/domestic birds)	Galliformes
+falcotinnunculus	Common kestrel	Falconiformes
+falscorusticolus	Eurasian Woodcock (likely Scolopax rusticola)	Charadriiformes
+gadwall	Gadwall	Anseriformes
+gallinulachloropus	Common Moorhen	Gruiformes
+gallus	Junglefowl (Gallus genus)	Galliformes
+gallusgallus	Red Junglefowl	Galliformes
+gallusgallusdomesticus	Domestic Chicken	Galliformes
+gallinagogallinago	Common Snipe	Charadriiformes
+goose	Goose (unspecified)	Anseriformes
+graculareligiosa	Common Hill Myna	Passeriformes
+great__black__headed__gull	Pallas’s Gull	Charadriiformes
+grey_teal	Grey Teal	Anseriformes
+greyteal	Grey Teal	Anseriformes
+garrulaxcanorus	Hwamei	Passeriformes
+garganey	Garganey	Anseriformes
+glaucous-wingedgull	Glaucous-winged Gull	Charadriiformes
+greygull	Grey Gull	Charadriiformes
+glaucousgull	Glaucous Gull	Charadriiformes
+great__crested__grebe	Great Crested Grebe	Podicipediformes
+greatcrestedgrebe	Great Crested Grebe	Podicipediformes
+greatbustard	Great Bustard	Otidiformes
+great__bustard	Great Bustard	Otidiformes
+greattit	Great Tit	Passeriformes
+greater__white__fronted__goose	Greater White-fronted Goose	Anseriformes
+greylaggoose	Greylag Goose	Anseriformes
+greylag_goose	Greylag Goose	Anseriformes
+grebe	Grebe (unspecified)	Podicipediformes
+green__winged__teal	Green-winged Teal	Anseriformes
+green-wingedteal	Green-winged Teal	Anseriformes
+grey__teal	Grey Teal	Anseriformes
+grey__heron	Grey Heron	Pelecaniformes
+guineafowl	Guineafowl (Numididae)	Galliformes
+gull	Gull (unspecified)	Charadriiformes
+gypsfulvus	Griffon Vulture	Accipitriformes
+gelochelidonnilotica	Gull-billed Tern	Charadriiformes
+halietusleucocephalus	Bald Eagle (misspelling of Haliaeetus)	Accipitriformes
+haliaeetusleucocephalus	Bald Eagle	Accipitriformes
+halietusalbicilla	White-tailed Eagle	Accipitriformes
+himantopushimantopusmelanurus	Black-winged Stilt	Charadriiformes
+larusfuscus	Lesser Black-backed Gull	Charadriiformes
+heron	Heron (unspecified)	Pelecaniformes
+herringgull	Herring Gull	Charadriiformes
+hirundorustica	Barn Swallow	Passeriformes
+houbara__bustard	Houbara Bustard	Otidiformes
+icelandgull	Iceland Gull	Charadriiformes
+japanese__white__eye	Japanese White-eye	Passeriformes
+japanese__quail	Japanese Quail	Galliformes
+larusarmenicus	Armenian Gull	Charadriiformes
+larusschistisagus	Slaty-backed Gull	Charadriiformes
+larussmithsonianus	American Herring Gull	Charadriiformes
+larusargentatus	European Herring Gull	Charadriiformes
+larusbrunnicephalus	Brown-headed Gull	Charadriiformes
+larusglaucescens	Glaucous-winged Gull	Charadriiformes
+larusmarinus	Great Black-backed Gull	Charadriiformes
+larusmelanocephalus	Mediterranean Gull	Charadriiformes
+laruscachinnans	Caspian Gull	Charadriiformes
+larosternainca	Inca Tern	Charadriiformes
+larusatricilla	Laughing Gull	Charadriiformes
+laruscanus	Common Gull	Charadriiformes
+larusdelawarensis	Ring-billed Gull	Charadriiformes
+larusdominicanus	Kelp Gull	Charadriiformes
+laughing__gull	Laughing Gull	Charadriiformes
+larus	Gull (Larus genus)	Charadriiformes
+larusichthyaetus	Pallas’s Gull	Charadriiformes
+larusridibundus	Black-headed Gull	Charadriiformes
+leucophaeusatricilla	Laughing Gull	Charadriiformes
+leucophaeus	Laughing gull group (genus)	Charadriiformes
+little__grebe	Little Grebe	Podicipediformes
+larushyperboreus	Glaucous Gull	Charadriiformes
+larusmichahellis	Yellow-legged Gull	Charadriiformes
+laruscrassirostris	Black-tailed Gull	Charadriiformes
+little__egret	Little Egret	Pelecaniformes
+lophuranycthemera	Silver Pheasant	Galliformes
+lophodytescucullatus	Hooded Merganser	Anseriformes
+larusglaucoides	Iceland Gull	Charadriiformes
+larusminutus	Little Gull	Charadriiformes
+leucophaeusscoresbii	Dolphin Gull	Charadriiformes
+larusnovaehollandiae	Silver Gull	Charadriiformes
+laruspipixcan	Franklin’s Gull	Charadriiformes
+magpie	Magpie (unspecified)	Passeriformes
+magpie__robin	Oriental Magpie-Robin	Passeriformes
+mallard	Mallard	Anseriformes
+milvusmigrans	Black Kite	Accipitriformes
+mallardduck	Mallard	Anseriformes
+marecapenelope	Eurasian Wigeon	Anseriformes
+murre	Murre (auks, genus Uria)	Charadriiformes
+morphnusguianensis	Crested Eagle	Accipitriformes
+mulardduck	Mulard Duck (hybrid domestic)	Anseriformes
+mute__swan	Mute Swan	Anseriformes
+muscovy__duck	Muscovy Duck	Anseriformes
+myna	Myna (unspecified)	Passeriformes
+meleagrisgallopavo	Wild Turkey	Galliformes
+melanittaperspicillata	Surf Scoter	Anseriformes
+marecaamericana	American Wigeon	Anseriformes
+melanittanigra	Common Scoter	Anseriformes
+melanittafusca	Velvet Scoter	Anseriformes
+melanittasp.	Scoter (Melanitta sp.)	Anseriformes
+melanittasp	Scoter (Melanitta sp.)	Anseriformes
+necrosyrtesmonachus	Hooded Vulture	Accipitriformes
+nisaetusnipalensis	Mountain Hawk-Eagle	Accipitriformes
+northernpintail	Northern Pintail	Anseriformes
+northern__shoveler	Northern Shoveler	Anseriformes
+northernshoveler	Northern Shoveler	Anseriformes
+numidasp.	Guineafowl (Numida sp.)	Galliformes
+northern__pintail	Northern Pintail	Anseriformes
+numidameleagris	Helmeted Guineafowl	Galliformes
+numeniusarquata	Eurasian Curlew	Charadriiformes
+numeniusphaeopus	Whimbrel	Charadriiformes
+nettarufina	Red-crested Pochard	Anseriformes
+nettapeposaca	Rosy-billed Pochard	Anseriformes
+openbill__stork	Asian Openbill	Ciconiiformes
+oreortyx	Mountain Quail	Galliformes
+ostrich	Ostrich	Struthioniformes
+oystercatcher	Oystercatcher (Haematopus spp.)	Charadriiformes
+otheravian	Bird (unspecified)	Unknown
+orientalwhitestork	Oriental Stork	Ciconiiformes
+onychoprionfuscatus	Sooty Tern	Charadriiformes
+oxyurajamaicensis	Ruddy Duck	Anseriformes
+oxyuraleucocephala	White-headed Duck	Anseriformes
+parabuteo	Harris’s hawk group (genus)	Accipitriformes
+parabuteounicinctus	Harris’s Hawk	Accipitriformes
+partridge	Partridge (unspecified)	Galliformes
+passerdomesticus	House Sparrow	Passeriformes
+parakeet	Parakeet (unspecified)	Psittaciformes
+parrot	Parrot (unspecified)	Psittaciformes
+passerine	Passerine bird	Passeriformes
+passermontanus	Eurasian Tree Sparrow	Passeriformes
+pavocristatus	Indian Peafowl	Galliformes
+peacock	Peafowl (male)	Galliformes
+peafowl	Peafowl	Galliformes
+phasianuscolchicus	Common Pheasant	Galliformes
+phasianus	Pheasant (Phasianus genus)	Galliformes
+phasaniussp.	Pheasant (unspecified)	Galliformes
+pheasant	Pheasant (unspecified)	Galliformes
+phasaniuscolchicus	Common pheasant	Galliformes
+pelican	Pelican (unspecified)	Pelecaniformes
+pelecanus	Pelicans (genus)	Pelecaniformes
+penguin	Penguin (unspecified)	Sphenisciformes
+peregrine__falcon	Peregrine Falcon	Falconiformes
+picapica	Eurasian Magpie	Passeriformes
+pica	Magpies (Pica genus)	Passeriformes
+pigeon	Pigeon (unspecified)	Columbiformes
+pink__footed__goose	Pink-footed Goose	Anseriformes
+polyplectronbicalcaratum	Grey Peacock-Pheasant	Galliformes
+podicepscristatus	Great Crested Grebe	Podicipediformes
+poultry	Domestic poultry	Galliformes
+pygoscelisantarcticus	Chinstrap Penguin	Sphenisciformes
+pink-earedduck	Pink-eared Duck	Anseriformes
+perdixperdix	Grey Partridge	Galliformes
+pygoscelisadeliae	Adélie Penguin	Sphenisciformes
+passer	Sparrows (Passer genus)	Passeriformes
+pavo	Peafowl (Pavo genus)	Galliformes
+quail	Quail (unspecified)	Galliformes
+rissatridactyla	Black-legged Kittiwake	Charadriiformes
+rynchopsniger	Black Skimmer	Charadriiformes
+rails	Rails (family Rallidae)	Gruiformes
+rail	Rail (unspecified)	Gruiformes
+ring-neckedduck	Ring-necked Duck	Anseriformes
+rook	Rook	Passeriformes
+ruddy__turnstone	Ruddy Turnstone	Charadriiformes
+ruddyturnstone	Ruddy Turnstone	Charadriiformes
+ruddyshelduck	Ruddy Shelduck	Anseriformes
+rosy__billed__pochard	Rosy-billed Pochard	Anseriformes
+sacredibis	Sacred Ibis	Pelecaniformes
+saker__falcon	Saker Falcon	Falconiformes
+sanderling	Sanderling	Charadriiformes
+sandpiper	Sandpiper (unspecified)	Charadriiformes
+scolopaxrusticola	Eurasian Woodcock	Charadriiformes
+shearwater	Shearwater (unspecified)	Procellariiformes
+shrike	Shrike (unspecified)	Passeriformes
+shorebird	Shorebird (unspecified)	Charadriiformes
+silky__chicken	Silkie Chicken	Galliformes
+silverteal	Silver Teal	Anseriformes
+snow__goose	Snow Goose	Anseriformes
+somateriamollissima	Common Eider	Anseriformes
+sparrow	Sparrow (unspecified)	Passeriformes
+speckledpigeon	Speckled Pigeon	Columbiformes
+starling	Starling (unspecified)	Passeriformes
+sternasandvicensis	Sandwich Tern	Charadriiformes
+swan	Swan (unspecified)	Anseriformes
+sterna	Terns (Sterna genus)	Charadriiformes
+sternahirundo	Common Tern	Charadriiformes
+sternaparadisaea	Arctic Tern	Charadriiformes
+streptopeliadecaocto	Eurasian Collared Dove	Columbiformes
+stork	Stork (unspecified)	Ciconiiformes
+swiftlet	Swiftlet (unspecified)	Apodiformes
+sternaelegans	Elegant Tern	Charadriiformes
+somateriafischeri	Spectacled Eider	Anseriformes
+sternaalbifrons	Little Tern	Charadriiformes
+sternafuscata	Sooty Tern	Charadriiformes
+stercorariuslonnbergi	South Polar Skua	Charadriiformes
+somateriaspectabilis	King Eider	Anseriformes
+sternulaalbifrons	Little Tern	Charadriiformes
+tachybaptusruficollis	Little Grebe	Podicipediformes
+tadornaferuginea	Ruddy Shelduck	Anseriformes
+tadornatadorna	Common Shelduck	Anseriformes
+teal	Teal (unspecified)	Anseriformes
+turkey	Turkey (unspecified/domestic)	Galliformes
+tern	Tern (unspecified)	Charadriiformes
+turtledove	Turtle Dove	Columbiformes
+tree__sparrow	Eurasian Tree Sparrow	Passeriformes
+turnstone	Turnstone (unspecified)	Charadriiformes
+tringasemipalmata	Willet	Charadriiformes
+tringatotanus	Common Redshank	Charadriiformes
+us_quail	Quail (unspecified)	Galliformes
+usquail	Quail (unspecified)	Galliformes
+waterbird	Waterbird	Unknown
+waterfowl	Waterfowl	Anseriformes
+wild__turkey	Wild Turkey	Galliformes
+wildwaterfowl	Wild waterfowl	Anseriformes
+white__bellied__bustard	White-bellied Bustard	Otidiformes
+white-frontedgoose	White-fronted Goose	Anseriformes
+wild__chicken	Wild Junglefowl	Galliformes
+wild__duck	Wild duck	Anseriformes
+wildbirds	Wild birds	Unknown
+whooper__swan	Whooper Swan	Anseriformes
+whooperswan	Whooper Swan	Anseriformes
+wildbird	Wild bird	Unknown
+xemasabini	Sabine’s Gull	Charadriiformes
+yellow__billed__duck	Yellow-billed Duck	Anseriformes
+yellow-billedpintail	Yellow-billed Pintail	Anseriformes
+yellow-billedteal	Yellow-billed Teal	Anseriformes
+zosteropsjaponicus	Japanese White-eye	Passeriformes
