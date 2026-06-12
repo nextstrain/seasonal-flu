@@ -155,7 +155,7 @@ rule subset_nextclade:
     params:
         nextclade_id_field=lambda w: _get_nextclade_config(w)["id_field"],
         nextclade_field_map=lambda w: [f"{old}={new}" for old, new in _get_nextclade_field_map(w).items()],
-        nextclade_fields=lambda w: ",".join(_get_nextclade_field_map(w).values()),
+        nextclade_fields=lambda w: ",".join(_get_nextclade_field_map(w).keys()),
     benchmark:
         "benchmarks/{dataset}/{segment}/subset_nextclade.txt"
     log:
@@ -164,13 +164,13 @@ rule subset_nextclade:
         r"""
         exec &> >(tee {log:q})
 
-        augur curate rename \
-            --metadata {input.nextclade:q} \
-            --id-column {params.nextclade_id_field:q} \
-            --field-map {params.nextclade_field_map:q} \
-            --output-metadata - \
-        | csvtk cut -t --fields {params.nextclade_fields:q} \
-        > {output.subset_nextclade:q}
+        csvtk cut -t {input.nextclade:q} \
+            --fields {params.nextclade_fields:q} \
+            | augur curate rename \
+                --metadata - \
+                --id-column {params.nextclade_id_field:q} \
+                --field-map {params.nextclade_field_map:q} \
+                --output-metadata {output.subset_nextclade:q}
         """
 
 
