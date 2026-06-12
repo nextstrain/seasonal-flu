@@ -169,7 +169,7 @@ NONHUMAN_MAMMAL = set([
     "camel", "rodent", 
     ])
 EQUINE = set([
-    "equine", "equuscaballus", "horse", "donkey", 
+    "equine", "equuscaballus", "horse", "donkey", "Equine",
 ])
 OTHER_HOSTS = set([
     "ferret", "insect", "laboratoryderived", "unknown", "animal", "host", "na", 
