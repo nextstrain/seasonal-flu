@@ -20,6 +20,7 @@ genspectrum_metadata_fields:
   - accessionVersion
   - specimenCollectorSampleId
   - sampleCollectionDate
+  - hostNameScientific
   - ncbiReleaseDate
   - country
   - division
@@ -34,6 +35,10 @@ genspectrum_metadata_fields:
   - insdcAccessionBase_seg7
   - insdcAccessionBase_seg8
 
+# Filter by fields available in GenSpecturm LAPIS
+genspectrum_filters:
+  hostNameScientific: "Homo sapiens"
+
 genspectrum_fastaHeaderTemplate: "{accession}_{.segment}"  # e.g. GS_00BCP0A_seg4
 
 curate:
@@ -42,6 +47,7 @@ curate:
     accessionVersion: accession_version
     specimenCollectorSampleId: strain
     sampleCollectionDate: date
+    hostNameScientific: host
     ncbiReleaseDate: date_released
     country: country
     division: division
@@ -99,6 +105,7 @@ curate:
     - country
     - division
     - location
+    - host
     - authors
     - full_authors
     - institution

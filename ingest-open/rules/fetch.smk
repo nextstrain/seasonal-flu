@@ -44,6 +44,7 @@ def _genspectrum_metadata_url(wildcards):
         "versionStatus": "LATEST_VERSION",
         "compression": "zstd",
         "fields": config["genspectrum_metadata_fields"],
+        **config["genspectrum_filters"],
     }
     query = urlencode(params, doseq=True, encoding="utf-8")
     return f"{endpoint}?{query}"
@@ -63,6 +64,7 @@ def _genspectrum_sequences_url(wildcards):
         "fastaHeaderTemplate": config["genspectrum_fastaHeaderTemplate"],
         "versionStatus": "LATEST_VERSION",
         "compression": "zstd",
+        **config["genspectrum_filters"],
     }
     query = urlencode(params, doseq=True, encoding="utf-8")
     return f"{endpoint}?{query}"
