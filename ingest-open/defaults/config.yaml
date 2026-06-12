@@ -89,11 +89,11 @@ curate:
 
   local_geolocation_rules: ../../ingest/defaults/geolocation_rules.tsv
 
-  annotations: 'annotations.tsv'
-  annotations_id: 'strain'
+  annotations: annotations.tsv
+  annotations_id: strain
 
-  record_id_field: 'accession'
-  strain_field: 'strain'
+  record_id_field: accession
+  strain_field: strain
 
   metadata_columns:
     - accession

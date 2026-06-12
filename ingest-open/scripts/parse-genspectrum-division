@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse Pathoplexus division field into two separate fields, "division" and "location".
+Parse GenSpectrum division field into two separate fields, "division" and "location".
 """
 import sys
 import argparse
