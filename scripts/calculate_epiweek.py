@@ -11,6 +11,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--metadata", required=True, help="metadata with a 'date' column")
+    parser.add_argument("--metadata-id-columns", nargs="+", help="names of possible id columns in the metadata")
     parser.add_argument("--strains", help="a list of strains to annotate epiweeks for using the given metadata")
     parser.add_argument("--attribute-name", default="epiweek", help="name to store annotations of epiweeks in JSON output")
     parser.add_argument("--output-node-data", required=True, help="node data JSON with epiweek annotations")
@@ -18,7 +19,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Read metadata.
-    metadata = read_metadata(args.metadata)
+    metadata = read_metadata(args.metadata, id_columns=args.metadata_id_columns)
 
     if args.strains:
         # Read strains.

@@ -68,6 +68,8 @@ rule export:
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
     output:
         auspice_json = "auspice/{build_name}_{segment}.json"
+    params:
+        strain_id = config.get("strain_id_field", "strain"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/export_{build_name}_{segment}.txt"
@@ -78,6 +80,7 @@ rule export:
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --metadata-id-columns {params.strain_id} \
             --node-data {input.node_data} \
             --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \

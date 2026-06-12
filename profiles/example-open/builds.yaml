@@ -1,7 +1,6 @@
-lat-longs: "config/lat_longs.tsv"
+strain_id_field: accession
 
-filter:
-  metadata-id-columns: accession
+lat-longs: "config/lat_longs.tsv"
 
 segments:
   - ha

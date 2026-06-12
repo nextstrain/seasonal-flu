@@ -148,6 +148,7 @@ rule prune_outliers:
         tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup_clean.nwk",
         outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
     params:
+        strain_id = config.get("strain_id_field", "strain"),
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
         cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
     resources:
@@ -158,6 +159,7 @@ rule prune_outliers:
             --tree {input.tree:q} \
             --aln {input.aln} \
             --dates {input.metadata} \
+            --metadata-id-column {params.strain_id} \
             --cutoff {params.cutoff} \
             {params.keep_strains_argument} \
             --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
@@ -235,7 +237,7 @@ rule refine:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
-        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
+        strain_id = config.get("strain_id_field", "strain"),
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
@@ -255,7 +257,7 @@ rule refine:
             --tree {input.tree} \
             --alignment {input.alignment} \
             --metadata {input.metadata} \
-            {params.metadata_id_columns_arg} \
+            --metadata-id-columns {params.strain_id} \
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
@@ -319,6 +321,7 @@ rule traits:
     output:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
     params:
+        strain_id = config.get("strain_id_field", "strain"),
         columns = config.get("traits", {}).get("columns", "region"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
@@ -330,6 +333,7 @@ rule traits:
         augur traits \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --metadata-id-columns {params.strain_id} \
             --output {output.node_data} \
             --columns {params.columns} \
             --confidence 2>&1 | tee {log}
@@ -461,7 +465,7 @@ rule tip_frequencies:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
     params:
-        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
+        strain_id = config.get("strain_id_field", "strain"),
         narrow_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("narrow_bandwidth", 1 / 20.0),
         wide_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("wide_bandwidth", 3 / 12.0),
         proportion_wide=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("proportion_wide", 0.0),
@@ -482,7 +486,7 @@ rule tip_frequencies:
             --method kde \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            {params.metadata_id_columns_arg} \
+            --metadata-id-columns {params.strain_id} \
             --narrow-bandwidth {params.narrow_bandwidth} \
             --wide-bandwidth {params.wide_bandwidth} \
             --proportion-wide {params.proportion_wide} \
@@ -499,6 +503,7 @@ rule annotate_recency_of_submissions:
     output:
         node_data = "builds/{build_name}/recency.json",
     params:
+        strain_id = config.get("strain_id_field", "strain"),
         submission_date_field=config.get("submission_date_field"),
         date_bins=config.get("recency", {}).get("date_bins"),
         date_bin_labels=config.get("recency", {}).get("date_bin_labels"),
@@ -512,6 +517,7 @@ rule annotate_recency_of_submissions:
         """
         python3 scripts/construct-recency-from-submission-date.py \
             --metadata {input.metadata} \
+            --metadata-id-columns {params.strain_id} \
             --submission-date-field {params.submission_date_field} \
             --date-bins {params.date_bins} \
             --date-bin-labels {params.date_bin_labels:q} \
@@ -524,6 +530,8 @@ rule annotate_epiweeks:
         metadata="builds/{build_name}/metadata.tsv",
     output:
         node_data="builds/{build_name}/epiweeks.json",
+    params:
+        strain_id = config.get("strain_id_field", "strain"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/annotate_epiweeks_{build_name}.txt"
@@ -533,6 +541,7 @@ rule annotate_epiweeks:
         """
         python3 scripts/calculate_epiweek.py \
             --metadata {input.metadata} \
+            --metadata-id-columns {params.strain_id} \
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
 
