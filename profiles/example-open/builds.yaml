@@ -10,6 +10,9 @@ segments:
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
 
+refine:
+  clock_filter_iqd: 10
+
 submission_date_field: date_released
 recency:
   date_bins: [7, 30, 90]
