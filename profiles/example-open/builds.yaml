@@ -1,5 +1,8 @@
 lat-longs: "config/lat_longs.tsv"
 
+filter:
+  metadata-id-columns: accession
+
 segments:
   - ha
   - na

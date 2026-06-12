@@ -137,6 +137,7 @@ rule subsample:
         strains = build_dir + "/{build_name}/strains_{subsample}.txt",
         filter_log = build_dir + "/{build_name}/strains_{subsample}_filter_log.tsv",
     params:
+        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
         filters =  lambda w: config["builds"][w.build_name]["subsamples"][w.subsample]["filters"],
         priorities = lambda w: f"--priority {build_dir}/{w.build_name}/titer_priorities.tsv" \
                                if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers' else ''
@@ -149,6 +150,7 @@ rule subsample:
         r"""
         augur filter \
             --metadata {input.metadata} \
+            {params.metadata_id_columns_arg} \
             {params.filters} \
             {params.priorities} \
             --output-strains {output.strains} \
@@ -167,10 +169,13 @@ rule select_strains:
         "benchmarks/select_strains_{build_name}.txt"
     log:
         "logs/select_strains_{build_name}.txt"
+    params:
+        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
     shell:
         """
         augur filter \
             --metadata {input.metadata} \
+            {params.metadata_id_columns_arg} \
             --exclude-all \
             --include {input.subsamples} \
             --output-metadata {output.metadata} \
@@ -189,11 +194,14 @@ rule select_sequences:
         "benchmarks/select_sequences_{build_name}_{segment}.txt"
     log:
         "logs/select_sequences_{build_name}_{segment}.txt"
+    params:
+        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
     shell:
         """
         augur filter \
             --sequences {input.sequences} \
             --metadata {input.metadata} \
+            {params.metadata_id_columns_arg} \
             --exclude-all \
             --include {input.strains} \
             --output-sequences {output.sequences} 2>&1 | tee {log}

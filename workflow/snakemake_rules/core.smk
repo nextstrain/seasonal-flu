@@ -235,6 +235,7 @@ rule refine:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
+        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
         coalescent = "const",
         date_inference = "marginal",
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
@@ -254,6 +255,7 @@ rule refine:
             --tree {input.tree} \
             --alignment {input.alignment} \
             --metadata {input.metadata} \
+            {params.metadata_id_columns_arg} \
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
@@ -459,6 +461,7 @@ rule tip_frequencies:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
     params:
+        metadata_id_columns_arg = lambda w: f"--metadata-id-columns {config['filter']['metadata-id-columns']}" if config.get("filter", {}).get("metadata-id-columns") else "",
         narrow_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("narrow_bandwidth", 1 / 20.0),
         wide_bandwidth=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("wide_bandwidth", 3 / 12.0),
         proportion_wide=lambda wildcards: config["builds"][wildcards.build_name].get("frequencies", {}).get("proportion_wide", 0.0),
@@ -479,6 +482,7 @@ rule tip_frequencies:
             --method kde \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            {params.metadata_id_columns_arg} \
             --narrow-bandwidth {params.narrow_bandwidth} \
             --wide-bandwidth {params.wide_bandwidth} \
             --proportion-wide {params.proportion_wide} \
