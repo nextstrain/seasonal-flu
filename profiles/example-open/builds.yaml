@@ -19,8 +19,9 @@ builds:
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
+      subclades: "config/h3n2/{segment}/subclades.tsv"
       lineage: "h3n2"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       subsamples:
         global:
-            filters: "--exclude-where 'ha!=True' 'na!=True'"
+            filters: "--exclude-where 'ha!=True' 'na!=True' --exclude-ambiguous-dates-by any --subsample-max-sequences 300 --group-by region month --min-date 3Y"
