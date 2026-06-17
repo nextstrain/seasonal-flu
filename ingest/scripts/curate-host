@@ -187,7 +187,6 @@ def guess_host_from_strain(strain_name: str) -> str:
 
 def read_avian_annotations(annotations_file):
     avian_annotations_dict = {}
-    
     with open(annotations_file, "r") as infile: 
         for line in infile: 
             host = line.split("\t")[0]
@@ -218,31 +217,31 @@ def format_host(avian_host_annotations, records: Iterable, strain_key:str, host_
 
         if gisaid_host in HUMAN:
             record['host'] = 'Human'
-            record['order'] = 'Human'
+#            record['order'] = 'Human'
         elif gisaid_host in AVIAN:
             record['host'] = 'Avian'
             order = return_avian_host(avian_host_annotations, gisaid_host)
-            record['order'] = order
+#            record['order'] = order
         elif gisaid_host in ENVIRONMENT:
             record['host'] = 'Environment'
-            record['order'] = 'Environment'
+#            record['order'] = 'Environment'
         elif gisaid_host in CATTLE:
             record['host'] = 'Cattle'
-            record['order'] = 'Cattle'
+#            record['order'] = 'Cattle'
         elif gisaid_host in EQUINE:
             record['host'] = 'Equine'
-            record['order'] = "Equine"
+#            record['order'] = "Equine"
         elif gisaid_host in NONHUMAN_MAMMAL:
             # extra logic to find cattle sequences that are annotated as mammal but are cattle
             if guess_host_from_strain(gisaid_strain) in CATTLE:
                 record['host'] = "Cattle"
-                record['order'] = "Cattle"
+#                record['order'] = "Cattle"
             else:
                 record['host'] = "Nonhuman Mammal"
-                record['order'] = "Nonhuman Mammal"
+#                record['order'] = "Nonhuman Mammal"
         elif gisaid_host in OTHER_HOSTS:
             record['host'] = "other"
-            record['order'] = "other"
+#            record['order'] = "other"
         else:
             print_err("cannot classify host for", gisaid_strain, record['host'])
 
@@ -254,7 +253,9 @@ if __name__ == '__main__':
     parser.add_argument("--host-field", required=True, help="The record field containing the host")
     args = parser.parse_args()
     
-    avian_host_annotations = read_avian_annotations(annotations_file)
+#    annotations_file = "avian-flu-host-annotations.tsv"
+#    avian_host_annotations = read_avian_annotations(annotations_file)
+#    print(avian_host_annotations)
 
     records = load_ndjson(sys.stdin)
     modified_records = format_host(avian_host_annotations, records, args.strain_field, args.host_field)
