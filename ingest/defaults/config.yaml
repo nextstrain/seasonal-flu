@@ -22,6 +22,7 @@
 gisaid_pairs: []
 
 # GISAID EPI ISL field to deduplicate the GISAID records by id prior to curation
+# and to filter out unwanted records at the start of the curation rule
 gisaid_id_field: Isolate_Id
 
 segments:
@@ -36,6 +37,9 @@ segments:
 
 # Config parameters related to the curate pipeline
 curate:
+  # The path to a file of records to exclude at the start of curation
+  # One record per line, with values from gisaid_id_field defined above
+  exclude: "defaults/exclude.txt"
   # The path to the local geolocation rules within the pathogen repo
   # The path should be relative to the ingest directory.
   local_geolocation_rules: "defaults/geolocation_rules.tsv"
@@ -92,7 +96,7 @@ curate:
   # our hardcoded strain name fixes
   # NOTE: we currently also use fauna TSVs which aren't defined in this config
   # we should add those fixes into this file in due course
-  strain_name_fixes: "defaults/strain_name_fixes.tsv" 
+  strain_name_fixes: "defaults/strain_name_fixes.tsv"
   gihsn_field: "gihsn_sample"
   age_field: "Host_Age"
   age_unit_field: "Host_Age_Unit"

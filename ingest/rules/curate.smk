@@ -42,6 +42,7 @@ def format_field_map(field_map: dict[str, str]) -> str:
 rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson",
+        exclude=config["curate"]["exclude"],
         lineage_annotations=config["curate"]["lineage_annotations"],
         strain_replacements_seasonal="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_replacements_avian="data/fauna-source-data/avian_flu_strain_name_fix.tsv",
@@ -58,6 +59,7 @@ rule curate:
     benchmark:
         "benchmarks/curate.txt"
     params:
+        gisaid_id_field=config["gisaid_id_field"],
         field_map=format_field_map(config["curate"]["field_map"]),
         gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
         gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
@@ -87,6 +89,9 @@ rule curate:
     shell:
         r"""
         (cat {input.sequences_ndjson:q} \
+            | ./scripts/filter-ndjson-by-value \
+                --field {params.gisaid_id_field:q} \
+                --exclude {input.exclude:q} \
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
