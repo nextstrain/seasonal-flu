@@ -16,6 +16,10 @@ I think the experience goes something like:
 3. Make code/TSV changes, following instructions here
 4. Rerun the curate pipeline & diff against (2). We want a user-friendly diffing approach which identifies what's changed without being too verbose
 
+## Exclude records
+
+If you run into "bad" records that you want to exclude entirely from the outputs,
+then add their GISAID EPI ISL to the `defaults/exclude.txt` file.
 
 ## Geography
 
@@ -36,5 +40,4 @@ Metadata which is _wrong_ is best corrected via a manual override for the specif
 GISAID Location fields with too much information are best corrected in step (1a) if they're a one-off or in step (1b) if you wish the rule to be applied to multiple records, or to future records.
 
 Spelling mistakes or synonyms are best corrected by adding rules to step (3b).
-For instance, we currently have a rule which changes the country "Timor-Leste" to "East Timor", encoded via the line in the TSV `*/Timor-Leste/*/*	*/East Timor/*/*` 
-
+For instance, we currently have a rule which changes the country "Timor-Leste" to "East Timor", encoded via the line in the TSV `*/Timor-Leste/*/*	*/East Timor/*/*`

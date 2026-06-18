@@ -11,13 +11,15 @@ from augur.io.print import print_err
 from augur.utils import read_entries
 
 
-def filter_by_value(records: Iterable[dict],
-                    field: str,
-                    include_values: set[str]) -> Iterable[dict]:
+def include_by_value(records: Iterable[dict],
+                     field: str,
+                     include: str) -> Iterable[dict]:
     """
     Filter *records* for record that has *field* value that are
-    included in the *include_values*.
+    included in the *include*.
     """
+    include_values = set(read_entries(include))
+
     for record in records:
         assert field in record, f"Records must include field {field!r}"
 
@@ -25,17 +27,44 @@ def filter_by_value(records: Iterable[dict],
             yield record
 
 
+def exclude_by_value(records: Iterable[dict],
+                     field: str,
+                     exclude: str) -> Iterable[dict]:
+    """
+    Drop records that have *field* value that are in the *exclude*.
+    """
+    exclude_values = set(read_entries(exclude))
+
+    for record in records:
+        assert field in record, f"Records must include field {field!r}"
+
+        if record[field] in exclude_values:
+            continue
+
+        yield record
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument("--field", required=True,
         help="The record field for filtering.")
-    parser.add_argument("--include", required=True,
+
+    options = parser.add_mutually_exclusive_group(required=True)
+    options.add_argument("--include",
         help="A text file with values to include, with one value per line.")
+    options.add_argument("--exclude",
+        help="A text file with values to exclude, with one value per line.")
 
     args = parser.parse_args()
 
-    include_values = set(read_entries(args.include))
     records = load_ndjson(stdin)
-    filtered_records = filter_by_value(records, args.field, include_values)
+
+    if args.include:
+        filtered_records = include_by_value(records, args.field, args.include)
+    elif args.exclude:
+        filtered_records = exclude_by_value(records, args.field, args.exclude)
+    else:
+        raise Exception("Ran into unhandled filtering path")
+
     dump_ndjson(filtered_records)
