@@ -98,6 +98,12 @@ builds:
           hardmin_date: 2004
           reference_EPI_ISL: EPI1857215
           reference_strain: A/Darwin/6/2021
+        CY114383:
+          filter: "--min-date 2009 --probabilistic-sampling --group-by year region --min-length 1400 --subsample-max-sequences 1500"
+          clade_offset: 0
+          hardmin_date: 2004
+          reference_EPI_ISL: EPI115646
+          reference_strain: A/Wisconsin/67/2005
   vic:
     ha:
       changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
