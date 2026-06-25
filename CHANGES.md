@@ -7,6 +7,11 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 26 June 2026
+
+- Added ingest-open workflow to ingest public data from GenSpectrum.
+  See the [ingest-open README](./ingest-open/README.md) for more details.
+
 # 8 June 2026
 
 - Add configuration interface, `traits`, to set the metadata columns to use for discrete trait analysis with `augur traits`.
