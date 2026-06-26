@@ -3,8 +3,8 @@ This part of the workflow merges inputs based on what is defined in the config.
 
 OUTPUTS:
 
-    metadata  = results/metadata.tsv
-    sequences = results/sequences_{segment}.fasta
+    metadata  = "data/{lineage}/metadata.tsv"
+    sequences = "data/{lineage}/{segment}.fasta"
 
 The config dict is expected to have a top-level `inputs` list that defines the
 separate inputs' name, metadata, and sequences. Optionally, the config can have
@@ -14,11 +14,13 @@ are combined with the default inputs:
 ```yaml
 inputs:
     - name: default
+      lineage: <lineage>
       metadata: <path-or-url>
       sequences: <path-or-url>
 
 additional_inputs:
     - name: private
+      lineage: <lineage>
       metadata: <path-or-url>
       sequences: <path-or-url>
 ```
@@ -28,6 +30,7 @@ Sequences can also be a defined a dict with keys for specific segments:
 ```yaml
 inputs:
     - name: default
+      lineage: <lineage>
       metadata: <path-or-url>
       sequences:
         ha: <path-or-url>
@@ -35,6 +38,7 @@ inputs:
 
 additional_inputs:
     - name: private
+      lineage: <lineage>
       metadata: <path-or-url>
       sequences:
         ha: <path-or-url>
@@ -82,11 +86,12 @@ def _parse_config_input(input):
 
     return info
 
-def _gather_inputs():
-    all_inputs = [*config['inputs'], *config.get('additional_inputs', [])]
+def _gather_inputs(lineage):
+    all_inputs = [i for i in [*config['inputs'], *config.get('additional_inputs', [])] if i['lineage']==lineage]
 
     if len(all_inputs)==0:
-        raise InvalidConfigError("Config must define at least one element in config.inputs or config.additional_inputs lists")
+        raise InvalidConfigError("Config must define at least one element in config.inputs or config.additional_inputs lists"
+            f"for lineage {lineage!r}, as this lineage was part of the config specified builds")
     if not all([isinstance(i, dict) for i in all_inputs]):
         raise InvalidConfigError("All of the elements in config.inputs and config.additional_inputs lists must be dictionaries. "
             "If you've used a command line '--config' double check your quoting.")
@@ -99,14 +104,20 @@ def _gather_inputs():
     if not any (['sequences' in i for i in all_inputs]):
         raise InvalidConfigError("At least one input must have 'sequences'")
 
-    available_keys = set(['name', 'metadata', 'sequences'])
+    available_keys = set(['name', 'lineage', 'metadata', 'sequences'])
     if any([len(set(el.keys())-available_keys)>0 for el in all_inputs]):
         raise InvalidConfigError(f"Each input (config.inputs and config.additional_inputs) can only include keys of {', '.join(available_keys)}")
 
     return {i['name']: _parse_config_input(i) for i in all_inputs}
 
-input_sources = _gather_inputs()
 
+def _named_metadata_files(w):
+    input_sources = _gather_inputs(w.lineage)
+    return {name: info['metadata'] for name,info in input_sources.items() if info.get('metadata', None)}
+
+def _named_sequence_files(w):
+    input_sources = _gather_inputs(w.lineage)
+    return list(filter(None, [info['sequences'](w) for info in input_sources.values() if info.get('sequences', None)]))
 
 rule merge_metadata:
     """
@@ -115,16 +126,16 @@ rule merge_metadata:
     - otherwise = augur merge
     """
     input:
-        **{name: info['metadata'] for name,info in input_sources.items() if info.get('metadata', None)}
+        unpack(_named_metadata_files),
     params:
         num_of_inputs = lambda w, input: len(input),
         metadata = lambda w, input: list(map("=".join, input.items()))
     output:
-        metadata = "results/metadata.tsv"
+        metadata = "data/{lineage}/metadata.tsv"
     log:
-        "logs/merge_metadata.txt",
+        "logs/{lineage}/merge_metadata.txt",
     benchmark:
-        "benchmarks/merge_metadata.txt"
+        "benchmarks/{lineage}/merge_metadata.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
@@ -148,15 +159,15 @@ rule merge_sequences:
     - otherwise = augur merge
     """
     input:
-        lambda w: list(filter(None, [info['sequences'](w) for info in input_sources.values() if info.get('sequences', None)]))
+        _named_sequence_files,
     params:
         num_of_inputs = lambda w, input: len(input),
     output:
-        sequences = "results/sequences_{segment}.fasta"
+        sequences = "data/{lineage}/{segment}.fasta"
     log:
-        "logs/{segment}/merge_sequences.txt",
+        "logs/{lineage}/{segment}/merge_sequences.txt",
     benchmark:
-        "benchmarks/{segment}/merge_sequences.txt"
+        "benchmarks/{lineage}/{segment}/merge_sequences.txt"
     shell:
         r"""
         exec &> >(tee {log:q})
