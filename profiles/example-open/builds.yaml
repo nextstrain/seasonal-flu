@@ -24,7 +24,7 @@ recency:
   upper_bin_label: older
 
 builds:
-    "example_build":
+    "example_open_build":
       reference: "config/h3n2/{segment}/reference.fasta"
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
