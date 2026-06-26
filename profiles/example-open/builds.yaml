@@ -1,3 +1,6 @@
+custom_rules:
+  - profiles/example-open/overwrite_auspice_config.smk
+
 inputs:
   - name: example
     lineage: h3n2
@@ -31,7 +34,9 @@ builds:
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
       lineage: "h3n2"
-      auspice_config: "config/h3n2/{segment}/auspice_config.json"
+      # Created in the workflow with custom rule `overwrite_auspice_config`
+      auspice_config: "data/h3n2/{segment}/auspice_config.json"
+      description: "profiles/example-open/description.md"
       subsamples:
         global:
             filters: "--exclude-where 'ha!=True' 'na!=True' --exclude-ambiguous-dates-by any --subsample-max-sequences 300 --group-by region month --min-date 3Y"
