@@ -1,6 +1,7 @@
 import datetime
 import pandas as pd
 from treetime.utils import numeric_date
+from snakemake.utils import min_version
 
 
 wildcard_constraints:
@@ -47,6 +48,14 @@ subclade_url_by_lineage_and_segment = {
         "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
     }
 }
+
+# Optionally support inputs to keep workflow backwards compatible
+if config.get("inputs"):
+    # Minimum Snakemake version needed for the storage plugins used in remote_files.smk
+    min_version("8.0.0")
+    include: "shared/vendored/snakemake/config.smk"
+    include: "shared/vendored/snakemake/remote_files.smk"
+    include: "workflow/snakemake_rules/merge_inputs.smk"
 
 include: "workflow/snakemake_rules/common.smk"
 
