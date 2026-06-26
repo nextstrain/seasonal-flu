@@ -1,5 +1,11 @@
 strain_id_field: accession
 
+inputs:
+  - name: example
+    lineage: h3n2
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/{segment}/sequences.fasta.zst
+
 lat-longs: "config/lat_longs.tsv"
 
 segments:
