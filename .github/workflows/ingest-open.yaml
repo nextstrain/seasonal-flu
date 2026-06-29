@@ -1,0 +1,42 @@
+name: Ingest open
+
+defaults:
+  run:
+    # This is the same as GitHub Action's `bash` keyword as of 20 June 2023:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+    #
+    # Completely spelling it out here so that GitHub can't change it out from under us
+    # and we don't have to refer to the docs to know the expected behavior.
+    shell: bash --noprofile --norc -eo pipefail {0}
+
+on:
+  schedule:
+    # Runs at 5:15pm UTC (10:15am PDT) similar to other automated pathogen ingests
+    - cron: '15 17 * * *'
+
+  workflow_dispatch:
+    inputs:
+      dockerImage:
+        description: "Specific container image to use for build (will override the default of `nextstrain build`)"
+        required: false
+        type: string
+
+jobs:
+  ingest:
+    permissions:
+      id-token: write
+    uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
+    secrets: inherit
+    with:
+      runtime: docker
+      env: |
+        NEXTSTRAIN_DOCKER_IMAGE: ${{ inputs.dockerImage }}
+      run: |
+        nextstrain build \
+          ingest-open \
+          upload_all \
+          --configfile build-configs/nextstrain-automation/config.yaml
+      artifact-paths: |
+        ingest-open/benchmarks/
+        ingest-open/logs/
+        ingest-open/.snakemake/log/
