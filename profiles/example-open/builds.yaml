@@ -1,0 +1,43 @@
+custom_rules:
+  - profiles/example-open/overwrite_auspice_config.smk
+
+strain_id_field: accession
+
+inputs:
+  - name: example
+    lineage: h3n2
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/{segment}/sequences.fasta.zst
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+refine:
+  clock_filter_iqd: 10
+
+submission_date_field: date_released
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+builds:
+    "example_open_build":
+      reference: "config/h3n2/{segment}/reference.fasta"
+      annotation: "config/h3n2/{segment}/genemap.gff"
+      tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
+      clades: "config/h3n2/ha/clades.tsv"
+      subclades: "config/h3n2/{segment}/subclades.tsv"
+      lineage: "h3n2"
+      # Created in the workflow with custom rule `overwrite_auspice_config`
+      auspice_config: "data/h3n2/{segment}/auspice_config.json"
+      description: "profiles/example-open/description.md"
+      subsamples:
+        global:
+            filters: "--exclude-where 'ha!=True' 'na!=True' --exclude-ambiguous-dates-by any --subsample-max-sequences 300 --group-by region month --min-date 3Y"

@@ -19,6 +19,11 @@ if __name__ == '__main__':
         help="tab-delimited metadata file"
     )
     parser.add_argument(
+        '--metadata-id-columns',
+        nargs="+",
+        help="names of possible id columns"
+    )
+    parser.add_argument(
         '--submission-date-field',
         default="date_submitted",
         help="field in the metadata with date that each sequences was submitted to its database"
@@ -58,7 +63,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    meta = read_metadata(args.metadata)
+    meta = read_metadata(args.metadata, id_columns=args.metadata_id_columns)
     meta[args.submission_date_field] = pd.to_datetime(
         meta[args.submission_date_field],
         errors="coerce",
