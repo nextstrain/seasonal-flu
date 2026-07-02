@@ -1,5 +1,4 @@
 haplotype	gene	site	alt
-J.2	clade	J.2
 J.2.2	clade	J.2.2
 J.2.3	clade	J.2.3
 
@@ -23,5 +22,9 @@ K:145N	HA1	145	N
 K:223I	clade	K
 K:223I	HA1	223	I
 
-K:328S	clade	K
-K:328S	HA1	328	S
+K:328T	clade	K
+K:328T	HA1	328	T
+
+K:79I-207Q	clade	K
+K:79I-207Q	HA1	79	I
+K:79I-207Q	HA1	207	Q
