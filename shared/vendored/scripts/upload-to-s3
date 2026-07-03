@@ -3,6 +3,12 @@ set -euo pipefail
 
 bin="$(dirname "$0")"
 
+# Temp artifacts, cleaned up however the script exits. Globals so the EXIT trap
+# sees them regardless of where in main() we leave (return, `exit`, or set -e).
+tmp=""
+workdir=""
+trap '[[ -n "$workdir" ]] && rm -rf "$workdir"; [[ -n "$tmp" ]] && rm -f "$tmp"' EXIT
+
 main() {
     local quiet=0
 
@@ -20,28 +26,62 @@ main() {
     local dst="${2:?A destination s3:// URL is required as the second argument.}"
     local cloudfront_domain="${3:-}"
 
+    # Fail early if $src is unreadable. Otherwise `tee < "$src"` below fails, but
+    # the background hasher/counter -- already blocked opening their fifos -- get
+    # no writer and hang instead of being cleaned up.
+    [[ -r "$src" ]] || { echo "upload-to-s3: cannot read source file: $src" >&2; exit 1; }
+
     local s3path="${dst#s3://}"
     local bucket="${s3path%%/*}"
     local key="${s3path#*/}"
 
-    local src_hash dst_hash no_hash=0000000000000000000000000000000000000000000000000000000000000000
-    src_hash="$("$bin/sha256sum" < "$src")"
+    # Read $src exactly once: while compressing it to a temp file, tee the same
+    # bytes to the hasher and the line counter. The old code read $src three
+    # separate times (sha256sum, wc -l, zstd); for the large aligned/sequences
+    # files those reads -- not the S3 transfer -- dominated the upload rules.
+    #
+    # Uploading a real file (rather than piping to `aws s3 cp -`) also lets the
+    # CLI parallelize the multipart transfer; a stdin stream can't seek and
+    # degrades to one slow stream. The temp lives next to $src (same big volume).
+    local upload_file="$src"
+    workdir="$(mktemp -d)"
+
+    local -a compressor=()
+    case "$dst" in
+        *.gz)  compressor=(gzip -c) ;;
+        *.xz)  compressor=(xz -2 -T0 -c) ;;
+        *.zst) compressor=(zstd -T0 -c) ;;
+    esac
+
+    local src_hash src_record_count
+    if [[ ${#compressor[@]} -gt 0 ]]; then
+        tmp="$(mktemp "$src.upload.XXXXXX")"
+        upload_file="$tmp"
+        mkfifo "$workdir/hash.fifo" "$workdir/count.fifo"
+        "$bin/sha256sum" < "$workdir/hash.fifo" > "$workdir/hash" &
+        local hash_pid=$!
+        wc -l < "$workdir/count.fifo" > "$workdir/count" &
+        local count_pid=$!
+        tee "$workdir/hash.fifo" "$workdir/count.fifo" < "$src" | "${compressor[@]}" > "$tmp"
+        # Wait one at a time: `wait a b` returns only b's status, so a failing
+        # hasher would be masked from set -e (uploading with a bad sha256sum).
+        wait "$hash_pid"
+        wait "$count_pid"
+        src_hash="$(cat "$workdir/hash")"
+        src_record_count="$(cat "$workdir/count")"
+    else
+        # No compression (e.g. the small *.json files) -- hash and count directly.
+        src_hash="$("$bin/sha256sum" < "$src")"
+        src_record_count="$(wc -l < "$src")"
+    fi
+
+    local dst_hash no_hash=0000000000000000000000000000000000000000000000000000000000000000
     dst_hash="$(aws s3api head-object --bucket "$bucket" --key "$key" --query Metadata.sha256sum --output text 2>/dev/null || echo "$no_hash")"
 
     if [[ $src_hash != "$dst_hash" ]]; then
-        # The record count may have changed
-        src_record_count="$(wc -l < "$src")"
-
         echo "Uploading $src → $dst"
-        if [[ "$dst" == *.gz ]]; then
-            gzip -c "$src"
-        elif  [[ "$dst" == *.xz ]]; then
-            xz -2 -T0 -c "$src"
-        elif [[ "$dst" == *.zst ]]; then
-            zstd -T0 -c "$src"
-        else
-            cat "$src"
-        fi | aws s3 cp --no-progress - "$dst" --metadata sha256sum="$src_hash",recordcount="$src_record_count" "$(content-type "$dst")"
+
+        aws s3 cp --no-progress "$upload_file" "$dst" --metadata sha256sum="$src_hash",recordcount="$src_record_count" "$(content-type "$dst")"
 
         if [[ -n $cloudfront_domain ]]; then
             echo "Creating CloudFront invalidation for $cloudfront_domain/$key"
