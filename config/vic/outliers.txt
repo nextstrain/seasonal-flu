@@ -62,3 +62,9 @@ B/Ukraine/2417/2024
 B/Ukraine/2318/2024 
 # [update-strains] NOTE: Following strain unable to be matched, but it also wasn't in fauna to start with:
 B/Ukraine/2319/2024 
+B/Astana/101/2026
+B/Shymkent/232/2026
+B/Astana/383/2026
+B/Astana/402/2026
+B/Astana/292/2026
+B/Astana/384/2026
