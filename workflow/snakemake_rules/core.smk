@@ -239,7 +239,8 @@ rule refine:
         date_inference = "marginal",
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
         clock_rate = clock_rate,
-        clock_std_dev = clock_std_dev
+        clock_std_dev = clock_std_dev,
+        divergence_units = lambda wildcards: config.get("refine", {}).get("divergence_units", "mutations-per-site"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
@@ -266,6 +267,7 @@ rule refine:
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
+            --divergence-units {params.divergence_units} \
             --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
         """
 

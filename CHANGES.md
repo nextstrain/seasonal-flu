@@ -7,6 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 21 July 2026
+
+- Added optional configurations param `refine.divergence_units` to support setting divergence units for `augur refine`.
+
 # 26 June 2026
 
 - Added ingest-open workflow to ingest public data from GenSpectrum.
