@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+"""
+Standardizes strain name to our expected patterns so that they can be used to
+deduplicate samples and be used as the id column.
+"""
+import argparse
+import sys
+from augur.io.json import dump_ndjson, load_ndjson
+from typing import Iterable
+
+
+def standardize_record_strains(records: Iterable,
+                               original_strain_field: str,
+                               id_field: str,
+                               new_strain_field: str) -> Iterable:
+    """
+    Adds the *new_strain_field* to the *records*, with standardized strain name
+    that was created from the *original_strain_field*.
+
+    Yields the modified records.
+    """
+
+    for record in records:
+        record = record.copy()
+        if original_strain_field not in record:
+            raise Exception(f"Records must have the expected original strain field: {original_strain_field!r}")
+        if id_field not in record:
+            raise Exception(f"Record must have the expected id field: {id_field!r}")
+
+        original_strain = record[original_strain_field].strip()
+        record_id = record[id_field].strip()
+        # TODO: standardize strain name
+        new_strain = original_strain or record_id
+        record[new_strain_field] = new_strain
+
+        yield record
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--strain-field", default="original_strain",
+        help="The record field containing the original strain name")
+    parser.add_argument("--id-field", default="accession",
+        help="The name of the id field to use as the back up strain name")
+    parser.add_argument("--new-strain-field", default="strain",
+        help="The name of the new field to add to the record with the standardized strain name")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(sys.stdin)
+    modified_records = standardize_record_strains(
+        records,
+        args.strain_field,
+        args.id_field,
+        args.new_strain_field)
+    dump_ndjson(modified_records)
