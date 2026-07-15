@@ -51,6 +51,7 @@ subclade_url_by_lineage_and_segment = {
 
 # Optionally support inputs to keep workflow backwards compatible
 if config.get("inputs"):
+
     # Minimum Snakemake version needed for the storage plugins used in remote_files.smk
     min_version("8.0.0")
 

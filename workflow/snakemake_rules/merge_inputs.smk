@@ -16,14 +16,18 @@ inputs:
     - name: default
       lineage: <lineage>
       metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
       sequences: <path-or-url>
 
 additional_inputs:
     - name: private
       lineage: <lineage>
       metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
       sequences: <path-or-url>
 ```
+The `id_field` key for each input is passed through to `augur merge
+--metadata-id-columns`. The merged metadata's id field is always named `strain`.
 
 Sequences can also be a defined a dict with keys for specific segments:
 
@@ -32,6 +36,7 @@ inputs:
     - name: default
       lineage: <lineage>
       metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
       sequences:
         ha: <path-or-url>
         na: <path-or-url>
@@ -40,6 +45,7 @@ additional_inputs:
     - name: private
       lineage: <lineage>
       metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
       sequences:
         ha: <path-or-url>
         na: <path-or-url>
@@ -71,6 +77,7 @@ def _parse_config_input(input):
     info = {
         "name": input["name"],
         "metadata": path_or_url(input["metadata"]) if input.get("metadata") else None,
+        "id_field": input["id_field"] if input.get("metadata") else None,
         "sequences": None,
     }
 
@@ -101,10 +108,12 @@ def _gather_inputs(lineage):
         raise InvalidConfigError("Each input (config.inputs and config.additional_inputs) must have a 'name' and 'metadata' and/or 'sequences'")
     if not any(['metadata' in i for i in all_inputs]):
         raise InvalidConfigError("At least one input must have 'metadata'")
+    if not all(['id_field' in i for i in all_inputs if 'metadata' in i]):
+        raise InvalidConfigError("Each input with 'metadata' must also have an 'id_field'")
     if not any (['sequences' in i for i in all_inputs]):
         raise InvalidConfigError("At least one input must have 'sequences'")
 
-    available_keys = set(['name', 'lineage', 'metadata', 'sequences'])
+    available_keys = set(['name', 'lineage', 'metadata', 'id_field', 'sequences'])
     if any([len(set(el.keys())-available_keys)>0 for el in all_inputs]):
         raise InvalidConfigError(f"Each input (config.inputs and config.additional_inputs) can only include keys of {', '.join(available_keys)}")
 
@@ -114,6 +123,10 @@ def _gather_inputs(lineage):
 def _named_metadata_files(w):
     input_sources = _gather_inputs(w.lineage)
     return {name: info['metadata'] for name,info in input_sources.items() if info.get('metadata', None)}
+
+def _metadata_id_fields(w):
+    input_sources = _gather_inputs(w.lineage)
+    return [f"{name}={info['id_field']}" for name,info in input_sources.items() if info.get('metadata', None)]
 
 def _named_sequence_files(w):
     input_sources = _gather_inputs(w.lineage)
@@ -126,7 +139,8 @@ rule merge_metadata:
     input:
         unpack(_named_metadata_files),
     params:
-        metadata = lambda w, input: list(map("=".join, input.items()))
+        metadata = lambda w, input: list(map("=".join, input.items())),
+        id_field = lambda w: _metadata_id_fields(w),
     output:
         metadata = "data/{lineage}/metadata.tsv"
     log:
@@ -139,8 +153,10 @@ rule merge_metadata:
 
         augur merge \
             --metadata {params.metadata:q} \
+            --metadata-id-columns {params.id_field:q} \
             --source-columns 'input_{{NAME}}' \
-            --output-metadata {output.metadata}
+            --output-metadata {output.metadata} \
+            --output-metadata-id-column strain
         """
 
 rule merge_sequences:
