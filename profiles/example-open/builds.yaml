@@ -4,9 +4,9 @@ custom_rules:
 inputs:
   - name: example
     lineage: h3n2
-    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst
+    metadata: ingest-open/results/h3n2/metadata.tsv
     id_field: strain
-    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/{segment}/sequences.fasta.zst
+    sequences: ingest-open/results/h3n2/{segment}.fasta
 
 lat-longs: "config/lat_longs.tsv"
 
