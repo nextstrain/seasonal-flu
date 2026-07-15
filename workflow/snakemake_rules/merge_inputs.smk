@@ -121,14 +121,11 @@ def _named_sequence_files(w):
 
 rule merge_metadata:
     """
-    This rule will run different commands depending on the number of inputs:
-    - one input = augur read-file
-    - otherwise = augur merge
+    Merges the metadata inputs (config.inputs + config.additional_inputs).
     """
     input:
         unpack(_named_metadata_files),
     params:
-        num_of_inputs = lambda w, input: len(input),
         metadata = lambda w, input: list(map("=".join, input.items()))
     output:
         metadata = "data/{lineage}/metadata.tsv"
@@ -140,23 +137,15 @@ rule merge_metadata:
         r"""
         exec &> >(tee {log:q})
 
-        if [[ {params.num_of_inputs:q} == 1 ]]; then
-            echo "[INFO] Reading single metadata input"
-            augur read-file {input:q} > {output.metadata:q}
-        else
-            echo "[INFO] Merging multiple metadata inputs"
-            augur merge \
-                --metadata {params.metadata:q} \
-                --source-columns 'input_{{NAME}}' \
-                --output-metadata {output.metadata}
-        fi
+        augur merge \
+            --metadata {params.metadata:q} \
+            --source-columns 'input_{{NAME}}' \
+            --output-metadata {output.metadata}
         """
 
 rule merge_sequences:
     """
-    This rule will run different commands depending on the number of inputs.
-    - one input = augur read-file
-    - otherwise = augur merge
+    Merges the sequences inputs (config.inputs + config.additional_inputs).
     """
     input:
         _named_sequence_files,
@@ -172,13 +161,7 @@ rule merge_sequences:
         r"""
         exec &> >(tee {log:q})
 
-        if [[ {params.num_of_inputs:q} == 1 ]]; then
-            echo "[INFO] Reading single sequences input"
-            augur read-file {input:q} > {output.sequences:q}
-        else
-            echo "[INFO] Merging multiple sequences inputs"
-            augur merge \
-                --sequences {input:q} \
-                --output-sequences {output.sequences:q}
-        fi
+        augur merge \
+            --sequences {input:q} \
+            --output-sequences {output.sequences:q}
         """

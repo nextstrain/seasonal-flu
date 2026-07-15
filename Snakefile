@@ -53,6 +53,18 @@ subclade_url_by_lineage_and_segment = {
 if config.get("inputs"):
     # Minimum Snakemake version needed for the storage plugins used in remote_files.smk
     min_version("8.0.0")
+
+    from packaging import version
+    from augur.__version__ import __version__ as augur_version
+    import sys
+
+    # Minimum Augur version needed for simple merge rules
+    min_augur_version = "34.0.0"
+    if version.parse(augur_version) < version.parse(min_augur_version):
+      print("This pipeline needs a newer version of augur than you currently have...")
+      print(f"Current augur version: {augur_version}. Minimum required: {min_augur_version}")
+      sys.exit(1)
+
     include: "shared/vendored/snakemake/config.smk"
     include: "shared/vendored/snakemake/remote_files.smk"
     include: "workflow/snakemake_rules/merge_inputs.smk"
