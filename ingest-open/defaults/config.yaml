@@ -45,7 +45,7 @@ curate:
   field_map:
     accession: accession
     accessionVersion: accession_version
-    specimenCollectorSampleId: strain
+    specimenCollectorSampleId: original_strain
     sampleCollectionDate: date
     hostNameScientific: host
     ncbiReleaseDate: date_released
@@ -54,10 +54,9 @@ curate:
     authors: full_authors
     authorAffiliations: institution
 
-  # TODO: add stricter regex
-  strain_regex: '^(A|B)/.+/.+$'
-  # Back up strain name field to use if 'strain' doesn't match regex above
-  strain_backup_fields: ['accession']
+  original_strain_field: original_strain
+  record_id_field: accession
+  strain_field: strain
 
   date_fields:
     - date
@@ -92,13 +91,11 @@ curate:
   annotations: annotations.tsv
   annotations_id: strain
 
-  record_id_field: accession
-  strain_field: strain
-
   metadata_columns:
     - accession
     - accession_version
     - strain
+    - original_strain
     - date
     - date_released
     - region
