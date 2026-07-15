@@ -31,8 +31,9 @@ rule curate:
         ndjson="data/{lineage}/curated.ndjson.zst",
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
-        strain_regex=config["curate"]["strain_regex"],
-        strain_backup_fields=config["curate"]["strain_backup_fields"],
+        original_strain_field=config["curate"]["original_strain_field"],
+        strain_field=config["curate"]["strain_field"],
+        record_id_field=config["curate"]["record_id_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         division_field=config["curate"]["genspectrum_division_field"],
@@ -56,9 +57,10 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map:q} \
             | augur curate normalize-strings \
-            | augur curate transform-strain-name \
-                --strain-regex {params.strain_regex:q} \
-                --backup-fields {params.strain_backup_fields:q} \
+            | {workflow.basedir}/scripts/standardize-strain-name \
+                --strain-field {params.original_strain_field:q} \
+                --new-strain-field {params.strain_field:q} \
+                --id-field {params.record_id_field:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
