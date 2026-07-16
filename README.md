@@ -108,14 +108,8 @@ create builds for other lineages and/or segments, make sure to download the data
 from GISAID then edit the config file to rerun ingest and create outputs for
 your data of interest.
 
-Copy the ingest outputs to the top level data folder
-
-```
-mkdir data
-cp -r ingest/results/* data/
-```
-
-Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
+Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with
+the results from the ingest workflow with the following command.
 
 ``` bash
 nextstrain build . --configfile profiles/gisaid/builds.yaml
