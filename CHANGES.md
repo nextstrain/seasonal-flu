@@ -7,10 +7,10 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
-# TBD
+# 22 July 2026
 
 - Added optional config parameter `inputs` for defining inputs for the phylogenetic workflow.
-  See the [merge inputs rules](./workflow/snakemake_rules/merge_inputs.smk) for more details.
+  See the [README](./README.md) for detailed instructions.
 
 # 21 July 2026
 
