@@ -178,7 +178,7 @@ rule split_ndjson_by_segment:
     params:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
-        id_field=config["curate"]["record_id_field"],
+        id_field=config["curate"]["output_id_field"],
         select_seq="error",
     shell:
         r"""

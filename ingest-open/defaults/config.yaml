@@ -91,6 +91,7 @@ curate:
   annotations: annotations.tsv
   annotations_id: strain
 
+  output_id_field: strain
   metadata_columns:
     - accession
     - accession_version
