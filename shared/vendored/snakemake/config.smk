@@ -2,6 +2,9 @@
 Shared functions to be used within a Snakemake workflow for handling
 workflow configs.
 """
+from dependencies import set_min_augur_version
+set_min_augur_version("34.1.0")
+
 import os
 import sys
 import yaml

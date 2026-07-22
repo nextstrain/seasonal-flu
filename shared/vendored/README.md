@@ -125,6 +125,7 @@ Snakemake workflow functions that are shared across many pathogen workflows that
 
 - [config.smk](snakemake/config.smk) - Shared functions for handling workflow configs.
 - [remote_files.smk](snakemake/remote_files.smk) - Exposes the `path_or_url` function which will use Snakemake's storage plugins to download/upload files to remote providers as needed.
+- [dependencies.py](./snakemake/dependencies.py) - Helper functions for checking dependency versions.
 
 
 ## Software requirements
