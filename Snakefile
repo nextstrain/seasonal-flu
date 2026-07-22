@@ -1,6 +1,7 @@
 import datetime
 import pandas as pd
 from treetime.utils import numeric_date
+from snakemake.utils import min_version
 
 
 wildcard_constraints:
@@ -47,6 +48,27 @@ subclade_url_by_lineage_and_segment = {
         "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
     }
 }
+
+# Optionally support inputs to keep workflow backwards compatible
+if config.get("inputs"):
+
+    # Minimum Snakemake version needed for the storage plugins used in remote_files.smk
+    min_version("8.0.0")
+
+    from packaging import version
+    from augur.__version__ import __version__ as augur_version
+    import sys
+
+    # Minimum Augur version needed for simple merge rules
+    min_augur_version = "34.0.0"
+    if version.parse(augur_version) < version.parse(min_augur_version):
+      print("This pipeline needs a newer version of augur than you currently have...")
+      print(f"Current augur version: {augur_version}. Minimum required: {min_augur_version}")
+      sys.exit(1)
+
+    include: "shared/vendored/snakemake/config.smk"
+    include: "shared/vendored/snakemake/remote_files.smk"
+    include: "workflow/snakemake_rules/merge_inputs.smk"
 
 include: "workflow/snakemake_rules/common.smk"
 

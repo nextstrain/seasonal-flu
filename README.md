@@ -108,14 +108,8 @@ create builds for other lineages and/or segments, make sure to download the data
 from GISAID then edit the config file to rerun ingest and create outputs for
 your data of interest.
 
-Copy the ingest outputs to the top level data folder
-
-```
-mkdir data
-cp -r ingest/results/* data/
-```
-
-Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
+Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with
+the results from the ingest workflow with the following command.
 
 ``` bash
 nextstrain build . --configfile profiles/gisaid/builds.yaml
@@ -141,6 +135,8 @@ To skip subsampling and use all records that you downloaded from GISAID, set `fi
             filters: ""
 ```
 
+## Configuration
+
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
 
 > [!IMPORTANT]
@@ -154,6 +150,46 @@ Explore the other configuration files in `profiles/`, to see other examples of h
 `clades` configuration should always point to the HA clade definition TSV.
 - The workflow only has subclade annotations for HA and NA segments, so remove
 the `subclades` configuration for other segments builds.
+
+### Inputs
+
+The configuration can include a top-level `inputs` list that defines the
+separate inputs' name, lineage, metadata, id field, and sequences.
+Optionally, the config can have a top-level `additional-inputs` list that is
+used to define additional data that are combined with the default inputs:
+
+```yaml
+inputs:
+    - name: default
+      lineage: h3n2
+      metadata: ingest/results/h3n2/metadata.tsv
+      id_field: strain
+      sequences: ingest/results/h3n2/{segment}.fasta
+
+additional_inputs:
+    - name: private
+      lineage: <lineage>
+      metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
+      sequences: <path-or-url>
+```
+The `id_field` key for each input is passed through to `augur merge --metadata-id-columns`.
+The merged metadata's id field is always named `strain` for downstream scripts.
+
+The `sequences` key can include the `{segment}` template to match to multiple
+segment filepaths. Sequences can also be a defined a dict with keys for specific segments
+if they have different filepaths.
+
+```yaml
+inputs:
+    - name: default
+      lineage: h3n2
+      metadata: ingest/results/h3n2/metadata.tsv
+      id_field: strain
+      sequences:
+        ha: ingest/results/h3n2/ha.fasta
+        na: ingest/new-results/h3n2/na.fasta
+```
 
 ## History
 

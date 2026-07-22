@@ -1,5 +1,9 @@
-custom_rules:
-  - profiles/ci/prepare_data.smk
+inputs:
+  - name: example_data
+    lineage: h3n2
+    metadata: example_data/h3n2_metadata.tsv
+    id_field: strain
+    sequences: example_data/h3n2_{segment}.fasta
 
 lat-longs: "config/lat_longs.tsv"
 

@@ -1,3 +1,9 @@
+inputs:
+  - name: local-ingest
+    lineage: h3n2
+    metadata: ingest/results/h3n2/metadata.tsv
+    id_field: strain
+    sequences: ingest/results/h3n2/{segment}.fasta
 
 lat-longs: "config/lat_longs.tsv"
 
