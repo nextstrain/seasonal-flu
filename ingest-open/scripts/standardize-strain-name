@@ -4,10 +4,16 @@ Standardizes strain name to our expected patterns so that they can be used to
 deduplicate samples and be used as the id column.
 """
 import argparse
+import re
 import sys
 from typing import Iterable
 from augur.io.file import open_file
 from augur.io.json import as_json, dump_ndjson, load_ndjson
+
+
+# Invalid characters for Augur metadata ids
+# See <https://docs.nextstrain.org/projects/augur/en/stable/faq/metadata.html#format>
+INVALID_CHARACTERS=re.compile(r"\s|\(|\)|\[|\]|{|}|\||#|>|<")
 
 
 def standardize_record_strains(records: Iterable,
@@ -29,7 +35,7 @@ def standardize_record_strains(records: Iterable,
                 raise Exception(f"Records must have the expected original strain field: {original_strain_field!r}")
 
             original_strain = record[original_strain_field].strip()
-            new_strain = original_strain
+            new_strain = standardize_strain_name(original_strain)
 
             if not new_strain:
                 print(as_json(record), file=invalid_strain_handle)
@@ -37,6 +43,14 @@ def standardize_record_strains(records: Iterable,
 
             record[new_strain_field] = new_strain
             yield record
+
+
+def standardize_strain_name(original_strain: str) -> str:
+    """
+    Standardize the *original_strain*
+    - remove invalid characters to fit Augur's criteria to be used as id
+    """
+    return re.sub(INVALID_CHARACTERS, "", original_strain)
 
 
 if __name__ == '__main__':
