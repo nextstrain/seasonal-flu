@@ -189,7 +189,7 @@ rule join_metadata_and_nextclade:
     output:
         metadata="data/{lineage}/metadata_with_nextclade.tsv",
     params:
-        metadata_id_field=config["curate"]["record_id_field"],
+        metadata_id_field=config["curate"]["output_id_field"],
         # augur merge requires named inputs
         named_subset_nextclade=lambda w, input: (
             f"{segment}={path}"
