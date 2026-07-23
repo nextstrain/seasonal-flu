@@ -84,6 +84,11 @@
       "type": "continuous"
     },
     {
+      "key": "na_muts",
+      "title": "NA mutations",
+      "type": "continuous"
+    },
+    {
       "key": "ep",
       "title": "Epitope mutations",
       "type": "continuous"
