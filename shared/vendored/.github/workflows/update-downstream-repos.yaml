@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Pass --force to git subrepo pull'
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}
@@ -106,7 +112,7 @@ jobs:
             git switch -c "$branch"
           fi
 
-          git subrepo pull "$VENDORED_PATH"
+          git subrepo pull "$VENDORED_PATH" ${{ inputs.force && '--force' || '' }}
 
           # Check for changes to determine if we need to create/update PRs
           changes=$(git rev-list --count "$parent".."$branch")
@@ -124,6 +130,8 @@ jobs:
             Subrepo changes may break workflows and require manual updates to
             fix errors. It is safe to add manual updates directly to this PR
             since they will not be overwritten by future automatic updates.
+
+            ${{ inputs.force && 'Subrepo updates were made with the `--force` flag so it overwrites any local changes in the subrepo.' || '' }}
         run: |
           if [[ "$changes" == "1" ]]; then
             git push origin HEAD
