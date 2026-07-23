@@ -299,6 +299,16 @@
       "type": "continuous"
     },
     {
+      "key": "ha_muts",
+      "title": "HA mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "ha1_muts",
+      "title": "HA1 mutations",
+      "type": "continuous"
+    },
+    {
       "key": "glyc",
       "title": "Glycosylation changes",
       "type": "continuous"

@@ -91,6 +91,11 @@
       "type": "continuous"
     },
     {
+      "key": "na_muts",
+      "title": "NA mutations",
+      "type": "continuous"
+    },
+    {
       "key": "glyc",
       "title": "Glycosylation changes",
       "type": "continuous"
