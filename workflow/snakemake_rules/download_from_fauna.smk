@@ -84,6 +84,7 @@ rule download_titers_from_fauna:
         "logs/download_titers_{lineage}_{center}_{passage}_{assay}.txt"
     shell:
         """
+        source {path_to_fauna}/.venv/bin/activate
         python3 {path_to_fauna}/tdb/download.py \
             --database {params.dbs} \
             --virus flu \
