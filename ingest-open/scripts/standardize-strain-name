@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""
+Standardizes strain name to our expected patterns so that they can be used to
+deduplicate samples and be used as the id column.
+"""
+import argparse
+import re
+import sys
+from typing import Iterable
+from augur.io.file import open_file
+from augur.io.json import as_json, dump_ndjson, load_ndjson
+
+
+# Invalid characters for Augur metadata ids
+# See <https://docs.nextstrain.org/projects/augur/en/stable/faq/metadata.html#format>
+INVALID_CHARACTERS=re.compile(r"\s|\(|\)|\[|\]|{|}|\||#|>|<")
+
+
+def standardize_record_strains(records: Iterable,
+                               original_strain_field: str,
+                               new_strain_field: str,
+                               invalid_strains_output: str) -> Iterable:
+    """
+    Adds the *new_strain_field* to the *records*, with standardized strain name
+    that was created from the *original_strain_field*.
+
+    Skips records that do not have a valid strain name.
+    Yields the modified records.
+    """
+
+    with open_file(invalid_strains_output, "w") as invalid_strain_handle:
+        for record in records:
+            record = record.copy()
+            if original_strain_field not in record:
+                raise Exception(f"Records must have the expected original strain field: {original_strain_field!r}")
+
+            original_strain = record[original_strain_field].strip()
+            new_strain = standardize_strain_name(original_strain)
+
+            if not new_strain:
+                print(as_json(record), file=invalid_strain_handle)
+                continue
+
+            record[new_strain_field] = new_strain
+            yield record
+
+
+def standardize_strain_name(original_strain: str) -> str:
+    """
+    Standardize the *original_strain*
+    - remove invalid characters to fit Augur's criteria to be used as id
+    """
+    return re.sub(INVALID_CHARACTERS, "", original_strain)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--strain-field", default="original_strain",
+        help="The record field containing the original strain name")
+    parser.add_argument("--new-strain-field", default="strain",
+        help="The name of the new field to add to the record with the standardized strain name")
+    parser.add_argument("--invalid-strains-output",
+        help="NDJSON to save records with invalid strain names that are excluded from the output to stdout")
+
+    args = parser.parse_args()
+
+    records = load_ndjson(sys.stdin)
+    modified_records = standardize_record_strains(
+        records,
+        args.strain_field,
+        args.new_strain_field,
+        args.invalid_strains_output)
+    dump_ndjson(modified_records)

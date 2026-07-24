@@ -29,10 +29,11 @@ rule curate:
         annotations=resolve_config_path(config["curate"]["annotations"]),
     output:
         ndjson="data/{lineage}/curated.ndjson.zst",
+        invalid_strains="data/{lineage}/invalid-strains.ndjson",
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
-        strain_regex=config["curate"]["strain_regex"],
-        strain_backup_fields=config["curate"]["strain_backup_fields"],
+        original_strain_field=config["curate"]["original_strain_field"],
+        strain_field=config["curate"]["strain_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         division_field=config["curate"]["genspectrum_division_field"],
@@ -56,9 +57,10 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map:q} \
             | augur curate normalize-strings \
-            | augur curate transform-strain-name \
-                --strain-regex {params.strain_regex:q} \
-                --backup-fields {params.strain_backup_fields:q} \
+            | {workflow.basedir}/scripts/standardize-strain-name \
+                --strain-field {params.original_strain_field:q} \
+                --new-strain-field {params.strain_field:q} \
+                --invalid-strains-output {output.invalid_strains:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -176,7 +178,7 @@ rule split_ndjson_by_segment:
     params:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
-        id_field=config["curate"]["record_id_field"],
+        id_field=config["curate"]["output_id_field"],
         select_seq="error",
     shell:
         r"""

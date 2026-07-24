@@ -7,6 +7,12 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 24 July 2026
+
+- Update ingest-open workflow to output the curated "strain" field as the
+  metadata and FASTA id field. The new "original_strain" field preserves the
+  original value of the strain name for display purposes.
+
 # 23 July 2026
 
 - Add colorings for the number of HA, HA1, and NA amino acid substitutions per node to corresponding gene trees for all subtypes. See [#250](https://github.com/nextstrain/seasonal-flu/pull/250) for details.
