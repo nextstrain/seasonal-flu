@@ -1,10 +1,27 @@
 custom_rules:
-  - workflow/snakemake_rules/download_from_s3.smk
   - profiles/nextstrain-public/rename.smk
   - profiles/nextstrain-public/deploy.smk
+  - profiles/nextstrain-open/overwrite_auspice_config.smk
 
 # URL for auto-deploying builds
 deploy_url: s3://nextstrain-data
+
+inputs:
+  - name: open-h3n2
+    lineage: h3n2
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/{segment}/sequences.fasta.zst
+  - name: open-h1n1pdm
+    lineage: h1n1pdm
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/{segment}/sequences.fasta.zst
+  - name: open-vic
+    lineage: vic
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/vic/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/vic/{segment}/sequences.fasta.zst
 
 lat-longs: "config/lat_longs.tsv"
 
@@ -15,17 +32,18 @@ segments:
 tree:
   tree-builder-args: "'-ninit 10 -n 4 -czb'"
 
-submission_date_field: date_submitted
+submission_date_field: date_released
 recency:
   date_bins: [7, 30, 90]
   date_bin_labels: ["last week", "last month", "last quarter"]
   upper_bin_label: older
 
 array-builds:
-  6M-hi-builds:
+  6M-builds:
     patterns:
       lineage:
         - h1n1pdm
+        - h3n2
         - vic
       min_date:
         - 6M
@@ -33,9 +51,9 @@ array-builds:
         - 6Y6M
       resolution:
         - 6m
-    build_name: "seasonal-flu_{lineage}_6m"
-    build_params: &shared-hi-build-params
-      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
+    build_name: "seasonal-flu_open_{lineage}_6m"
+    build_params: &shared-build-params
+      auspice_name: "seasonal-flu_open_{lineage}_{{segment}}_{resolution}"
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
@@ -45,26 +63,22 @@ array-builds:
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
-      enable_titer_models: true
       enable_embeddings: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
-      titer_collections:
-        - name: cdc_cell_hi
-          data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
+      description: "profiles/nextstrain-open/description.md"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
-          priorities: "titers"
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
-          priorities: "titers"
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date}
-  2Y-hi-builds:
+  2Y-builds:
     patterns:
       lineage:
         - h1n1pdm
+        - h3n2
         - vic
       min_date:
         - 2Y
@@ -72,30 +86,14 @@ array-builds:
         - 8Y
       resolution:
         - 2y
-    build_name: "seasonal-flu_{lineage}_2y"
-    build_params:
-      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
-      vaccines: "config/{lineage}/vaccine.json"
-      enable_glycosylation: true
-      enable_lbi: true
-      enable_titer_models: true
-      enable_embeddings: true
-      include: "'config/{lineage}/reference_strains.txt'"
-      exclude: "'config/{lineage}/outliers.txt'"
-      titer_collections:
-        - name: cdc_cell_hi
-          data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
+    build_name: "seasonal-flu_open_{lineage}_2y"
+    build_params: *shared-build-params
     subsamples: *subsampling-scheme
-  3Y-hi-builds:
+  3Y-builds:
     patterns:
       lineage:
         - h1n1pdm
+        - h3n2
         - vic
       min_date:
         - 3Y
@@ -103,13 +101,14 @@ array-builds:
         - 9Y
       resolution:
         - 3y
-    build_name: "seasonal-flu_{lineage}_3y"
-    build_params: *shared-hi-build-params
+    build_name: "seasonal-flu_open_{lineage}_3y"
+    build_params: *shared-build-params
     subsamples: *subsampling-scheme
-  6Y-hi-builds:
+  6Y-builds:
     patterns:
       lineage:
         - h1n1pdm
+        - h3n2
         - vic
       min_date:
         - 6Y
@@ -117,13 +116,14 @@ array-builds:
         - 12Y
       resolution:
         - 6y
-    build_name: "seasonal-flu_{lineage}_6y"
-    build_params: *shared-hi-build-params
+    build_name: "seasonal-flu_open_{lineage}_6y"
+    build_params: *shared-build-params
     subsamples: *subsampling-scheme
-  12Y-hi-builds:
+  12Y-builds:
     patterns:
       lineage:
         - h1n1pdm
+        - h3n2
         - vic
       min_date:
         - 12Y
@@ -131,118 +131,6 @@ array-builds:
         - 18Y
       resolution:
         - 12y
-    build_name: "seasonal-flu_{lineage}_12y"
-    build_params: *shared-hi-build-params
+    build_name: "seasonal-flu_open_{lineage}_12y"
+    build_params: *shared-build-params
     subsamples: *subsampling-scheme
-  6M-fra-builds:
-    patterns:
-      min_date:
-        - 6M
-      reference_min_date:
-        - 6Y6M
-      resolution:
-        - 6m
-    build_name: "seasonal-flu_h3n2_6m"
-    build_params: &shared-fra-build-params
-      lineage: h3n2
-      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
-      vaccines: "config/{lineage}/vaccine.json"
-      enable_glycosylation: true
-      enable_lbi: true
-      enable_titer_models: true
-      enable_embeddings: true
-      include: "'config/{lineage}/reference_strains.txt'"
-      exclude: "'config/{lineage}/outliers.txt'"
-      titer_collections:
-        - name: cdc_cell_fra
-          data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
-    subsamples: *subsampling-scheme
-  # 2Y H3N2 builds are a special case where we enable forecasts.
-  2Y-fra-builds:
-    patterns:
-      min_date:
-        - 2Y
-      reference_min_date:
-        - 8Y
-      resolution:
-        - 2y
-    build_name: "seasonal-flu_h3n2_2y"
-    build_params:
-      lineage: h3n2
-      auspice_name: "seasonal-flu_{lineage}_{{segment}}_{resolution}"
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
-      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
-      vaccines: "config/{lineage}/vaccine.json"
-      enable_glycosylation: true
-      enable_lbi: true
-      enable_titer_models: true
-      enable_forecasts: false
-      enable_embeddings: true
-      include: "'config/{lineage}/reference_strains.txt'"
-      exclude: "'config/{lineage}/outliers.txt'"
-      titer_collections:
-        - name: cdc_cell_fra
-          data: "data/h3n2/cdc_ferret_cell_fra_titers.tsv"
-    subsamples: *subsampling-scheme
-  3Y-fra-builds:
-    patterns:
-      min_date:
-        - 3Y
-      reference_min_date:
-        - 9Y
-      resolution:
-        - 3y
-    build_name: "seasonal-flu_h3n2_3y"
-    build_params: *shared-fra-build-params
-    subsamples: *subsampling-scheme
-  6Y-fra-builds:
-    patterns:
-      min_date:
-        - 6Y
-      reference_min_date:
-        - 12Y
-      resolution:
-        - 6y
-    build_name: "seasonal-flu_h3n2_6y"
-    build_params: *shared-fra-build-params
-    subsamples: *subsampling-scheme
-  12Y-fra-builds:
-    patterns:
-      min_date:
-        - 12Y
-      reference_min_date:
-        - 18Y
-      resolution:
-        - 12y
-    build_name: "seasonal-flu_h3n2_12y"
-    build_params: *shared-fra-build-params
-    subsamples: *subsampling-scheme
-
-# H3N2-specific fitness model
-fitness_model:
-  models:
-    - cTiter_x-ne_star
-    - ne_star-lbi
-  best_model: cTiter_x-ne_star
-  delta_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  pivot_interval: 6
-  delta_pivots: 1
-  months_back_for_current_samples: 6
-  max_years_for_distances: 5
-  number_of_forecast_samples: 1
-  excluded_node_data_fields:
-    - aa_muts
-    - aa_sequences
-    - muts
-    - num_date_confidence
-    - sequence
