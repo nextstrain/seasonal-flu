@@ -91,6 +91,8 @@ curate:
   annotations: annotations.tsv
   annotations_id: strain
 
+  reference_strains: ../config/{lineage}/reference_strains.txt
+  reference_column: is_reference
   output_id_field: strain
   metadata_columns:
     - accession
@@ -107,6 +109,7 @@ curate:
     - authors
     - full_authors
     - institution
+    - is_reference
 
 nextclade:
   nextclade:

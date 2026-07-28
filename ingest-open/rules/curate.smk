@@ -194,6 +194,52 @@ rule split_ndjson_by_segment:
         """
 
 
+# Modified from top level rule
+# <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L94-L113>
+rule build_reference_strains_table:
+    input:
+        references=resolve_config_path(config["curate"]["reference_strains"]),
+    output:
+        references="data/{lineage}/reference_strains.tsv",
+    params:
+        reference_column=config["curate"]["reference_column"],
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        csvtk add-header \
+            --names {params.id_field:q} \
+            {input.references:q} \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name {params.reference_column:q} \
+                --expression "'True'" > {output.references:q}
+        """
+
+
+# Modified from top level rule
+# https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L115-L137
+rule annotate_metadata_with_reference_strains:
+    input:
+        references="data/{lineage}/reference_strains.tsv",
+        metadata="data/{lineage}/curated_metadata.tsv",
+    output:
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
+    params:
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        if [[ -s {input.metadata:q} ]]; then
+            csvtk -t join \
+                --left-join \
+                --na "False" \
+                -f {params.id_field:q} \
+                {input.metadata:q} \
+                {input.references:q} > {output.metadata:q}
+        else
+            touch {output.metadata:q}
+        fi
+        """
+
 def metadata_fields(wildcards) -> str:
     """
     Returns config defined columns and any additional segment
@@ -211,7 +257,7 @@ def metadata_fields(wildcards) -> str:
 
 rule subset_metadata:
     input:
-        metadata="data/{lineage}/curated_metadata.tsv",
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
     output:
         subset_metadata="data/{lineage}/subset_metadata.tsv",
     params:
