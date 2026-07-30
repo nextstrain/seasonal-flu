@@ -116,6 +116,7 @@ builds:
           prefix: cell_hi_
           title: "Cell-passaged HI titers from ferret sera"
           genes: ["HA1"]
+          run_reference_models: true
         - name: egg_hi
           data: "data/h1n1pdm/who_ferret_egg_hi_titers.tsv"
           prefix: egg_hi_
