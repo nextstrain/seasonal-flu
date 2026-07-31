@@ -67,6 +67,11 @@ builds:
           prefix: cell_fra_
           title: "Cell-passaged FRA titers from ferret sera"
           genes: ["HA1"]
+        - name: egg_fra
+          data: "data/h3n2/who_ferret_egg_fra_titers.tsv"
+          prefix: egg_fra_
+          title: "Egg-passaged FRA titers from ferret sera"
+          genes: ["HA1"]
         - name: cell_hi
           data: "data/h3n2/who_ferret_cell_hi_titers.tsv"
           prefix: cell_hi_
