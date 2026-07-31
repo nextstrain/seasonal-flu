@@ -130,8 +130,8 @@ rule export_full_trees:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
-        antigenic_advance_from_human_titers=get_antigenic_advance_from_human_titers,
-        antigenic_distance_to_future=get_antigenic_distances_to_future,
+        #antigenic_advance_from_human_titers=get_antigenic_advance_from_human_titers,
+        #antigenic_distance_to_future=get_antigenic_distances_to_future,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         description = lambda w: config['builds'][w.build_name].get("description", "config/description.md"),
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
@@ -146,7 +146,7 @@ rule export_full_trees:
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} {input.antigenic_advance_from_human_titers} {input.antigenic_distance_to_future} \
+            --node-data {input.node_data} \
             --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
