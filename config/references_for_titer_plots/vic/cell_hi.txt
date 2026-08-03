@@ -1,17 +1,9 @@
-B/Austria/1359417/2021 # C, vaccine strain
-B/Victoria/16/2023 # C.3:208P
-B/Pennsylvania/14/2025 # C.3.1, CDC
-B/Tasmania/31/2025 # C.3.1
-B/Kanagawa/AC2414/2025 # C.3.1
-
-B/Dunedin/5/2025 # C.5.1:128K
-B/Utah/11/2023 # C.5.1:128K
-B/Kansas/5/2024 # C.5.1:128K,202V
-
-B/Missouri/3/2024 # C.5.6:199A, CDC
-B/Victoria/542/2025 # C.5.6:189A
-B/Darwin/152/2025 # C.5.6:75E,197K
-
+B/Austria/1359417/2021 # C.5, older vaccine
+B/Pennsylvania/14/2025 # C.3.1, vaccine
+B/Victoria/12/2026 # C.3.3
+B/Connecticut/5/2026 # C.3.3
+B/Alabama/7/2023 # C.5.6
+B/Darwin/152/2025 # C.5.6:75E-197K
 B/Canberra/141/2025 # C.5.6.1
-
-B/Texas/19/2024 # C.5.7
+B/NewMexico/6/2025 # C.5.6.1
+B/Tokyo/EIS13-776/2025 # C.5.6.1

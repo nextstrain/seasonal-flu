@@ -1,9 +1,7 @@
-A/DistrictOfColumbia/27/2023 # J.2:145N, vaccine strain
-A/Alaska/8/2025 # J.2.3
-A/Sydney/1359/2024 # J.2.4, vaccine strain
+A/Sydney/1359/2024 # J.2.4, older vaccine
 A/Mississippi/37/2025 # J.2.4, CDC's A/Sydney/1359/2024-like virus
-A/Wisconsin/114/2025 # K
-A/Darwin/1415/2025 # K
-A/Norway/8765/2025 # K
-A/Sydney/853/2025 # K
-A/Tokyo/EIS13-355/2025 # K:265G
+A/NewMexico/1/2026 # J.2.4:79V
+A/Darwin/1415/2025 # K, vaccine
+A/Wisconsin/114/2025 # K, CDC’s vaccine
+A/Perth/19/2026 # K:91N
+A/Victoria/192/2026 # K:272T
