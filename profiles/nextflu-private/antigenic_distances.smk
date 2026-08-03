@@ -3,7 +3,7 @@ ruleorder: export_private > export
 def get_antigenic_plot_paths(wildcards):
     paths = []
     for build_name in config["builds"].keys():
-        if "titers" in build_name:
+        if "titers" in build_name or "full" in build_name:
             for collection in config["builds"][build_name]["titer_collections"]:
                 if "ferret" in collection["data"]:
                     paths.append(f"figures/antigenic_distances_between_strains_{build_name}_ha_{collection['name']}.png")
