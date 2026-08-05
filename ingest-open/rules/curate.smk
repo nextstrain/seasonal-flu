@@ -29,10 +29,11 @@ rule curate:
         annotations=resolve_config_path(config["curate"]["annotations"]),
     output:
         ndjson="data/{lineage}/curated.ndjson.zst",
+        invalid_strains="data/{lineage}/invalid-strains.ndjson",
     params:
         field_map=format_field_map(config["curate"]["field_map"]),
-        strain_regex=config["curate"]["strain_regex"],
-        strain_backup_fields=config["curate"]["strain_backup_fields"],
+        original_strain_field=config["curate"]["original_strain_field"],
+        strain_field=config["curate"]["strain_field"],
         date_fields=config["curate"]["date_fields"],
         expected_date_formats=config["curate"]["expected_date_formats"],
         division_field=config["curate"]["genspectrum_division_field"],
@@ -56,9 +57,10 @@ rule curate:
             | augur curate rename \
                 --field-map {params.field_map:q} \
             | augur curate normalize-strings \
-            | augur curate transform-strain-name \
-                --strain-regex {params.strain_regex:q} \
-                --backup-fields {params.strain_backup_fields:q} \
+            | {workflow.basedir}/scripts/standardize-strain-name \
+                --strain-field {params.original_strain_field:q} \
+                --new-strain-field {params.strain_field:q} \
+                --invalid-strains-output {output.invalid_strains:q} \
             | augur curate format-dates \
                 --date-fields {params.date_fields:q} \
                 --expected-date-formats {params.expected_date_formats:q} \
@@ -176,7 +178,7 @@ rule split_ndjson_by_segment:
     params:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
-        id_field=config["curate"]["record_id_field"],
+        id_field=config["curate"]["output_id_field"],
         select_seq="error",
     shell:
         r"""
@@ -191,6 +193,52 @@ rule split_ndjson_by_segment:
                 --output-id-field {params.id_field:q}
         """
 
+
+# Modified from top level rule
+# <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L94-L113>
+rule build_reference_strains_table:
+    input:
+        references=resolve_config_path(config["curate"]["reference_strains"]),
+    output:
+        references="data/{lineage}/reference_strains.tsv",
+    params:
+        reference_column=config["curate"]["reference_column"],
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        csvtk add-header \
+            --names {params.id_field:q} \
+            {input.references:q} \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name {params.reference_column:q} \
+                --expression "'True'" > {output.references:q}
+        """
+
+
+# Modified from top level rule
+# https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L115-L137
+rule annotate_metadata_with_reference_strains:
+    input:
+        references="data/{lineage}/reference_strains.tsv",
+        metadata="data/{lineage}/curated_metadata.tsv",
+    output:
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
+    params:
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        if [[ -s {input.metadata:q} ]]; then
+            csvtk -t join \
+                --left-join \
+                --na "False" \
+                -f {params.id_field:q} \
+                {input.metadata:q} \
+                {input.references:q} > {output.metadata:q}
+        else
+            touch {output.metadata:q}
+        fi
+        """
 
 def metadata_fields(wildcards) -> str:
     """
@@ -209,7 +257,7 @@ def metadata_fields(wildcards) -> str:
 
 rule subset_metadata:
     input:
-        metadata="data/{lineage}/curated_metadata.tsv",
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
     output:
         subset_metadata="data/{lineage}/subset_metadata.tsv",
     params:
