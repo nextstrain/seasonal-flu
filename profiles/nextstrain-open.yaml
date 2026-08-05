@@ -1,0 +1,136 @@
+custom_rules:
+  - profiles/nextstrain-public/rename.smk
+  - profiles/nextstrain-public/deploy.smk
+  - profiles/nextstrain-open/overwrite_auspice_config.smk
+
+# URL for auto-deploying builds
+deploy_url: s3://nextstrain-data
+
+inputs:
+  - name: open-h3n2
+    lineage: h3n2
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/{segment}/sequences.fasta.zst
+  - name: open-h1n1pdm
+    lineage: h1n1pdm
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/{segment}/sequences.fasta.zst
+  - name: open-vic
+    lineage: vic
+    metadata: s3://nextstrain-data/files/workflows/seasonal-flu/vic/metadata.tsv.zst
+    id_field: strain
+    sequences: s3://nextstrain-data/files/workflows/seasonal-flu/vic/{segment}/sequences.fasta.zst
+
+lat-longs: "config/lat_longs.tsv"
+
+segments:
+  - ha
+  - na
+
+tree:
+  tree-builder-args: "'-ninit 10 -n 4 -czb'"
+
+submission_date_field: date_released
+recency:
+  date_bins: [7, 30, 90]
+  date_bin_labels: ["last week", "last month", "last quarter"]
+  upper_bin_label: older
+
+array-builds:
+  6M-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - h3n2
+        - vic
+      min_date:
+        - 6M
+      reference_min_date:
+        - 6Y6M
+      resolution:
+        - 6m
+    build_name: "seasonal-flu_open_{lineage}_6m"
+    build_params: &shared-build-params
+      auspice_name: "seasonal-flu_open_{lineage}_{{segment}}_{resolution}"
+      reference: "config/{lineage}/{{segment}}/reference.fasta"
+      annotation: "config/{lineage}/{{segment}}/genemap.gff"
+      tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
+      clades: "config/{lineage}/ha/clades.tsv"
+      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
+      vaccines: "config/{lineage}/vaccine.json"
+      enable_glycosylation: true
+      enable_lbi: true
+      enable_embeddings: true
+      include: "'config/{lineage}/reference_strains.txt'"
+      exclude: "'config/{lineage}/outliers.txt'"
+      description: "profiles/nextstrain-open/description.md"
+    subsamples: &subsampling-scheme
+      regions_except_europe:
+          filters: --query "(region != 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
+      europe:
+          filters: --query "(region == 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
+      references:
+          filters: --query "(is_reference == True)" --min-date {reference_min_date}
+  2Y-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - h3n2
+        - vic
+      min_date:
+        - 2Y
+      reference_min_date:
+        - 8Y
+      resolution:
+        - 2y
+    build_name: "seasonal-flu_open_{lineage}_2y"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
+  3Y-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - h3n2
+        - vic
+      min_date:
+        - 3Y
+      reference_min_date:
+        - 9Y
+      resolution:
+        - 3y
+    build_name: "seasonal-flu_open_{lineage}_3y"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
+  6Y-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - h3n2
+        - vic
+      min_date:
+        - 6Y
+      reference_min_date:
+        - 12Y
+      resolution:
+        - 6y
+    build_name: "seasonal-flu_open_{lineage}_6y"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
+  12Y-builds:
+    patterns:
+      lineage:
+        - h1n1pdm
+        - h3n2
+        - vic
+      min_date:
+        - 12Y
+      reference_min_date:
+        - 18Y
+      resolution:
+        - 12y
+    build_name: "seasonal-flu_open_{lineage}_12y"
+    build_params: *shared-build-params
+    subsamples: *subsampling-scheme
