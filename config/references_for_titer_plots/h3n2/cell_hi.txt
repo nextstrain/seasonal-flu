@@ -1,6 +1,6 @@
 A/Sydney/1359/2024 # J.2.4, older vaccine
 A/Mississippi/37/2025 # J.2.4, CDC's A/Sydney/1359/2024-like virus
-A/NewMexico/1/2026 # J.2.4:79V
+A/NewMexico/1/2026 # J.2.4.2
 A/Darwin/1415/2025 # K, vaccine
 A/Wisconsin/114/2025 # K, CDC’s vaccine
 A/Perth/19/2026 # K:91N
