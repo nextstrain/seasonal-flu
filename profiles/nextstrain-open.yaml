@@ -64,7 +64,9 @@ array-builds:
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
-      enable_embeddings: true
+      # Turn off embeddings for now since it errors for 6m builds
+      # See <https://github.com/nextstrain/seasonal-flu/pull/332#discussion_r3768509224>
+      enable_embeddings: false
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       description: "profiles/nextstrain-open/description.md"
