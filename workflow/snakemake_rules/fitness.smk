@@ -206,6 +206,52 @@ rule distances:
             --output {output.distances} 2>&1 | tee {log}
         """
 
+#
+# Calculate log convergence ratio sum
+#
+
+rule download_lcr_weights:
+    output:
+        weights="config/{lineage}/{segment}/lcr_weights.tsv",
+        windows="config/{lineage}/{segment}/lcr_windows.tsv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        weights_url=lambda wildcards: lcr_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment, {}).get("weights"),
+        windows_url=lambda wildcards: lcr_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment, {}).get("windows"),
+    shell:
+        """
+        curl -o {output.weights} "{params.weights_url}"
+        curl -o {output.windows} "{params.windows_url}"
+        """
+
+rule lcr_sum:
+    input:
+        tree = rules.refine.output.tree,
+        branch_lengths = rules.refine.output.node_data,
+        mutations = rules.ancestral.output.node_data,
+        weights = lambda w: rules.download_lcr_weights.output.weights.format(lineage=config["builds"][w.build_name]["lineage"], segment=w.segment),
+        windows = lambda w: rules.download_lcr_weights.output.windows.format(lineage=config["builds"][w.build_name]["lineage"], segment=w.segment),
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/lcr_sum.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/lcr_sum_{build_name}_{segment}.txt"
+    log:
+        "logs/lcr_sum_{build_name}_{segment}.txt"
+    resources:
+        mem_mb=8000,
+        time="00:30:00",
+    shell:
+        """
+        python3 scripts/calculate_lcr_sum.py \
+            --weights {input.weights} \
+            --windows {input.windows} \
+            --tree {input.tree} \
+            --branch-lengths {input.branch_lengths} \
+            --mutations {input.mutations} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
 def _get_node_data_for_predictors(wildcards):
     """Return a list of node data files for fitness predictors
     """
