@@ -135,6 +135,16 @@ To skip subsampling and use all records that you downloaded from GISAID, set `fi
             filters: ""
 ```
 
+## Open build
+
+The open build uses public data from GenSpectrum, which we curate and make publically available.
+
+Run the open builds with
+
+```bash
+nextstrain build . --configfile profiles/nextstrain-open.yaml
+```
+
 ## Configuration
 
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
