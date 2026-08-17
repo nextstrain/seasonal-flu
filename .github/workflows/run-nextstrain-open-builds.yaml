@@ -10,6 +10,15 @@ defaults:
     shell: bash --noprofile --norc -eo pipefail {0}
 
 on:
+  # This workflow will be triggered after the "Ingest open" workflow has completed on the "master" branch.
+  workflow_run:
+    workflows:
+      - Ingest open
+    types:
+      - completed
+    branches:
+      - master
+
   workflow_dispatch:
     inputs:
       dockerImage:
@@ -18,7 +27,65 @@ on:
         type: string
 
 jobs:
+  check-new-data:
+    if: |
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.check-cache.outputs.cache-hit }}
+    steps:
+      - name: Get sha256sum
+        id: get-sha256sum
+        env:
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: |
+          s3_urls=(
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/metadata.tsv.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/ha/sequences.fasta.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h1n1pdm/na/sequences.fasta.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/metadata.tsv.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/ha/sequences.fasta.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/h3n2/na/sequences.fasta.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/vic/metadata.tsv.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/vic/ha/sequences.fasta.zst"
+            "s3://nextstrain-data/files/workflows/seasonal-flu/vic/na/sequences.fasta.zst"
+          )
+
+          # Code below is modified from ingest/upload-to-s3
+          # https://github.com/nextstrain/ingest/blob/c0b4c6bb5e6ccbba86374d2c09b42077768aac23/upload-to-s3#L23-L29
+
+          no_hash=0000000000000000000000000000000000000000000000000000000000000000
+
+          for s3_url in "${s3_urls[@]}"; do
+            s3path="${s3_url#s3://}"
+            bucket="${s3path%%/*}"
+            key="${s3path#*/}"
+
+            s3_hash="$(aws s3api head-object --no-sign-request --bucket "$bucket" --key "$key" --query Metadata.sha256sum --output text 2>/dev/null || echo "$no_hash")"
+            echo "${s3_hash}" | tee -a ingest-open-output-sha256sum
+          done
+
+      - name: Check cache
+        id: check-cache
+        uses: actions/cache@v6
+        with:
+          path: ingest-open-output-sha256sum
+          key: ingest-open-output-sha256sum-${{ hashFiles('ingest-open-output-sha256sum') }}
+          lookup-only: true
+
+
   run-build:
+    # Run the workflow under two conditions
+    # 1. `workflow_run` triggered `check-new-data` and there's new data (no cache hit)
+    # 2. the workflow is being manually run by `workflow_dispatch`
+    needs: [check-new-data]
+    if: |
+      always() &&
+      (
+        (needs.check-new-data.result == 'success' && needs.check-new-data.outputs.cache-hit != 'true') ||
+        github.event_name == 'workflow_dispatch'
+      )
     permissions:
       id-token: write
     uses: nextstrain/.github/.github/workflows/pathogen-repo-build.yaml@master
