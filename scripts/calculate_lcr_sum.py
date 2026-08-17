@@ -2,7 +2,7 @@
 import argparse
 
 from augur.io import write_json
-from augur.utils import read_node_data, read_tree
+from augur.utils import annotate_parents_for_tree, read_node_data, read_tree
 from bisect import bisect_right
 import pandas as pd
 
@@ -17,40 +17,42 @@ def annotate_tree(mutations_by_node, tree, weights, starts, ends, dates):
     after_last_window = 0
 
     for node in tree.find_clades():
-        for child in node.clades:
-            # Get mutations between current node and its parent.
-            mutations = [
-                (gene, mutation)
-                for gene, gene_mutations in mutations_by_node[child.name].items()
-                for mutation in gene_mutations
-            ]
+        # Get mutations between current node and its parent.
+        mutations = [
+            (gene, mutation)
+            for gene, gene_mutations in mutations_by_node[node.name].items()
+            for mutation in gene_mutations
+        ]
 
-            # Find the window to use for scoring the current node (earliest end date after the branch date)
-            date = dates[child.name]
-            window = bisect_right(ends, date)
+        # Find the window to use for scoring the current node (earliest end date after the branch date)
+        date = dates[node.name]
+        window = bisect_right(ends, date)
 
-            # Calculate the log convergence ratio sum on the branch to the current node.
-            total += len(mutations)
-            branch = 0.0
+        # Calculate the log convergence ratio sum on the branch to the current node.
+        total += len(mutations)
+        branch = 0.0
 
-            if window == len(ends):
-                # Past every window's end, so score with the last window.
-                after_last_window += len(mutations)
-                window = len(ends) - 1
+        if window == len(ends):
+            # Past every window's end, so score with the last window.
+            after_last_window += len(mutations)
+            window = len(ends) - 1
 
-            if starts[window] > date:
-                outside_windows += len(mutations)
-            else:
-                for gene, mutation in mutations:
-                    weight = weights.get((f"{gene}:{mutation}", window))
-                    if weight is None:
-                        missing += 1
-                        continue
+        if starts[window] > date:
+            outside_windows += len(mutations)
+        else:
+            for gene, mutation in mutations:
+                weight = weights.get((f"{gene}:{mutation}", window))
+                if weight is None:
+                    missing += 1
+                    continue
 
-                    branch += weight
+                branch += weight
 
-            # Calculate cumulative log convergence ratio from root to current node.
-            lcr_sum[child.name] = lcr_sum[node.name] + branch
+        # Calculate cumulative log convergence ratio from root to current node.
+        lcr_sum[node.name] = branch
+        if getattr(node, "parent"):
+            lcr_sum[node.name] += lcr_sum.get(node.parent.name, 0.0)
+
 
     return lcr_sum, total, missing, outside_windows, after_last_window
 
@@ -80,6 +82,7 @@ def main(args):
 
     # Load tree.
     tree = read_tree(args.tree)
+    tree = annotate_parents_for_tree(tree)
 
     # Load amino acid mutations per gene on the branch to each node.
     mutations_by_node = {
