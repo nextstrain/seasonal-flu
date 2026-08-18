@@ -1,6 +1,3 @@
-custom_rules:
-  - profiles/nextstrain-open/overwrite_auspice_config.smk
-
 inputs:
   - name: example
     lineage: h3n2
@@ -34,10 +31,10 @@ builds:
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
       lineage: "h3n2"
-      # Created in the workflow with custom rule `overwrite_auspice_config`
       auspice_config:
         - "config/shared_auspice_configs/maintainers.json"
-        - "data/h3n2/{segment}/auspice_config.json"
+        - "config/shared_auspice_configs/open_data_provenance.json"
+        - "config/h3n2/{segment}/auspice_config.json"
       description: "profiles/nextstrain-open/description.md"
       subsamples:
         global:

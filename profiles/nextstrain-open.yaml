@@ -1,7 +1,6 @@
 custom_rules:
   - profiles/nextstrain-public/rename.smk
   - profiles/nextstrain-public/deploy.smk
-  - profiles/nextstrain-open/overwrite_auspice_config.smk
 
 # URL for auto-deploying builds
 deploy_url: s3://nextstrain-data
@@ -59,10 +58,10 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      # Created in the workflow with custom rule `overwrite_auspice_config`
       auspice_config:
         - "config/shared_auspice_configs/maintainers.json"
-        - "data/{lineage}/{{segment}}/auspice_config.json"
+        - "config/shared_auspice_configs/open_data_provenance.json"
+        - "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
