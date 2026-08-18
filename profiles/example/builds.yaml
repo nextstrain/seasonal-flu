@@ -27,7 +27,10 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       lineage: "h3n2"
-      auspice_config: "config/h3n2/{segment}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "config/h3n2/{segment}/auspice_config.json"
       subsamples:
         global:
             filters: "--exclude-where 'ha!=True' 'na!=True'"

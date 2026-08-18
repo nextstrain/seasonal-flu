@@ -37,7 +37,10 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
@@ -77,7 +80,10 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
@@ -130,7 +136,10 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "config/{lineage}/ha/clades.tsv"
       subclades: "config/{lineage}/{{segment}}/subclades.tsv"
-      auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
@@ -156,5 +165,3 @@ array-builds:
       country2:
           filters: "--group-by division year month --subsample-max-sequences 1500 --min-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
-
-
