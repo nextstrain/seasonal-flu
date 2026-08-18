@@ -35,7 +35,9 @@ builds:
       subclades: "config/h3n2/{segment}/subclades.tsv"
       lineage: "h3n2"
       # Created in the workflow with custom rule `overwrite_auspice_config`
-      auspice_config: "data/h3n2/{segment}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "data/h3n2/{segment}/auspice_config.json"
       description: "profiles/nextstrain-open/description.md"
       subsamples:
         global:

@@ -43,7 +43,10 @@ builds:
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "config/h3n2/ha/clades.tsv"
       subclades: "config/h3n2/{segment}/subclades.tsv"
-      auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_glycosylation: true
       enable_titer_models: true
@@ -95,7 +98,10 @@ builds:
       tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
       clades: "config/h1n1pdm/ha/clades.tsv"
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
-      auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
       vaccines: "config/h1n1pdm/vaccine.json"
       enable_glycosylation: true
       enable_titer_models: true
@@ -131,7 +137,10 @@ builds:
       tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
       clades: "config/vic/ha/clades.tsv"
       subclades: "config/vic/{segment}/subclades.tsv"
-      auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
+      auspice_config:
+        - "config/shared_auspice_configs/maintainers.json"
+        - "config/shared_auspice_configs/gisaid_data_provenance.json"
+        - "profiles/nextflu-private/vic/{segment}/auspice_config.json"
       vaccines: "config/vic/vaccine.json"
       enable_glycosylation: true
       enable_titer_models: true
