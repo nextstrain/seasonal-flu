@@ -1,4 +1,5 @@
 ruleorder: export_full_trees > export
+ruleorder: export_full_trees > export_private
 
 rule calculate_antigenic_advance_from_human_titers:
     input:
