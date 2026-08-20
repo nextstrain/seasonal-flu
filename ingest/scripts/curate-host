@@ -162,15 +162,15 @@ ENVIRONMENT = set([
 ])
 CATTLE = set(["dairycattle", "cattle", "cow", "bovine", "dairycow"])
 NONHUMAN_MAMMAL = set([
-    "bat", "canine", "feline", "harbourseal","mammals", "mink", "othermammals",
+    "bat", "canine", "equine", "equuscaballus", "horse", "donkey", "Equine","feline", "harbourseal","mammals", "mink", "othermammals",
     "primate","swine","pig", "susscrofadomesticus", "lion", "weasel", "raccoon__dog", "tiger",
     "dog", "large__cat", "mouse","murine","pika","seal","meerkat", "cat","feliscatus", "rousettusaegyptiacus","rodent", 
     "canislupusfamiliaris", "susscrofa", "susscrofascrofa", "musmusculus", "panda", 
     "camel", "rodent", 
     ])
-EQUINE = set([
-    "equine", "equuscaballus", "horse", "donkey", "Equine",
-])
+# EQUINE = set([
+#     "equine", "equuscaballus", "horse", "donkey", "Equine",
+# ])
 OTHER_HOSTS = set([
     "ferret", "insect", "laboratoryderived", "unknown", "animal", "host", "na", 
 ])
