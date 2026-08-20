@@ -48,6 +48,7 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
+      enable_lcr_sum: true
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/h3n2/reference_strains.txt"

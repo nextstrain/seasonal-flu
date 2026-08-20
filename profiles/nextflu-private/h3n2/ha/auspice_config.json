@@ -328,6 +328,11 @@
       "type": "continuous"
     },
     {
+      "key": "lcr_sum",
+      "title": "Convergence (Turner et al. 2026)",
+      "type": "continuous"
+    },
+    {
       "key": "region",
       "title": "Region",
       "type": "categorical"
