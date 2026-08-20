@@ -50,6 +50,9 @@ def _get_node_data_by_wildcards(wildcards):
     if config["builds"][wildcards.build_name].get("enable_embeddings", False):
         inputs.append(rules.convert_embedding_clusters_to_node_data.output.node_data)
 
+    if config["builds"][wildcards.build_name].get('enable_lcr_sum', False) and wildcards.segment in lcr_url_by_lineage_and_segment.get(config["builds"][wildcards.build_name].get("lineage"), {}):
+        inputs.append(rules.lcr_sum.output.node_data)
+
     if wildcards.segment == "ha":
         inputs.append(rules.annotate_derived_haplotypes.output.haplotypes)
 

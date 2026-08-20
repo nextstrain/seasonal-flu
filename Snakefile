@@ -49,6 +49,15 @@ subclade_url_by_lineage_and_segment = {
     }
 }
 
+lcr_url_by_lineage_and_segment = {
+    "h3n2": {
+        "ha": {
+            "weights": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/lcr_weights.tsv",
+            "windows": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/lcr_windows.tsv",
+        },
+    }
+}
+
 # Optionally support inputs to keep workflow backwards compatible
 if config.get("inputs"):
 
