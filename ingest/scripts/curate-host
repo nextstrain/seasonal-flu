@@ -204,8 +204,8 @@ def format_host(records: Iterable, strain_key:str, host_key:str) -> Iterable:
             record['host'] = 'Environment'
         elif gisaid_host in CATTLE:
             record['host'] = 'Cattle'
-        elif gisaid_host in EQUINE:
-            record['host'] = 'Equine'
+#        elif gisaid_host in EQUINE:
+#            record['host'] = 'Equine'
         elif gisaid_host in NONHUMAN_MAMMAL:
             # extra logic to find cattle sequences that are annotated as mammal but are cattle
             if guess_host_from_strain(gisaid_strain) in CATTLE:
