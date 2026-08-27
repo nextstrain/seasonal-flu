@@ -5,7 +5,7 @@ from snakemake.utils import min_version
 
 
 wildcard_constraints:
-    lineage = r'h1n1pdm|h3n2|vic|yam',
+    lineage = r'h1n1pdm|h3n2|vic|yam|h1n1',
     segment = r'pb2|pb1|pa|ha|np|na|mp|ns',
     center = r'who|cdc|crick|niid|crick|vidrl',
     passage = r'cell|egg',
