@@ -31,6 +31,9 @@ clade_url_by_lineage_and_segment = {
     },
     "vic": {
         "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/clades.tsv",
+    },
+    "h1n1": {
+        "ha": "https://raw.githubusercontent.com/nextstrain/seasonal-flu/refs/heads/master/config/h1n1/ha/clades.tsv",
     }
 }
 
@@ -46,6 +49,9 @@ subclade_url_by_lineage_and_segment = {
     "vic": {
         "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv",
         "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
+    },
+    "h1n1": {
+        "ha": "https://raw.githubusercontent.com/nextstrain/seasonal-flu/refs/heads/master/config/h1n1/ha/subclades.tsv",
     }
 }
 
