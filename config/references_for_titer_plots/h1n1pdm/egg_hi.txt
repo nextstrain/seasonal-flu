@@ -1,4 +1,5 @@
 A/Missouri/11/2025-egg # D.3.1, vaccine
 A/Maryland/8/2025-egg # D.3.1.1
 A/Darwin/1423/2025-egg # D.3.1.1
+A/Iceland/25-39422/2025-egg # D.3.1.1:205K, Crick
 A/Delaware/9/2026-egg # D.3.1.1:139N

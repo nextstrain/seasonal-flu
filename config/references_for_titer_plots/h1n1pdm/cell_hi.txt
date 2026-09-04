@@ -6,3 +6,4 @@ A/Tokyo/EIS13-602/2025 # D.3.1.1, NIID
 A/Massachusetts/22/2026 # D.3.1.1:139N, CDC
 A/Nevada/33/2026 # D.3.1.1:205K, CDC
 A/Tokyo/EIS13-961/2025 # D.3.1.1:155E, NIID
+A/Victoria/42/2025 # C.1.9.3:155E

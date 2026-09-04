@@ -5,3 +5,4 @@ A/Darwin/1415/2025 # K, vaccine
 A/Wisconsin/114/2025 # K, CDC’s vaccine
 A/Perth/19/2026 # K:91N
 A/Victoria/192/2026 # K:272T
+A/Kentucky/24/2026 # J.2.3
