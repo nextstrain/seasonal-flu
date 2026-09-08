@@ -203,7 +203,7 @@ flowchart LR
       ingest[[ingest]]
       triggerAvian[[trigger_avian_flu]]
       uploadTiters[[upload_titers]]
-      trigger[[trigger]]
+      triggerForecasts[[trigger_forecasts_flu]]
     end
 
     runPublic[run-public-builds]
@@ -215,16 +215,20 @@ flowchart LR
   end
 
   subgraph forecasts-flu
-    runModels[run-models]
+    subgraph runModels[run-models]
+      run_models[[run_models]]
+      trigger[[trigger]]
+    end
   end
 
   seasonal-flu ~~~ avian-flu
   seasonal-flu ~~~ forecasts-flu
-  ingest --> uploadTiters --> trigger
+  ingest --> uploadTiters --> triggerForecasts
   ingest --> triggerAvian -."inputs.triggerAvianFlu" .-> genoflu
+  triggerForecasts -."inputs.triggerForecastsFlu".-> runModels
+  run_models --> trigger
   trigger -."inputs.triggerPublic".-> runPublic
   trigger -."inputs.triggerNextfluPrivate".-> runPrivate
-  trigger -."inputs.triggerForecastsFlu".-> runModels
 ```
 
 ## History
