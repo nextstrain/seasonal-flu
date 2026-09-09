@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 
+from augur.io import write_json
 from augur.reconstruct_sequences import load_alignments
 from augur.titer_model import SubstitutionModel
-from augur.io import write_json
 from augur.utils import read_tree
 from collections import defaultdict
 import numpy as np
@@ -30,7 +30,11 @@ def annotate_tree(titer_model, tree, substitution_effect, n_samples, groups):
             # Calculate titer drop on the branch to the current node.
             posterior_dTiterSub[child.name] = np.zeros_like(posterior_dTiterSub[tree.root.name])
             for gene, mutation in mutations:
-                gene_mutation = f"{gene}:{mutation}"
+                # Mutations from the titer model take the form of "[ancestral
+                # allele][position][derived allele]". Since the titer model only
+                # estimates effects for derived alleles, we need to strip the
+                # ancestral allele from each mutation.
+                gene_mutation = f"{gene}:{mutation[1:]}"
                 if gene_mutation in substitution_effect:
                     for group_index, group in enumerate(groups):
                         posterior_dTiterSub[child.name][:, group_index] += substitution_effect[gene_mutation][group]
@@ -51,9 +55,6 @@ def main(args):
     if args.group_by:
         group_by.append(args.group_by)
 
-    if len(group_by) == 1:
-        group_by = group_by[0]
-
     effects_by_substitution = defaultdict(dict)
     distinct_groups = set()
     for group_key, group_df in substitution_effects.groupby(group_by, sort=False):
@@ -61,7 +62,7 @@ def main(args):
             effects_by_substitution[group_key[0]][group_key[1]] = group_df["value"].values
             distinct_groups.add(group_key[1])
         else:
-            effects_by_substitution[group_key]["all"] = group_df["value"].values
+            effects_by_substitution[group_key[0]]["all"] = group_df["value"].values
             distinct_groups.add("all")
 
     distinct_groups = sorted(distinct_groups)
@@ -115,19 +116,22 @@ def main(args):
                 prefix = f"{args.attribute_prefix}{group}_"
 
             node_data[node.name].update({
-                f"{prefix}dTiterSub": dTiterSub[group_index],
-                f"{prefix}dTiterSubLowerHPDI": dTiterSubLowerHPDI[group_index],
-                f"{prefix}dTiterSubUpperHPDI": dTiterSubUpperHPDI[group_index],
-                f"{prefix}cTiterSub": cTiterSub[group_index],
-                f"{prefix}cTiterSubLowerHPDI": cTiterSubLowerHPDI[group_index],
-                f"{prefix}cTiterSubUpperHPDI": cTiterSubUpperHPDI[group_index],
+                f"{prefix}dTiterSub": dTiterSub[group_index] * -1,
+                f"{prefix}dTiterSubLowerHPDI": dTiterSubLowerHPDI[group_index] * -1,
+                f"{prefix}dTiterSubUpperHPDI": dTiterSubUpperHPDI[group_index] * -1,
+                f"{prefix}cTiterSub": cTiterSub[group_index] * -1,
+                f"{prefix}cTiterSubLowerHPDI": cTiterSubLowerHPDI[group_index] * -1,
+                f"{prefix}cTiterSubUpperHPDI": cTiterSubUpperHPDI[group_index] * -1,
             })
 
     # Calculate mean substitution effects for the "all" group.
-    mean_effect_by_substitution = {
-        substitution: effects_by_substitution[substitution]["all"].mean().round(4)
-        for substitution in effects_by_substitution.keys()
-    }
+    if args.group_by:
+        mean_effect_by_substitution = {}
+    else:
+        mean_effect_by_substitution = {
+            substitution: effects_by_substitution[substitution]["all"].mean().round(4) * -1
+            for substitution in effects_by_substitution.keys()
+        }
 
     # Export the antigenic advance per node.
     write_json(

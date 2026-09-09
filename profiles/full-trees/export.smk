@@ -1,6 +1,9 @@
 ruleorder: export_full_trees > export
 ruleorder: export_full_trees > export_private
 
+human_antigenic_advance_attribute = "kikawa_2026_cTiterSub"
+ferret_antigenic_advance_attribute = "cell_hi_cTiterSub"
+
 rule calculate_antigenic_advance_from_human_titers:
     input:
         substitutions=lambda wildcards: f"profiles/full-trees/{config['builds'][wildcards.build_name]['lineage']}/{wildcards.titer_collection}.parquet",
@@ -50,16 +53,16 @@ rule parse_frequencies_and_ga_from_mlr_json:
 
 rule calculate_human_antigenic_distance_to_the_future:
     input:
-        titer_model="builds/{build_name}/ha/titers-sub-human/kikawa_2025_2026.json",
+        titer_model="builds/{build_name}/ha/titers-sub-human/kikawa_2026.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
         forecasts="builds/{build_name}/ha/mlr/freq_forecast.tsv",
-        tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
+        tip_attributes="builds/{build_name}/metadata.tsv",
         ha1_sequences_dir="builds/{build_name}/ha/translations",
     output:
         node_data="builds/{build_name}/human_antigenic_distance_to_future.json",
         table="builds/{build_name}/human_antigenic_distance_to_future.tsv",
     params:
-        min_date="2025-05-01",
+        min_date="2026-02-01",
         min_reference_year=2022,
         attribute_name="antigenic_distance_to_future_human",
         ha1_sequences="builds/{build_name}/ha/translations/HA1.fasta",
@@ -83,13 +86,13 @@ rule calculate_ferret_antigenic_distance_to_the_future:
         titer_model="builds/{build_name}/ha/titers-sub-model/cell_hi.json",
         titers=lambda wildcards: f"data/{config['builds'][wildcards.build_name]['lineage']}/who_ferret_cell_hi_titers.tsv",
         forecasts="builds/{build_name}/ha/mlr/freq_forecast.tsv",
-        tip_attributes="builds/{build_name}/ha/emerging_haplotypes.tsv",
+        tip_attributes="builds/{build_name}/metadata.tsv",
         ha1_sequences_dir="builds/{build_name}/ha/translations",
     output:
         node_data="builds/{build_name}/ferret_antigenic_distance_to_future.json",
         table="builds/{build_name}/ferret_antigenic_distance_to_future.tsv",
     params:
-        min_date="2025-05-01",
+        min_date="2026-02-01",
         min_reference_year=2022,
         attribute_name="antigenic_distance_to_future_ferret",
         ha1_sequences="builds/{build_name}/ha/translations/HA1.fasta",
@@ -112,7 +115,7 @@ def get_antigenic_advance_from_human_titers(wildcards):
     if "vic" not in wildcards.build_name and wildcards.segment == "ha":
         return [
             f"builds/{wildcards.build_name}/{wildcards.segment}/titers-sub-human/{titer_collection}.json"
-            for titer_collection in ["kikawa_2025", "kikawa_2025_2026", "kikawa_2025_2026_SCH", "kikawa_2025_2026_PENN"]
+            for titer_collection in ["kikawa_2026"]
         ]
     else:
         return []
@@ -131,8 +134,8 @@ rule export_full_trees:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
-        #antigenic_advance_from_human_titers=get_antigenic_advance_from_human_titers,
-        #antigenic_distance_to_future=get_antigenic_distances_to_future,
+        antigenic_advance_from_human_titers=get_antigenic_advance_from_human_titers,
+        antigenic_distance_to_future=get_antigenic_distances_to_future,
         auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
         description = lambda w: config['builds'][w.build_name].get("description", "config/description.md"),
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
@@ -147,10 +150,52 @@ rule export_full_trees:
         augur export v2 \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --node-data {input.node_data} \
+            --node-data {input.node_data} {input.antigenic_advance_from_human_titers} {input.antigenic_distance_to_future} \
             --include-root-sequence-inline \
             --lat-longs {input.lat_longs} \
             --auspice-config {input.auspice_config} \
             --description {input.description} \
             --output {output.auspice_json} 2>&1 | tee {log}
+        """
+
+rule get_antigenic_advance_attributes_per_tip:
+    input:
+        auspice_json="auspice/{build_name}_{segment}.json",
+    output:
+        tip_attributes="builds/{build_name}/{segment}/tip_attributes.tsv",
+    params:
+        attributes=[
+            "emerging_haplotype_ha",
+            human_antigenic_advance_attribute,
+            ferret_antigenic_advance_attribute,
+        ],
+    shell:
+        r"""
+        python scripts/auspice_tree_to_table.py \
+            --tree {input.auspice_json} \
+            --output-metadata {output.tip_attributes} \
+            --attributes {params.attributes}
+        """
+
+rule plot_fitness_by_antigenic_advance:
+    input:
+        tip_attributes="builds/{build_name}/{segment}/tip_attributes.tsv",
+        fitnesses="builds/{build_name}/{segment}/mlr/fitnesses.tsv",
+        auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
+    output:
+        figure="figures/{build_name}_{segment}_fitness_by_antigenic_advance.png",
+    params:
+        variant_attribute="emerging_haplotype_ha",
+        human_antigenic_advance_attribute=human_antigenic_advance_attribute,
+        ferret_antigenic_advance_attribute=ferret_antigenic_advance_attribute,
+    shell:
+        r"""
+        python scripts/plot_fitness_by_antigenic_advance.py \
+            --tip-attributes {input.tip_attributes} \
+            --fitnesses {input.fitnesses} \
+            --auspice-config {input.auspice_config} \
+            --variant-attribute {params.variant_attribute} \
+            --human-antigenic-advance-attribute {params.human_antigenic_advance_attribute} \
+            --ferret-antigenic-advance-attribute {params.ferret_antigenic_advance_attribute} \
+            --output-figure {output.figure}
         """
