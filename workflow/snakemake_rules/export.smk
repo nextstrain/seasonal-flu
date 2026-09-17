@@ -60,13 +60,23 @@ def _get_node_data_by_wildcards(wildcards):
     inputs = [input_file.format(**wildcards_dict) for input_file in inputs]
     return inputs
 
+
+def _get_auspice_config(w):
+    auspice_configs = config["builds"][w.build_name]["auspice_config"]
+    if isinstance(auspice_configs, str):
+        return [auspice_configs]
+    if isinstance(auspice_configs, list):
+        return auspice_configs
+    raise Exception(f"Unexpected type for config.auspice_config: {type(auspice_configs)!r}. Expected string or list.")
+
+
 rule export:
     message: "Exporting data files for auspice"
     input:
         tree = rules.refine.output.tree,
         metadata = build_dir + "/{build_name}/metadata.tsv",
         node_data = _get_node_data_by_wildcards,
-        auspice_config = lambda w: config['builds'][w.build_name]['auspice_config'],
+        auspice_config = _get_auspice_config,
         description = lambda w: config['builds'][w.build_name].get("description", "config/description.md"),
         lat_longs = config.get('lat-longs', "config/lat_longs.tsv"),
     output:

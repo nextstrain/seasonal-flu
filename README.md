@@ -135,6 +135,20 @@ To skip subsampling and use all records that you downloaded from GISAID, set `fi
             filters: ""
 ```
 
+## Open builds
+
+The open builds use public data from INSDC databases available through
+[NCBI Datasets](https://www.ncbi.nlm.nih.gov/datasets) that were curated by
+[GenSpectrum](https://loculus.genspectrum.org) and standardized by this repo's
+[ingest-open](./ingest-open) workflow. The resulting data are publically available
+at https://nextstrain.org/pathogens/files?filter=seasonal-flu.
+
+Run the open builds with
+
+```bash
+nextstrain build . --configfile profiles/nextstrain-open.yaml
+```
+
 ## Configuration
 
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
