@@ -3,12 +3,13 @@ Shared functions to be used within a Snakemake workflow for handling
 workflow configs.
 """
 from dependencies import set_min_augur_version
-set_min_augur_version("34.1.0")
+set_min_augur_version("34.1.2")
 
 import os
 import sys
 import yaml
 from augur.config import resolve_filepath
+from augur.validate import load_json_schema_locally, validate_json, ValidateError
 from collections.abc import Callable
 from typing import Optional
 from textwrap import dedent, indent
@@ -66,6 +67,29 @@ else:
 
 class InvalidConfigError(Exception):
     pass
+
+
+def dump_and_validate(dump_path, schema_path):
+    """
+    Write Snakemake's 'config' variable to a file, then validate it against the
+    schema. Do both in the same function so that the validation output can
+    easily reference the path of the dumped config for inspection.
+    """
+    global config
+
+    write_config(dump_path)
+
+    if "custom_rules" in config:
+        # Assumes the workflow invoking this function accepts "custom_rules" to
+        # define arbitrary Snakemake rules and supporting config.
+        print("WARNING: Skipping config schema validation because custom rules are defined.", file=sys.stderr)
+        return
+
+    try:
+        validator = load_json_schema_locally(schema_path)
+        validate_json(config, validator, dump_path)
+    except ValidateError as e:
+        raise InvalidConfigError(str(e)) from e
 
 
 def resolve_config_path(path: str) -> Callable:
