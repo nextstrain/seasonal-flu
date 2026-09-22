@@ -17,7 +17,7 @@ message="❌ ${job_name} job has FAILED 😞 "
 if [[ -n "${AWS_BATCH_JOB_ID}" ]]; then
     message+="See AWS Batch job \`${AWS_BATCH_JOB_ID}\` (<https://console.aws.amazon.com/batch/v2/home?region=us-east-1#jobs/detail/${AWS_BATCH_JOB_ID}|link>) for error details. "
 elif [[ -n "${GITHUB_RUN_ID}" ]]; then
-    message+="See GitHub Action <https://github.com/${github_repo}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true|${GITHUB_RUN_ID}> for error details. "
+    message+="See GitHub Action <https://github.com/${github_repo}/actions/runs/${GITHUB_RUN_ID}|${GITHUB_RUN_ID}> for error details. "
 fi
 
 "$bin"/notify-slack "$message"

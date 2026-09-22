@@ -16,7 +16,7 @@ echo "Notifying Slack about started ${job_name} job."
 message="${job_name} job has started."
 
 if [[ -n "${GITHUB_RUN_ID}" ]]; then
-  message+=" The job was submitted by GitHub Action <https://github.com/${github_repo}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true|${GITHUB_RUN_ID}>."
+  message+=" The job was submitted by GitHub Action <https://github.com/${github_repo}/actions/runs/${GITHUB_RUN_ID}|${GITHUB_RUN_ID}>."
 fi
 
 if [[ -n "${AWS_BATCH_JOB_ID}" ]]; then
