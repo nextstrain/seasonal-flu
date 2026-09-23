@@ -191,6 +191,42 @@ inputs:
         na: ingest/new-results/h3n2/na.fasta
 ```
 
+## GitHub Action Workflows
+
+The GitHub Action workflows in this repo orchestrates workflows across other repos:
+
+
+```mermaid
+flowchart LR
+  subgraph seasonal-flu
+    subgraph upload
+      ingest[[ingest]]
+      triggerAvian[[trigger_avian_flu]]
+      uploadTiters[[upload_titers]]
+      trigger[[trigger]]
+    end
+
+    runPublic[run-public-builds]
+    runPrivate[run-nextflu-private-builds]
+  end
+
+  subgraph avian-flu
+    genoflu[genoflu-gisaid]
+  end
+
+  subgraph forecasts-flu
+    runModels[run-models]
+  end
+
+  seasonal-flu ~~~ avian-flu
+  seasonal-flu ~~~ forecasts-flu
+  ingest --> uploadTiters --> trigger
+  ingest --> triggerAvian -."inputs.triggerAvianFlu" .-> genoflu
+  trigger -."inputs.triggerPublic".-> runPublic
+  trigger -."inputs.triggerNextfluPrivate".-> runPrivate
+  trigger -."inputs.triggerForecastsFlu".-> runModels
+```
+
 ## History
 
  - Prior to March 31, 2023, we selected strains for each build using a custom Python script called [select_strains.py](https://github.com/nextstrain/seasonal-flu/blob/64b5204d23c0b95e4b06f943e4efb8db005759c0/scripts/select_strains.py). With the merge of [the refactored workflow](https://github.com/nextstrain/seasonal-flu/pull/76), we have since used a configuration file to define the `augur filter` query logic we want for strain selection per build.
