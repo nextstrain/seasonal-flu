@@ -100,6 +100,7 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
+      enable_lcr_sum: true
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/h1n1pdm/reference_strains.txt"
@@ -136,6 +137,7 @@ builds:
       enable_glycosylation: true
       enable_titer_models: true
       enable_measurements: true
+      enable_lcr_sum: true
       min_date: *min_date
       reference_min_date: "6Y"
       include: "config/vic/reference_strains.txt"

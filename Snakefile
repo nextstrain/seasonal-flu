@@ -56,10 +56,22 @@ subclade_url_by_lineage_and_segment = {
 }
 
 lcr_url_by_lineage_and_segment = {
+    "h1n1pdm": {
+        "ha": {
+            "weights": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/H1pdm09/lcr_weights.tsv",
+            "windows": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/H1pdm09/lcr_windows.tsv",
+        },
+    },
     "h3n2": {
         "ha": {
-            "weights": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/lcr_weights.tsv",
-            "windows": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/lcr_windows.tsv",
+            "weights": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/H3/lcr_weights.tsv",
+            "windows": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/H3/lcr_windows.tsv",
+        },
+    },
+    "vic": {
+        "ha": {
+            "weights": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/BVic/lcr_weights.tsv",
+            "windows": "https://raw.githubusercontent.com/SamT123/nextstrain-flu-convergence/main/results/BVic/lcr_windows.tsv",
         },
     }
 }
