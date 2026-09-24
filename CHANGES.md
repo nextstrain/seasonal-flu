@@ -7,6 +7,15 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 24 September 2026
+
+- Add Sam Turner's log convergence ratio (LCR) annotations to H1N1pdm and B/Victoria HA trees to identify positively selected mutations. See [#352](https://github.com/nextstrain/seasonal-flu/pull/352) for details.
+
+
+# 20 August 2026
+
+- Add Sam Turner's log convergence ratio (LCR) annotations to H3N2 HA trees to identify positively selected mutations. See [#345](https://github.com/nextstrain/seasonal-flu/pull/345) for details.
+
 # 29 July 2026
 
 - Update ingest-open workflow to output the curated "strain" field as the
