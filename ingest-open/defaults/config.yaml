@@ -26,6 +26,7 @@ genspectrum_metadata_fields:
   - division
   - authors
   - authorAffiliations
+  - bioprojectAccession
   - insdcAccessionBase_seg1
   - insdcAccessionBase_seg2
   - insdcAccessionBase_seg3
@@ -53,6 +54,7 @@ curate:
     division: division
     authors: full_authors
     authorAffiliations: institution
+    bioprojectAccession: bioproject_accession
 
   original_strain_field: original_strain
   record_id_field: accession
@@ -109,6 +111,7 @@ curate:
     - authors
     - full_authors
     - institution
+    - bioproject_accession
     - is_reference
 
 nextclade:
