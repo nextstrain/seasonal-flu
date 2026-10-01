@@ -8,8 +8,16 @@ on:
         description: "Trigger nextstrain/avian-flu GenoFLU workflow"
         type: boolean
         required: true
+      triggerForecastsFlu:
+        description: "Trigger forecasts-flu models"
+        required: true
+        type: boolean
+      forecastsFluDockerImage:
+        description: "Specific container image to use for forecasts-flu models"
+        required: false
+        type: string
       triggerPublic:
-        description: "Trigger Nextstrain public builds"
+        description: "Trigger Nextstrain public builds after the forecasts-flu workflow, only used if triggerForecastsFlu is true"
         required: true
         type: boolean
       publicDockerImage:
@@ -17,19 +25,11 @@ on:
         required: false
         type: string
       triggerNextfluPrivate:
-        description: "Trigger nextflu-private group builds"
+        description: "Trigger nextflu-private group builds after the forecasts-flu workflow, only used if triggerForecastsFlu is true"
         required: true
         type: boolean
       nextfluPrivateDockerImage:
         description: "Specific container image to use for nextflu-private group builds"
-        required: false
-        type: string
-      triggerForecastsFlu:
-        description: "Trigger forecasts-flu models"
-        required: true
-        type: boolean
-      forecastsFluDockerImage:
-        description: "Specific container image to use for forecasts-flu models"
         required: false
         type: string
 
@@ -63,7 +63,7 @@ jobs:
             --repo nextstrain/avian-flu
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
-     
+
   upload_titers:
     # Depends on ingest since titer should be checked against sequence strains
     needs: [ingest]
@@ -83,31 +83,20 @@ jobs:
           upload_all_titers \
           --configfile profiles/upload.yaml
 
-  trigger:
+  trigger_forecasts_flu:
     needs: [upload_titers]
-    strategy:
-      matrix:
-        include:
-          - trigger: ${{ inputs.triggerPublic }}
-            repo: seasonal-flu
-            workflow: run-public-builds.yaml
-            image: ${{ inputs.publicDockerImage }}
-          - trigger: ${{ inputs.triggerNextfluPrivate }}
-            repo: seasonal-flu
-            workflow: run-nextflu-private-builds.yaml
-            image: ${{ inputs.nextfluPrivateDockerImage }}
-          - trigger: ${{ inputs.triggerForecastsFlu }}
-            repo: forecasts-flu
-            workflow: run-models.yaml
-            image: ${{ inputs.forecastsFluDockerImage }}
     runs-on: ubuntu-latest
     steps:
-      - if: ${{ matrix.trigger }}
-        name: Trigger ${{ matrix.workflow }}
+      - if: ${{ inputs.triggerForecastsFlu }}
+        name: Trigger forecasts-flu/run-models
         run: |
           gh workflow run \
-            ${{ matrix.workflow }} \
-            --repo nextstrain/${{ matrix.repo }} \
-            -f dockerImage=${{ matrix.image }}
+            run-models.yaml \
+            --repo nextstrain/forecasts-flu \
+            -f dockerImage=${{ inputs.forecastsFluDockerImage }} \
+            -f triggerPublic=${{ inputs.triggerPublic }} \
+            -f publicDockerImage=${{ inputs.publicDockerImage }} \
+            -f triggerNextfluPrivate=${{ inputs.triggerNextfluPrivate }} \
+            -f nextfluPrivateDockerImage=${{ inputs.nextfluPrivateDockerImage }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_NEXTSTRAIN_BOT_WORKFLOW_DISPATCH }}
