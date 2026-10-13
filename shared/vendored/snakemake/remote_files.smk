@@ -7,8 +7,43 @@ The errors raised by storage plugins are often confusing. For instance, a HTTP
 underlying issue. S3 credentials errors are similarly confusing and we attempt
 to check these ourselves to improve UX here.
 """
-
+import os
+import socket
 from urllib.parse import urlparse
+from snakemake.io import get_flag_value, AnnotatedString
+from snakemake.logging import logger
+
+
+def is_online(host="8.8.8.8", port=53, timeout=3) -> bool:
+    """
+    Check if workflow has network connection.
+    Based on <https://stackoverflow.com/a/33117579>
+    Host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as err:
+        logger.debug(f"Assuming no internet connection with error: {err}")
+        return False
+
+
+# Determine whether workflow should try to fetch or revalidate remote input
+# files based on prioritization order:
+#     1. Environment variable `NEXTSTRAIN_REMOTE_FILES`
+#     2. Per workflow config parameter `use_remote_files`
+#     3. Whether the workflow has network connection
+USE_REMOTE_FILES = True
+if "NEXTSTRAIN_USE_REMOTE_FILES" in os.environ:
+    USE_REMOTE_FILES = bool(os.environ["NEXTSTRAIN_USE_REMOTE_FILES"])
+elif "use_remote_files" in config:
+    USE_REMOTE_FILES = bool(config["use_remote_files"])
+else:
+    USE_REMOTE_FILES = is_online()
+
 
 # Keep a list of known public buckets, which we'll allow uncredentialled (unsigned) access to
 # We could make this config-definable in the future
@@ -99,7 +134,7 @@ def _storage_http(*, keep_local, retries) -> snakemake.storage.StorageProviderPr
     return _storage_registry['http']
 
 
-def path_or_url(uri, *, keep_local=True, retries=2) -> str:
+def path_or_url(uri, *, keep_local=True, retries=2) -> str | AnnotatedString:
     """
     Intended for use in Snakemake inputs / outputs to transparently use remote
     resources. Returns the URI wrapped by an applicable storage plugin. Local
@@ -142,12 +177,12 @@ def path_or_url(uri, *, keep_local=True, retries=2) -> str:
 
     if info.scheme=='s3':
         try:
-            return _storage_s3(bucket=info.netloc, keep_local=keep_local, retries=retries)(uri)
+            return _local_or_storage(_storage_s3(bucket=info.netloc, keep_local=keep_local, retries=retries)(uri))
         except RemoteFilesMissingCredentials as e:
             raise Exception(f"AWS credentials are required to access {uri!r}") from e
 
     if info.scheme=='https':
-        return _storage_http(keep_local=keep_local, retries=retries)(uri)
+        return _local_or_storage(_storage_http(keep_local=keep_local, retries=retries)(uri))
     elif info.scheme=='http':
         raise Exception(f"HTTP remote file support is not implemented in nextstrain workflows (attempting to access {uri!r}).\n"
             "Please use an HTTPS address instead.")
@@ -157,3 +192,53 @@ def path_or_url(uri, *, keep_local=True, retries=2) -> str:
             "Please get in touch if you require this functionality and we can add it to our workflows")
 
     raise Exception(f"Input address {uri!r} (scheme={info.scheme!r}) is from a non-supported remote")
+
+
+def _local_or_storage(wrapped: AnnotatedString) -> str | AnnotatedString:
+    """
+    Given a storage-wrapped input (an AnnotatedString carrying a `storage_object`
+    flag), transparently fall back to the local cache copy as determined by
+    USE_REMOTE_FILES:
+      * If USE_REMOTE_FILES == True, then return object unchanged and let the
+        allow normal Snakemake retrieval, revalidation, or
+        MissingInputException behaviour.
+      * If USE_REMOTE_FILES == False and cache does not exist, raise an error.
+      * If USE_REMOTE_FILES == False and cache does exist, then return the
+        plain local path. Snakemake then treats it as an ordinary local input
+        (existence via `os.path.exists`, no network), allowing the workflow to
+        run offline from cache.
+    """
+    so = get_flag_value(wrapped, "storage_object")
+    if so is None:
+        raise Exception("_local_or_storage must be called with a storage object AnnotatedString. Provided argument: ", wrapped)
+
+    # Return StorageObject as-is since remote files are expected and allow it
+    # to fetch or revalidate cached files as needed.
+    # Any connection errors will be raised downstream
+    if USE_REMOTE_FILES:
+        return wrapped
+
+    # The keep_local flag is managed by the workflow author and this cannot be
+    # changed by the user. So output warning for user and return the StorageObject as-is.
+    if not so.keep_local:
+        logger.warning(
+            f"Unable to use cached copy of {so.query!r} because the workflow "
+            "author has opted out of keeping a local copy for this input. "
+            "Please contact the workflow author to enable use of local cached files."
+        )
+        return wrapped
+
+    local = so.local_path()
+    if not local.exists():
+        raise Exception(
+            f"Unable to find local cached file for {so.query!r}. "
+            "Please make sure you have run the workflow at least once with "
+            "internet connection and config.use_remote_files set to True to "
+            "to fetch and save the remote file locally.")
+
+    logger.warning(
+        f"Using the cached copy of {so.query} at {local} without revalidation. "
+        "Set config.use_remote_files to True if you want to force revalidation."
+    )
+
+    return str(local)
