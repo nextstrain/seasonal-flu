@@ -7,6 +7,11 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 15 October 2026
+
+- Support use of cached remote inputs when defining inputs via the `inputs` parameter.
+  See https://github.com/nextstrain/shared/pull/87 for more details.
+
 # 29 September 2026
 
 - Update ingest-open workflow to output the "bioproject_accession" column in
