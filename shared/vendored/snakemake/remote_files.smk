@@ -12,6 +12,7 @@ import socket
 from urllib.parse import urlparse
 from snakemake.io import get_flag_value, AnnotatedString
 from snakemake.logging import logger
+from textwrap import dedent
 
 
 def is_online(host="8.8.8.8", port=53, timeout=3) -> bool:
@@ -228,17 +229,14 @@ def _local_or_storage(wrapped: AnnotatedString) -> str | AnnotatedString:
         )
         return wrapped
 
-    local = so.local_path()
-    if not local.exists():
-        raise Exception(
-            f"Unable to find local cached file for {so.query!r}. "
-            "Please make sure you have run the workflow at least once with "
-            "internet connection and config.use_remote_files set to True to "
-            "to fetch and save the remote file locally.")
+    local = str(so.local_path())
+    logger.warning(dedent(f"""\
+        Attempting to use the local file for:
 
-    logger.warning(
-        f"Using the cached copy of {so.query} at {local} without revalidation. "
-        "Set config.use_remote_files to True if you want to force revalidation."
-    )
+            remote: {so.query}
+            local: {local}
 
-    return str(local)
+        Set config.use_remote_files to True if you want to force revalidation of the remote file
+        or if you run into the MissingInputException with the local file.
+        """))
+    return local
