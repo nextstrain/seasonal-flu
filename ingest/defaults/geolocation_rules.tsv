@@ -126,3 +126,7 @@ Europe/Spain/Pontevedra/Galicia	Europe/Spain/Galicia/Pontevedra
 
 # Fix casing changes introduced by `augur curate titlecase`
 */*/*/Maricopa County Az	*/*/*/Maricopa County AZ
+
+# USA location fixes due location not matching `<division>, <location>` pattern
+*/USA/Washington/Oh	*/USA/Ohio/Washington County OH
+*/USA/Washington/Dc	*/USA/Washington DC/
