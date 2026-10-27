@@ -1,0 +1,26 @@
+{
+    "nucMutLabelMap": {},
+    "nucMutLabelMapReverse": {},
+    "shortcuts": [
+      "flu_h3n2_na_broad",
+      "nextstrain/flu/h3n2/na",
+      "nextstrain/flu/h3n2/na/wisconsin-67-2005"
+    ],
+      "aaMotifs": [
+      {
+        "name": "glycosylation",
+        "nameShort": "Glyc.",
+        "nameFriendly": "Glycosylation",
+        "description": "N-linked glycosylation motifs (N-X-S/T with X any amino acid other than P)",
+        "includeCdses": [
+          {
+            "cds":"NA",
+            "ranges":[{"begin":29, "end":466}]
+          }
+        ],
+        "motifs": [
+          "N[^P][ST]"
+        ]
+      }
+    ]
+}
