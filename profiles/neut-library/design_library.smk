@@ -23,7 +23,7 @@ rule parse_frequencies_and_ga_from_mlr_json:
 rule merge_metadata_and_nextclade_for_library_design:
     input:
         metadata="builds/{build_name}/metadata.tsv",
-        nextclade="data/{build_name}/ha/nextclade.tsv",
+        nextclade=lambda wildcards: f"data/{config['builds'][wildcards.build_name].get('lineage')}/ha/nextclade.tsv",
     output:
         metadata="builds/{build_name}/metadata_with_nextclade.tsv",
     shell:
