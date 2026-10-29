@@ -40,7 +40,7 @@ rule annotate_metadata_with_library_haplotypes:
     input:
         metadata="builds/{build_name}/metadata_with_nextclade.tsv",
         distance_maps=lambda wildcards: config["builds"][wildcards.build_name]["distance_maps"],
-        recurrent_substitutions_map=lambda wildcards: config["builds"][wildcards.build_name]["recurrent_substitutions_map"],
+        lcr_weights=lambda wildcards: f"config/{config['builds'][wildcards.build_name]['lineage']}/ha/lcr_weights.tsv",
         translations_dir=directory(build_dir + "/{build_name}/ha/translations"),
     output:
         library_metadata="builds/{build_name}/library_metadata.tsv",
@@ -52,7 +52,7 @@ rule annotate_metadata_with_library_haplotypes:
         python scripts/prepare_library_haplotypes.py \
             --metadata {input.metadata} \
             --distance-maps {input.distance_maps:q} \
-            --recurrent-substitutions-map {input.recurrent_substitutions_map:q} \
+            --lcr-weights {input.lcr_weights:q} \
             --alignments {params.alignments:q} \
             --gene-names {params.genes:q} \
             --output {output.library_metadata}

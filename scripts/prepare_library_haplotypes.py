@@ -23,7 +23,7 @@ def main(args):
         "derived_haplotype",
         "HA1_mutations",
         "glycosylation_mutations",
-        "recurrent_substitutions",
+        "lcr_score",
         "HA1_coverage",
         "SigPep_sequence",
         "HA1_sequence",
@@ -96,22 +96,38 @@ def main(args):
         lambda glyc: len([site for site in glyc.split(";") if site.startswith("HA1:")])
     )
 
-    # Score recurrent substitutions.
-    metadata["recurrent_substitutions"] = 0
-    if args.recurrent_substitutions_map:
-        with open(args.recurrent_substitutions_map, "r", encoding="utf-8") as fh:
-            recurrent_substitutions_by_clade = json.load(fh)
+    # Calculate LCR scores.
+    metadata["lcr_score"] = 0
+    if args.lcr_weights:
+        lcr_weights = pd.read_csv(
+            args.lcr_weights,
+            sep="\t",
+            comment="#",
+        )
+        latest_window = lcr_weights["window_end"].drop_duplicates().sort_values(
+            ascending=False
+        ).values[0]
+        print(f"latest LCR window: {latest_window}")
 
-        for subclade, subclade_substitutions in recurrent_substitutions_by_clade.items():
-            metadata.loc[metadata["clade"] == subclade, "recurrent_substitutions"] = metadata.loc[
-                metadata["clade"] == subclade,
-                "all_ha1_substitutions"
-            ].apply(
-                lambda subs: sum(
-                    sub in subclade_substitutions
-                    for sub in subs.split(",")
-                )
+        latest_lcr_weights_for_HA1 = lcr_weights[
+            (lcr_weights["window_end"] == latest_window) &
+            (lcr_weights["gene"] == "HA1")
+        ].copy()
+
+        latest_lcr_weights_for_HA1["substitution"] = (
+            latest_lcr_weights_for_HA1["from_aa"] +
+            latest_lcr_weights_for_HA1["site"].astype(str) +
+            latest_lcr_weights_for_HA1["derived_aa"]
+        )
+
+        lcr_by_substitution = dict(latest_lcr_weights_for_HA1.loc[:, ["substitution", "lcr"]].values)
+
+        metadata["lcr_score"] = metadata["founder_ha1_substitutions"].apply(
+            lambda subs: sum(
+                lcr_by_substitution.get(sub, 0.0)
+                for sub in subs.split(",")
             )
+        )
 
     def get_ha1_coverage(coverage):
         """Parse coverage string like "HA1:1,HA2:0.9954954954954955,SigPep:1"
@@ -147,7 +163,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--metadata", required=True, help="TSV of Nextstrain-style metadata merged with Nextclade annotations")
     parser.add_argument("--distance-maps", nargs="+", help="JSON(s) in Augur's distance map format. Each map is used to annotate mutation counts in the output with count columns named by the distance map.")
-    parser.add_argument("--recurrent-substitutions-map", help="JSON of substitutions (<ancestral allele><position><derived allele>) indexed by clade name for the given subtype")
+    parser.add_argument("--lcr-weights", help="TSV of LCR weights with columns for gene, site, from_aa, derived_aa, window_end, and lcr")
     parser.add_argument("--alignments", nargs="+", required=True, help="FASTA amino acid alignment(s) per gene")
     parser.add_argument("--gene-names", nargs="+", required=True, help="list of genes to match the FASTA alignments")
     parser.add_argument("--output", required=True, help="TSV of metadata annotated by mutation scores and amino acid alignments per gene")
