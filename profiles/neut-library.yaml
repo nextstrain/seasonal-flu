@@ -38,7 +38,7 @@ builds:
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       subsamples: &subsampling
         global:
-            filters: --min-date 2025-12-01 --exclude-ambiguous-dates-by month --exclude config/{lineage}/outliers.txt --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus_ha\` == 'good'"
+            filters: --min-date 2026-02-01 --exclude-ambiguous-dates-by month --exclude config/{lineage}/outliers.txt --exclude-where 'ha!=True' 'passage_category=egg' --query "\`qc.overallStatus_ha\` == 'good'"
     h1n1pdm:
       lineage: h1n1pdm
       distance_maps:
