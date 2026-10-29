@@ -28,7 +28,6 @@ builds:
       mutation_weights:
         glycosylation_mutations: 0
         HA1_mutations: 1
-        recurrent_substitutions: 3
         wolf_mutations: 3
         koel_mutations: 4
       reference: "profiles/neut-library/nextclade_h3n2/reference.fasta"
@@ -47,7 +46,6 @@ builds:
       mutation_weights:
         glycosylation_mutations: 0
         HA1_mutations: 1
-        recurrent_substitutions: 3
         canton_mutations: 3
       reference: "profiles/neut-library/nextclade_h1n1pdm/reference.fasta"
       annotation: "profiles/neut-library/nextclade_h1n1pdm/genome_annotation.gff3"

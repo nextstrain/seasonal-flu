@@ -20,6 +20,9 @@ def summarize_haplotypes(data_frame, mutation_columns):
         "representative_strain_ha1_sequence_hash": ("HA1_sequence_hash", "first"),
     }
 
+    if "lcr_score" in data_frame.columns:
+       aggregated_fields["lcr_score"] = ("lcr_score", "mean")
+
     if mutation_columns is not None:
         for mutation_column in mutation_columns:
             aggregated_fields[mutation_column] = (mutation_column, "mean")
@@ -156,6 +159,11 @@ def main(args):
         + lineage_summary["score_mutations"]
     )
 
+    lineage_summary["score_lcr"] = (
+        lineage_summary["lcr_score"]
+        / lineage_summary["lcr_score"].abs().max()
+    )
+
     lineage_summary["score_fitness"] = (
         lineage_summary["relative_fitness"]
         / lineage_summary["relative_fitness"].abs().max()
@@ -163,6 +171,7 @@ def main(args):
 
     lineage_summary["score_total"] = (
         lineage_summary["score_mutations"]
+        + lineage_summary["score_lcr"]
         + lineage_summary["score_fitness"]
         + lineage_summary["proportion_countries"]
     )
