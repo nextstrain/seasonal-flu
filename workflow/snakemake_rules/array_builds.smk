@@ -36,6 +36,13 @@ for array_build in config.get("array-builds", {}).values():
         for k,v in array_build.get("build_params",{}).items():
             if isinstance(v, str):
                 build_params[k] = v.format(**build_params)
+            # Expand build parameters in list of Auspice configs
+            # since is not covered by the expansion for string values above.
+            # Minimizing change by limiting this to `auspice_config`, but we
+            # could just do this for all lists of strings
+            elif k == "auspice_config" and isinstance(v, list):
+                expanded_v = map(lambda _v: _v.format(**build_params), v)
+                build_params[k] = list(expanded_v)
             elif k == "titer_collections":
                 # Allow expansion of build parameters in titer collection
                 # attributes like data path and title.
