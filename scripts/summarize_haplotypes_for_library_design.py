@@ -184,6 +184,7 @@ def main(args):
        args.output,
        sep="\t",
        index=False,
+       float_format="%.2f",
     )
 
 
