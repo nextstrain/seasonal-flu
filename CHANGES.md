@@ -7,6 +7,12 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# TBD November 2026
+
+- Support independent non-HA segment builds by making the HA based "Clade" coloring optional.
+  Users can run a build without the HA segment, e.g. `--config segments='["na"]'`,
+  but the resulting tree will no longer have the "Clade" coloring.
+
 - Fix "Clade" coloring for non-HA segments so that they no longer color internal
   branches based on the HA tree.
 
