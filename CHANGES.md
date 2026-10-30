@@ -7,6 +7,9 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+- Fix "Clade" coloring for non-HA segments so that they no longer color internal
+  branches based on the HA tree.
+
 # 4 November 2026
 
 - Color tips in HA trees by fitness estimates from [MLR models fit to different variant classifications](https://nextstrain.github.io/forecasts-flu/).
