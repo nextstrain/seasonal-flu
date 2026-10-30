@@ -347,26 +347,51 @@ rule download_clades:
         """
 
 # Determine clades with HA mutations.
-rule clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/ha/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
-    output:
-        node_data = build_dir + "/{build_name}/ha/clades.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/clades_{build_name}.txt"
-    log:
-        "logs/clades_{build_name}.txt"
-    shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
+# Only runs when including HA builds to support independent non-HA builds
+if "ha" in config["segments"]:
+    rule clades:
+        input:
+            tree = build_dir + "/{build_name}/ha/tree.nwk",
+            muts = build_dir + "/{build_name}/ha/muts.json",
+            clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
+        output:
+            node_data = build_dir + "/{build_name}/ha/clades.json",
+        conda: "../envs/nextstrain.yaml"
+        benchmark:
+            "benchmarks/clades_{build_name}.txt"
+        log:
+            "logs/clades_{build_name}.txt"
+        shell:
+            """
+            augur clades \
+                --tree {input.tree} \
+                --mutations {input.muts} \
+                --clades {input.clades} \
+                --output {output.node_data} 2>&1 | tee {log}
+            """
+
+    # Assign clade annotations to non-HA segments from HA.
+    rule import_clades:
+        input:
+            tree = build_dir + "/{build_name}/ha/tree.nwk",
+            muts = build_dir + "/{build_name}/{segment}/muts.json",
+            clades = build_dir + "/{build_name}/ha/clades.json",
+        output:
+            node_data = build_dir + "/{build_name}/{segment}/clades.json",
+        wildcard_constraints:
+            segment = "^(?!ha).*"
+        conda: "../envs/nextstrain.yaml"
+        benchmark:
+            "benchmarks/import_clades_{build_name}_{segment}.txt"
+        log:
+            "logs/import_clades_{build_name}_{segment}.txt"
+        shell:
+            """
+            python3 scripts/import_tip_clades.py \
+                --tree {input.tree} \
+                --clades {input.clades} \
+                --output {output.node_data} 2>&1 | tee {log}
+            """
 
 rule download_subclades:
     output:
@@ -406,28 +431,6 @@ rule subclades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-# Assign clade annotations to non-HA segments from HA.
-rule import_clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = build_dir + "/{build_name}/ha/clades.json",
-    output:
-        node_data = build_dir + "/{build_name}/{segment}/clades.json",
-    wildcard_constraints:
-        segment = "^(?!ha).*"
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/import_clades_{build_name}_{segment}.txt"
-    log:
-        "logs/import_clades_{build_name}_{segment}.txt"
-    shell:
-        """
-        python3 scripts/import_tip_clades.py \
-            --tree {input.tree} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
 
 rule annotate_derived_haplotypes:
     input:
