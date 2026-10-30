@@ -414,6 +414,11 @@ rule import_clades:
         clades = build_dir + "/{build_name}/ha/clades.json",
     output:
         node_data = build_dir + "/{build_name}/{segment}/clades.json",
+    wildcard_constraints:
+        # Match everything except ha - not using ^ because it prevents other
+        # segments from matching.
+        # See <https://github.com/snakemake/snakemake/issues/782>
+        segment = "(?!ha).*"
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/import_clades_{build_name}_{segment}.txt"
