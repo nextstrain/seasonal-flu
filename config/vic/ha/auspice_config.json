@@ -178,6 +178,16 @@
       "type": "continuous"
     },
     {
+      "key": "mlr_fitness_emerging_haplotype_ha",
+      "title": "MLR fitness (emerging haplotype)",
+      "type": "continuous"
+    },
+    {
+      "key": "mlr_fitness_subclade_haplotype_ha",
+      "title": "MLR fitness (AA)",
+      "type": "continuous"
+    },
+    {
       "key": "region",
       "title": "Region",
       "type": "categorical"

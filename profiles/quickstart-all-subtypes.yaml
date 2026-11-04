@@ -26,6 +26,8 @@ builds:
       subclades: "config/h3n2/{segment}/subclades.tsv"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       subsamples: &subsampling
         global:
             filters: "--subsample-max-sequences 300 --group-by region month --min-date 1Y --exclude-ambiguous-dates-by any --exclude-where 'ha!=True' 'na!=True'"
@@ -38,6 +40,8 @@ builds:
       subclades: "config/h1n1pdm/{segment}/subclades.tsv"
       auspice_config: "config/h1n1pdm/{segment}/auspice_config.json"
       vaccines: "config/h1n1pdm/vaccine.json"
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       subsamples: *subsampling
     vic:
       lineage: vic
@@ -48,4 +52,6 @@ builds:
       subclades: "config/vic/{segment}/subclades.tsv"
       auspice_config: "config/vic/{segment}/auspice_config.json"
       vaccines: "config/vic/vaccine.json"
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       subsamples: *subsampling

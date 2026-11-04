@@ -1,25 +1,3 @@
-rule download_mlr_json:
-    output:
-        mlr="builds/{build_name}/ha/mlr/model.json",
-    params:
-        model_url=lambda wildcards: f"https://data.nextstrain.org/files/workflows/forecasts-flu/gisaid/aa_haplotype/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/MLR_results.json",
-    shell:
-        r"""
-        curl --compressed -o {output.mlr:q} {params.model_url:q}
-        """
-
-rule parse_frequencies_and_ga_from_mlr_json:
-    input:
-        mlr="builds/{build_name}/ha/mlr/model.json",
-    output:
-        fitnesses="builds/{build_name}/ha/mlr/fitnesses.tsv",
-    shell:
-        r"""
-        python scripts/parse-json.py \
-            --input {input.mlr} \
-            --outga {output.fitnesses}
-        """
-
 rule merge_metadata_and_nextclade_for_library_design:
     input:
         metadata="builds/{build_name}/metadata.tsv",
@@ -61,7 +39,7 @@ rule annotate_metadata_with_library_haplotypes:
 rule design_library:
     input:
         metadata="builds/{build_name}/library_metadata.tsv",
-        fitnesses="builds/{build_name}/ha/mlr/fitnesses.tsv",
+        fitnesses="builds/{build_name}/ha/mlr/aa_haplotype_fitnesses.tsv",
     output:
         library_design="builds/{build_name}/library_design.tsv",
     params:
