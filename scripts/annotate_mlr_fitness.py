@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 
-from augur.io import write_json
+from augur.io import read_metadata, write_json
 from augur.utils import read_tree
 import pandas as pd
 
@@ -18,12 +18,7 @@ if __name__ == '__main__':
 
     tree = read_tree(args.tree)
 
-    metadata = pd.read_csv(
-        args.metadata,
-        sep="\t",
-        usecols=["strain"] + args.variant_columns,
-        index_col="strain",
-    )
+    metadata = read_metadata(args.metadata)
 
     # Create a mapping of each variant column (e.g., "subclade_haplotype_ha")
     # and the fitnesses per variant in that column. Each variant column
