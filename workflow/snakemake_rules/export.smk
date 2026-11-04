@@ -8,10 +8,17 @@ def _get_node_data_by_wildcards(wildcards):
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
     ]
+
+    # Clades depend on HA segment data
+    if "ha" in config["segments"]:
+        # rule clades only outputs HA segment clades
+        if wildcards.segment == "ha":
+            inputs.append(rules.clades.output.node_data)
+        else:
+            inputs.append(rules.import_clades.output.node_data)
 
     if "recency" in config:
         inputs.append(rules.annotate_recency_of_submissions.output.node_data)
