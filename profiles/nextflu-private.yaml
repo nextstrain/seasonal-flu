@@ -46,6 +46,8 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     titer_collections:
       - name: cell_hi
         data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
@@ -94,6 +96,8 @@ builds:
     enable_forecasts: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     min_date: "2Y"
     reference_min_date: "6Y"
     max_date: "4W"
@@ -143,6 +147,8 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     titer_collections:
       - name: cell_hi
         data: "data/vic/who_ferret_cell_hi_titers.tsv"
