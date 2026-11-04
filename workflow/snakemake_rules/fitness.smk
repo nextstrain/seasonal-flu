@@ -483,9 +483,10 @@ rule download_mlr_json:
         mlr="builds/{build_name}/ha/mlr/{variant_classification}/model.json",
     params:
         model_url=lambda wildcards: f"https://data.nextstrain.org/files/workflows/forecasts-flu/gisaid/{wildcards.variant_classification}/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/MLR_results.json",
+    retries: 5
     shell:
         r"""
-        curl --compressed -o {output.mlr:q} {params.model_url:q}
+        curl -fsSL --compressed -o {output.mlr:q} {params.model_url:q}
         """
 
 rule parse_frequencies_and_ga_from_mlr_json:
