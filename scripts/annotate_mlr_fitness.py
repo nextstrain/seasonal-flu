@@ -4,6 +4,7 @@ import argparse
 from augur.io import read_metadata, write_json
 from augur.utils import read_tree
 import pandas as pd
+import sys
 
 
 if __name__ == '__main__':
@@ -15,6 +16,13 @@ if __name__ == '__main__':
     parser.add_argument("--output-node-data", required=True, help="node data JSON file with MLR fitness per node")
 
     args = parser.parse_args()
+
+    if len(args.variant_columns) != len(args.fitnesses):
+        print(
+            "ERROR: Each file provided via `--fitnesses` requires one matching column from `--variant-columns`",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     tree = read_tree(args.tree)
 
