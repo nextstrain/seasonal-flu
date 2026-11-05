@@ -48,6 +48,7 @@ array-builds:
       enable_titer_models: true
       enable_embeddings: true
       enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -88,6 +89,7 @@ array-builds:
       enable_titer_models: true
       enable_embeddings: true
       enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -160,6 +162,7 @@ array-builds:
       enable_titer_models: true
       enable_embeddings: true
       enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -192,6 +195,7 @@ array-builds:
       enable_forecasts: false
       enable_embeddings: true
       enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
