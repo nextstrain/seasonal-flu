@@ -147,7 +147,9 @@ Explore the other configuration files in `profiles/`, to see other examples of h
   - annotation: "config/{lineage}/{segment}/genemap.gff"
   - tree_exclude_sites: "config/{lineage}/{segment}/exclude-sites.txt"
 - The workflow assigns clade annotations to non-HA segments from HA, so the
-`clades` configuration should always point to the HA clade definition TSV.
+`clades` configuration should always point to the HA clade definition TSV. If you
+are running builds of non-HA segments _without_ HA, then the `clades` configuration
+will be ignored and the build will not have the "Clade" coloring.
 - The workflow only has subclade annotations for HA and NA segments, so remove
 the `subclades` configuration for other segments builds.
 
