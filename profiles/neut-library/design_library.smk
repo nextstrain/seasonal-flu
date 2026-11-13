@@ -1,7 +1,7 @@
 rule merge_metadata_and_nextclade_for_library_design:
     input:
         metadata="builds/{build_name}/metadata.tsv",
-        nextclade="data/{build_name}/ha/nextclade.tsv",
+        nextclade=lambda wildcards: f"data/{config['builds'][wildcards.build_name].get('lineage')}/ha/nextclade.tsv",
     output:
         metadata="builds/{build_name}/metadata_with_nextclade.tsv",
     shell:
@@ -18,7 +18,7 @@ rule annotate_metadata_with_library_haplotypes:
     input:
         metadata="builds/{build_name}/metadata_with_nextclade.tsv",
         distance_maps=lambda wildcards: config["builds"][wildcards.build_name]["distance_maps"],
-        recurrent_substitutions_map=lambda wildcards: config["builds"][wildcards.build_name]["recurrent_substitutions_map"],
+        lcr_weights=lambda wildcards: f"config/{config['builds'][wildcards.build_name]['lineage']}/ha/lcr_weights.tsv",
         translations_dir=directory(build_dir + "/{build_name}/ha/translations"),
     output:
         library_metadata="builds/{build_name}/library_metadata.tsv",
@@ -30,7 +30,7 @@ rule annotate_metadata_with_library_haplotypes:
         python scripts/prepare_library_haplotypes.py \
             --metadata {input.metadata} \
             --distance-maps {input.distance_maps:q} \
-            --recurrent-substitutions-map {input.recurrent_substitutions_map:q} \
+            --lcr-weights {input.lcr_weights:q} \
             --alignments {params.alignments:q} \
             --gene-names {params.genes:q} \
             --output {output.library_metadata}
@@ -39,7 +39,8 @@ rule annotate_metadata_with_library_haplotypes:
 rule design_library:
     input:
         metadata="builds/{build_name}/library_metadata.tsv",
-        fitnesses="builds/{build_name}/ha/mlr/aa_haplotype_fitnesses.tsv",
+        emerging_haplotype_fitnesses="builds/{build_name}/ha/mlr/emerging_haplotype/fitnesses.tsv",
+        aa_haplotype_fitnesses="builds/{build_name}/ha/mlr/aa_haplotype/fitnesses.tsv",
     output:
         library_design="builds/{build_name}/library_design.tsv",
     params:
@@ -52,7 +53,8 @@ rule design_library:
         r"""
         python scripts/summarize_haplotypes_for_library_design.py \
             --metadata {input.metadata} \
-            --fitnesses {input.fitnesses} \
+            --aa-haplotype-fitnesses {input.aa_haplotype_fitnesses} \
+            --emerging-haplotype-fitnesses {input.emerging_haplotype_fitnesses} \
             --mutation-weights {params.mutation_weights} \
             --min-ha1-coverage {params.min_ha1_coverage} \
             --output {output.library_design}
