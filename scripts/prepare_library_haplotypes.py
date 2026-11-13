@@ -20,6 +20,7 @@ def main(args):
         "date",
         "region",
         "country",
+        "emerging_haplotype_ha",
         "derived_haplotype",
         "HA1_mutations",
         "glycosylation_mutations",

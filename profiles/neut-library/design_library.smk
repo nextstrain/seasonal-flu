@@ -39,7 +39,8 @@ rule annotate_metadata_with_library_haplotypes:
 rule design_library:
     input:
         metadata="builds/{build_name}/library_metadata.tsv",
-        fitnesses="builds/{build_name}/ha/mlr/aa_haplotype_fitnesses.tsv",
+        emerging_haplotype_fitnesses="builds/{build_name}/ha/mlr/emerging_haplotype/fitnesses.tsv",
+        aa_haplotype_fitnesses="builds/{build_name}/ha/mlr/aa_haplotype/fitnesses.tsv",
     output:
         library_design="builds/{build_name}/library_design.tsv",
     params:
@@ -52,7 +53,8 @@ rule design_library:
         r"""
         python scripts/summarize_haplotypes_for_library_design.py \
             --metadata {input.metadata} \
-            --fitnesses {input.fitnesses} \
+            --aa-haplotype-fitnesses {input.aa_haplotype_fitnesses} \
+            --emerging-haplotype-fitnesses {input.emerging_haplotype_fitnesses} \
             --mutation-weights {params.mutation_weights} \
             --min-ha1-coverage {params.min_ha1_coverage} \
             --output {output.library_design}

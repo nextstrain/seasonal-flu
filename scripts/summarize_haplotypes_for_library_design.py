@@ -11,6 +11,7 @@ def summarize_haplotypes(data_frame, mutation_columns):
 
     aggregated_fields = {
         "count": ("derived_haplotype", "count"),
+        "emerging_haplotype": ("emerging_haplotype_ha", "first"),
         "n_countries": ("country", "nunique"),
         "n_regions": ("region", "nunique"),
         "latest_sequence": ("date", "max"),
@@ -107,46 +108,60 @@ def main(args):
     )
 
     # Load fitness for lineage.
-    fitnesses = pd.read_csv(args.fitnesses, sep="\t")
-    hier_fitnesses = fitnesses.loc[
-        fitnesses["location"] == "hierarchical", ["variant", "median"]
-    ].rename(
-        columns={
-            "variant": "derived_haplotype",
-            "median": "median_ga",
-        }
-    )
-    hier_fitnesses["derived_haplotype"] = hier_fitnesses[
-        "derived_haplotype"
-    ].str.replace("-", ",")
 
-    # Calculate the weighted population average GA.
-    hier_fitnesses = hier_fitnesses.merge(
-        lineage_summary.reset_index().loc[:, ["derived_haplotype", "count"]],
-        on="derived_haplotype",
-    )
-    hier_fitnesses["frequency"] = (
-        hier_fitnesses["count"] / hier_fitnesses["count"].sum()
-    )
-    weighted_mean_population_ga = (
-        hier_fitnesses["frequency"] * hier_fitnesses["median_ga"]
-    ).sum()
+    def get_fitnesses_by_haplotype_resolution(haplotype_fitnesses, variant_column, lineage_summary):
+        fitnesses = pd.read_csv(haplotype_fitnesses, sep="\t")
+        hier_fitnesses = fitnesses.loc[
+            fitnesses["location"] == "hierarchical", ["variant", "median"]
+        ].rename(
+            columns={
+                "variant": variant_column,
+                "median": "median_ga",
+            }
+        )
+        hier_fitnesses[variant_column] = hier_fitnesses[variant_column].str.replace("-", ",")
 
-    hier_fitnesses["relative_fitness"] = np.log(
-        hier_fitnesses["median_ga"]
-    ) - np.log(weighted_mean_population_ga)
-    hier_fitnesses = hier_fitnesses.drop(columns=["count"])
+        if variant_column != "derived_haplotype":
+            counts = lineage_summary.groupby(variant_column).aggregate(
+                count=("count", "sum"),
+            ).reset_index()
+        else:
+            counts = lineage_summary.reset_index().loc[:, [variant_column, "count"]]
 
-    # Annotate summary by median hierarchical GA.
-    lineage_summary = lineage_summary.merge(
-        hier_fitnesses,
-        how="left",
-        on="derived_haplotype",
-    )
-    lineage_summary["median_ga"] = lineage_summary["median_ga"].fillna(0.0)
-    lineage_summary["relative_fitness"] = lineage_summary[
-        "relative_fitness"
-    ].fillna(0.0)
+        # Calculate the weighted population average GA.
+        hier_fitnesses = hier_fitnesses.merge(
+            counts,
+            on=variant_column,
+        )
+        hier_fitnesses["frequency"] = (
+            hier_fitnesses["count"] / hier_fitnesses["count"].sum()
+        )
+
+        weighted_mean_population_ga = (
+            hier_fitnesses["frequency"] * hier_fitnesses["median_ga"]
+        ).sum()
+
+        hier_fitnesses[f"relative_fitness_{variant_column}"] = np.log(hier_fitnesses["median_ga"]) - np.log(weighted_mean_population_ga)
+        hier_fitnesses = hier_fitnesses.drop(columns=["count", "median_ga", "frequency"])
+
+        lineage_summary = lineage_summary.merge(
+            hier_fitnesses,
+            how="left",
+            on=variant_column,
+        )
+        lineage_summary[f"relative_fitness_{variant_column}"] = lineage_summary[f"relative_fitness_{variant_column}"].fillna(0.0)
+
+        lineage_summary[f"score_fitness_{variant_column}"] = (
+            lineage_summary[f"relative_fitness_{variant_column}"]
+            / lineage_summary[f"relative_fitness_{variant_column}"].abs().max()
+        )
+
+        return lineage_summary.copy()
+
+    lineage_summary = get_fitnesses_by_haplotype_resolution(args.aa_haplotype_fitnesses, "derived_haplotype", lineage_summary)
+    lineage_summary = get_fitnesses_by_haplotype_resolution(args.emerging_haplotype_fitnesses, "emerging_haplotype", lineage_summary)
+
+    # Annotate summary by relative fitness for different haplotype resolutions.
 
     # Score haplotypes following approach for clade assignment in:
     # https://github.com/influenza-clade-nomenclature/clade-suggestion-algorithm
@@ -164,15 +179,10 @@ def main(args):
         / lineage_summary["lcr_score"].abs().max()
     )
 
-    lineage_summary["score_fitness"] = (
-        lineage_summary["relative_fitness"]
-        / lineage_summary["relative_fitness"].abs().max()
-    )
-
     lineage_summary["score_total"] = (
         lineage_summary["score_mutations"]
         + lineage_summary["score_lcr"]
-        + lineage_summary["score_fitness"]
+        + lineage_summary["score_fitness_derived_haplotype"]
         + lineage_summary["proportion_countries"]
     )
 
@@ -191,7 +201,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--metadata", required=True, help="TSV of metadata for potential library strains with derived haplotypes and scores annotated")
-    parser.add_argument("--fitnesses", help="TSV of fitnesses per derived haplotype")
+    parser.add_argument("--emerging-haplotype-fitnesses", help="TSV of fitnesses per emerging haplotype (coarser haplotypes)")
+    parser.add_argument("--aa-haplotype-fitnesses", help="TSV of fitnesses per amino acid haplotype (finer haplotypes)")
     parser.add_argument("--mutation-weights", nargs="+", help="key/value pairs of columns in the metadata to score and their corresponding weight (e.g., 'koel_mutations=3 wolf_mutations=2 HA1_mutations=1')")
     parser.add_argument("--min-ha1-coverage", type=float, default=0.75, help="minimum coverage for HA1 as a proportion of the full amino acid sequence length")
     parser.add_argument("--output", required=True, help="TSV of derived haplotypes summaries with representative strains/sequences and scores")
