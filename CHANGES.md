@@ -9,6 +9,8 @@ The "__NEXT__" heading below describes changes in the unreleased development sou
 
 # 17 November 2026
 
+- Update clade names and colors for H3N2 HA.
+  See [#364](https://github.com/nextstrain/seasonal-flu/pull/364) for details.
 - Update clade names and colors for H1N1pdm HA and NA.
   See [#363](https://github.com/nextstrain/seasonal-flu/pull/363) for details.
 
