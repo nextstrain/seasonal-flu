@@ -7,6 +7,11 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 17 November 2026
+
+- Update clade names and colors for H1N1pdm HA and NA.
+  See [#363](https://github.com/nextstrain/seasonal-flu/pull/363) for details.
+
 # 12 November 2026
 
 - Update emerging haplotypes for H1N1pdm to include D.3.1.1 variants with 139N and 155E and remove older variants.
