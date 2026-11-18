@@ -4,9 +4,9 @@ J.2.3	clade	J.2.3
 J.2.4	clade	J.2.4
 J.2.4.2	clade	J.2.4.2
 K	clade	K
-
-K:96R	clade	K
-K:96R	HA1	96	R
+K.1	clade	K.1
+K.2	clade	K.2
+K.3	clade	K.3
 
 K:145N	clade	K
 K:145N	HA1	145	N
@@ -16,7 +16,3 @@ K:223I	HA1	223	I
 
 K:328T	clade	K
 K:328T	HA1	328	T
-
-K:79I-207Q	clade	K
-K:79I-207Q	HA1	79	I
-K:79I-207Q	HA1	207	Q
