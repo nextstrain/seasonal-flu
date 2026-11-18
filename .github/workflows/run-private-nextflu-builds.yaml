@@ -40,6 +40,8 @@ jobs:
   deploy-private-nextflu:
     needs: [run-build]
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - name: Trigger deploy-private-nextflu
         run: |
