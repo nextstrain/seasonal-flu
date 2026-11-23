@@ -187,3 +187,7 @@ A/Trapani/1/2024
 A/Milan/291/2024
 A/India/1/2025
 A/India/3/2025
+A/Hungary/101243-UPL26-001396/2026
+A/RiodeJaneiro/12946/2024
+A/RioGrandedoSul/12680/2024
+A/RioGrandedoSul/12678/2024
