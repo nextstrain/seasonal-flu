@@ -104,7 +104,21 @@ def parse_arguments():
     parser.add_argument(
         '--ignore-missing-founders',
         action='store_true',
-        help='Ignore lineages in guide tree that lack founder sequences (default: raise error)'
+        help='Fold lineages that lack a founder sequence into their parent (default: raise error)'
+    )
+    parser.add_argument(
+        '--unknown-lineage-policy',
+        choices=['parent', 'root', 'drop'],
+        default='parent',
+        help='What to do with sequences whose lineage is not a node of the guide tree: place them '
+             'in the nearest enclosing lineage, in the root lineage, or drop them (default: parent)'
+    )
+    parser.add_argument(
+        '--max-dropped-fraction',
+        type=float,
+        default=0.05,
+        help='Fail if a larger fraction of the alignment ends up without a place in the tree '
+             '(default: 0.05)'
     )
     return parser.parse_args()
 
@@ -171,13 +185,35 @@ def parse_guide_tree(newick_path: str, root_lineage: str = None) -> LineageNode:
     return build_lineage_tree(tree.root, save_phylo_node=True)
 
 
+def enclosing_lineage(lineage: str, lineage_map: Dict[str, LineageNode]) -> Optional[str]:
+    """
+    Nearest ancestor of `lineage` that is present in the guide tree.
+
+    Lineages that are added to the nomenclature after the guide tree was built,
+    or that are more finely resolved than the guide tree, are placed in the
+    lineage they descend from, e.g. 'K.1.2' is placed in 'K.1' or else in 'K'.
+    """
+    parts = lineage.split('.')
+    for i in range(len(parts) - 1, 0, -1):
+        candidate = '.'.join(parts[:i])
+        if candidate in lineage_map:
+            return candidate
+    return None
+
+
 def assign_sequences_to_lineages(
     root: LineageNode,
     assignments: Dict[str, str],
-    sequences: Dict[str, SeqRecord]
-):
-    """Assign sequences to their respective lineage nodes."""
-    # Create a map of lineage name to node
+    sequences: Dict[str, SeqRecord],
+    unknown_lineage_policy: str = 'parent',
+    founder_ids: Optional[set] = None,
+) -> Dict[str, object]:
+    """
+    Assign sequences to their respective lineage nodes.
+
+    Every sequence of the alignment ends up in exactly one of the reported
+    categories, so that sequences are never dropped without notice.
+    """
     lineage_map = {}
 
     def map_lineages(node):
@@ -187,10 +223,85 @@ def assign_sequences_to_lineages(
 
     map_lineages(root)
 
-    # Assign sequences
-    for seq_id, lineage in assignments.items():
-        if lineage in lineage_map and seq_id in sequences:
+    report = {
+        'assigned': 0,
+        'founders': 0,
+        'placed_in_enclosing_lineage': {},   # lineage not in guide tree -> count
+        'placed_in_root': {},                # no enclosing lineage in guide tree -> count
+        'dropped_unknown_lineage': {},       # only when the policy says to drop
+        'without_assignment': [],            # in the alignment but not in the metadata
+    }
+
+    founder_ids = founder_ids or set()
+    for seq_id in sequences:
+        if seq_id in founder_ids:
+            # founders are placed by assign_founders_to_lineages, not by their lineage call
+            report['founders'] += 1
+            continue
+        lineage = assignments.get(seq_id)
+        if lineage is None:
+            report['without_assignment'].append(seq_id)
+            continue
+        if lineage in lineage_map:
             lineage_map[lineage].sequences.append(seq_id)
+            report['assigned'] += 1
+            continue
+
+        # the lineage is not a node of the guide tree
+        enclosing = enclosing_lineage(lineage, lineage_map)
+        if unknown_lineage_policy == 'drop':
+            report['dropped_unknown_lineage'].setdefault(lineage, 0)
+            report['dropped_unknown_lineage'][lineage] += 1
+        elif enclosing and unknown_lineage_policy == 'parent':
+            lineage_map[enclosing].sequences.append(seq_id)
+            report['placed_in_enclosing_lineage'].setdefault(f"{lineage} -> {enclosing}", 0)
+            report['placed_in_enclosing_lineage'][f"{lineage} -> {enclosing}"] += 1
+        else:
+            # above the root of the guide tree, or an unparseable name: these are
+            # ancestral context for the root lineage
+            root.sequences.append(seq_id)
+            report['placed_in_root'].setdefault(f"{lineage} -> {root.name}", 0)
+            report['placed_in_root'][f"{lineage} -> {root.name}"] += 1
+
+    return report
+
+
+def report_assignments(report: Dict[str, object], total: int, max_dropped_fraction: float) -> int:
+    """Print what happened to every sequence and fail if too many were lost."""
+    placed = (report['assigned']
+              + sum(report['placed_in_enclosing_lineage'].values())
+              + sum(report['placed_in_root'].values()))
+    dropped = sum(report['dropped_unknown_lineage'].values()) + len(report['without_assignment'])
+
+    print("\nSequence assignment:")
+    print(f"  {report['assigned']} assigned to their own lineage")
+    for label, count in sorted(report['placed_in_enclosing_lineage'].items(), key=lambda x: -x[1]):
+        print(f"  {count} placed in enclosing lineage: {label}")
+    for label, count in sorted(report['placed_in_root'].items(), key=lambda x: -x[1]):
+        print(f"  {count} placed in the root lineage: {label}")
+    for label, count in sorted(report['dropped_unknown_lineage'].items(), key=lambda x: -x[1]):
+        print(f"  {count} DROPPED, lineage not in guide tree: {label}")
+    if report['without_assignment']:
+        examples = ', '.join(report['without_assignment'][:5])
+        print(f"  {len(report['without_assignment'])} DROPPED, no lineage assignment "
+              f"(e.g. {examples})")
+    if report['founders']:
+        print(f"  ({report['founders']} founder sequences in the alignment, placed as founders)")
+    print(f"  {placed} of {total} sequences placed, {dropped} dropped")
+
+    # sequences that land in the root lineage are not lost, but a build in which most
+    # sequences do is usually reading the wrong column or using a stale guide tree
+    if total and report['assigned'] / total < 0.5:
+        print(f"Warning: only {report['assigned'] / total:.1%} of sequences were assigned to "
+              f"their own lineage. Check that --lineage-column names the column holding the "
+              f"lineages of the guide tree and that the guide tree is up to date.")
+
+    if total and dropped / total > max_dropped_fraction:
+        print(f"Error: dropped {dropped / total:.1%} of sequences, more than the allowed "
+              f"{max_dropped_fraction:.1%}. Check that --lineage-column names the column "
+              f"holding the lineages of the guide tree.", file=sys.stderr)
+        return 1
+    return 0
 
 
 def assign_founders_to_lineages(
@@ -198,23 +309,44 @@ def assign_founders_to_lineages(
     founders: Dict[str, SeqRecord],
     ignore_missing_founders: bool = False
 ):
-    """Assign founder sequences to their respective lineage nodes."""
+    """
+    Assign founder sequences to their respective lineage nodes.
+
+    A lineage without a founder cannot be the root of its own subtree. Rather than
+    discarding it with its sequences and descendants, it is folded into its parent:
+    its sequences are built as part of the parent subtree and its children are
+    re-attached to the parent. This keeps newly designated lineages, for which no
+    founder has been defined yet, in the tree.
+    """
+    folded = []
+
     def assign(node):
         if node.name in founders:
             node.founder_seq = founders[node.name]
         children_to_keep = []
         # note that this allows a missing founder for the root node
         for child in node.children:
-            if ignore_missing_founders and child.name not in founders:
-                print(f"Warning: Founder sequence for lineage '{child.name}' not found. Skipping this lineage.")
-            elif child.name not in founders:
-                raise ValueError(f"Founder sequence for lineage '{child.name}' not found.")
-            else:
+            if child.name in founders:
                 assign(child)
                 children_to_keep.append(child)
+            elif ignore_missing_founders:
+                assign(child)
+                folded.append((child.name, node.name, len(child.sequences)))
+                node.sequences.extend(child.sequences)
+                children_to_keep.extend(child.children)
+                for grandchild in child.children:
+                    grandchild.parent = node
+            else:
+                raise ValueError(f"Founder sequence for lineage '{child.name}' not found.")
         node.children = children_to_keep
 
     assign(root)
+
+    if folded:
+        print("\nLineages without a founder sequence, folded into their parent:")
+        for name, parent, n_seqs in folded:
+            print(f"  {name} -> {parent} ({n_seqs} sequences kept)")
+    return folded
 
 
 def run_iqtree(
@@ -276,7 +408,6 @@ def run_iqtree(
 
         tree = Phylo.read(str(tree_file), 'newick')
         print(f"Rooting tree with {root}")
-        Phylo.write(tree, str('temp_tree.nwk'), 'newick')  # Write intermediate tree for debugging
         tree.root_with_outgroup(root)
         return tree
 
@@ -319,6 +450,10 @@ def build_subtree(
     # Need at least 3 sequences to build a tree
     print(f"Lineage {node.name}: total sequences for subtree: {len(subtree_seqs)}")
     print([seq.id for seq in subtree_seqs])
+    if len(subtree_seqs) == 0:
+        # a lineage can end up empty when its sequences were folded into a parent
+        print(f"Lineage {node.name}: no sequences, no subtree built")
+        return None
     if len(subtree_seqs) < 3:
         if node.name.startswith('internal_'):
             tree = Phylo.read(io.StringIO(f"({','.join(seq.id for seq in subtree_seqs)});"), 'newick')
@@ -478,7 +613,11 @@ def main():
 
     # Prepare lineage structure
     print("\nAssigning sequences to lineages...")
-    assign_sequences_to_lineages(lineage_root, assignments, sequences)
+    report = assign_sequences_to_lineages(lineage_root, assignments, sequences,
+                                          args.unknown_lineage_policy, set(founders))
+    if report_assignments(report, len(sequences) - len(set(founders) & set(sequences)),
+                          args.max_dropped_fraction):
+        return 1
     assign_founders_to_lineages(lineage_root, founders, args.ignore_missing_founders)
 
     # Build and stitch trees
