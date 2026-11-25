@@ -31,7 +31,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: blab/nextflu
           sparse-checkout: |
@@ -80,7 +80,7 @@ jobs:
       - name: Build site
         run: bundle exec jekyll build
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           # Minimum node version to install Netlify CLI
           # https://docs.netlify.com/cli/get-started/#installation

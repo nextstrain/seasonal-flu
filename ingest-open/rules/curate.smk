@@ -1,0 +1,275 @@
+"""
+This part of the workflow handles the curation of the open data
+
+REQUIRED INPUTS:
+
+    ndjson = "data/{lineage}/open.ndjson.zst"
+
+OUTPUTS:
+
+    metadata      = data/{lineage}/subset_metadata.tsv
+    sequences     = results/{lineage}/{segment}.fasta
+
+"""
+
+# Curate metadata
+def format_field_map(field_map: dict[str, str]) -> list[str]:
+    """
+    Format entries to the format expected by `augur curate --field-map`.
+    When used in a Snakemake shell block, the list is automatically expanded and
+    spaces are handled by quoted interpolation.
+    """
+    return [f'{key}={value}' for key, value in field_map.items()]
+
+
+rule curate:
+    input:
+        ndjson="data/{lineage}/open.ndjson.zst",
+        geolocation_rules=resolve_config_path(config["curate"]["local_geolocation_rules"]),
+        annotations=resolve_config_path(config["curate"]["annotations"]),
+    output:
+        ndjson="data/{lineage}/curated.ndjson.zst",
+        invalid_strains="data/{lineage}/invalid-strains.ndjson",
+    params:
+        field_map=format_field_map(config["curate"]["field_map"]),
+        original_strain_field=config["curate"]["original_strain_field"],
+        strain_field=config["curate"]["strain_field"],
+        date_fields=config["curate"]["date_fields"],
+        expected_date_formats=config["curate"]["expected_date_formats"],
+        division_field=config["curate"]["genspectrum_division_field"],
+        location_field=config["curate"]["location_field"],
+        articles=config["curate"]["titlecase"]["articles"],
+        abbreviations=config["curate"]["titlecase"]["abbreviations"],
+        titlecase_fields=config["curate"]["titlecase"]["fields"],
+        authors_field=config["curate"]["authors_field"],
+        authors_default_value=config["curate"]["authors_default_value"],
+        abbr_authors_field=config["curate"]["abbr_authors_field"],
+        annotations_id=config["curate"]["annotations_id"],
+    benchmark:
+        "benchmarks/{lineage}/curate.txt"
+    log:
+        "logs/{lineage}/curate.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.ndjson:q} \
+            | augur curate rename \
+                --field-map {params.field_map:q} \
+            | augur curate normalize-strings \
+            | {workflow.basedir}/scripts/standardize-strain-name \
+                --strain-field {params.original_strain_field:q} \
+                --new-strain-field {params.strain_field:q} \
+                --invalid-strains-output {output.invalid_strains:q} \
+            | augur curate format-dates \
+                --date-fields {params.date_fields:q} \
+                --expected-date-formats {params.expected_date_formats:q} \
+            | {workflow.basedir}/scripts/parse-genspectrum-division \
+                --division-field {params.division_field:q} \
+                --location-field {params.location_field:q} \
+            | augur curate titlecase \
+                --titlecase-fields {params.titlecase_fields:q} \
+                --articles {params.articles:q} \
+                --abbreviations {params.abbreviations:q} \
+            | augur curate abbreviate-authors \
+                --authors-field {params.authors_field:q} \
+                --default-value {params.authors_default_value:q} \
+                --abbr-authors-field {params.abbr_authors_field:q} \
+            | augur curate apply-geolocation-rules \
+            | augur curate apply-geolocation-rules \
+                --no-default-rules \
+                --geolocation-rules {input.geolocation_rules:q} \
+            | augur curate apply-record-annotations \
+                --annotations {input.annotations:q} \
+                --id-field {params.annotations_id:q} \
+            | zstd -T0 -c > {output.ndjson:q}
+        """
+
+
+# Copied from
+# <https://github.com/nextstrain/zika/blob/4d8d8c452b8f3f50b771d95a17662c88818b6048/phylogenetic/rules/annotate_phylogeny.smk#L81-L97>
+def conditional(option, argument):
+    """Used for config-defined arguments whose presence necessitates a command-line option
+    (e.g. --foo) prepended and whose absence should result in no option/arguments in the CLI command.
+    *argument* can be falsey, in which case an empty string is returned (i.e. "don't pass anything
+    to the CLI"), or a *list* or *string* or *number* in which case a flat list of options/args is returned,
+    or *True* in which case a list of a single element (the option) is returned.
+    Any other argument type is a WorkflowError
+    """
+    if not argument:
+        return ""
+    if argument is True: # must come before `isinstance(argument, int)` as bool is a subclass of int
+        return [option]
+    if isinstance(argument, list):
+        return [option, *argument]
+    if isinstance(argument, int) or isinstance(argument, float) or isinstance(argument, str):
+        return [option, argument]
+    raise WorkflowError(f"Workflow function conditional() received an argument value of unexpected type: {type(argument).__name__}")
+
+
+def get_prioritized_id_file(wildcards):
+    if prioritized_id_file := config["curate"].get("prioritized_strain_ids", {}).get(wildcards.lineage):
+        return resolve_config_path(prioritized_id_file)
+    return []
+
+rule prioritize_id_per_strain:
+    input:
+        curated_ndjson="data/{lineage}/curated.ndjson.zst",
+        prioritized_strain_ids=get_prioritized_id_file,
+    output:
+        prioritized_ids="data/{lineage}/prioritized_ids.txt",
+    benchmark:
+        "benchmarks/{lineage}/prioritize_id_per_strain.txt"
+    log:
+        "logs/{lineage}/prioritize_id_per_strain.txt"
+    params:
+        strain_field=config["curate"]["strain_field"],
+        id_field=config["curate"]["record_id_field"],
+        seq_field="sequences",
+        prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_strain_ids),
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.curated_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/prioritize-id-per-strain \
+                --strain-field {params.strain_field:q} \
+                --id-field {params.id_field:q} \
+                --seq-field {params.seq_field:q} \
+                {params.prioritized_strain_ids:q} \
+                --output {output.prioritized_ids:q}
+        """
+
+
+rule deduplicate_ndjson_by_strain:
+    input:
+        curated_ndjson="data/{lineage}/curated.ndjson.zst",
+        prioritized_ids="data/{lineage}/prioritized_ids.txt",
+    output:
+        deduped_ndjson=temp("data/{lineage}/deduped_curated.ndjson.zst"),
+    benchmark:
+        "benchmarks/{lineage}/deduplicate_ndjson_by_strain.txt"
+    log:
+        "logs/{lineage}/deduplicate_ndjson_by_strain.txt"
+    params:
+        id_field=config["curate"]["record_id_field"],
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.curated_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/filter-ndjson-by-value \
+                --field {params.id_field:q} \
+                --include {input.prioritized_ids:q} \
+            | zstd -T0 -c > {output.deduped_ndjson:q}
+        """
+
+
+rule split_ndjson_by_segment:
+    input:
+        deduped_ndjson="data/{lineage}/deduped_curated.ndjson.zst",
+    output:
+        metadata="data/{lineage}/curated_metadata.tsv",
+        sequences=expand("results/{{lineage}}/{segment}.fasta", segment=config["segments"]),
+    benchmark:
+        "benchmarks/{lineage}/split_ndjson_by_segment.txt"
+    log:
+        "logs/{lineage}/split_ndjson_by_segment.txt"
+    params:
+        segments=config["segments"],
+        seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
+        id_field=config["curate"]["output_id_field"],
+        select_seq="error",
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        zstdcat {input.deduped_ndjson:q} \
+            | {workflow.basedir}/../ingest/scripts/split-ndjson-by-segment \
+                --segments {params.segments:q} \
+                --select-seq {params.select_seq:q} \
+                --output-metadata {output.metadata:q} \
+                --sequences-output-dir {params.seq_output_dir:q} \
+                --output-id-field {params.id_field:q}
+        """
+
+
+# Modified from top level rule
+# <https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L94-L113>
+rule build_reference_strains_table:
+    input:
+        references=resolve_config_path(config["curate"]["reference_strains"]),
+    output:
+        references="data/{lineage}/reference_strains.tsv",
+    params:
+        reference_column=config["curate"]["reference_column"],
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        csvtk add-header \
+            --names {params.id_field:q} \
+            {input.references:q} \
+            | csvtk uniq \
+            | csvtk --out-tabs mutate2 \
+                --name {params.reference_column:q} \
+                --expression "'True'" > {output.references:q}
+        """
+
+
+# Modified from top level rule
+# https://github.com/nextstrain/seasonal-flu/blob/f073d3e055ab6efaae6d4c91a06efa621b6247d9/workflow/snakemake_rules/select_strains.smk#L115-L137
+rule annotate_metadata_with_reference_strains:
+    input:
+        references="data/{lineage}/reference_strains.tsv",
+        metadata="data/{lineage}/curated_metadata.tsv",
+    output:
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
+    params:
+        id_field=config["curate"]["output_id_field"],
+    shell:
+        r"""
+        if [[ -s {input.metadata:q} ]]; then
+            csvtk -t join \
+                --left-join \
+                --na "False" \
+                -f {params.id_field:q} \
+                {input.metadata:q} \
+                {input.references:q} > {output.metadata:q}
+        else
+            touch {output.metadata:q}
+        fi
+        """
+
+def metadata_fields(wildcards) -> str:
+    """
+    Returns config defined columns and any additional segment
+    columns added by ./scripts/split-ndjson-by-segment
+    """
+    metadata_columns = config["curate"]["metadata_columns"].copy()
+    for segment in config["segments"]:
+        metadata_columns.extend([
+            segment,
+            f"accession_{segment}",
+        ])
+    metadata_columns.append("n_segments")
+    return ",".join(metadata_columns)
+
+
+rule subset_metadata:
+    input:
+        metadata="data/{lineage}/curated_metadata_with_references.tsv",
+    output:
+        subset_metadata="data/{lineage}/subset_metadata.tsv",
+    params:
+        metadata_fields=metadata_fields,
+    benchmark:
+        "benchmarks/{lineage}/subset_metadata.txt"
+    log:
+        "logs/{lineage}/subset_metadata.txt"
+    shell:
+        r"""
+        exec &> >(tee {log:q})
+
+        csvtk cut -t -f {params.metadata_fields:q} \
+            {input.metadata:q} > {output.subset_metadata:q}
+        """

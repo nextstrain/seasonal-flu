@@ -73,13 +73,13 @@ if __name__ == '__main__':
             "strain",
             "date",
             "region",
-            "emerging_haplotype",
+            "emerging_haplotype_ha",
         ]
     ).query(
         f"date >= '{args.min_date}'"
     )
-    tips.loc[tips["emerging_haplotype"] == "unassigned", "emerging_haplotype"] = "other"
-    tips["region_haplotype"] = tips.apply(lambda record: f"{record['region']}/{record['emerging_haplotype']}", axis=1)
+    tips.loc[tips["emerging_haplotype_ha"] == "unassigned", "emerging_haplotype_ha"] = "other"
+    tips["region_haplotype"] = tips.apply(lambda record: f"{record['region']}/{record['emerging_haplotype_ha']}", axis=1)
 
     tips_with_futures = tips[tips["region_haplotype"].isin(region_haplotypes)].copy()
     print(f"Found {tips_with_futures.shape[0]} tips")
@@ -115,10 +115,16 @@ if __name__ == '__main__':
 
                     for i in range(ha1_sequence_length):
                         if reference_sequence[i] != tip_sequence[i]:
-                            distance_for_region_haplotype += substitutions.get(
-                                f"{reference_sequence[i]}{i + 1}{tip_sequence[i]}",
-                                0.0,
-                            )
+                            # Human models don't have reference alleles.
+                            if f"{i + 1}{tip_sequence[i]}" in substitutions:
+                                effect = substitutions[f"{i + 1}{tip_sequence[i]}"]
+                            # Ferret models do have reference alleles.
+                            elif f"{reference_sequence[i]}{i + 1}{tip_sequence[i]}" in substitutions:
+                                effect = substitutions[f"{reference_sequence[i]}{i + 1}{tip_sequence[i]}"]
+                            else:
+                                effect = 0.0
+
+                            distance_for_region_haplotype += effect
 
             # Calculate the average antigenic distance between the current reference
             # and all tips for this region and haplotype.

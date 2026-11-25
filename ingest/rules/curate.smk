@@ -42,6 +42,7 @@ def format_field_map(field_map: dict[str, str]) -> str:
 rule curate:
     input:
         sequences_ndjson="data/gisaid.ndjson",
+        exclude=config["curate"]["exclude"],
         lineage_annotations=config["curate"]["lineage_annotations"],
         strain_replacements_seasonal="data/fauna-source-data/flu_strain_name_fix.tsv",
         strain_replacements_avian="data/fauna-source-data/avian_flu_strain_name_fix.tsv",
@@ -58,6 +59,7 @@ rule curate:
     benchmark:
         "benchmarks/curate.txt"
     params:
+        gisaid_id_field=config["gisaid_id_field"],
         field_map=format_field_map(config["curate"]["field_map"]),
         gisaid_subtype_field=config["curate"]["gisaid_subtype_field"],
         gisaid_lineage_field=config["curate"]["gisaid_lineage_field"],
@@ -87,6 +89,9 @@ rule curate:
     shell:
         r"""
         (cat {input.sequences_ndjson:q} \
+            | ./scripts/filter-ndjson-by-value \
+                --field {params.gisaid_id_field:q} \
+                --exclude {input.exclude:q} \
             | augur curate rename \
                 --field-map {params.field_map} \
             | augur curate normalize-strings \
@@ -196,25 +201,47 @@ rule filter_curated_data:
         """
 
 
+rule prioritize_id_per_strain:
+    input:
+        curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_strain_ids=lambda w: config["filtering"][w.dataset].get('prioritized_strain_ids', []),
+    output:
+        prioritized_ids="data/{dataset}/prioritized_ids.txt",
+    log:
+        "logs/{dataset}/prioritize_id_per_strain.txt"
+    params:
+        strain_field=config["curate"]["new_strain_field"],
+        id_field=config["curate"]["gisaid_id_field"],
+        seq_field="sequences",
+        prioritized_strain_ids=lambda _, input: conditional('--prioritized-ids', input.prioritized_strain_ids),
+    shell:
+        r"""
+         (zstdcat {input.curated_ndjson:q} \
+            | ./scripts/prioritize-id-per-strain \
+                --strain-field {params.strain_field:q} \
+                --id-field {params.id_field:q} \
+                --seq-field {params.seq_field:q} \
+                {params.prioritized_strain_ids:q} \
+                --output {output.prioritized_ids:q}) 2> {log:q}
+        """
+
+
 rule deduplicate_ndjson_by_strain:
     input:
         curated_ndjson="data/{dataset}/curated_gisaid.ndjson.zst",
+        prioritized_ids="data/{dataset}/prioritized_ids.txt",
     output:
         deduped_ndjson=temp("data/{dataset}/deduped_curated.ndjson.zst"),
     log:
         "logs/{dataset}/deduplicate_ndjson_by_strain.txt"
     params:
-        strain_field=config["curate"]["new_strain_field"],
         id_field=config["curate"]["gisaid_id_field"],
-        # TODO XXX - can we make this an input to get snakemake's file checking?
-        prioritized_strain_ids=lambda w: conditional('--prioritized-ids', config["filtering"][w.dataset].get('prioritized_strain_ids', None)),
     shell:
         r"""
          (zstdcat {input.curated_ndjson:q} \
-            | ./scripts/dedup-by-strain \
-                --strain-field {params.strain_field:q} \
-                --id-field {params.id_field:q} \
-                {params.prioritized_strain_ids:q} \
+            | ./scripts/filter-ndjson-by-value \
+                --field {params.id_field:q} \
+                --include {input.prioritized_ids:q} \
             | zstd -T0 -c > {output.deduped_ndjson:q}) 2> {log:q}
         """
 
@@ -231,11 +258,13 @@ rule split_ndjson_by_segment:
         segments=config["segments"],
         seq_output_dir=lambda w, output: Path(output.sequences[0]).parent,
         id_field=config["curate"]["output_id_field"],
+        select_seq="gisaid",
     shell:
         r"""
         zstdcat {input.deduped_ndjson:q} \
-            | ./scripts/split-gisaid-ndjson-by-segment \
+            | ./scripts/split-ndjson-by-segment \
                 --segments {params.segments:q} \
+                --select-seq {params.select_seq:q} \
                 --output-metadata {output.metadata:q} \
                 --sequences-output-dir {params.seq_output_dir:q} \
                 --output-id-field {params.id_field:q} 2> {log:q}
@@ -276,12 +305,16 @@ rule annotate_metadata_with_reference_strains:
         id_field=config["curate"]["output_id_field"],
     shell:
         r"""
-        csvtk -t join \
-            --left-join \
-            --na "False" \
-            -f {params.id_field:q} \
-            {input.metadata:q} \
-            {input.references:q} > {output.metadata:q}
+        if [[ -s {input.metadata:q} ]]; then
+            csvtk -t join \
+                --left-join \
+                --na "False" \
+                -f {params.id_field:q} \
+                {input.metadata:q} \
+                {input.references:q} > {output.metadata:q}
+        else
+            touch {output.metadata:q}
+        fi
         """
 
 
@@ -300,7 +333,7 @@ def metadata_selector(wildcards):
 def metadata_fields(wildcards) -> str:
     """
     Returns config defined columns and any additional segment
-    columns added by ./scripts/split-gisaid-ndjson-by-segment
+    columns added by ./scripts/split-ndjson-by-segment
     """
     metadata_columns = config["filtering"][wildcards.dataset]["metadata_columns"].copy()
     for segment in config["segments"]:
@@ -316,7 +349,7 @@ rule subset_metadata:
     input:
         metadata=metadata_selector,
     output:
-        subset_metadata="results/{dataset}/metadata.tsv",
+        subset_metadata="data/{dataset}/subset_metadata.tsv",
     params:
         metadata_fields=metadata_fields,
     shell:

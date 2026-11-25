@@ -87,7 +87,7 @@ AVIAN = set([
 
     "japanese__white__eye", "japanese__quail",
 
-    "larusarmenicus","larusschistisagus", "larussmithsonianus","larusargentatus", "larusbrunnicephalus",
+    "larusbelcheri","larusarmenicus","larusschistisagus", "larussmithsonianus","larusargentatus", "larusbrunnicephalus",
     "larusglaucescens","larusmarinus","larusmelanocephalus","laruscachinnans","larosternainca",
     "larusatricilla", "laruscanus", "larusdelawarensis","larusdominicanus","laughing__gull","larus",
     "larusichthyaetus", "larusridibundus", "larusridibundus", "leucophaeusatricilla",
@@ -162,15 +162,15 @@ ENVIRONMENT = set([
 ])
 CATTLE = set(["dairycattle", "cattle", "cow", "bovine", "dairycow"])
 NONHUMAN_MAMMAL = set([
-    "bat", "canine", "feline", "harbourseal","mammals", "mink", "othermammals",
+    "bat", "canine", "equine", "equuscaballus", "horse", "donkey", "Equine","feline", "harbourseal","mammals", "mink", "othermammals",
     "primate","swine","pig", "susscrofadomesticus", "lion", "weasel", "raccoon__dog", "tiger",
     "dog", "large__cat", "mouse","murine","pika","seal","meerkat", "cat","feliscatus", "rousettusaegyptiacus","rodent", 
     "canislupusfamiliaris", "susscrofa", "susscrofascrofa", "musmusculus", "panda", 
     "camel", "rodent", 
     ])
-EQUINE = set([
-    "equine", "equuscaballus", "horse", "donkey", 
-])
+# EQUINE = set([
+#     "equine", "equuscaballus", "horse", "donkey", "Equine",
+# ])
 OTHER_HOSTS = set([
     "ferret", "insect", "laboratoryderived", "unknown", "animal", "host", "na", 
 ])
@@ -204,8 +204,8 @@ def format_host(records: Iterable, strain_key:str, host_key:str) -> Iterable:
             record['host'] = 'Environment'
         elif gisaid_host in CATTLE:
             record['host'] = 'Cattle'
-        elif gisaid_host in EQUINE:
-            record['host'] = 'Equine'
+#        elif gisaid_host in EQUINE:
+#            record['host'] = 'Equine'
         elif gisaid_host in NONHUMAN_MAMMAL:
             # extra logic to find cattle sequences that are annotated as mammal but are cattle
             if guess_host_from_strain(gisaid_strain) in CATTLE:

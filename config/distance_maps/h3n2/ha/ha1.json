@@ -1,5 +1,6 @@
 {
     "default": 0,
+    "output_type": "integer",
     "map": {
         "HA1": {
             "1": 1,

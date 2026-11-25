@@ -161,7 +161,7 @@ if __name__ == '__main__':
     }
 
     # Initialize the figure
-    if len(reference_order) == 1:
+    if len(reference_order) < 3:
         height = 4
     elif len(reference_order) < 5:
         height = 8

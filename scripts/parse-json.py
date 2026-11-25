@@ -20,6 +20,7 @@ def parse_json(input_file, output_ga, output_rf, output_freq, output_raw, output
     Parses "freq" and "delta" (relative fitness) and "ga" (growth advantage) from Latent model results.
     Parses "raw_freq" from MLR or Latent model as raw_freq.
     """
+    sites_to_parse = ["mean", "median", "HDI_95_upper", "HDI_95_lower"]
 
     # Read in JSON file
     with open(input_file, "r") as file:
@@ -34,7 +35,7 @@ def parse_json(input_file, output_ga, output_rf, output_freq, output_raw, output
         if output_freq:
             # Parse freq from MLR or Latent model
             for record in data["data"]:
-                if record["site"] == "freq" and record["ps"] in ["mean", "median", "HDI_95_upper", "HDI_95_lower"]:
+                if record["site"] == "freq" and record["ps"] in sites_to_parse:
                     key = (record["location"], record["variant"], record["date"])
                     if key not in grouped_freq:
                         grouped_freq[key] = {"location": record["location"], "date": record["date"], "variant": record["variant"]}
@@ -49,7 +50,7 @@ def parse_json(input_file, output_ga, output_rf, output_freq, output_raw, output
             print("Parsing forecast freq from model results.")
             grouped_freq_forecast = {}
             for record in data["data"]:
-                if record["site"] == "freq_forecast" and record["ps"] in ["mean", "median", "HDI_95_upper", "HDI_95_lower"]:
+                if record["site"] == "freq_forecast" and record["ps"] in sites_to_parse:
                     key = (record["location"], record["variant"], record["date"])
                     if key not in grouped_freq_forecast:
                         grouped_freq_forecast[key] = {"location": record["location"], "date": record["date"], "variant": record["variant"]}
@@ -74,12 +75,31 @@ def parse_json(input_file, output_ga, output_rf, output_freq, output_raw, output
          # Parse ga (MLR model)
         if model_version == "MLR":
             print("Parsing ga (growth advantage) from MLR model results.")
+            # The pivot is the last variant in the list, by design.
+            pivot_variant = data["metadata"]["variants"][-1]
+            pivot_variant_in_data = False
+
             for record in data["data"]:
-                if record["site"] == "ga" and record["ps"] in ["mean", "median", "HDI_95_upper", "HDI_95_lower"]:
+                if record["site"] == "ga" and record["ps"] in sites_to_parse:
+                    if record["variant"] == pivot_variant:
+                        pivot_variant_in_data = True
+
                     key = (record["location"], record["variant"])
                     if key not in grouped_ga:
                         grouped_ga[key] = {"location": record["location"], "variant": record["variant"]}
                     grouped_ga[key][record["ps"]] = record["value"]
+
+            # If pivot variant isn't in the data, add records for the pivot at
+            # each location. This check guards against upstream changes to the
+            # JSON that include records for the pivot in the future.
+            if not pivot_variant_in_data:
+                for location in data["metadata"]["location"]:
+                    grouped_ga[(location, pivot_variant)] = {
+                        "location": location,
+                        "variant": pivot_variant,
+                    }
+                    for site in sites_to_parse:
+                        grouped_ga[(location, pivot_variant)][site] = 1.0
 
             # Write output mlr/ga.tsv
             write_outfile(output_ga, grouped_ga)

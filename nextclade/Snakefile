@@ -317,7 +317,7 @@ rule translate_clade_founders:
     params:
         outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_new_{{cds}}.fasta",
         nextclade_bin = "nextclade3"
-    threads: 3
+    threads: 2
     shell:
         """
         {params.nextclade_bin} run \

@@ -35,7 +35,6 @@ builds:
     tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
     clades: "nomenclature/h1n1pdm/ha/clades.tsv"
     subclades: "nomenclature/h1n1pdm/{segment}/subclades.tsv"
-    emerging_haplotypes: "config/h1n1pdm/{segment}/emerging_haplotypes.tsv"
     auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "6Y"
@@ -47,6 +46,8 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     titer_collections:
       - name: cell_hi
         data: "data/h1n1pdm/who_ferret_cell_hi_titers.tsv"
@@ -66,10 +67,10 @@ builds:
         title: "Cell-passaged HI titers from pooled mouse sera"
     subsamples: &titers-subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (\`qc.overallStatus_ha\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (\`qc.overallStatus\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (\`qc.overallStatus_ha\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date} --exclude {exclude}
@@ -88,7 +89,6 @@ builds:
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
     clades: "nomenclature/h3n2/ha/clades.tsv"
     subclades: "nomenclature/h3n2/{segment}/subclades.tsv"
-    emerging_haplotypes: "config/h3n2/{segment}/emerging_haplotypes.tsv"
     auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
     vaccines: "config/h3n2/vaccine.json"
     enable_glycosylation: true
@@ -96,6 +96,8 @@ builds:
     enable_forecasts: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     min_date: "2Y"
     reference_min_date: "6Y"
     max_date: "4W"
@@ -134,7 +136,6 @@ builds:
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
     clades: "profiles/nextflu-private/vic/ha/clades.tsv"
     subclades: "nomenclature/vic/{segment}/subclades.tsv"
-    emerging_haplotypes: "config/vic/{segment}/emerging_haplotypes.tsv"
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "6Y"
@@ -146,6 +147,8 @@ builds:
     enable_lbi: true
     enable_titer_models: true
     enable_measurements: true
+    enable_lcr_sum: true
+    enable_mlr_fitness: true
     titer_collections:
       - name: cell_hi
         data: "data/vic/who_ferret_cell_hi_titers.tsv"

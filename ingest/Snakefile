@@ -32,6 +32,7 @@ rule all:
 
 include: "rules/prepare_ndjson.smk"
 include: "rules/curate.smk"
+include: "rules/nextclade.smk"
 
 
 if "custom_rules" in config:

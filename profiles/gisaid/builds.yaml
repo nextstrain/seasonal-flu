@@ -1,20 +1,9 @@
-custom_rules:
-  - profiles/gisaid/prepare_data.smk
-
-metadata_fields:
-  - Isolate_Name
-  - Isolate_Id
-  - Passage_History
-  - Location
-  - Collection_Date
-  - Submission_Date
-renamed_metadata_fields:
-  - strain
-  - accession
-  - passage
-  - full_location
-  - date
-  - date_submitted
+inputs:
+  - name: local-ingest
+    lineage: h3n2
+    metadata: ingest/results/h3n2/metadata.tsv
+    id_field: strain
+    sequences: ingest/results/h3n2/{segment}.fasta
 
 lat-longs: "config/lat_longs.tsv"
 

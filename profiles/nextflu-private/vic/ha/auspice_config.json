@@ -2,10 +2,6 @@
   "title": "Real-time tracking of influenza B/Vic evolution",
   "maintainers": [
     {
-      "name": "Jennifer Chang",
-      "url": "https://bedford.io/team/jennifer-chang/"
-    },
-    {
       "name": "Jover Lee",
       "url": "https://bedford.io/team/jover-lee/"
     },
@@ -58,7 +54,7 @@
           "#5098B9"
         ],
         [
-          "C.3.2",
+          "C.3.3",
           "#6CB28C"
         ],
         [
@@ -84,7 +80,17 @@
       ]
     },
     {
-      "key": "emerging_haplotype",
+      "key": "subclade_nextclade_ha",
+      "title": "HA subclade (Nextclade)",
+      "type": "categorical"
+    },
+    {
+      "key": "subclade_nextclade_na",
+      "title": "NA subclade (Nextclade)",
+      "type": "categorical"
+    },
+    {
+      "key": "emerging_haplotype_ha",
       "title": "Emerging haplotype",
       "type": "categorical",
       "scale": [
@@ -93,12 +99,12 @@
           "#3E5DD0"
         ],
         [
-          "C.3:255P-197N",
-          "#4A8CC2"
-        ],
-        [
           "C.3.1",
           "#60AA9E"
+        ],
+        [
+          "C.3.3",
+          "#4A8CC2"
         ],
         [
           "C.5.1",
@@ -157,8 +163,33 @@
       "type": "continuous"
     },
     {
+      "key": "ha_muts",
+      "title": "HA mutations",
+      "type": "continuous"
+    },
+    {
+      "key": "ha1_muts",
+      "title": "HA1 mutations",
+      "type": "continuous"
+    },
+    {
       "key": "glyc",
       "title": "Glycosylation changes",
+      "type": "continuous"
+    },
+    {
+      "key": "lcr_sum",
+      "title": "Convergence (Turner et al. 2026)",
+      "type": "continuous"
+    },
+    {
+      "key": "mlr_fitness_emerging_haplotype_ha",
+      "title": "MLR fitness (emerging haplotype)",
+      "type": "continuous"
+    },
+    {
+      "key": "mlr_fitness_subclade_haplotype_ha",
+      "title": "MLR fitness (AA)",
       "type": "continuous"
     },
     {
@@ -287,7 +318,7 @@
       "type": "categorical"
     },
     {
-      "key": "qc.overallStatus",
+      "key": "qc.overallStatus_ha",
       "title": "Nextclade QC(overallStatus)",
       "type": "categorical"
     },
@@ -309,7 +340,7 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "emerging_haplotype",
+    "color_by": "emerging_haplotype_ha",
     "branch_label": "Subclade"
   },
   "filters": [

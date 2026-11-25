@@ -31,6 +31,7 @@ A/Dakar/3124/2021
 A/Darwin/27/2021
 A/Denmark/1/2021
 A/Denmark/36/2021
+A/DistritoFederal/260324000414/2026
 A/EasternIndia/107/2009
 A/Galicia/2443/2017
 A/Guatemala/150/2018
@@ -184,3 +185,9 @@ A/Tehran/IR-3983/2024
 A/Tehran/IR-12685/2024
 A/Trapani/1/2024
 A/Milan/291/2024
+A/India/1/2025
+A/India/3/2025
+A/Hungary/101243-UPL26-001396/2026
+A/RiodeJaneiro/12946/2024
+A/RioGrandedoSul/12680/2024
+A/RioGrandedoSul/12678/2024

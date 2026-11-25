@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+"""
+Splits NDJSON into 1 metadata TSV and 8 segment sequence FASTAs.
+
+Reads NDJSON from stdin and expects each record to be formatted as:
+
+    {
+        "<id_field>": "...",
+        "<sequences_field>": {
+            "ha": [
+                {
+                    "accession": "...",
+                    "sequence": "...",
+                }
+            ],
+            [...other segments...]
+        }
+    }
+"""
+import argparse
+import os
+from collections import defaultdict
+from itertools import chain
+from pathlib import Path
+from sys import stdin
+from textwrap import dedent
+from typing import Iterable
+from augur.io.json import load_ndjson
+from augur.io.metadata import write_records_to_tsv
+from augur.io.print import print_err
+
+
+SEGMENTS = [
+    "pb2",
+    "pb1",
+    "pa",
+    "ha",
+    "np",
+    "na",
+    "mp",
+    "ns",
+]
+
+UNKNOWN_VALUE = "?"
+
+STATS:defaultdict[int,int] = defaultdict(int)
+
+
+def create_segment_fasta_files(output_dir: str, segments: list) -> dict:
+    """
+    Create empty FASTA files for all segments as
+
+        <output_dir>/<segment>.fasta
+
+    Removes any old files that already exists since we will be
+    appending to the FASTA files as we loop through the NDJSON.
+    """
+    segment_fasta_files = {}
+    for segment in segments:
+        segment_fasta = Path(output_dir, f"{segment.lower()}.fasta")
+        # Remove any old FASTA files as we will be appending to the FASTAs
+        if segment_fasta.exists():
+            os.remove(segment_fasta)
+        Path.touch(segment_fasta)
+        segment_fasta_files[segment] = segment_fasta
+    return segment_fasta_files
+
+
+def update_records_and_output_sequences(records: Iterable,
+                                        segment_fasta_files: dict,
+                                        output_id_field: str,
+                                        select_seq_type: str) -> Iterable:
+    """
+    Updates the records with the expected segment metadata fields, where
+    the <segment> field will be "True" if the sequence exists and
+    `accession_<segment>` field will have the segment accession or "N/A" if
+    the sequence does not exist. Also adds a `n_segments` field with the count
+    of segments.
+
+    Outputs the segment sequences to their corresponding FASTA files and yields
+    the modified records if they have at least one segment sequence.
+    *select_seq_type* determines how sequences are selected if there are multiple
+    sequences for the same segment of a single record.
+    """
+    for record in records:
+        record_id = record[output_id_field]
+        # Remove the `sequences` since we will be outputting them to FASTAs
+        # and keeping relevant metadata fields as new fields
+        record_seqs = record.pop("sequences")
+        output_sequences = 0
+        for segment, fasta_file in segment_fasta_files.items():
+            accession_field = f"accession_{segment}"
+            if segment_seqs := record_seqs.get(segment, []):
+                output_seq = select_seq(segment_seqs, select_seq_type)
+                record[segment] = "True"
+                record[accession_field] = output_seq["accession"]
+                output_sequences += 1
+                with fasta_file.open("a") as fh:
+                    fh.writelines([
+                        f">{record_id}\n",
+                        f"{output_seq['sequence']}\n"
+                    ])
+            else:
+                record[segment] = "False"
+                record[f"accession_{segment}"] = "N/A"
+
+        record['n_segments'] = output_sequences
+        STATS[output_sequences] += 1
+
+        # Only keep metadata for records that have at least one segment sequence
+        if output_sequences >= 1:
+            yield record
+        else:
+            print_err(f"WARNING: Dropping record {record_id} because it doesn't have any segment sequences")
+            continue
+
+
+def select_seq(seqs: list[dict], select_seq_type:str) -> dict:
+    """
+    Given a list of *seqs*, return the selected seq dict.
+
+    *select_seq_type* determines which sequence is prioritized if there are
+    multiple sequences:
+
+    * "gisaid" - selects longest sequence then the latest accession, with latest
+    accession represented by having the biggest integer after the "EPI" prefix
+    in the accession.
+
+    * "error" - raise an error if there are multiple sequences per segment.
+    """
+    if select_seq_type == "gisaid":
+        sorted_seqs = sorted(
+            seqs,
+            # Sort for longest sequence then latest accession
+            key=lambda s: (len(s["sequence"]), int(s["accession"].removeprefix("EPI"))),
+            reverse=True)
+        return sorted_seqs[0]
+    elif select_seq_type == "error":
+        assert len(seqs) <= 1, "There should only be one sequence per segment"
+        return seqs[0]
+
+    raise ValueError(f"Encountered unexpected `select_seq_type`: {select_seq_type}")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("--output-metadata",
+        help=dedent("""\
+            Output metadata TSV file.
+            The TSV will include all original metadata fields except the
+            `sequences` field. New columns will be added to track the segments.
+            The `<segment>` columns will be "True" if the sequence exists.
+            The `accession_<segment>` columns will have the segment accessions
+            or "N/A" if the sequence does not exist.
+            """))
+    parser.add_argument("--output-id-field",
+        help="The record field to use as the sequence identifier in the FASTA output")
+    parser.add_argument("--sequences-output-dir",
+        help=dedent(f"""\
+            Output directory for sequence FASTAs.
+            Segments will be output to separate FASTAs <output_dir>/<segment>.fasta.
+            """))
+    parser.add_argument("--segments", nargs="*", default=SEGMENTS,
+        help="Segments to include in output directory.")
+    parser.add_argument("--sequences-field", default="sequences",
+        help="The record field that contains the segment sequences array.")
+    parser.add_argument("--select-seq", choices=["gisaid", "error"],
+        help=dedent("""\
+            Rules for selecting sequence if there are multiple sequences for the
+            same segment of the same record.
+        """))
+
+
+    args = parser.parse_args()
+
+    segment_fasta_files = create_segment_fasta_files(args.sequences_output_dir, args.segments)
+    records = load_ndjson(stdin)
+    modified_records = update_records_and_output_sequences(
+        records,
+        segment_fasta_files,
+        args.output_id_field,
+        args.select_seq,
+    )
+
+    try:
+        first_record = next(modified_records)
+    except StopIteration:
+        print_err("WARNING: No records provided, outputting empty TSV and FASTAs.")
+        Path(args.output_metadata).touch()
+    else:
+        write_records_to_tsv(chain([first_record], modified_records), args.output_metadata)
+
+    # Summary statistics (to STDERR)
+    print_err(f"Num records: {sum(STATS.values()):,}")
+    print_err("Num segments per record:")
+    print_err(f"0 segments: {STATS[0]:,} (records not written to metadata)")
+    for i in range(1, 8+1):
+        print_err(f"{i} segments: {STATS[i]:,}")

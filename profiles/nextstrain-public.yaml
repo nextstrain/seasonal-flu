@@ -41,13 +41,14 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "nomenclature/{lineage}/ha/clades.tsv"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
-      emerging_haplotypes: "config/{lineage}/{{segment}}/emerging_haplotypes.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
       enable_embeddings: true
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -55,10 +56,10 @@ array-builds:
           data: "data/{lineage}/cdc_ferret_cell_hi_titers.tsv"
     subsamples: &subsampling-scheme
       regions_except_europe:
-          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region != 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by region year month --subsample-max-sequences 2700 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       europe:
-          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
+          filters: --query "(passage_category != 'egg') & (region == 'Europe') & (ha == True) & (na == True) & (\`qc.overallStatus_ha\` == 'good')" --group-by country year month --subsample-max-sequences 300 --min-date {min_date} --exclude {exclude}
           priorities: "titers"
       references:
           filters: --query "(is_reference == True)" --min-date {reference_min_date}
@@ -81,13 +82,14 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "nomenclature/{lineage}/ha/clades.tsv"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
-      emerging_haplotypes: "config/{lineage}/{{segment}}/emerging_haplotypes.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
       enable_embeddings: true
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -153,13 +155,14 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "nomenclature/{lineage}/ha/clades.tsv"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
-      emerging_haplotypes: "config/{lineage}/{{segment}}/emerging_haplotypes.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
       enable_titer_models: true
       enable_embeddings: true
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:
@@ -184,7 +187,6 @@ array-builds:
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       clades: "nomenclature/{lineage}/ha/clades.tsv"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
-      emerging_haplotypes: "config/{lineage}/{{segment}}/emerging_haplotypes.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -192,6 +194,8 @@ array-builds:
       enable_titer_models: true
       enable_forecasts: false
       enable_embeddings: true
+      enable_lcr_sum: true
+      enable_mlr_fitness: true
       include: "'config/{lineage}/reference_strains.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
       titer_collections:

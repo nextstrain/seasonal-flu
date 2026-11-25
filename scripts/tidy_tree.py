@@ -165,8 +165,7 @@ def load_assignments(
     default_lineage: str = 'unassigned'
 ) -> Dict[str, str]:
     """Load sequence-to-lineage assignments from TSV file using pandas."""
-    # Read TSV file, handling comments
-    df = pd.read_csv(assignment_path, sep='\t', comment='#')
+    df = pd.read_csv(assignment_path, sep='\t', dtype=str)
 
     # Check if required columns exist
     if seq_id_column not in df.columns:

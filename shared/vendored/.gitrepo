@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/nextstrain/shared
+	branch = main
+	commit = 7a986c3c6c52c51d33dd412800b0bb694030f379
+	parent = f1fc8b9f6a1e05d4163f1f18f2a3cd716f59edbd
+	method = merge
+	cmdver = 0.4.9

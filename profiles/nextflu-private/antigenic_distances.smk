@@ -3,7 +3,7 @@ ruleorder: export_private > export
 def get_antigenic_plot_paths(wildcards):
     paths = []
     for build_name in config["builds"].keys():
-        if "titers" in build_name:
+        if "titers" in build_name or "full" in build_name:
             for collection in config["builds"][build_name]["titer_collections"]:
                 if "ferret" in collection["data"]:
                     paths.append(f"figures/antigenic_distances_between_strains_{build_name}_ha_{collection['name']}.png")
@@ -27,10 +27,10 @@ rule plot_antigenic_distances_between_strains:
     log:
         "logs/plot_antigenic_distances_between_strains_{build_name}_{segment}_{titer_collection}.txt"
     params:
-        min_test_date=2025.33,
+        min_test_date=2026.08,
         title=get_titer_collection_title,
         clade_color_field="emerging_haplotype_test",
-        auspice_config_color_field="emerging_haplotype",
+        auspice_config_color_field="emerging_haplotype_ha",
     conda: "../../workflow/envs/nextstrain.yaml"
     shell:
         """

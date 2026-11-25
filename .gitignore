@@ -13,6 +13,11 @@ figures/
 targets/
 benchmarks/
 nomenclature/
+nextclade_dataset/
+config/*/*/clades.tsv
+config/*/*/subclades.tsv
+config/*/*/lcr_weights.tsv
+config/*/*/lcr_windows.tsv
 
 # Sensitive environment variables
 environment*

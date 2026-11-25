@@ -24,6 +24,11 @@ rule upload_all:
                          dataset=list(config['filtering'].keys()),
                          segment=config["segments"]),
         mv_processed=all_processed_gisaid_pairs,
+        nextclade=[
+            f"results/upload/{dataset}/{segment}/nextclade.tsv.upload"
+            for dataset in (set(config["filtering"].keys()) & set(config["nextclade"].keys()))
+            for segment in (set(config["segments"]) & set(config["nextclade"][dataset].keys()))
+        ],
 
 
 rule upload_gisaid_ndjson:
@@ -35,9 +40,10 @@ rule upload_gisaid_ndjson:
         flag="results/upload/gisaid.ndjson.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.ndjson:q} \
             {params.s3_dst:q}/gisaid.ndjson.zst \
@@ -80,9 +86,10 @@ rule upload_metadata:
         flag="results/upload/{dataset}/metadata.tsv.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.metadata:q} \
             {params.s3_dst:q}/{wildcards.dataset}/metadata.tsv.xz \
@@ -97,11 +104,31 @@ rule upload_sequences:
         flag="results/upload/{dataset}/{segment}.fasta.upload",
     params:
         s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
     shell:
         r"""
-        ./vendored/upload-to-s3 \
+        {params.vendored_scripts:q}/upload-to-s3 \
             --quiet \
             {input.sequences:q} \
             {params.s3_dst:q}/{wildcards.dataset}/{wildcards.segment}/sequences.fasta.xz \
             2>&1 | tee {output.flag:q}
+        """
+
+
+rule upload_nextclade:
+    input:
+        nextclade=_get_nextclade,
+    output:
+        flag="results/upload/{dataset}/{segment}/nextclade.tsv.upload",
+    params:
+        s3_dst=config["s3_dst"],
+        vendored_scripts=f"{workflow.current_basedir}/../../../shared/vendored/scripts",
+    shell:
+        r"""
+        exec &> >(tee {output.flag:q})
+
+        {params.vendored_scripts:q}/upload-to-s3 \
+            --quiet \
+            {input.nextclade:q} \
+            {params.s3_dst:q}/{wildcards.dataset}/{wildcards.segment}/nextclade.tsv.xz
         """

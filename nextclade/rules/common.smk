@@ -88,7 +88,7 @@ rule run_nextclade:
         "data/{lineage}/{segment}/nextclade.tsv",
     params:
         dataset_dir=lambda w: f"nextclade/b_{w.segment}" if w.lineage=='vic' else f"nextclade/{w.lineage}_{w.segment}",
-    threads: workflow.cores
+    threads: 2
     shell:
         """
         nextclade3 run -j {threads} -D nextclade/{wildcards.lineage}_{wildcards.segment} \
@@ -228,7 +228,7 @@ rule align:
     params:
         outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{cds}}.fasta",
         nextclade_bin = "nextclade3"
-    threads: 3
+    threads: 2
     shell:
         """
         seqkit rmdup  {input.reference} {input.reference_strains} {input.sequences} | \

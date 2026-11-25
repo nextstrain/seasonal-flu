@@ -1,28 +1,9 @@
-custom_rules:
-  - profiles/ci/prepare_data.smk
-
-fasta_fields:
-  - strain
-  - virus
-  - accession
-  - date
-  - date_submitted
-  - region
-  - country
-  - division
-  - location
-  - passage_category
-  - originating_lab
-  - submitting_lab
-  - age
-  - gender
-prettify_fields:
-  - region
-  - country
-  - division
-  - location
-  - originating_lab
-  - submitting_lab
+inputs:
+  - name: example_data
+    lineage: h3n2
+    metadata: example_data/h3n2_metadata.tsv
+    id_field: strain
+    sequences: example_data/h3n2_{segment}.fasta
 
 lat-longs: "config/lat_longs.tsv"
 
@@ -45,7 +26,6 @@ builds:
       annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       clades: "nomenclature/h3n2/ha/clades.tsv"
-      emerging_haplotypes: "example_data/haplotypes.tsv"
       lineage: "h3n2"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"
       subsamples:

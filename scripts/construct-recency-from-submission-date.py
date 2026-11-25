@@ -1,5 +1,6 @@
 import argparse
 from augur.io import read_metadata, write_json
+import csv
 import datetime
 import numpy as np
 import pandas as pd
@@ -51,6 +52,10 @@ if __name__ == '__main__':
         required=True,
         help="node data JSON with recency annotations"
     )
+    parser.add_argument(
+        '--output-table',
+        help="TSV of recency by strain",
+    )
     args = parser.parse_args()
 
     meta = read_metadata(args.metadata)
@@ -95,3 +100,15 @@ if __name__ == '__main__':
         }
 
     write_json(node_data, args.output)
+
+    if args.output_table:
+        with open(args.output_table, "w", encoding="utf-8", newline="") as oh:
+            writer = csv.writer(
+                oh,
+                delimiter="\t",
+                lineterminator="\n",
+            )
+            writer.writerow(["strain", "recency"])
+
+            for strain, recency in recency_by_strain.items():
+                writer.writerow([strain, recency])

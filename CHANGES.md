@@ -7,6 +7,112 @@ Changes for this project _do not_ currently follow the [Semantic Versioning rule
 Instead, changes appear below grouped by the date they were added to the workflow.
 The "__NEXT__" heading below describes changes in the unreleased development source code and as such may not be routinely kept up to date.
 
+# 18 November 2026
+
+- Update emerging haplotype definitions and colors for H1N1pdm and H3N2 HA.
+  See [#366](https://github.com/nextstrain/seasonal-flu/pull/366) for details.
+
+# 17 November 2026
+
+- Update clade names and colors for H3N2 HA.
+  See [#364](https://github.com/nextstrain/seasonal-flu/pull/364) for details.
+- Update clade names and colors for H1N1pdm HA and NA.
+  See [#363](https://github.com/nextstrain/seasonal-flu/pull/363) for details.
+
+# 12 November 2026
+
+- Update emerging haplotypes for H1N1pdm to include D.3.1.1 variants with 139N and 155E and remove older variants.
+  See [#362](https://github.com/nextstrain/seasonal-flu/pull/362) for details.
+
+# 4 November 2026
+
+- Color tips in HA trees by fitness estimates from [MLR models fit to different variant classifications](https://nextstrain.github.io/forecasts-flu/).
+  See [#361](https://github.com/nextstrain/seasonal-flu/pull/361) for details.
+
+# 15 October 2026
+
+- Support use of cached remote inputs when defining inputs via the `inputs` parameter.
+  See https://github.com/nextstrain/shared/pull/87 for more details.
+
+# 29 September 2026
+
+- Update ingest-open workflow to output the "bioproject_accession" column in
+  the metadata TSV file. The column can include multiple bioproject accessions
+  in a comma delimited string if the sample is part of multiple bioprojects,
+  e.g. "PRJNA183620,PRJNA263044,PRJNA266349".
+
+# 24 September 2026
+
+- Add Sam Turner's log convergence ratio (LCR) annotations to H1N1pdm and B/Victoria HA trees to identify positively selected mutations. See [#352](https://github.com/nextstrain/seasonal-flu/pull/352) for details.
+
+
+# 20 August 2026
+
+- Add Sam Turner's log convergence ratio (LCR) annotations to H3N2 HA trees to identify positively selected mutations. See [#345](https://github.com/nextstrain/seasonal-flu/pull/345) for details.
+
+# 29 July 2026
+
+- Update ingest-open workflow to output the curated "strain" field as the
+  metadata and FASTA id field. The new "original_strain" field preserves the
+  original value of the strain name for display purposes.
+
+# 23 July 2026
+
+- Add colorings for the number of HA, HA1, and NA amino acid substitutions per node to corresponding gene trees for all subtypes. See [#250](https://github.com/nextstrain/seasonal-flu/pull/250) for details.
+
+# 22 July 2026
+
+- Added optional config parameter `inputs` for defining inputs for the phylogenetic workflow.
+  See the [README](./README.md) for detailed instructions.
+
+# 21 July 2026
+
+- Added optional configurations param `refine.divergence_units` to support setting divergence units for `augur refine`.
+
+# 26 June 2026
+
+- Added ingest-open workflow to ingest public data from GenSpectrum.
+  See the [ingest-open README](./ingest-open/README.md) for more details.
+
+# 8 June 2026
+
+- Add configuration interface, `traits`, to set the metadata columns to use for discrete trait analysis with `augur traits`.
+  See [#319](https://github.com/nextstrain/seasonal-flu/pull/319) for details.
+
+# 6 May 2026
+
+- *MAJOR CHANGE* The steps for running Nextclade and adding haplotype annotations
+  have been removed from the core workflow. If you would like to include
+  Nextclade and haplotype annotations in your build, then run the ingest workflow
+  first and use the outputs as inputs for the core workflow.
+  The Quickstart for GISAID has been updated to reflect this change.
+
+# 29 April 2026
+
+- The default ingest config produces metadata with multiple segment QC columns,
+  e.g. `qc.overallStatus_ha`. If you are using the ingest workflow metadata output
+  for filtering, make sure to update your filter query columns to match the new QC columns.
+
+# 21 April 2026
+
+- The ingest workflow now supports starting from a subset of segments defined by the `segments` config param.
+- The ingest workflow now supports running Nextclade and adding haplotype annotations to the metadata.
+  See the [default config](./ingest/defaults/config.yaml) for the config params for Nextclade and haplotypes.
+
+# 1 April 2026
+
+- *MAJOR CHANGE* Modified the default workflow to start from a single `metadata.tsv`
+and one or more `<segment>.fasta` files. The workflow no longer accepts just a single
+FASTA file with metadata in the sequence headers. The Quickstart GISAID build
+_has not_ been affected by this change and will continue to support the Excel
+metadata file.
+- Removed the following top level config params. They were mostly used by
+Nextstrain internal workflows and should not affect external users.
+    - fauna_fasta_fields
+    - fasta_fields
+    - prettify_fields
+    - data_source
+
 # 9 March 2026
 
 - Export Nextclade subclade columns for each segment to the build metadata (e.g., `subclade_nextclade_ha`, `subclade_nextclade_na`, etc.), allowing any segment's tree to color tips by any other segment's clade annotation. See [#258](https://github.com/nextstrain/seasonal-flu/pull/258) for details.

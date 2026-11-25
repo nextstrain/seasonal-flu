@@ -205,12 +205,24 @@ needs conda (fine without it), `upload` lacks pb2 references (as on `master`), a
 `nextclade` and `nextflu-public` have since been deleted on `master`. `allflu` and
 `nextstrain` mix tidy tree with `augur tree` builds (yam, internal segments).
 
+### Merge of `master` (2026-11-25)
+
+`master` had moved on by about 250 commits. Relevant for tidy tree: nextclade no longer
+runs in the phylo workflow, ingest adds its calls to the metadata, so `tidytree` now
+reads `subclade_nextclade_{segment}` from the build's `metadata.tsv` (same lineages for
+every sequence of vic 6m NA as from `nextclade.tsv.xz`). `master`'s URL tables for
+`clades.tsv` and `subclades.tsv` are replaced by the nomenclature repos of this branch;
+the new `h1n1` lineage, like yam, has its definitions in `config/` and is copied into
+`nomenclature/`. All profiles point at `nomenclature/`. Every profile dry runs except
+`full-trees`, which defines `download_mlr_json` twice on `master` too, and `upload`
+(no pb2 references, as before).
+
 ## Next steps (as of 2026-11-25)
 
 Everything up to here is committed on `WIP/tidy-tree`. The reduced 12y builds
 (300 sequences each) of `profiles/nextstrain` and the full 3y, 2y and 6m builds of
-`nextstrain-public` have been run, and every profile has been dry run. `master` is about
-250 commits ahead of this branch. In order:
+`nextstrain-public` have been run before the merge of `master`, and every profile has
+been dry run after it. In order:
 
 1. **Review the NA founders** of H1N1pdm `C.5`/`C.5.3`/`C.3` and H3N2 `B.3`/`B.4` in the
    nomenclature repos (see above), and check the other NA repos for sibling founders
@@ -218,23 +230,23 @@ Everything up to here is committed on `WIP/tidy-tree`. The reduced 12y builds
 2. **Run a build with glycosylation, LBI, titer models and embeddings switched on.**
    These read `tree.nwk`, which now keeps polytomies and IQ-TREE branch lengths for tidy
    tree builds; LBI and the titer tree model are the most likely to react.
-3. **Bring the branch up to date with `master`.**
-4. **Finish phase 4.** Once the comparison logs look right, stop running
+3. **Finish phase 4.** Once the comparison logs look right, stop running
    `subclades_from_mutations` for tidy tree builds. Consider deriving the HA clade labels
    (`clades.json`) from the subclade labels via the `clade:` field of the subclade yamls
    instead of `augur clades` with `clades.tsv`; check first that every subclade sets it.
-5. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
+4. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
    `nomenclature_branch` in the `Snakefile` to `main`.
-6. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
+5. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
    inputs of their rules so that editing them reruns the rules, and turn the toy cases
    used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
    into tests of `assign_subclades_from_tree.py`.
 
 ### How to test
 
-Data needed in `data/{h3n2,h1n1pdm,vic}/`: `metadata.tsv`, `ha.fasta`, `na.fasta`,
-`{ha,na}/nextclade.tsv.xz` and the titer tables of the builds. The nomenclature files
-are downloaded by the workflow into `nomenclature/`.
+Data needed in `data/{h3n2,h1n1pdm,vic}/`: `metadata.tsv` as written by ingest, which
+holds the nextclade calls as `subclade_nextclade_{ha,na}`, `ha.fasta`, `na.fasta` and the
+titer tables of the builds. The nomenclature files are downloaded by the workflow into
+`nomenclature/`.
 
 Reduce the builds with an extra config file, e.g. `test.yaml` outside the repo (or
 `config_local.yaml`, which is gitignored). Set `resolution` and
@@ -268,9 +280,6 @@ snakemake $T --profile profiles/nextstrain \
 - Snakemake does not rerun a rule when only its script changed. After editing
   `tidy_tree.py` or `assign_subclades_from_tree.py` add
   `--forcerun tidytree subclades_from_tree`.
-- If a downloaded `data/{lineage}/{segment}.fasta` is newer than its `nextclade.tsv.xz`,
-  Snakemake reruns nextclade on the whole dataset; `touch` the nextclade file if both
-  came from the same download.
 - `--config 'nomenclature={"branch": "main"}'` switches the nomenclature branch; the
   files are fetched again because the URL changed.
 
@@ -417,9 +426,8 @@ again:
 
 - The phylo workflow does **not** use the wrong lineage column. The `clade` column of
   the nextclade output holds subclade names in every lineage, identical to `subclade`
-  where both exist, so `--lineage-column clade` is correct.
-- `data/{lineage}/{segment}/nextclade.tsv.xz` **is** produced by the workflow, by
-  `run_nextclade` in `workflow/snakemake_rules/select_strains.smk`, with
-  `ruleorder: download_nextclade > run_nextclade` preferring the copy on S3. There is no
-  need to take lineage calls from the `align` step; the existing route covers the full
-  dataset rather than just the build's subsample.
+  where both exist. Ingest writes it to the metadata as `subclade_nextclade_{segment}`,
+  which is what `tidytree` reads.
+- There is no need to take lineage calls from the `align` step. Since the merge of
+  `master`, which removed nextclade from the phylo workflow, they come from the
+  metadata, as for every other nextclade annotation.

@@ -206,6 +206,52 @@ rule distances:
             --output {output.distances} 2>&1 | tee {log}
         """
 
+#
+# Calculate log convergence ratio sum
+#
+
+rule download_lcr_weights:
+    output:
+        weights="config/{lineage}/{segment}/lcr_weights.tsv",
+        windows="config/{lineage}/{segment}/lcr_windows.tsv",
+    conda: "../envs/nextstrain.yaml"
+    params:
+        weights_url=lambda wildcards: lcr_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment, {}).get("weights"),
+        windows_url=lambda wildcards: lcr_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment, {}).get("windows"),
+    shell:
+        """
+        curl -o {output.weights} "{params.weights_url}"
+        curl -o {output.windows} "{params.windows_url}"
+        """
+
+rule lcr_sum:
+    input:
+        tree = rules.refine.output.tree,
+        branch_lengths = rules.refine.output.node_data,
+        mutations = rules.ancestral.output.node_data,
+        weights = lambda w: rules.download_lcr_weights.output.weights.format(lineage=config["builds"][w.build_name]["lineage"], segment=w.segment),
+        windows = lambda w: rules.download_lcr_weights.output.windows.format(lineage=config["builds"][w.build_name]["lineage"], segment=w.segment),
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/lcr_sum.json",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/lcr_sum_{build_name}_{segment}.txt"
+    log:
+        "logs/lcr_sum_{build_name}_{segment}.txt"
+    resources:
+        mem_mb=8000,
+        time="00:30:00",
+    shell:
+        """
+        python3 scripts/calculate_lcr_sum.py \
+            --weights {input.weights} \
+            --windows {input.windows} \
+            --tree {input.tree} \
+            --branch-lengths {input.branch_lengths} \
+            --mutations {input.mutations} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
 def _get_node_data_for_predictors(wildcards):
     """Return a list of node data files for fitness predictors
     """
@@ -430,4 +476,51 @@ rule merge_weighted_distances_to_future:
         python3 flu-forecasting/scripts/merge_weighted_distances_to_future.py \
             --distances {input.distances:q} \
             --output {output.node_data} 2>&1 | tee {log}
+        """
+
+rule download_mlr_json:
+    output:
+        mlr="builds/{build_name}/ha/mlr/{variant_classification}/model.json",
+    params:
+        model_url=lambda wildcards: f"https://data.nextstrain.org/files/workflows/forecasts-flu/gisaid/{wildcards.variant_classification}/{config['builds'][wildcards.build_name]['lineage']}/region/mlr/MLR_results.json",
+    retries: 5
+    shell:
+        r"""
+        curl -fsSL --compressed -o {output.mlr:q} {params.model_url:q}
+        """
+
+rule parse_frequencies_and_ga_from_mlr_json:
+    input:
+        mlr="builds/{build_name}/ha/mlr/{variant_classification}/model.json",
+    output:
+        fitnesses="builds/{build_name}/ha/mlr/{variant_classification}/fitnesses.tsv",
+    shell:
+        r"""
+        python scripts/parse-json.py \
+            --input {input.mlr} \
+            --outga {output.fitnesses}
+        """
+
+rule annotate_mlr_fitness:
+    input:
+        tree="builds/{build_name}/{segment}/tree.nwk",
+        metadata="builds/{build_name}/metadata.tsv",
+        fitnesses=expand("builds/{{build_name}}/{{segment}}/mlr/{variant_classification}/fitnesses.tsv", variant_classification=("aa_haplotype", "emerging_haplotype")),
+    output:
+        node_data="builds/{build_name}/{segment}/mlr_fitness.json",
+    params:
+        variant_columns=("subclade_haplotype_ha", "emerging_haplotype_ha"),
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/annotate_mlr_fitness_{build_name}_{segment}.txt"
+    log:
+        "logs/annotate_mlr_fitness_{build_name}_{segment}.txt"
+    shell:
+        """
+        python3 scripts/annotate_mlr_fitness.py \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --fitnesses {input.fitnesses:q} \
+            --variant-columns {params.variant_columns:q} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
         """

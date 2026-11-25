@@ -233,8 +233,8 @@ rule tidytree:
     input:
         alignment = rules.align.output.alignment,
         guide_tree = get_guide_tree_name,
-        metadata = lambda w:f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}/nextclade.tsv.xz",
-        dates = build_dir + "/{build_name}/metadata.tsv",
+        # the lineage of each sequence is the nextclade call that ingest adds to the metadata
+        metadata = build_dir + "/{build_name}/metadata.tsv",
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_tidy.nwk",
         lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
@@ -259,14 +259,14 @@ rule tidytree:
             --alignment {input.alignment} \
             --guide-tree {input.guide_tree} \
             --lineage-assignments {input.metadata} \
-            --seq-id-column seqName \
-            --lineage-column clade \
+            --seq-id-column strain \
+            --lineage-column subclade_nextclade_{wildcards.segment} \
             --threads {threads} \
             --ignore-missing-founders \
             --unknown-lineage-policy {params.unknown_lineage_policy} \
             --max-dropped-fraction {params.max_dropped_fraction} \
             {params.root_lineage} \
-            --metadata {input.dates} \
+            --metadata {input.metadata} \
             --output-lineages {output.lineages} \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
@@ -387,6 +387,7 @@ rule refine:
         # up to 6 substitutions long in practice, as it prunes branches below 0.1 substitutions
         topology = lambda w: ("--keep-polytomies --branch-length-inference input"
                               if uses_tidy_tree(w.build_name, w.segment) else "--stochastic-resolve"),
+        divergence_units = lambda wildcards: config.get("refine", {}).get("divergence_units", "mutations-per-site"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
@@ -413,6 +414,7 @@ rule refine:
             --coalescent {params.coalescent} \
             --date-confidence \
             --date-inference {params.date_inference} \
+            --divergence-units {params.divergence_units} \
             --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
         """
 
@@ -464,7 +466,7 @@ rule traits:
     output:
         node_data = build_dir + "/{build_name}/{segment}/traits.json",
     params:
-        columns = "region"
+        columns = config.get("traits", {}).get("columns", "region"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/traits_{build_name}_{segment}.txt"
@@ -591,30 +593,6 @@ rule import_clades:
             --tree {input.tree} \
             --clades {input.clades} \
             --output {output.node_data} 2>&1 | tee {log}
-        """
-
-rule emerging_haplotypes:
-    input:
-        nextclade=build_dir + "/{build_name}/metadata_with_nextclade.tsv",
-        haplotypes=lambda wildcards: config["builds"][wildcards.build_name].get("emerging_haplotypes"),
-    output:
-        haplotypes_table=build_dir + "/{build_name}/{segment}/emerging_haplotypes.tsv",
-        node_data=build_dir + "/{build_name}/{segment}/emerging_haplotypes.json",
-    params:
-        clade_column="clade",
-        membership_name="emerging_haplotype",
-    conda: "../envs/nextstrain.yaml"
-    log:
-        "logs/emerging_haplotypes_{build_name}_{segment}.txt"
-    shell:
-        r"""
-        python scripts/assign_haplotypes.py \
-            --substitutions {input.nextclade:q} \
-            --haplotypes {input.haplotypes:q} \
-            --clade-column {params.clade_column:q} \
-            --haplotype-column-name {params.membership_name:q} \
-            --output-table {output.haplotypes_table:q} \
-            --output-node-data {output.node_data:q} 2>&1 | tee {log}
         """
 
 rule annotate_derived_haplotypes:

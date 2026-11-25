@@ -49,11 +49,12 @@ nextstrain view auspice/
 
 Navigate to [GISAID](http://gisaid.org).
 Select the "EpiFlu" link in the top navigation bar and then select "Search" from the EpiFlu navigation bar.
-From the search interface, select A/H3N2 human samples collected in the last six months, as shown in the example below.
+From the search interface, select A/H3N2 human samples collected in your time period of interest.
+Under the "Required Segments" section at the bottom of the page, select "HA".
+Check "exclude" TPE submissions to exclude restricted data, as shown in the example below.
 
 ![Search for recent A/H3N2 data](images/01-search-gisaid-for-h3n2.png)
 
-Also, under the "Required Segments" section at the bottom of the page, select "HA".
 Then select the "Search" button.
 Select the checkbox in the top-left corner of the search results (the same row with the column headings), to select all matching records as shown below.
 
@@ -67,22 +68,48 @@ From the "Download" window that appears, select "Isolates as XLS (virus metadata
 Create a new directory for these data in the `seasonal-flu` working directory.
 
 ``` bash
-mkdir -p data/h3n2/
+mkdir -p ingest/data/
 ```
 
-Save the XLS file you downloaded (e.g., `gisaid_epiflu_isolates.xls`) as `data/h3n2/metadata.xls`.
+Save the XLS file you downloaded as `ingest/data/<YYYY-MM-DD-N>-metadata.xls`.
+  - `<YYYY-MM-DD>` is the date the files were downloaded from GISAID.
+  - `<N>` is the number of the download to support multiple downloads in the
+    same day since GISAID limits the number of records per download.
+  - For example, if you had to split the data between two downloads on 2025-04-11,
+    then save the files as
+      - `2025-04-11-01-metadata.xls`
+      - `2025-04-11-02-metadata.xls`
+
 Return to the GISAID "Download" window, and select "Sequences (DNA) as FASTA".
 In the "DNA" section, select the checkbox for "HA".
-In the "FASTA Header" section, enter only `Virus name`.
+In the "FASTA Header" section, enter
+```
+DNA Accession no. | Submitting lab  | Originating lab
+```
 Uncheck both boxes related to spaces in the FASTA header.
 Your settings should look like those shown in the screenshot below.
 
 ![Download sequences](images/04-download-sequences.png)
 
 Select the "Download" button.
-Save the FASTA file you downloaded (e.g., `gisaid_epiflu_sequences.fasta`) as `data/h3n2/raw_sequences_ha.fasta`.
+Save the FASTA file you downloaded `ingest/data/<YYYY-MM-DD-N>-sequences.fasta`.
 
-Run the Nextstrain workflow for these data to produce an annotated phylogenetic tree of recent A/H3N2 HA data with the following command.
+Run the Nextstrain ingest workflow for these data to produce the clean input for
+the phylogenetic workflow with the following command.
+
+```bash
+nextstrain build ingest --configfile build-configs/gisaid/config.yaml
+```
+
+Explore the configuration file for this workflow by opening `ingest/build-configs/gisaid/config.yaml`
+in your favorite text editor. This configuration file determines the outputs
+of the workflow, including the lineages and segments. If you would like to
+create builds for other lineages and/or segments, make sure to download the data
+from GISAID then edit the config file to rerun ingest and create outputs for
+your data of interest.
+
+Run the workflow to create an annotated phylogenetic tree of recent A/H3N2 HA data with
+the results from the ingest workflow with the following command.
 
 ``` bash
 nextstrain build . --configfile profiles/gisaid/builds.yaml
@@ -108,6 +135,8 @@ To skip subsampling and use all records that you downloaded from GISAID, set `fi
             filters: ""
 ```
 
+## Configuration
+
 Explore the other configuration files in `profiles/`, to see other examples of how you can build your own Nextstrain workflows for influenza.
 
 > [!IMPORTANT]
@@ -121,6 +150,86 @@ Explore the other configuration files in `profiles/`, to see other examples of h
 `clades` configuration should always point to the HA clade definition TSV.
 - The workflow only has subclade annotations for HA and NA segments, so remove
 the `subclades` configuration for other segments builds.
+
+### Inputs
+
+The configuration can include a top-level `inputs` list that defines the
+separate inputs' name, lineage, metadata, id field, and sequences.
+Optionally, the config can have a top-level `additional-inputs` list that is
+used to define additional data that are combined with the default inputs:
+
+```yaml
+inputs:
+    - name: default
+      lineage: h3n2
+      metadata: ingest/results/h3n2/metadata.tsv
+      id_field: strain
+      sequences: ingest/results/h3n2/{segment}.fasta
+
+additional_inputs:
+    - name: private
+      lineage: <lineage>
+      metadata: <path-or-url>
+      id_field: <metadata-id-field-name>
+      sequences: <path-or-url>
+```
+The `id_field` key for each input is passed through to `augur merge --metadata-id-columns`.
+The merged metadata's id field is always named `strain` for downstream scripts.
+
+The `sequences` key can include the `{segment}` template to match to multiple
+segment filepaths. Sequences can also be a defined a dict with keys for specific segments
+if they have different filepaths.
+
+```yaml
+inputs:
+    - name: default
+      lineage: h3n2
+      metadata: ingest/results/h3n2/metadata.tsv
+      id_field: strain
+      sequences:
+        ha: ingest/results/h3n2/ha.fasta
+        na: ingest/new-results/h3n2/na.fasta
+```
+
+## GitHub Action Workflows
+
+The GitHub Action workflows in this repo orchestrates workflows across other repos:
+
+
+```mermaid
+flowchart LR
+  subgraph seasonal-flu
+    subgraph upload
+      ingest[[ingest]]
+      triggerAvian[[trigger_avian_flu]]
+      uploadTiters[[upload_titers]]
+      triggerForecasts[[trigger_forecasts_flu]]
+    end
+
+    runPublic[run-public-builds]
+    runPrivate[run-nextflu-private-builds]
+  end
+
+  subgraph avian-flu
+    genoflu[genoflu-gisaid]
+  end
+
+  subgraph forecasts-flu
+    subgraph runModels[run-models]
+      run_models[[run_models]]
+      trigger[[trigger]]
+    end
+  end
+
+  seasonal-flu ~~~ avian-flu
+  seasonal-flu ~~~ forecasts-flu
+  ingest --> uploadTiters --> triggerForecasts
+  ingest --> triggerAvian -."inputs.triggerAvianFlu" .-> genoflu
+  triggerForecasts -."inputs.triggerForecastsFlu".-> runModels
+  run_models --> trigger
+  trigger -."inputs.triggerPublic".-> runPublic
+  trigger -."inputs.triggerNextfluPrivate".-> runPrivate
+```
 
 ## History
 
