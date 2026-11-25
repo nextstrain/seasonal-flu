@@ -15,7 +15,8 @@ to come from the tree structure rather than from signature SNPs in `clades.tsv`.
 
 | what | where |
 |---|---|
-| tidy tree script | `scripts/tidy_tree.py` (this repo, branch `WIP/tidy-tree`) |
+| tidy tree library | `scripts/tidytree/` (this repo, branch `WIP/tidy-tree`), tests in `tests/tidytree/` |
+| command line wrappers | `scripts/tidy_tree.py`, `scripts/assign_subclades_from_tree.py` |
 | phylo workflow rules | `workflow/snakemake_rules/core.smk` |
 | nextclade dataset workflow | `nextclade/Snakefile`, `nextclade/rules/common.smk` |
 | founders used by the phylo builds | `.auto-generated/founders.fasta` of the nomenclature repos, downloaded to `nomenclature/{lineage}/{segment}/founders.fasta` |
@@ -232,10 +233,7 @@ been dry run after it. In order:
    have not yet run on a tidy tree.
 3. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
    `nomenclature_branch` in the `Snakefile` to `main`.
-4. Phase 3 and phase 2 below. For phase 3, also declare the scripts as
-   inputs of their rules so that editing them reruns the rules, and turn the toy cases
-   used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
-   into tests of `assign_subclades_from_tree.py`.
+4. Phase 2 and phase 5 below.
 
 ### How to test
 
@@ -273,11 +271,11 @@ snakemake $T --profile profiles/nextstrain \
     --configfile profiles/nextstrain/builds.yaml test.yaml
 ```
 
-- Snakemake does not rerun a rule when only its script changed. After editing
-  `tidy_tree.py` or `assign_subclades_from_tree.py` add
-  `--forcerun tidytree subclades_from_tree`.
+- The tidy tree scripts are inputs of their rules, so editing them reruns the tidy trees
+  and their labels and everything downstream of them.
 - `--config 'nomenclature={"branch": "main"}'` switches the nomenclature branch; the
   files are fetched again because the URL changed.
+- `python -m pytest tests/tidytree` runs the tests of the tidy tree code in seconds.
 
 What to look at:
 
@@ -311,14 +309,30 @@ representative route is sound for new designations. Requires at least two
 representatives that **cover the position and sample the basal diversity** of the
 lineage.
 
-### Phase 3 — refactor `scripts/tidy_tree.py`
+### Phase 3 — refactor `scripts/tidy_tree.py` (done)
 
-Split into a library and a CLI wrapper. Replace the recursion with loops so the
-`sys.setrecursionlimit(10000)` workaround can go. Reuse `augur tree`'s IQ-TREE runner
-and name escaping rather than the local `run_iqtree`. Build independent subtrees in
-parallel. Add small synthetic test cases. (The pre-nomenclature context is now handled
-by rooting at the guide tree root on its oldest sequence, which replaces the planned
-`__context__` pseudo lineage.)
+The code is a package `scripts/tidytree/` with thin command line wrappers, whose options
+and log lines are unchanged except that `--iqtree-path` is gone:
+
+- `guide.py`: the guide tree, resolution of lineage calls, the automatic root lineage
+- `assign.py`: assigning sequences and founders to lineages, the assignment report
+- `build.py`: building, grafting and tidying the subtrees
+- `labels.py`: labelling lineages from the lineages of the tips
+
+The recursion is replaced by loops and the `sys.setrecursionlimit(10000)` workaround is
+gone (the trees are at most about 100 nodes deep). IQ-TREE runs through `augur tree`'s
+`build_iqtree`, which escapes characters IQ-TREE alters in names. The subtrees are built
+`--threads` at a time (4 in the phylo workflow) and then grafted bottom-up; with a fixed
+seed the result does not depend on the number of threads, and it differs from the old
+code by fewer splits than two seeds of the old code differ by. The labels are identical
+to those of the old code. The scripts and the package are inputs of the rules using
+them, so editing them reruns the rules.
+
+`python -m pytest tests/tidytree` covers the guide tree, the assignment policies,
+folding lineages without founder, grafting, collapsing, small subtrees, the labelling
+cases (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem,
+lineages only represented by their founder, founder tips, refined calls) and an end to
+end run with IQ-TREE on synthetic data; CI runs them in a separate job.
 
 ### Phase 4 — clade labels from the tree structure (done)
 
