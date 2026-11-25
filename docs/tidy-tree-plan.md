@@ -114,15 +114,37 @@ call, i.e. dropped; it is now reported as unused.
 
 A root lineage without a founder, such as `unassigned`, is rooted on an outgroup:
 `--explicit-root` if given, otherwise the oldest exactly dated sequence of that lineage
-from `--metadata`. B/Vic HA 12y uses this, because `B` (V1B) is a sister of `A`; the
-reduced test build picks B/Netherlands/1000/1962 from the forced reference strains.
+from `--metadata`.
+
+### This repo: root lineage and subclade labels from the tree
+
+The root lineage is chosen automatically (`--root-lineage auto`, the default) as the
+most specific lineage of the guide tree containing the lineages of all sequences. The
+per-resolution table in the `Snakefile` is gone; a root can still be set with
+`tidy_tree.root_lineage.{lineage}.{segment}.{resolution}`, and sequences outside it are
+then excluded and reported, not counted as dropped. Previously anything outside the root
+lineage was built into the root lineage's subtree as if it belonged to it. In practice
+every build contains old reference strains forced in by the subsampling (H3N2 back to
+1968), so the root is `unassigned`, rooted on the oldest of them, and the old diversity
+sits at the base of every tree.
+
+Subclade labels for tidy tree builds come from `scripts/assign_subclades_from_tree.py`
+instead of `augur clades`. `tidy_tree.py --output-lineages` writes the lineage of each
+sequence as a node of the guide tree (call, else enclosing lineage, else root). For each
+lineage, from the root of the guide tree down, the label goes on the MRCA of its tips
+(including sublineages) and the subtree below is assigned to it. If the MRCA subtree also
+holds tips of other lineages, the lineage has no node of its own and its largest pure
+subtrees are labelled instead. This happens when the stem of a lineage has zero length
+and `prune_short_branches` in `sanitize_trees` collapses it; plain MRCA labelling let
+H1N1pdm NA `B.1` take over most of the tree. `augur clades` still runs alongside
+(`subclades_from_mutations`) and the disagreements are in
+`logs/subclades_from_tree_*.txt`.
 
 Tested on the 12y `profiles/nextstrain` builds for h3n2, h1n1pdm and vic, HA and NA,
-subsampled to 300 sequences: all six run to auspice JSON, every sequence placed, every
-founder used. Subclade labels from `augur clades` on the tidy trees agree with
-nextclade for 99-100% of tips, except H3N2 NA (89%): 30 pre-nomenclature context
-sequences labelled `A` because the build is rooted at `A`, and 18 parent vs child calls
-(`B` vs `B.2`, `A.2.2` vs `A.2.2.1`), which phase 4 should remove.
+subsampled to 300 sequences: all six run to auspice JSON with every sequence placed.
+Tree labels agree with nextclade for every tip (largely by construction), `augur clades`
+for 89% (H3N2 NA) to 100%. Every lineage gets a single branch label except four with a
+collapsed stem: H1N1pdm NA `B.1` (4 branches), `C.5`, `D.2` and B/Vic NA `B.2` (2 each).
 
 ## To do
 
@@ -155,22 +177,15 @@ lineage.
 Split into a library and a CLI wrapper. Replace the recursion with loops so the
 `sys.setrecursionlimit(10000)` workaround can go. Reuse `augur tree`'s IQ-TREE runner
 and name escaping rather than the local `run_iqtree`. Build independent subtrees in
-parallel. Turn the pre-nomenclature context into an explicit `__context__` pseudo
-lineage above the guide tree root, built normally and rooted on the explicit outgroup,
-rather than the current `--explicit-root` and oldest sequence special cases. Choose the root lineage
-automatically as the MRCA of the lineages present in the sample, with a manual
-override, replacing the hard coded per-resolution table. Add small synthetic test cases.
+parallel. Add small synthetic test cases. (The pre-nomenclature context is now handled
+by rooting at the guide tree root on its oldest sequence, which replaces the planned
+`__context__` pseudo lineage.)
 
-### Phase 4 — clade labels from the tree structure
+### Phase 4 — clade labels from the tree structure (done, in transition)
 
-In a tidy tree the graft points *are* the lineage root nodes, so tidy tree can emit a
-node-data JSON in the same shape as `augur clades` output and signature SNPs are not
-needed for these segments. To survive refine, pruning and sanitising, locate each
-lineage node after `refine` as the parent of its founder tip, then drop the founder tips
-before export unless the nextclade reference trees should keep them. During the
-transition run both methods and report disagreements, which also checks the founders.
-Builds without a guide tree keep `augur clades` with `clades.tsv`; HA labels are still
-copied to other segments by `import_clades`.
+Remaining: drop `subclades_from_mutations` for tidy tree builds once the comparison has
+been watched for a while. HA clade labels (`clades.json`) still come from `augur clades`
+with `clades.tsv` and are copied to other segments by `import_clades`.
 
 ### Phase 5 — augur
 

@@ -236,7 +236,8 @@ rule tidytree:
         metadata = lambda w:f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}/nextclade.tsv.xz",
         dates = build_dir + "/{build_name}/metadata.tsv",
     output:
-        tree = build_dir + "/{build_name}/{segment}/tree_tidy.nwk"
+        tree = build_dir + "/{build_name}/{segment}/tree_tidy.nwk",
+        lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/tidytree_{build_name}_{segment}.txt"
@@ -267,6 +268,7 @@ rule tidytree:
             --max-dropped-fraction {params.max_dropped_fraction} \
             {params.root_lineage} \
             --metadata {input.dates} \
+            --output-lineages {output.lineages} \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 
@@ -486,22 +488,22 @@ rule clades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-# Determine subclades for na and ha.
-rule subclades:
+# Determine subclades for na and ha, from their signature mutations.
+rule subclades_from_mutations:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
         clades = lambda wildcards: config["builds"][wildcards.build_name].get("subclades"),
     output:
-        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+        node_data = build_dir + "/{build_name}/{segment}/subclades_mutations.json",
     params:
         membership_name = "subclade",
         label_name = "Subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/subclades_{build_name}_{segment}.txt"
+        "benchmarks/subclades_from_mutations_{build_name}_{segment}.txt"
     log:
-        "logs/subclades_{build_name}_{segment}.txt"
+        "logs/subclades_from_mutations_{build_name}_{segment}.txt"
     shell:
         """
         augur clades \
@@ -511,6 +513,49 @@ rule subclades:
             --membership-name {params.membership_name} \
             --label-name {params.label_name} \
             --output {output.node_data} 2>&1 | tee {log}
+        """
+
+# Determine subclades of a tidy tree from the lineages its tips were placed in. The
+# labels from signature mutations are computed alongside for comparison, which is
+# reported in the log.
+rule subclades_from_tree:
+    input:
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
+        guide_tree = get_guide_tree_name,
+        compare = build_dir + "/{build_name}/{segment}/subclades_mutations.json",
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/subclades_tree.json",
+    params:
+        membership_name = "subclade",
+        label_name = "Subclade",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/subclades_from_tree_{build_name}_{segment}.txt"
+    log:
+        "logs/subclades_from_tree_{build_name}_{segment}.txt"
+    shell:
+        """
+        python3 scripts/assign_subclades_from_tree.py \
+            --tree {input.tree} \
+            --lineages {input.lineages} \
+            --guide-tree {input.guide_tree} \
+            --membership-name {params.membership_name} \
+            --label-name {params.label_name} \
+            --compare {input.compare} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
+rule subclades:
+    input:
+        node_data = lambda w: build_dir + (f"/{w.build_name}/{w.segment}/subclades_tree.json"
+                                           if uses_tidy_tree(w.build_name, w.segment)
+                                           else f"/{w.build_name}/{w.segment}/subclades_mutations.json"),
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+    shell:
+        """
+        cp {input.node_data} {output.node_data}
         """
 
 # Assign clade annotations to non-HA segments from HA.
