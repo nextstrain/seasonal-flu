@@ -381,9 +381,12 @@ rule refine:
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev,
-        # the polytomies of a tidy tree are where tips branch off at a founder; resolving
-        # them would move such tips into the subtree of the lineage
-        polytomies = lambda w: "--keep-polytomies" if uses_tidy_tree(w.build_name, w.segment) else "--stochastic-resolve",
+        # tidy tree has collapsed the short branches already. The polytomies are where tips
+        # branch off at a founder; resolving them would move such tips into the subtree of
+        # the lineage. Reoptimized branch lengths would let TreeTime collapse more branches,
+        # up to 6 substitutions long in practice, as it prunes branches below 0.1 substitutions
+        topology = lambda w: ("--keep-polytomies --branch-length-inference input"
+                              if uses_tidy_tree(w.build_name, w.segment) else "--stochastic-resolve"),
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
@@ -401,7 +404,7 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
-            {params.polytomies} \
+            {params.topology} \
             --timetree \
             --use-fft \
             --no-covariance \

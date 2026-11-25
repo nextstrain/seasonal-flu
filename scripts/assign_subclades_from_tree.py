@@ -8,14 +8,18 @@ label goes on the branch leading to the MRCA of these tips, and every node in th
 subtree below the MRCA is assigned to it. Lineages are processed from the root of the
 guide tree downwards, so a sublineage overwrites its parent within its own subtree.
 
-Subtrees of the MRCA that hold only tips of ancestral lineages branch off at the
-founder of the lineage: its stem had zero length and was collapsed into a polytomy that
-holds them. They do not prevent the lineage from being labelled on the MRCA and keep
-the label of their own lineage.
+Three cases need care:
 
-If the subtree of the MRCA contains any other tips of other lineages, the lineage has no
-node of its own. Then its largest subtrees that contain only its own tips are labelled
-instead, so that it does not take over the rest of the subtree.
+- A lineage without tips of its own, only of sublineages, is not labelled. In tidy tree
+  it is represented only by its founder and has no node of its own.
+- A lineage whose stem has zero length was collapsed into a polytomy, which may also
+  hold subtrees made only of tips of ancestral lineages: they branch off at the founder.
+  The lineage is labelled on the polytomy all the same and those subtrees keep their own
+  label, unless an ancestral lineage is labelled on the same node, as it would then lose
+  its label.
+- If the subtree of the MRCA contains any other tips of other lineages, the lineage has
+  no node of its own. Then its largest subtrees that contain only its own tips are
+  labelled instead, so that it does not take over the rest of the subtree.
 
 Unlike labelling by signature mutations, this does not depend on the mutations
 reconstructed on the tree, only on the tips that are present, so it is robust to
@@ -120,15 +124,21 @@ def main():
     labels = []   # (node, lineage), in the order lineages are assigned
     split = {}    # lineage -> (tips of other lineages under its MRCA, number of subtrees)
     basal = {}    # lineage -> tips of ancestral lineages branching off at its MRCA
+    labelled = set()
+    # lineages called for at least one tip; one represented only by its founder in tidy
+    # tree has no node of its own to label
+    called = {tip_lineage.get(tip.name, args.default_lineage) for tip in tips}
     for lineage in preorder:
-        if lineage == args.default_lineage or lineage not in members:
+        if lineage == args.default_lineage or lineage not in called:
             continue
         own = members[lineage]
         root = mrca(own, up, depth)
         ancestors = set(lineage_and_ancestors(parent.get(lineage), parent))
-        at_founder = {child for child in root.clades
-                      if all(tip_lineage.get(tip.name, args.default_lineage) in ancestors
-                             for tip in child.get_terminals())}
+        # an ancestral lineage labelled on the same node would lose its label
+        at_founder = set() if root in labelled else {
+            child for child in root.clades
+            if all(tip_lineage.get(tip.name, args.default_lineage) in ancestors
+                   for tip in child.get_terminals())}
         n_at_founder = sum(n_tips[child] for child in at_founder)
         if n_tips[root] == len(own) + n_at_founder:
             roots = [root]
@@ -154,6 +164,7 @@ def main():
             split[lineage] = (n_tips[root] - len(own), len(roots))
         for subtree_root in roots:
             labels.append((subtree_root, lineage))
+            labelled.add(subtree_root)
             for child in subtree_root.clades:
                 if child not in at_founder:
                     for node in child.find_clades():

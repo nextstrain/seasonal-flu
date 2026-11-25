@@ -142,9 +142,10 @@ def parse_arguments():
     parser.add_argument(
         '--collapse-threshold',
         type=float,
-        default=1e-5,
-        help='Collapse internal branches shorter than this into polytomies, so that downstream '
-             'steps need not remove branches (default: 1e-5, well below one substitution)'
+        default=0.1,
+        help='Collapse internal branches shorter than this many substitutions into polytomies, '
+             'so that downstream steps need not remove branches. The default, 0.1, is the length '
+             'below which TreeTime, and thus augur refine, collapses branches (default: 0.1)'
     )
     return parser.parse_args()
 
@@ -538,6 +539,16 @@ def run_iqtree(
         return tree
 
 
+def p_distance(a: SeqRecord, b: SeqRecord) -> float:
+    """Fraction of sites with an unambiguous nucleotide in both sequences at which they differ."""
+    compared = differ = 0
+    for x, y in zip(str(a.seq).upper(), str(b.seq).upper()):
+        if x in 'ACGT' and y in 'ACGT':
+            compared += 1
+            differ += x != y
+    return differ / compared if compared else 0.0
+
+
 def build_subtree(
     node: LineageNode,
     all_sequences: Dict[str, SeqRecord],
@@ -581,7 +592,14 @@ def build_subtree(
         print(f"Lineage {node.name}: no sequences, no subtree built")
         return None
     if len(subtree_seqs) < 3:
-        if node.name.startswith('internal_'):
+        if node.founder_seq and len(subtree_seqs) == 2:
+            # too few sequences for IQ-TREE, but the branch lengths matter: a missing
+            # one would count as zero and the branch be collapsed
+            other = next(seq for seq in subtree_seqs if seq.id != node.founder_seq.id)
+            distance = p_distance(node.founder_seq, other)
+            tree = Phylo.read(io.StringIO(
+                f"({node.founder_seq.id}:0,{other.id}:{distance}){node.name};"), 'newick')
+        elif node.name.startswith('internal_'):
             tree = Phylo.read(io.StringIO(f"({','.join(seq.id for seq in subtree_seqs)});"), 'newick')
         elif len(subtree_seqs) == 2:
             tree = Phylo.read(io.StringIO(f"({','.join(seq.id for seq in subtree_seqs)}){node.name};"), 'newick')
@@ -683,17 +701,21 @@ def graft_subtree(
 
 def collapse_short_branches(tree, threshold: float) -> int:
     """
-    Collapse internal branches shorter than threshold into polytomies, in place.
+    Collapse internal branches shorter than threshold into polytomies, in place, and
+    merge nodes with a single child into it.
 
     A lineage whose founder sits at zero distance from the node where tips of its parent
     lineage branch off thereby gets a polytomy that contains those tips, rather than a
-    zero length stem that a later step would collapse in an arbitrary way.
+    zero length stem that a later step would collapse in an arbitrary way. Single child
+    nodes are left where grafting removed the founder of a lineage. A branch without a
+    length is kept, as its length is unknown.
     """
     n_collapsed = 0
     for node in tree.find_clades(order='postorder'):
         children = []
         for child in node.clades:
-            if child.clades and (child.branch_length or 0) < threshold:
+            short = child.branch_length is not None and child.branch_length < threshold
+            if child.clades and (short or len(child.clades) == 1):
                 for grandchild in child.clades:
                     grandchild.branch_length = (grandchild.branch_length or 0) + (child.branch_length or 0)
                 children.extend(child.clades)
@@ -701,6 +723,9 @@ def collapse_short_branches(tree, threshold: float) -> int:
             else:
                 children.append(child)
         node.clades = children
+    while len(tree.root.clades) == 1 and tree.root.clades[0].clades:
+        tree.root = tree.root.clades[0]
+        n_collapsed += 1
     return n_collapsed
 
 
@@ -858,8 +883,12 @@ def main():
         for founder in [tip for tip in final_tree.get_terminals() if tip.name in founders]:
             final_tree.prune(founder)
 
-    n_collapsed = collapse_short_branches(final_tree, args.collapse_threshold)
-    print(f"\nCollapsed {n_collapsed} internal branches shorter than {args.collapse_threshold}")
+    alignment_length = len(next(iter(sequences.values())).seq)
+    threshold = args.collapse_threshold / alignment_length
+    n_collapsed = collapse_short_branches(final_tree, threshold)
+    print(f"\nCollapsed {n_collapsed} internal branches shorter than {args.collapse_threshold} "
+          f"substitutions ({threshold:.2e} per site) or leading to a single child")
+    final_tree.ladderize()
 
     # Write output
     print(f"\nWriting final tree to {args.output_tree}...")
