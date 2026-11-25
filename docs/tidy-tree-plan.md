@@ -156,45 +156,69 @@ the parent lineage branch off, `prune_short_branches` in `sanitize_trees` collap
 stem, and `refine --stochastic-resolve` then resolved the polytomy at random and buried
 those parent lineage tips 5-10 nodes deep inside the lineage.
 
-Now `tidy_tree.py` drops the founder tips (unless `--keep-founders`) and collapses
-internal branches shorter than `--collapse-threshold` (1e-5), and for tidy tree builds
-nothing later removes or resolves branches: `flag_outliers.py` and `sanitize_trees.py`
-get `--keep-short-branches`, and `refine` uses `--keep-polytomies` instead of
-`--stochastic-resolve`. `assign_subclades_from_tree.py` labels a lineage on its MRCA
-also when that polytomy holds subtrees made only of tips of ancestral lineages; these
-keep their own label. Founder tips used to reach `sanitize_trees` and survive it when an
-HA and an NA lineage share a name; only `refine` removed them, for lack of metadata.
+Now branches are only ever removed in `tidy_tree.py`, with the lineages in view:
 
-Result on the 3y builds: every sequence placed in all six, `tidytree` takes 1-2 minutes
-per tree. The automatic root is a real lineage (A, A.2, A.1.1) in five of them, since
-the references only go back 9 years; H1N1pdm HA is rooted at `unassigned` because some
-2018-2020 references predate its subclades. Every lineage has a single label except:
+- it drops the founder tips (unless `--keep-founders`), collapses internal branches
+  shorter than `--collapse-threshold` substitutions (0.1, the cutoff TreeTime uses) and
+  merges the single child nodes that grafting leaves where it removed a founder
+- subtrees with fewer than 3 sequences, built without IQ-TREE, get the distance of each
+  sequence to the founder as branch length. They had none, which counted as zero and
+  collapsed the stems of lineages represented only by founders, e.g. H3N2 HA `J` into
+  `G.1.3` in the 6m build
+- `flag_outliers.py` and `sanitize_trees.py` get `--keep-short-branches`
+- `refine` uses `--keep-polytomies --branch-length-inference input` for tidy tree
+  builds. TreeTime otherwise reoptimizes the branch lengths and then prunes those below
+  0.1 substitutions, which collapsed branches of up to 6 substitutions, including
+  lineage nodes. TreeTime ladderizes the tree only on setup and after resolving
+  polytomies, so these collapses had also left the trees unladderized. The time trees
+  barely change: on H3N2 3y HA, `J` and `K` move by 0.01-0.02 years, the root of the
+  old references by one year
 
-- H1N1pdm NA `C.5` and H3N2 NA `B.4`: the founder of a sibling lineage descends from
-  theirs, so the sibling (`C.3`, `B.3`) branches off at their polytomy. `C.3` carries all
-  three founder mutations of `C.5` (607G, 1049A, 1415T), `B.3` is the `B.4` founder plus
-  989A, and `C.5.3` reverts 607 and 1049 relative to `C.5`. The NA founders need review
-  upstream; this is not a tree problem.
-- sparse old lineages among the references (H1N1pdm NA `B.1`, H3N2 HA `B.1.2.1`), as in
-  the 12y builds.
+Founder tips used to reach `sanitize_trees` and survive it when an HA and an NA lineage
+share a name; only `refine` removed them, for lack of metadata.
+
+`assign_subclades_from_tree.py` does not label a lineage without tips of its own (only
+its founder represents it), and labels a lineage on the polytomy of its MRCA also when
+that holds subtrees made only of tips of ancestral lineages, which keep their own label,
+unless an ancestral lineage is labelled on the same node.
+
+Results on the 3y, 2y and 6m builds of `nextstrain-public` (18 trees): every sequence
+placed, no internal node lost after tidy tree other than by pruning tips, all trees
+ladderized, every lineage a tip is assigned to has a branch label. `tidytree` takes 1-2
+minutes per tree when run alone. The automatic root follows the reference window: A,
+A.2 or A.1.1 for 3y, B.1.2 or A.2.2 for H3N2 2y and 6m, A.3 and A.1 for vic 6m; H1N1pdm
+HA is rooted at `unassigned` in all windows because some 2018-2020 references predate
+its subclades. Every lineage has a single label except:
+
+- H1N1pdm NA `C.5` (3y) and H3N2 NA `B.4` (all three windows): the founder of a sibling
+  lineage descends from theirs, so the sibling (`C.3`, `B.3`) branches off at their
+  polytomy. `C.3` carries all three founder mutations of `C.5` (607G, 1049A, 1415T),
+  `B.3` is the `B.4` founder plus 989A, and `C.5.3` reverts 607 and 1049 relative to
+  `C.5`. The NA founders need review upstream; this is not a tree problem.
+- H1N1pdm NA `B.1`, two old reference strains in two places.
+
+Disagreements with `augur clades` come from the signature mutations: up to 89 tips in
+H3N2 6m NA, mostly `B.4.2` here and `B.2` there.
+
+Dry runs of every profile resolve, except for reasons unrelated to tidy tree: `gisaid`
+needs conda (fine without it), `upload` lacks pb2 references (as on `master`), and
+`nextclade` and `nextflu-public` have since been deleted on `master`. `allflu` and
+`nextstrain` mix tidy tree with `augur tree` builds (yam, internal segments).
 
 ## Next steps (as of 2026-11-25)
 
 Everything up to here is committed on `WIP/tidy-tree`. The reduced 12y builds
-(300 sequences each) and the full 3y builds of `nextstrain-public` have been run. In order:
+(300 sequences each) of `profiles/nextstrain` and the full 3y, 2y and 6m builds of
+`nextstrain-public` have been run, and every profile has been dry run. `master` is about
+250 commits ahead of this branch. In order:
 
-1. **Profile dry runs.** The nomenclature paths changed in 16 profiles, but only
-   `profiles/nextstrain` has been run. Dry run every profile to catch broken paths;
-   `allflu` also covers yam and the internal segments, which go through `augur tree`.
-   Profiles that need fauna or S3 credentials may fail for unrelated reasons.
-2. **Review the NA founders** of H1N1pdm `C.5`/`C.5.3`/`C.3` and H3N2 `B.3`/`B.4` in the
+1. **Review the NA founders** of H1N1pdm `C.5`/`C.5.3`/`C.3` and H3N2 `B.3`/`B.4` in the
    nomenclature repos (see above), and check the other NA repos for sibling founders
    that descend from one another.
-3. **Shorter windows.** The full size 3y builds are done (above). Run the 2y and 6m
-   builds. Things to watch:
-   - the automatic root, which depends on how far back the forced reference strains go
-     (`reference_min_date` in `nextstrain-public`, all of them in `profiles/nextstrain`)
-   - lineages without a node of their own in `logs/subclades_from_tree_*`
+2. **Run a build with glycosylation, LBI, titer models and embeddings switched on.**
+   These read `tree.nwk`, which now keeps polytomies and IQ-TREE branch lengths for tidy
+   tree builds; LBI and the titer tree model are the most likely to react.
+3. **Bring the branch up to date with `master`.**
 4. **Finish phase 4.** Once the comparison logs look right, stop running
    `subclades_from_mutations` for tidy tree builds. Consider deriving the HA clade labels
    (`clades.json`) from the subclade labels via the `clade:` field of the subclade yamls
