@@ -146,6 +146,89 @@ Tree labels agree with nextclade for every tip (largely by construction), `augur
 for 89% (H3N2 NA) to 100%. Every lineage gets a single branch label except four with a
 collapsed stem: H1N1pdm NA `B.1` (4 branches), `C.5`, `D.2` and B/Vic NA `B.2` (2 each).
 
+## Next steps (as of 2026-11-25)
+
+Everything up to here is committed on `WIP/tidy-tree`. Only the reduced 12y builds have
+been run (300 sequences each). In order:
+
+1. **Profile dry runs.** The nomenclature paths changed in 16 profiles, but only
+   `profiles/nextstrain` has been run. Dry run every profile to catch broken paths;
+   `allflu` also covers yam and the internal segments, which go through `augur tree`.
+   Profiles that need fauna or S3 credentials may fail for unrelated reasons.
+2. **Shorter windows and full size.** Run the 2y builds (and the 6m builds of the
+   profiles that have them) and the full 3000 sequence builds. Things to watch:
+   - the automatic root: with the forced reference strains every build should be rooted
+     at `unassigned` on its oldest sequence, so the 1968-2004 references sit at the base
+     of even short builds. Decide whether that is acceptable or whether the subsampling
+     of short builds should stop forcing them
+   - lineages without a node of their own (collapsed zero length stems), which may be
+     more frequent with more sequences
+   - run time of `tidytree` at full size
+3. **Finish phase 4.** Once the comparison logs look right, stop running
+   `subclades_from_mutations` for tidy tree builds. Consider deriving the HA clade labels
+   (`clades.json`) from the subclade labels via the `clade:` field of the subclade yamls
+   instead of `augur clades` with `clades.tsv`; check first that every subclade sets it.
+4. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
+   `nomenclature_branch` in the `Snakefile` to `main`.
+5. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
+   inputs of their rules so that editing them reruns the rules, and turn the toy cases
+   used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
+   into tests of `assign_subclades_from_tree.py`.
+
+### How to test
+
+Data needed in `data/{h3n2,h1n1pdm,vic}/`: `metadata.tsv`, `ha.fasta`, `na.fasta`,
+`{ha,na}/nextclade.tsv.xz` and the titer tables of the builds. The nomenclature files
+are downloaded by the workflow into `nomenclature/`.
+
+Reduce the builds with an extra config file, e.g. `test.yaml` outside the repo (or
+`config_local.yaml`, which is gitignored). Set `resolution` and
+`--subsample-max-sequences` as needed:
+
+```yaml
+array-builds:
+  nextstrain:
+    patterns:
+      lineage: [h3n2, h1n1pdm, vic]
+      center: [cdc]
+      passage: [cell]
+      assay: [hi, fra]
+      resolution: [12]
+    subsamples:
+      global:
+        filters: "--group-by region year --subsample-max-sequences 300 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
+        priorities: "titers"
+```
+
+The builds with titer data are `h3n2_cdc_cell_fra`, `h1n1pdm_cdc_cell_hi` and
+`vic_cdc_cell_hi`. Targets go **before** `--configfile`, which takes a list:
+
+```
+T=$(for b in h3n2_cdc_cell_fra h1n1pdm_cdc_cell_hi vic_cdc_cell_hi; do for s in ha na; do
+      echo auspice/${b}_12y_${s}.json; done; done)
+snakemake $T --profile profiles/nextstrain \
+    --configfile profiles/nextstrain/builds.yaml test.yaml
+```
+
+- Snakemake does not rerun a rule when only its script changed. After editing
+  `tidy_tree.py` or `assign_subclades_from_tree.py` add
+  `--forcerun tidytree subclades_from_tree`.
+- If a downloaded `data/{lineage}/{segment}.fasta` is newer than its `nextclade.tsv.xz`,
+  Snakemake reruns nextclade on the whole dataset; `touch` the nextclade file if both
+  came from the same download.
+- `--config 'nomenclature={"branch": "main"}'` switches the nomenclature branch; the
+  files are fetched again because the URL changed.
+
+What to look at:
+
+- `logs/tidytree_<build>_<segment>.txt`: the chosen root lineage and outgroup, then the
+  sequence assignment: `N of M sequences placed, 0 dropped, 0 excluded` is the expected
+  outcome with the automatic root
+- `logs/subclades_from_tree_<build>_<segment>.txt`: lineages without a node of their own,
+  and tip labels that disagree with `augur clades`
+- the auspice JSONs: each lineage should carry its `Subclade` branch label once, except
+  the lineages listed as without a node of their own
+
 ## To do
 
 ### Phase 1 leftovers
