@@ -8,7 +8,11 @@ label goes on the branch leading to the MRCA of these tips, and every node in th
 subtree below the MRCA is assigned to it. Lineages are processed from the root of the
 guide tree downwards, so a sublineage overwrites its parent within its own subtree.
 
-Three cases need care:
+With --refine-calls, tips take a call from the current nomenclature where it is their
+lineage or a sublineage of it, which catches up calls made with an older nomenclature.
+
+Founder sequences kept as tips are named after their lineage and belong to it, but do
+not count as tips of their own. Three cases need care:
 
 - A lineage without tips of its own, only of sublineages, is not labelled. In tidy tree
   it is represented only by its founder and has no node of its own.
@@ -51,6 +55,14 @@ def parse_arguments():
                         help='Lineage of nodes outside every labelled lineage (default: unassigned)')
     parser.add_argument('--compare', help='Node data JSON of another labelling, e.g. augur clades, '
                                           'to report disagreements with')
+    parser.add_argument('--refine-calls',
+                        help='Node data JSON with lineage calls of the tips from the current '
+                             'nomenclature, e.g. augur clades with its subclades.tsv. A call is '
+                             'taken where it is the lineage of the tip or one of its sublineages, '
+                             'so that tips called with an older nomenclature pick up lineages '
+                             'designated or renamed since')
+    parser.add_argument('--refine-calls-membership', default='subclade',
+                        help='Node attribute holding the lineage in --refine-calls (default: subclade)')
     parser.add_argument('--output-node-data', required=True, help='Output node data JSON')
     return parser.parse_args()
 
@@ -103,7 +115,22 @@ def main():
     tip_lineage = dict(zip(placed['seq_id'], placed['lineage']))
     parent, preorder = guide_tree_ancestry(args.guide_tree)
 
+    if args.refine_calls:
+        calls = json.load(open(args.refine_calls))['nodes']
+        refined = Counter()
+        for name, lineage in tip_lineage.items():
+            call = calls.get(name, {}).get(args.refine_calls_membership)
+            if call and call != lineage and lineage in lineage_and_ancestors(parent.get(call), parent):
+                tip_lineage[name] = call
+                refined[(lineage, call)] += 1
+        print(f"Refined the lineage of {sum(refined.values())} tips with {args.refine_calls}:")
+        for (lineage, call), n in refined.most_common():
+            print(f"  {n} tips: {lineage} -> {call}")
+
     tips = tree.get_terminals()
+    # founder sequences kept as tips are named after their lineage and belong to it
+    founders = {tip.name for tip in tips if tip.name not in tip_lineage and tip.name in set(preorder)}
+    tip_lineage.update({name: name for name in founders})
     missing = [tip.name for tip in tips if tip.name not in tip_lineage]
     if missing:
         print(f"Warning: {len(missing)} tips have no lineage and count as {args.default_lineage} "
@@ -127,7 +154,7 @@ def main():
     labelled = set()
     # lineages called for at least one tip; one represented only by its founder in tidy
     # tree has no node of its own to label
-    called = {tip_lineage.get(tip.name, args.default_lineage) for tip in tips}
+    called = {tip_lineage.get(tip.name, args.default_lineage) for tip in tips if tip.name not in founders}
     for lineage in preorder:
         if lineage == args.default_lineage or lineage not in called:
             continue

@@ -217,10 +217,17 @@ rule subsample_harddate:
             --output-strains {output.sampled_strains}
         """
 
+def get_founders(w):
+    """Founders of the lineages of the nomenclature, for the segments that have one."""
+    if "founders" in config["builds"][w.lineage][w.segment]:
+        return "data/{lineage}/{segment}/founders.fasta"
+    return []
+
 rule align:
     input:
         sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
         reference_strains="build/{lineage}/{segment}/reference_strains.fasta",
+        founders=get_founders,
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
@@ -231,7 +238,7 @@ rule align:
     threads: 2
     shell:
         """
-        seqkit rmdup  {input.reference} {input.reference_strains} {input.sequences} | \
+        seqkit rmdup  {input.reference} {input.reference_strains} {input.founders} {input.sequences} | \
         {params.nextclade_bin} run \
             --jobs={threads} \
             --input-ref {input.reference} \

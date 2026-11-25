@@ -1,26 +1,30 @@
 clade_repo: "https://raw.githubusercontent.com/influenza-clade-nomenclature/"
+# Branch of the nomenclature repositories, substituted for {branch} in their URLs. The
+# founders are only on the `founders` branch until it is merged into main.
+nomenclature_branch: "founders"
 dataset_repo: "https://raw.githubusercontent.com/nextstrain/nextclade_data/release/data/nextstrain/flu"
 
 builds:
   h1n1pdm:
     ha:
-      changelog: "seasonal_A-H1N1pdm_HA/main/CHANGELOG.md"
+      changelog: "seasonal_A-H1N1pdm_HA/{branch}/CHANGELOG.md"
+      founders: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/founders.fasta"
       root: "A/California/7/2009"
       clade_systems:
         clade:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades-long.tsv"
+          url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/clades-long.tsv"
           key: "legacy-clade"
         short-clade:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv"
+          url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/clades.tsv"
           key: "short-clade"
         subclade:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/subclade.nwk"
         subclade_backcompat:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv"
+          url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/subclades.tsv"
           key: "subclade"
         proposedSubclade:
-          url: "seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_A-H1N1pdm_HA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         CY121680: # exclude South Korean genomes because of sequencing artifacts close to the start of HA
@@ -36,14 +40,15 @@ builds:
           reference_EPI_ISL: EPI1812046
           reference_strain: A/Wisconsin/588/2019
     na:
-      root_lineage: "A/California/7/2009"
-      changelog: "seasonal_A-H1N1pdm_NA/main/CHANGELOG.md"
+      root: "A/California/7/2009"
+      changelog: "seasonal_A-H1N1pdm_NA/{branch}/CHANGELOG.md"
+      founders: "seasonal_A-H1N1pdm_NA/{branch}/.auto-generated/founders.fasta"
       clade_systems:
         subclade:
-          url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_A-H1N1pdm_NA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_A-H1N1pdm_NA/{branch}/.auto-generated/subclade.nwk"
         proposedSubclade:
-          url: "seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_A-H1N1pdm_NA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         MW626056:
@@ -55,23 +60,24 @@ builds:
   h3n2:
     ha:
       root: "A/HongKong/1/1968"
-      changelog: "seasonal_A-H3N2_HA/main/CHANGELOG.md"
+      changelog: "seasonal_A-H3N2_HA/{branch}/CHANGELOG.md"
+      founders: "seasonal_A-H3N2_HA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         clade:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/clades-long.tsv"
+          url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/clades-long.tsv"
           key: "legacy-clade"
         subclade:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_A-H3N2_HA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/subclade.nwk"
         subclade_backcompat:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv"
+          url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/subclades.tsv"
           key: "subclade"
         short-clade:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv"
+          url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/clades.tsv"
           key: "short-clade"
         proposedSubclade:
-          url: "seasonal_A-H3N2_HA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_A-H3N2_HA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         EPI1857216:
@@ -88,14 +94,15 @@ builds:
           reference_strain: A/Wisconsin/67/2005-egg
     na:
       root: "A/HongKong/1/1968"
-      changelog: "seasonal_A-H3N2_NA/main/CHANGELOG.md"
+      changelog: "seasonal_A-H3N2_NA/{branch}/CHANGELOG.md"
+      founders: "seasonal_A-H3N2_NA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         subclade:
-          url: "seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_A-H3N2_NA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_A-H3N2_NA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_A-H3N2_NA/{branch}/.auto-generated/subclade.nwk"
         proposedSubclade:
-          url: "seasonal_A-H3N2_NA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_A-H3N2_NA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         EPI1857215:
@@ -107,20 +114,21 @@ builds:
   vic:
     ha:
       root: "B/Victoria/2/1987"
-      changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
+      changelog: "seasonal_B-Vic_HA/{branch}/CHANGELOG.md"
+      founders: "seasonal_B-Vic_HA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         clade:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/clades.tsv"
           key: "legacy-clade"
         subclade:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclade.nwk"
         subclade_backcompat:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclades.tsv"
           key: "subclade"
         proposedSubclade:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         KX058884:
@@ -131,14 +139,15 @@ builds:
           reference_strain: B/Brisbane/60/2008-egg
     na:
       root: "B/Victoria/2/1987"
-      changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
+      changelog: "seasonal_B-Vic_NA/{branch}/CHANGELOG.md"
+      founders: "seasonal_B-Vic_NA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         subclade:
-          url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_B-Vic_NA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_B-Vic_NA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_NA/{branch}/.auto-generated/subclade.nwk"
         proposedSubclade:
-          url: "seasonal_B-Vic_NA/main/.auto-generated/subclade-proposals.tsv"
+          url: "seasonal_B-Vic_NA/{branch}/.auto-generated/subclade-proposals.tsv"
           key: "proposedSubclade"
       refs:
         CY073894:
@@ -150,17 +159,18 @@ builds:
   b:
     ha:
       root: "B/Lee/1940"
-      changelog: "seasonal_B-Vic_HA/main/CHANGELOG.md"
+      changelog: "seasonal_B-Vic_HA/{branch}/CHANGELOG.md"
+      founders: "seasonal_B-Vic_HA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         subclade:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_HA/{branch}/.auto-generated/subclade.nwk"
         lineage:
           url: "local"
           key: "lineage"
         clade-vic:
-          url: "seasonal_B-Vic_HA/main/.auto-generated/clades.tsv"
+          url: "seasonal_B-Vic_HA/{branch}/.auto-generated/clades.tsv"
           key: "legacy-clade-vic"
         clade-yam:
           url: "local"
@@ -174,12 +184,13 @@ builds:
           reference_strain: B/Brisbane/60/2008-egg
     na:
       root: "B/Lee/1940"
-      changelog: "seasonal_B-Vic_NA/main/CHANGELOG.md"
+      changelog: "seasonal_B-Vic_NA/{branch}/CHANGELOG.md"
+      founders: "seasonal_B-Vic_NA/{branch}/.auto-generated/founders.fasta"
       max_branch_length: 0.002
       clade_systems:
         subclade:
-          url: "seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv"
-          tree-url: "seasonal_B-Vic_NA/main/.auto-generated/subclade.nwk"
+          url: "seasonal_B-Vic_NA/{branch}/.auto-generated/subclades.tsv"
+          tree-url: "seasonal_B-Vic_NA/{branch}/.auto-generated/subclade.nwk"
       refs:
         CY073894:
           filter: "--min-date 1939 --probabilistic-sampling --group-by year --min-length 1500 --subsample-max-sequences 2000"
@@ -191,7 +202,7 @@ builds:
 
   # yam:
   #   ha:
-  #     changelog: "seasonal_B-Yam_HA/main/CHANGELOG.md"
+  #     changelog: "seasonal_B-Yam_HA/{branch}/CHANGELOG.md"
   #     clade_systems:
   #       clade:
   #         url: "https://raw.githubusercontent.com/nextstrain/seasonal-flu/master/config/yam/ha/clades.tsv"

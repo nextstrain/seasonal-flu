@@ -5,12 +5,11 @@ include: "rules/common.smk"
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
-        if w.lineage and lineage!=w.lineage:
+        if getattr(w, "lineage", None) and lineage!=w.lineage:
             continue
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
-                builds.append(f"build/{lineage}/{segment}/{ref}/founder_sequences.translations.done")
     return builds
 
 rule all_lineage:
@@ -28,16 +27,21 @@ rule all:
         all_builds
 
 
+def nomenclature_url(w, path):
+    """URL of a file of the nomenclature repository, on the configured branch."""
+    path = path.format(branch=config["nomenclature_branch"])
+    return path if w.lineage == 'yam' else config['clade_repo'] + path
+
 rule download_clades:
     message:
         "Downloading clade definitions for {wildcards.lineage} from {params.source_tsv} -> {output}"
     output:
         clade_tsv = "data/{lineage}/{segment}/{reference}/raw_{clade}.tsv"
     params:
-        source_tsv = lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
+        source_tsv = lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url']),
     shell:
         """
-        curl {params.source_tsv} > {output.clade_tsv}
+        curl -fsSL {params.source_tsv} > {output.clade_tsv}
         """
 
 rule download_clade_tree:
@@ -46,10 +50,10 @@ rule download_clade_tree:
     output:
         guide_tree = "data/{lineage}/{segment}/guide-tree_{clade}.nwk"
     params:
-        source_nwk=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
+        source_nwk=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url']),
     shell:
         """
-        curl {params.source_nwk} > {output.guide_tree}
+        curl -fsSL {params.source_nwk} > {output.guide_tree}
         """
 
 rule download_changelog_clades:
@@ -58,10 +62,24 @@ rule download_changelog_clades:
     output:
         changelog = "data/{lineage}/{segment}/changelog.md"
     params:
-        source=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["changelog"],
+        source=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["changelog"]),
     shell:
         """
-        curl {params.source} > {output.changelog}
+        curl -fsSL {params.source} > {output.changelog}
+        """
+
+rule download_founders:
+    message:
+        "Downloading lineage founders for {wildcards.lineage} {wildcards.segment} from {params.source} -> {output}"
+    output:
+        founders = "data/{lineage}/{segment}/founders.fasta"
+    params:
+        source=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["founders"]),
+    shell:
+        # The founders are aligned to the reference of the nomenclature. Remove the
+        # gaps so that align places them against the reference of the dataset.
+        """
+        curl -fsSL {params.source} | sed '/^>/!s/-//g' > {output.founders}
         """
 
 rule offset_clades:
@@ -82,23 +100,6 @@ rule offset_clades:
             >{output}
         """
 
-rule add_founders_to_alignment:
-    input:
-        alignment=rules.align.output.alignment,
-        founder_sequences = "config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
-    output:
-        alignment="build/{lineage}/{segment}/{reference}/align.aligned.with_founders.fasta"
-    shell:
-        """
-        cat {input.alignment} {input.founder_sequences} > {output.alignment}
-        """
-
-def get_root_lineage(w):
-    if "root_lineage" in config["builds"][w.lineage][w.segment]:
-        return f" --root-lineage {config['builds'][w.lineage][w.segment]['root_lineage']}"
-    else:
-        return ""
-
 def get_explicit_root(w):
     if "root" in config["builds"][w.lineage][w.segment]:
         return f" --explicit-root '{config['builds'][w.lineage][w.segment]['root']}'"
@@ -108,16 +109,16 @@ def get_explicit_root(w):
 rule tidytree:
     message: "Building tree"
     input:
-        alignment = rules.add_founders_to_alignment.output.alignment,
+        alignment = rules.align.output.alignment,
         guide_tree = "data/{lineage}/{segment}/guide-tree_subclade.nwk",
         metadata = "data/{lineage}/{segment}/metadata.tsv",
     output:
-        tree="build/{lineage}/{segment}/{reference}/tidytree.nwk"
+        tree="build/{lineage}/{segment}/{reference}/tidytree.nwk",
+        lineages="build/{lineage}/{segment}/{reference}/tidy_lineages.tsv",
     threads: 2
     params:
         clade_name = lambda w: 'subclade' if w.segment=='ha' and w.lineage not in ['b', 'vic'] else 'clade',
         explicit_root = get_explicit_root,
-        root_lineage = get_root_lineage
     resources:
         mem_mb=16000,
         time="2:00:00",
@@ -126,7 +127,6 @@ rule tidytree:
         python3 ../scripts/tidy_tree.py \
             --alignment {input.alignment} \
             --guide-tree {input.guide_tree} \
-            {params.root_lineage} \
             --lineage-assignments {input.metadata} \
             --seq-id-column strain \
             --lineage-column {params.clade_name} \
@@ -135,7 +135,9 @@ rule tidytree:
             --iqtree-args '-ninit 10 -n 4 -czb' \
             --ignore-missing-founders \
             {params.explicit_root} \
-            --output-tree {output.tree} 2>&1 | tee {log}
+            --metadata {input.metadata} \
+            --output-lineages {output.lineages} \
+            --output-tree {output.tree}
         """
 
 rule sanitize:
@@ -157,7 +159,7 @@ rule sanitize:
 rule refine:
     input:
         tree=rules.sanitize.output.tree,
-        alignment=rules.add_founders_to_alignment.output.alignment,
+        alignment=rules.align.output.alignment,
         metadata="data/{lineage}/{segment}/metadata.tsv"
     output:
         tree="build/{lineage}/{segment}/{reference}/tree.nwk",
@@ -183,7 +185,7 @@ rule ancestral:
         """
     input:
         tree=rules.refine.output.tree,
-        alignment=rules.add_founders_to_alignment.output.alignment,
+        alignment=rules.align.output.alignment,
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
     output:
@@ -207,6 +209,64 @@ rule ancestral:
         """
 
 
+
+# Clade systems labelled from the lineages of the tips of the tidy tree rather than from
+# signature mutations. The others (legacy clades, short clades, proposals) are only
+# defined by mutations.
+SUBCLADE_SYSTEMS = ["subclade", "subclade_backcompat"]
+
+# The lineage calls of the metadata come from the released dataset and know nothing of
+# lineages designated or renamed since. Calls by signature mutations with the current
+# nomenclature refine them where they are a sublineage of the original call.
+rule subclades_from_mutations:
+    message:
+        "Calling subclades by their signature mutations"
+    input:
+        tree=rules.refine.output.tree,
+        muts=rules.ancestral.output.node_data,
+        clades="data/{lineage}/{segment}/{reference}/shifted_subclade.tsv",
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/subclades_mutations.json",
+    shell:
+        """
+        augur clades --tree {input.tree} \
+            --mutations {input.muts} \
+            --clades {input.clades} \
+            --membership-name subclade \
+            --label-name subclade \
+            --output-node-data {output.node_data}
+        """
+
+rule subclades_from_tree:
+    message:
+        "Labelling {wildcards.clade} from the lineages of the tips"
+    input:
+        tree=rules.refine.output.tree,
+        lineages=rules.tidytree.output.lineages,
+        guide_tree="data/{lineage}/{segment}/guide-tree_subclade.nwk",
+        calls=rules.subclades_from_mutations.output.node_data,
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/clade_{clade}.json",
+    log:
+        "build/{lineage}/{segment}/{reference}/clade_{clade}.log",
+    wildcard_constraints:
+        clade="|".join(SUBCLADE_SYSTEMS),
+    params:
+        membership_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade_membership'),
+        label_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade')
+    shell:
+        """
+        python3 ../scripts/assign_subclades_from_tree.py \
+            --tree {input.tree} \
+            --lineages {input.lineages} \
+            --guide-tree {input.guide_tree} \
+            --membership-name {params.membership_key} \
+            --label-name {params.label_key} \
+            --refine-calls {input.calls} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
+ruleorder: subclades_from_tree > clades
 
 rule clades:
     message:
@@ -291,46 +351,6 @@ rule export:
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
         """
-
-
-rule extract_clade_founders:
-    input:
-        clades="build/{lineage}/{segment}/{reference}/clade_subclade.json",
-        ancestral = "build/{lineage}/{segment}/{reference}/muts.json",
-    output:
-        sequences="config/{lineage}/{segment}/{reference}/founder_sequences_new.fasta",
-    shell:
-        """
-        python3 scripts/extract_founder_sequences.py \
-            --clades-json {input.clades} \
-            --ancestral-json {input.ancestral} \
-            --output {output.sequences}
-        """
-
-rule translate_clade_founders:
-    input:
-        sequences=rules.extract_clade_founders.output.sequences,
-        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
-    output:
-        translations="build/{lineage}/{segment}/{reference}/founder_sequences.translations.done",
-    params:
-        outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_new_{{cds}}.fasta",
-        nextclade_bin = "nextclade3"
-    threads: 2
-    shell:
-        """
-        {params.nextclade_bin} run \
-            --jobs={threads} \
-            --input-ref {input.reference} \
-            --input-annotation {input.annotation} \
-            --gap-alignment-side right \
-            --in-order \
-            --output-translations {params.outdir} \
-            {input.sequences}
-        touch {output.translations}
-        """
-
 
 
 rule make_dataset:

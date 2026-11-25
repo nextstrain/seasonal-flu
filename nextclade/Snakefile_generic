@@ -6,7 +6,7 @@ include: "rules/common.smk"
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
-        if w.lineage and lineage!=w.lineage:
+        if getattr(w, "lineage", None) and lineage!=w.lineage:
             continue
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
