@@ -93,13 +93,16 @@ if __name__=="__main__":
     parser.add_argument('--keep-strains', type=str, nargs='+', help='a list of strains to keep in the output tree regardless of outlier status (i.e., reference strains that need to be retained in the build)')
     parser.add_argument('--output-outliers', type=str, help='file for outliers')
     parser.add_argument('--output-tree', type=str, help='file for pruned tree')
+    parser.add_argument('--keep-short-branches', action="store_true",
+                        help="do not collapse branches without mutations, e.g. because tidy tree "
+                             "already collapsed them with the lineages in view")
 
     args = parser.parse_args()
     dates = parse_dates(args.dates)
     tt = TreeTime(gtr='JC69', tree=args.tree, aln=args.aln, verbose=1, dates=dates)
     tt.clock_filter(n_iqd=4, reroot='least-squares' if args.reroot else None)
     if args.aln:
-        tt.infer_ancestral_sequences(prune_short=True, marginal=True)
+        tt.infer_ancestral_sequences(prune_short=not args.keep_short_branches, marginal=True)
 
     pruned_tips = prepare_tree(tt.tree)
 

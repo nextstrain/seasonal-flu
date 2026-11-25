@@ -263,7 +263,6 @@ rule tidytree:
             --lineage-column clade \
             --threads {threads} \
             --ignore-missing-founders \
-            --keep-founders \
             --unknown-lineage-policy {params.unknown_lineage_policy} \
             --max-dropped-fraction {params.max_dropped_fraction} \
             {params.root_lineage} \
@@ -283,6 +282,7 @@ rule prune_outliers:
     params:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
         cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
+        keep_short_branches=lambda w: "--keep-short-branches" if uses_tidy_tree(w.build_name, w.segment) else "",
     resources:
         mem_mb=2000,
     shell:
@@ -292,6 +292,7 @@ rule prune_outliers:
             --aln {input.aln} \
             --dates {input.metadata} \
             --cutoff {params.cutoff} \
+            {params.keep_short_branches} \
             {params.keep_strains_argument} \
             --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
         """
@@ -307,6 +308,12 @@ rule sanitize_trees:
         "benchmarks/sanitize_trees_{build_name}.txt"
     log:
         "logs/sanitize_trees_{build_name}.txt"
+    params:
+        # tidy tree collapses short branches itself, with the lineages in view
+        keep_short_branches = lambda w: [
+            f"{build_dir}/{w.build_name}/{segment}/tree_without_outliers_clean.nwk"
+            for segment in config['segments'] if uses_tidy_tree(w.build_name, segment)
+        ],
     resources:
         mem_mb=2000,
     shell:
@@ -314,6 +321,7 @@ rule sanitize_trees:
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
             --alignments {input.alignments:q} \
+            --keep-short-branches {params.keep_short_branches:q} \
             --output {output.trees:q} 2>&1 | tee {log}
         """
 
@@ -372,7 +380,10 @@ rule refine:
         date_inference = "marginal",
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
         clock_rate = clock_rate,
-        clock_std_dev = clock_std_dev
+        clock_std_dev = clock_std_dev,
+        # the polytomies of a tidy tree are where tips branch off at a founder; resolving
+        # them would move such tips into the subtree of the lineage
+        polytomies = lambda w: "--keep-polytomies" if uses_tidy_tree(w.build_name, w.segment) else "--stochastic-resolve",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
@@ -390,7 +401,7 @@ rule refine:
             --output-tree {output.tree} \
             --output-node-data {output.node_data} \
             --keep-root \
-            --stochastic-resolve \
+            {params.polytomies} \
             --timetree \
             --use-fft \
             --no-covariance \

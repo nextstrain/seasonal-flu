@@ -139,6 +139,13 @@ def parse_arguments():
         help='Fail if a larger fraction of the alignment ends up without a place in the tree '
              '(default: 0.05)'
     )
+    parser.add_argument(
+        '--collapse-threshold',
+        type=float,
+        default=1e-5,
+        help='Collapse internal branches shorter than this into polytomies, so that downstream '
+             'steps need not remove branches (default: 1e-5, well below one substitution)'
+    )
     return parser.parse_args()
 
 
@@ -674,6 +681,29 @@ def graft_subtree(
         parent_node.name = parent_node.name + "_internal"
 
 
+def collapse_short_branches(tree, threshold: float) -> int:
+    """
+    Collapse internal branches shorter than threshold into polytomies, in place.
+
+    A lineage whose founder sits at zero distance from the node where tips of its parent
+    lineage branch off thereby gets a polytomy that contains those tips, rather than a
+    zero length stem that a later step would collapse in an arbitrary way.
+    """
+    n_collapsed = 0
+    for node in tree.find_clades(order='postorder'):
+        children = []
+        for child in node.clades:
+            if child.clades and (child.branch_length or 0) < threshold:
+                for grandchild in child.clades:
+                    grandchild.branch_length = (grandchild.branch_length or 0) + (child.branch_length or 0)
+                children.extend(child.clades)
+                n_collapsed += 1
+            else:
+                children.append(child)
+        node.clades = children
+    return n_collapsed
+
+
 def stitch_subtrees(
     root: LineageNode,
     all_sequences: Dict[str, SeqRecord],
@@ -821,6 +851,15 @@ def main():
     if final_tree is None:
         print("Error: Failed to build final tree")
         return 1
+
+    if not args.keep_founders:
+        # grafting removes the founders of grafted lineages, but not that of the root
+        # lineage or of lineages whose subtree is the founder alone
+        for founder in [tip for tip in final_tree.get_terminals() if tip.name in founders]:
+            final_tree.prune(founder)
+
+    n_collapsed = collapse_short_branches(final_tree, args.collapse_threshold)
+    print(f"\nCollapsed {n_collapsed} internal branches shorter than {args.collapse_threshold}")
 
     # Write output
     print(f"\nWriting final tree to {args.output_tree}...")

@@ -8,10 +8,14 @@ label goes on the branch leading to the MRCA of these tips, and every node in th
 subtree below the MRCA is assigned to it. Lineages are processed from the root of the
 guide tree downwards, so a sublineage overwrites its parent within its own subtree.
 
-If the subtree of the MRCA also contains tips of other lineages, the lineage has no
-node of its own, typically because the branch leading to it had zero length and was
-collapsed into a polytomy. Then its largest subtrees that contain only its own tips
-are labelled instead, so that it does not take over the rest of the polytomy.
+Subtrees of the MRCA that hold only tips of ancestral lineages branch off at the
+founder of the lineage: its stem had zero length and was collapsed into a polytomy that
+holds them. They do not prevent the lineage from being labelled on the MRCA and keep
+the label of their own lineage.
+
+If the subtree of the MRCA contains any other tips of other lineages, the lineage has no
+node of its own. Then its largest subtrees that contain only its own tips are labelled
+instead, so that it does not take over the rest of the subtree.
 
 Unlike labelling by signature mutations, this does not depend on the mutations
 reconstructed on the tree, only on the tips that are present, so it is robust to
@@ -115,13 +119,21 @@ def main():
     membership = {node: args.default_lineage for node in tree.find_clades()}
     labels = []   # (node, lineage), in the order lineages are assigned
     split = {}    # lineage -> (tips of other lineages under its MRCA, number of subtrees)
+    basal = {}    # lineage -> tips of ancestral lineages branching off at its MRCA
     for lineage in preorder:
         if lineage == args.default_lineage or lineage not in members:
             continue
         own = members[lineage]
         root = mrca(own, up, depth)
-        if n_tips[root] == len(own):
+        ancestors = set(lineage_and_ancestors(parent.get(lineage), parent))
+        at_founder = {child for child in root.clades
+                      if all(tip_lineage.get(tip.name, args.default_lineage) in ancestors
+                             for tip in child.get_terminals())}
+        n_at_founder = sum(n_tips[child] for child in at_founder)
+        if n_tips[root] == len(own) + n_at_founder:
             roots = [root]
+            if at_founder:
+                basal[lineage] = n_at_founder
         else:
             # count the tips of the lineage below each node of the MRCA subtree
             n_own = Counter()
@@ -142,14 +154,23 @@ def main():
             split[lineage] = (n_tips[root] - len(own), len(roots))
         for subtree_root in roots:
             labels.append((subtree_root, lineage))
-            for node in subtree_root.find_clades():
-                membership[node] = lineage
+            for child in subtree_root.clades:
+                if child not in at_founder:
+                    for node in child.find_clades():
+                        membership[node] = lineage
+            membership[subtree_root] = lineage
 
     print("Lineages without a node of their own, labelled on their largest pure subtrees:")
     for lineage, (n_other, n_subtrees) in split.items():
         print(f"  {lineage}: {len(members[lineage])} tips in {n_subtrees} subtrees, "
               f"{n_other} tips of other lineages under their MRCA")
     if not split:
+        print("  none")
+
+    print("Lineages labelled on a polytomy that holds tips of ancestral lineages:")
+    for lineage, n in basal.items():
+        print(f"  {lineage}: {len(members[lineage])} tips, {n} tips of ancestral lineages")
+    if not basal:
         print("  none")
 
     # a branch keeps the label of the most specific lineage starting on it
