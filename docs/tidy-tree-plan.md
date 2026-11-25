@@ -146,31 +146,62 @@ Tree labels agree with nextclade for every tip (largely by construction), `augur
 for 89% (H3N2 NA) to 100%. Every lineage gets a single branch label except four with a
 collapsed stem: H1N1pdm NA `B.1` (4 branches), `C.5`, `D.2` and B/Vic NA `B.2` (2 each).
 
+### This repo: branches are collapsed once, in tidy tree
+
+The 3y builds of `profiles/nextstrain-public.yaml` (full size, ~3000 sequences per tree,
+glycosylation, LBI, titer models and embeddings switched off) split large lineages into
+many labelled pieces, e.g. vic NA `B.8` into 9 and H1N1pdm NA `C.5.3` into 4. The tidy
+tree itself was fine: when a founder sits at zero distance from the node where tips of
+the parent lineage branch off, `prune_short_branches` in `sanitize_trees` collapsed the
+stem, and `refine --stochastic-resolve` then resolved the polytomy at random and buried
+those parent lineage tips 5-10 nodes deep inside the lineage.
+
+Now `tidy_tree.py` drops the founder tips (unless `--keep-founders`) and collapses
+internal branches shorter than `--collapse-threshold` (1e-5), and for tidy tree builds
+nothing later removes or resolves branches: `flag_outliers.py` and `sanitize_trees.py`
+get `--keep-short-branches`, and `refine` uses `--keep-polytomies` instead of
+`--stochastic-resolve`. `assign_subclades_from_tree.py` labels a lineage on its MRCA
+also when that polytomy holds subtrees made only of tips of ancestral lineages; these
+keep their own label. Founder tips used to reach `sanitize_trees` and survive it when an
+HA and an NA lineage share a name; only `refine` removed them, for lack of metadata.
+
+Result on the 3y builds: every sequence placed in all six, `tidytree` takes 1-2 minutes
+per tree. The automatic root is a real lineage (A, A.2, A.1.1) in five of them, since
+the references only go back 9 years; H1N1pdm HA is rooted at `unassigned` because some
+2018-2020 references predate its subclades. Every lineage has a single label except:
+
+- H1N1pdm NA `C.5` and H3N2 NA `B.4`: the founder of a sibling lineage descends from
+  theirs, so the sibling (`C.3`, `B.3`) branches off at their polytomy. `C.3` carries all
+  three founder mutations of `C.5` (607G, 1049A, 1415T), `B.3` is the `B.4` founder plus
+  989A, and `C.5.3` reverts 607 and 1049 relative to `C.5`. The NA founders need review
+  upstream; this is not a tree problem.
+- sparse old lineages among the references (H1N1pdm NA `B.1`, H3N2 HA `B.1.2.1`), as in
+  the 12y builds.
+
 ## Next steps (as of 2026-11-25)
 
-Everything up to here is committed on `WIP/tidy-tree`. Only the reduced 12y builds have
-been run (300 sequences each). In order:
+Everything up to here is committed on `WIP/tidy-tree`. The reduced 12y builds
+(300 sequences each) and the full 3y builds of `nextstrain-public` have been run. In order:
 
 1. **Profile dry runs.** The nomenclature paths changed in 16 profiles, but only
    `profiles/nextstrain` has been run. Dry run every profile to catch broken paths;
    `allflu` also covers yam and the internal segments, which go through `augur tree`.
    Profiles that need fauna or S3 credentials may fail for unrelated reasons.
-2. **Shorter windows and full size.** Run the 2y builds (and the 6m builds of the
-   profiles that have them) and the full 3000 sequence builds. Things to watch:
-   - the automatic root: with the forced reference strains every build should be rooted
-     at `unassigned` on its oldest sequence, so the 1968-2004 references sit at the base
-     of even short builds. Decide whether that is acceptable or whether the subsampling
-     of short builds should stop forcing them
-   - lineages without a node of their own (collapsed zero length stems), which may be
-     more frequent with more sequences
-   - run time of `tidytree` at full size
-3. **Finish phase 4.** Once the comparison logs look right, stop running
+2. **Review the NA founders** of H1N1pdm `C.5`/`C.5.3`/`C.3` and H3N2 `B.3`/`B.4` in the
+   nomenclature repos (see above), and check the other NA repos for sibling founders
+   that descend from one another.
+3. **Shorter windows.** The full size 3y builds are done (above). Run the 2y and 6m
+   builds. Things to watch:
+   - the automatic root, which depends on how far back the forced reference strains go
+     (`reference_min_date` in `nextstrain-public`, all of them in `profiles/nextstrain`)
+   - lineages without a node of their own in `logs/subclades_from_tree_*`
+4. **Finish phase 4.** Once the comparison logs look right, stop running
    `subclades_from_mutations` for tidy tree builds. Consider deriving the HA clade labels
    (`clades.json`) from the subclade labels via the `clade:` field of the subclade yamls
    instead of `augur clades` with `clades.tsv`; check first that every subclade sets it.
-4. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
+5. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
    `nomenclature_branch` in the `Snakefile` to `main`.
-5. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
+6. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
    inputs of their rules so that editing them reruns the rules, and turn the toy cases
    used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
    into tests of `assign_subclades_from_tree.py`.
