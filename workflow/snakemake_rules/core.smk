@@ -212,11 +212,16 @@ rule prune_reference:
         """
 
 def get_root_clade(w):
+    """
+    Root lineage of the tidy tree. By default tidy tree chooses the most specific
+    lineage containing all sequences of the build; a lineage can be set instead with
+    tidy_tree.root_lineage.{lineage}.{segment}.{resolution}, e.g. 2y, in which case
+    sequences outside it are left out of the tree.
+    """
     lineage = config['builds'][w.build_name]['lineage']
-    segment = w.segment
     resolution = f"{config['builds'][w.build_name].get('resolution', '6')}y"
-    print(f"Getting root clade for lineage {lineage}, segment {segment}, resolution {resolution}")
-    return root_lineage.get(lineage, {}).get(segment, {}).get(resolution, "A")
+    roots = config.get("tidy_tree", {}).get("root_lineage", {})
+    return roots.get(lineage, {}).get(w.segment, {}).get(resolution, "auto")
 
 def get_guide_tree_name(w):
     lineage = config['builds'][w.build_name]['lineage']

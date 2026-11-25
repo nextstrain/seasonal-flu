@@ -94,11 +94,20 @@ def parse_arguments():
         help='Additional arguments to pass to IQ-TREE'
     )
     parser.add_argument(
+        '--output-lineages',
+        help='Table of the lineage of each sequence in terms of the guide tree (TSV with '
+             'columns seq_id, lineage), from which the clades of the final tree can be labelled'
+    )
+    parser.add_argument(
         '--keep-founders',
         action='store_true',
         help='Keep founder sequences as leaves in the final tree'
     )
-    parser.add_argument('--root-lineage', default=None, help='Root lineage for the tree')
+    parser.add_argument('--root-lineage', default='auto',
+                        help="Root lineage for the tree. 'auto' (default) uses the most specific "
+                             "lineage of the guide tree that contains the lineages of all "
+                             "sequences. With an explicit root lineage, sequences outside it are "
+                             "excluded from the tree and reported.")
     parser.add_argument('--explicit-root', default=None, type=str,
                         help='Sequence on which to root the tree. If the root lineage has no founder '
                              'and this is not given, the oldest sequence of the root lineage is used, '
@@ -169,9 +178,12 @@ def load_assignments(
     return assignments
 
 
-def parse_guide_tree(newick_path: str, root_lineage: str = None) -> LineageNode:
+def parse_guide_tree(newick_path: str, root_lineage: str = None,
+                     default_lineage: str = 'unassigned') -> LineageNode:
     """Parse the lineage guide tree and build LineageNode structure."""
     tree = Phylo.read(newick_path, 'newick')
+    # as in read_guide_tree_parents, an unnamed root is the default lineage
+    tree.root.name = tree.root.name or default_lineage
     if root_lineage:
         matches = [x for x in tree.find_clades(name=root_lineage)]
         if matches:
@@ -225,6 +237,58 @@ def oldest_sequence(
     return min(dated)[1]
 
 
+def read_guide_tree_parents(newick_path: str, default_lineage: str = 'unassigned'):
+    """
+    Parent of each lineage of the full guide tree, and the name of its root.
+
+    An unnamed root takes the default lineage, which is what sequences without a
+    lineage call are assigned to.
+    """
+    guide = Phylo.read(newick_path, 'newick')
+    guide_root = guide.root.name or default_lineage
+    parent = {guide_root: None}
+    for clade in guide.find_clades(order='preorder'):
+        name = guide_root if clade is guide.root else clade.name
+        for child in clade.clades:
+            if child.name:
+                parent[child.name] = name
+    return parent, guide_root
+
+
+def resolve_lineage(lineage: Optional[str], parent: Dict[str, Optional[str]], guide_root: str) -> str:
+    """
+    The lineage of the full guide tree a lineage call corresponds to: the call itself,
+    else its nearest enclosing lineage, else the root of the guide tree.
+    """
+    if lineage in parent:
+        return lineage
+    if isinstance(lineage, str):
+        return enclosing_lineage(lineage, parent) or guide_root
+    return guide_root
+
+
+def automatic_root_lineage(lineages, parent: Dict[str, Optional[str]]) -> str:
+    """The most specific lineage of the guide tree containing all given lineages."""
+    def path_to_root(lineage):
+        path = []
+        while lineage is not None:
+            path.append(lineage)
+            lineage = parent[lineage]
+        return path[::-1]
+
+    common = None
+    for lineage in set(lineages):
+        path = path_to_root(lineage)
+        if common is None:
+            common = path
+        else:
+            n = 0
+            while n < min(len(common), len(path)) and common[n] == path[n]:
+                n += 1
+            common = common[:n]
+    return common[-1]
+
+
 def enclosing_lineage(lineage: str, lineage_map: Dict[str, LineageNode]) -> Optional[str]:
     """
     Nearest ancestor of `lineage` that is present in the guide tree.
@@ -245,6 +309,8 @@ def assign_sequences_to_lineages(
     root: LineageNode,
     assignments: Dict[str, str],
     sequences: Dict[str, SeqRecord],
+    guide_parent: Dict[str, Optional[str]],
+    guide_root: str,
     unknown_lineage_policy: str = 'parent',
     founder_ids: Optional[set] = None,
 ) -> Dict[str, object]:
@@ -269,6 +335,7 @@ def assign_sequences_to_lineages(
         'placed_in_enclosing_lineage': {},   # lineage not in guide tree -> count
         'placed_in_root': {},                # no enclosing lineage in guide tree -> count
         'dropped_unknown_lineage': {},       # only when the policy says to drop
+        'outside_root': {},                  # lineage outside the root lineage -> count
         'without_assignment': [],            # in the alignment but not in the metadata
     }
 
@@ -287,18 +354,24 @@ def assign_sequences_to_lineages(
             report['assigned'] += 1
             continue
 
-        # the lineage is not a node of the guide tree
-        enclosing = enclosing_lineage(lineage, lineage_map)
+        # a lineage of the guide tree outside the root lineage, or a call that is not
+        # a node of the guide tree and resolves to one outside the root lineage: these
+        # are excluded on purpose by the choice of the root lineage
+        resolved = resolve_lineage(lineage, guide_parent, guide_root)
+        if resolved not in lineage_map:
+            report['outside_root'].setdefault(lineage, 0)
+            report['outside_root'][lineage] += 1
+            continue
+
+        # the lineage is not a node of the guide tree but descends from the root lineage
         if unknown_lineage_policy == 'drop':
             report['dropped_unknown_lineage'].setdefault(lineage, 0)
             report['dropped_unknown_lineage'][lineage] += 1
-        elif enclosing and unknown_lineage_policy == 'parent':
-            lineage_map[enclosing].sequences.append(seq_id)
-            report['placed_in_enclosing_lineage'].setdefault(f"{lineage} -> {enclosing}", 0)
-            report['placed_in_enclosing_lineage'][f"{lineage} -> {enclosing}"] += 1
+        elif unknown_lineage_policy == 'parent' and resolved != root.name:
+            lineage_map[resolved].sequences.append(seq_id)
+            report['placed_in_enclosing_lineage'].setdefault(f"{lineage} -> {resolved}", 0)
+            report['placed_in_enclosing_lineage'][f"{lineage} -> {resolved}"] += 1
         else:
-            # above the root of the guide tree, or an unparseable name: these are
-            # ancestral context for the root lineage
             root.sequences.append(seq_id)
             report['placed_in_root'].setdefault(f"{lineage} -> {root.name}", 0)
             report['placed_in_root'][f"{lineage} -> {root.name}"] += 1
@@ -312,6 +385,7 @@ def report_assignments(report: Dict[str, object], total: int, max_dropped_fracti
               + sum(report['placed_in_enclosing_lineage'].values())
               + sum(report['placed_in_root'].values()))
     dropped = sum(report['dropped_unknown_lineage'].values()) + len(report['without_assignment'])
+    excluded = sum(report['outside_root'].values())
 
     print("\nSequence assignment:")
     print(f"  {report['assigned']} assigned to their own lineage")
@@ -325,9 +399,14 @@ def report_assignments(report: Dict[str, object], total: int, max_dropped_fracti
         examples = ', '.join(report['without_assignment'][:5])
         print(f"  {len(report['without_assignment'])} DROPPED, no lineage assignment "
               f"(e.g. {examples})")
+    for label, count in sorted(report['outside_root'].items(), key=lambda x: -x[1]):
+        print(f"  {count} excluded, outside the root lineage: {label}")
     if report['founders']:
         print(f"  ({report['founders']} founder sequences in the alignment, placed as founders)")
-    print(f"  {placed} of {total} sequences placed, {dropped} dropped")
+    print(f"  {placed} of {total} sequences placed, {dropped} dropped, {excluded} excluded "
+          f"as outside the root lineage")
+    # sequences outside the root lineage are excluded by choice, not lost
+    total -= excluded
 
     # sequences that land in the root lineage are not lost, but a build in which most
     # sequences do is usually reading the wrong column or using a stale guide tree
@@ -511,6 +590,27 @@ def build_subtree(
     return tree
 
 
+def write_guide_tree_lineages(
+    seq_ids,
+    assignments: Dict[str, str],
+    parent: Dict[str, Optional[str]],
+    guide_root: str,
+    path: str,
+):
+    """
+    Write the lineage of each sequence as a node of the full guide tree.
+
+    This is the lineage call itself if it is a node of the guide tree, otherwise the
+    nearest enclosing lineage, otherwise the root of the guide tree. Unlike the lineage
+    a sequence was built into, it does not depend on lineages being folded for lack of
+    a founder.
+    """
+    rows = [(seq_id, resolve_lineage(assignments.get(seq_id), parent, guide_root))
+            for seq_id in seq_ids]
+    pd.DataFrame(rows, columns=['seq_id', 'lineage']).to_csv(path, sep='\t', index=False)
+    print(f"Wrote the lineages of {len(rows)} sequences to {path}")
+
+
 def find_clade_by_name(tree, name: str):
     """Find a clade/node in the tree by its name."""
     def search(clade):
@@ -627,31 +727,17 @@ def main():
     sequences = load_sequences(args.alignment)
     print(f"  Loaded {len(sequences)} sequences")
 
-    print("Parsing lineage guide tree...")
-    lineage_root = parse_guide_tree(args.guide_tree, args.root_lineage)
+    guide_parent, guide_root = read_guide_tree_parents(args.guide_tree, args.default_lineage)
 
     if args.founder_sequences:
         print("Loading founder sequences...")
         founders = load_sequences(args.founder_sequences)
         print(f"  Loaded {len(founders)} founder sequences")
     else:
-        founders = {}
-        # recognise founders against the full guide tree, not just the part below the
-        # root lineage, so that founders of lineages outside it are not taken for
-        # sequences without a lineage assignment
-        all_lineages = {clade.name for clade in Phylo.read(args.guide_tree, 'newick').find_clades() if clade.name}
-        lineages_below_root = {clade.name for clade in lineage_root.tree.find_clades() if clade.name}
-        unused = []
-        for seq_id, seq in sequences.items():
-            if seq_id in lineages_below_root:
-                founders[seq_id] = seq
-            elif seq_id in all_lineages:
-                unused.append(seq_id)
+        # founders are named after their lineage; recognise them against the full guide
+        # tree, not only the part below the root lineage
+        founders = {seq_id: seq for seq_id, seq in sequences.items() if seq_id in guide_parent}
         print(f"  gathered {len(founders)} founder sequences from alignment")
-        if unused:
-            print(f"  ignoring {len(unused)} founders of lineages outside the root lineage: "
-                  f"{', '.join(sorted(unused))}")
-        sequences = {seq_id: seq for seq_id, seq in sequences.items() if seq_id not in unused}
 
     print("Loading sequence-to-lineage assignments...")
     assignments = load_assignments(
@@ -662,14 +748,43 @@ def main():
     )
     print(f"  Loaded {len(assignments)} assignments")
 
+    root_lineage = args.root_lineage
+    if root_lineage == 'auto':
+        root_lineage = automatic_root_lineage(
+            [resolve_lineage(assignments.get(seq_id), guide_parent, guide_root)
+             for seq_id in sequences if seq_id not in founders and seq_id in assignments],
+            guide_parent)
+        print(f"Root lineage chosen automatically as the lineage containing all sequences: {root_lineage}")
+    elif root_lineage not in guide_parent:
+        print(f"Error: root lineage '{root_lineage}' is not a lineage of the guide tree")
+        return 1
+
+    print("Parsing lineage guide tree...")
+    lineage_root = parse_guide_tree(args.guide_tree, root_lineage, args.default_lineage)
+
+    # founders of lineages outside the root lineage are not used
+    lineages_below_root = {clade.name for clade in lineage_root.tree.find_clades() if clade.name}
+    lineages_below_root.add(lineage_root.name)
+    unused = sorted(seq_id for seq_id in founders if seq_id not in lineages_below_root)
+    if unused:
+        print(f"  ignoring {len(unused)} founders of lineages outside the root lineage: "
+              f"{', '.join(unused)}")
+        founders = {seq_id: seq for seq_id, seq in founders.items() if seq_id not in unused}
+        sequences = {seq_id: seq for seq_id, seq in sequences.items() if seq_id not in unused}
+
     # Prepare lineage structure
     print("\nAssigning sequences to lineages...")
     report = assign_sequences_to_lineages(lineage_root, assignments, sequences,
+                                          guide_parent, guide_root,
                                           args.unknown_lineage_policy, set(founders))
     if report_assignments(report, len(sequences) - len(set(founders) & set(sequences)),
                           args.max_dropped_fraction):
         return 1
     assign_founders_to_lineages(lineage_root, founders, args.ignore_missing_founders)
+
+    if args.output_lineages:
+        write_guide_tree_lineages([seq_id for seq_id in sequences if seq_id not in founders],
+                                  assignments, guide_parent, guide_root, args.output_lineages)
 
     # the subtree of each lineage is rooted on its founder; a root lineage without one,
     # such as the context above the nomenclature, needs an outgroup instead

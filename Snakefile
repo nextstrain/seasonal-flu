@@ -21,65 +21,6 @@ lineage_name_by_abbreviation = {
     "yam": "Yam",
 }
 
-root_lineage = {
-    "h3n2": {
-        "ha":{
-            "6m": "J.2",
-            "1y": "J.2",
-            "2y": "J",
-            "3y": "G",
-            "6y": "B",
-            "12y": "A"
-        },
-        "na":{
-            "6m": "B.4",
-            "1y": "B.4",
-            "2y": "B.4",
-            "3y": "B.2",
-            "6y": "A.2",
-            "12y": "A"
-        }
-    },
-    "h1n1pdm": {
-        "ha":{
-            "6m": "C.1",
-            "1y": "C.1",
-            "2y": "C.1",
-            "3y": "C.1",
-            "6y": "C",
-            "12y": "A"
-        },
-        "na":{
-            "6m": "C.5.3",
-            "1y": "C.5.3",
-            "2y": "C.5.3",
-            "3y": "C",
-            "6y": "A",
-            "12y": "A"
-        }
-    },
-    "vic": {
-        "ha":{
-            "6m": "C",
-            "1y": "C",
-            "2y": "C",
-            "3y": "A.3",
-            "6y": "A",
-            # B (V1B) is a sister of A, so the context above both is the root,
-            # rooted on its oldest sequence as it has no founder
-            "12y": "unassigned"
-        },
-        "na":{
-            "6m": "B",
-            "1y": "B",
-            "2y": "B",
-            "3y": "A.1",
-            "6y": "A",
-            "12y": "A"
-        }
-    },
-}
-
 # Repositories of the hierarchical lineage nomenclature, which provide the clade and
 # subclade definitions, the subclade guide tree and the lineage founder sequences.
 nomenclature_repo_by_lineage_and_segment = {
