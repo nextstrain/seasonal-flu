@@ -218,6 +218,46 @@ the new `h1n1` lineage, like yam, has its definitions in `config/` and is copied
 `full-trees`, which defines `download_mlr_json` twice on `master` too, and `upload`
 (no pb2 references, as before).
 
+### Branch `tidy-tree-tt-rs`: TreeTime 1.0 instead of augur refine and ancestral
+
+On this branch the phylo workflow runs the Rust implementation of TreeTime (nightly
+`1.0.0-nightly.20261123T125651Z+ffc39fb`, from github.com/neherlab/treetime-nightly) in
+place of `augur refine` and `augur ancestral`. The executable is
+`config.treetime.executable`, by default `treetime-rs` on the PATH (`treetime` would be
+TreeTime 0.x of augur).
+
+- `refine` runs `timetree` with the settings of the former `augur refine`: kept root,
+  fixed clock rate and its standard deviation, a fitted constant coalescent (`opt`, which
+  is what augur's `const` meant), date confidence, the clock filter at 4 IQDs removing the
+  flagged and the undated tips, ladderized. Tidy tree builds keep polytomies and input
+  branch lengths and do not collapse branches; other builds have their polytomies
+  resolved. `timetree` writes the tree in years (`tree_time.nwk`); `tree.nwk` is that
+  tree times the clock rate, which is what augur refine wrote and what `ancestral` and
+  `traits` expect (`scripts/scale_time_tree.py`).
+- **To fix in TreeTime:** `ancestral` normalizes its inferred model to a rate of 1 per
+  unit branch length, takes no rate with `--model infer`, and cannot read the model of
+  `timetree --output-model`. On the time tree in years it reconstructs 19853 mutations
+  instead of 2938 (vic 6m NA); on the rescaled tree or the divergence tree it agrees with
+  augur. Once `ancestral` fits the overall rate or reads the timetree model, it can take
+  `tree_time.nwk` directly and the rescaling can go.
+- `ancestral` runs `ancestral` on the alignment and the per-CDS translations of the
+  nextclade `align` step, with ambiguous tip states imputed, which keeps changes to
+  ambiguity codes out of the mutations as augur did. TreeTime reads coding regions only
+  from CDS rows, so `annotation_with_cds` turns the gene rows of the genemaps into CDS
+  rows (`scripts/annotation_with_cds.py`). The mutations of the root are relative to the
+  inferred root, which is the reference of the node data, rather than to the reference of
+  the build.
+
+Compared with augur on vic 6m (HA, NA): same topology and subclades, node dates equal
+in the median and within 0.15 years for 95% of the nodes, but the root of the old
+references 1.2-1.5 years earlier; nucleotide mutations identical for 98.7% of the nodes,
+amino acid mutations for 99.8%, the differences around that root; glycosylation counts,
+relative to the root, shifted by one as the inferred root differs by a motif. The 3y
+builds of `nextstrain-public` with all their features run through, `timetree` in 6-26
+seconds per tree; the titer models fit as before. Not yet run: builds without tidy
+tree (yam, internal segments), which dry run. The nextclade dataset workflow still uses
+augur refine (divergence only) and augur ancestral.
+
 ## Next steps (as of 2026-11-25)
 
 Everything up to here is committed on `tidy-tree`. The reduced 12y builds
