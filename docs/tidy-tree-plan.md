@@ -19,7 +19,7 @@ to come from the tree structure rather than from signature SNPs in `clades.tsv`.
 | phylo workflow rules | `workflow/snakemake_rules/core.smk` |
 | nextclade dataset workflow | `nextclade/Snakefile`, `nextclade/rules/common.smk` |
 | founders used by the phylo builds | `.auto-generated/founders.fasta` of the nomenclature repos, downloaded to `nomenclature/{lineage}/{segment}/founders.fasta` |
-| founders used by the nextclade datasets | `nextclade/config/{lineage}/{segment}/{ref}/founder_sequences*.fasta` |
+| founders used by the nextclade datasets | the same, downloaded to `nextclade/data/{lineage}/{segment}/founders.fasta` |
 | nomenclature repos | `../clades/seasonal_*`, branch `founders` |
 | nomenclature scripts | `../clades/helper-scripts`, branch `founders` |
 | full sequence data used for testing | `../seasonal-flu-tidy-tree/nextclade/data` |
@@ -232,7 +232,7 @@ been dry run after it. In order:
    have not yet run on a tidy tree.
 3. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
    `nomenclature_branch` in the `Snakefile` to `main`.
-4. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
+4. Phase 3 and phase 2 below. For phase 3, also declare the scripts as
    inputs of their rules so that editing them reruns the rules, and turn the toy cases
    used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
    into tests of `assign_subclades_from_tree.py`.
@@ -292,14 +292,9 @@ What to look at:
 
 ## To do
 
-### Phase 1 leftovers
+### Phase 1 leftovers (done)
 
-- The nextclade dataset workflow still uses the per-reference copies in
-  `nextclade/config/*/`, including the per-CDS files it needs for `founderMuts`. Move it
-  to the upstream founders too, which retires `nextclade/update_founders.sh` and the
-  hand renaming of `founder_sequences_new*.fasta`. The `extract_clade_founders` rule
-  should become a step that proposes an updated `founder` block upstream, ideally as a
-  PR, instead of writing files that are moved by hand.
+The nextclade dataset workflow uses the upstream founders, see above.
 
 ### Phase 2 — founder lifecycle
 
@@ -345,14 +340,33 @@ matches the former labels for all H3N2 and all but 7 old H1N1pdm tips of the 3y 
 `config/h3n2/ha/emerging_clades.tsv` and `profiles/nextflu-private/vic/ha/clades.tsv`
 are unused now.
 
-### Nextclade dataset workflow
+### Nextclade dataset workflow (done)
 
-Calls the same `tidy_tree.py`, so the collapsing of short branches, the branch lengths
-of small subtrees and the ladderizing apply there too, untested. Not adapted yet: it
-takes the founders from its per-reference copies (phase 1 leftovers), downloads its own
-guide tree, sets the root lineage in its config rather than choosing it automatically,
-keeps the founder tips (`--keep-founders`, open decision 2) and labels clades with
-`augur clades` rather than from the tree.
+The founders come from the nomenclature repos (`founders` in `nextclade/config/
+config_dict.yaml`), like the guide tree and the clade tables, all from the branch in
+`nomenclature_branch`. `align` realigns them to the reference of each dataset; the
+per-reference copies in `nextclade/config/*/`, `extract_clade_founders`,
+`translate_clade_founders` and `scripts/extract_founder_sequences.py` are gone.
+`nextclade/update_founders.sh` and the untracked `founder_sequences_new*.fasta` are
+obsolete. New founders are made upstream when a lineage is designated.
+
+The tidy tree chooses its root lineage automatically; `root` in the config is the
+outgroup where the root lineage has no founder (`unassigned`). The founder tips stay in
+the dataset trees (`--keep-founders`), and the tree is a divergence tree only.
+
+The subclade (`clade` and its back-compat copy `subclade`) is labelled from the tree,
+legacy and short clades and the proposals with `augur clades`. The lineage calls come
+from the released dataset, which does not know lineages designated or renamed since; so
+`assign_subclades_from_tree.py --refine-calls` takes the call of `augur clades` with the
+current `subclades.tsv` where it is a sublineage of the original call (H3N2 NA: 286 tips
+`B.4.2` -> `C`, the former `B.4.2.2`; H1N1pdm HA: 206 tips `D.3.1` -> `E` and its
+sublineages). The decisions are logged in `build/*/*/*/clade_subclade.log`.
+
+Compared with the released datasets (April 2026) on 4000-6000 sequences per dataset,
+the subclade calls differ only by nomenclature updates (renames, new designations such
+as `J.2.4.2`, `K.1`, `D.1.2`) and a few old strains; legacy clades agree for all H1N1pdm
+and all but 13 old H3N2 sequences, QC is unchanged. The `b` datasets lack
+`config/b/{outliers,reference_strains}.txt` and could not be built.
 
 ### Phase 5 — augur
 
