@@ -248,6 +248,28 @@ TreeTime 0.x of augur).
   inferred root, which is the reference of the node data, rather than to the reference of
   the build.
 
+- The reference sequence and genome annotation of the builds come from released
+  Nextclade datasets, fetched by `get_nextclade_dataset` into `nextclade_datasets/`
+  (`nextclade_dataset_by_lineage_and_segment` in the `Snakefile`). Where a segment has two
+  datasets, the one whose reference has the length of the nomenclature reference: H3N2
+  HA A/Wisconsin/67/2005 (1737 nt) rather than A/Darwin/6/2021; H1N1pdm HA has two
+  datasets of the nomenclature length, of which A/California/7/2009 is the nomenclature
+  reference itself. HA references are thus unchanged. The NA references change to those
+  of the datasets (H3N2 1439 instead of 1436, H1N1pdm 1433 instead of 1432, B/Vic 1401
+  instead of 1516 nt), which shifts nucleotide positions of NA but none configured: no
+  NA has excluded sites. Internal segments use the generic datasets of their lineage;
+  yam, which only has an HA dataset, uses those of all influenza B (`nextstrain/flu/b/`)
+  for NA and the internal segments. A build can name another dataset with
+  `nextclade_dataset` (`neut-library` uses A/Darwin/6/2021 and A/Wisconsin/588/2019), or
+  give a `reference` and `annotation` for a segment without a dataset; no profile needs
+  them any more. The nextclade dataset workflow keeps its own sources in
+  `nextclade/dataset_config/`.
+- `GENES` now covers the internal segments, with the coding regions that the datasets of
+  all lineages have (PB2, PB1, PA, NP, M1, NS1 and NEP): `PB1-F2` and `PA-X` are not in
+  every dataset, and the second MP protein is `M2` or `BM2`. Builds of internal segments
+  failed before with a `KeyError`, hidden by the missing references; `upload` dry runs
+  now. They have not been run, for lack of local data.
+
 Compared with augur on vic 6m (HA, NA): same topology and subclades, node dates equal
 in the median and within 0.15 years for 95% of the nodes, but the root of the old
 references 1.2-1.5 years earlier; nucleotide mutations identical for 98.7% of the nodes,
