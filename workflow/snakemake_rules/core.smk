@@ -366,13 +366,14 @@ def clock_rate(w):
 def clock_std_dev(w):
     return clock_rate(w)/5
 
+# TreeTime 1.0 (Rust); not on PATH as `treetime`, which is TreeTime 0.x of augur
+TREETIME = config.get("treetime", {}).get("executable", "treetime-rs")
+
 rule refine:
     message:
         """
-        Refining tree
-          - estimate timetree
-          - use {params.coalescent} coalescent timescale
-          - estimate {params.date_inference} node dates
+        Inferring the time tree with TreeTime
+          - {params.coalescent} coalescent timescale
           - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
         """
     input:
@@ -380,86 +381,120 @@ rule refine:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
+        # the time tree with branch lengths in years, and the same tree in substitutions
+        # per site (years times the clock rate), as augur refine writes it. TreeTime's
+        # ancestral normalizes its inferred model to a rate of 1 per unit branch length and
+        # cannot read the model of timetree, so it needs the rescaled tree; drop the
+        # rescaling once ancestral fits the rate or reads the timetree model
+        time_tree = build_dir + "/{build_name}/{segment}/tree_time.nwk",
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
-        coalescent = "const",
-        date_inference = "marginal",
+        coalescent = "opt",
         clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev,
         # tidy tree has collapsed the short branches already. The polytomies are where tips
         # branch off at a founder; resolving them would move such tips into the subtree of
-        # the lineage. Reoptimized branch lengths would let TreeTime collapse more branches,
-        # up to 6 substitutions long in practice, as it prunes branches below 0.1 substitutions
-        topology = lambda w: ("--keep-polytomies --branch-length-inference input"
-                              if uses_tidy_tree(w.build_name, w.segment) else "--stochastic-resolve"),
+        # the lineage. Reoptimized branch lengths would let TreeTime collapse more branches.
+        # Other trees get their polytomies resolved by the node dates.
+        topology = lambda w: ("--keep-polytomies --branch-length-mode input --no-collapse-short-branches"
+                              if uses_tidy_tree(w.build_name, w.segment) else ""),
         divergence_units = lambda wildcards: config.get("refine", {}).get("divergence_units", "mutations-per-site"),
+        treetime = TREETIME,
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
     log:
         "logs/refine_{build_name}_{segment}.txt"
+    threads: 2
     resources:
         mem_mb=2000,
         time="2:00:00",
     shell:
+        # the clock filter removes the flagged and the undated tips, as augur refine does
         """
-        augur refine \
+        {params.treetime} timetree \
             --tree {input.tree} \
             --alignment {input.alignment} \
             --metadata {input.metadata} \
-            --output-tree {output.tree} \
-            --output-node-data {output.node_data} \
+            --metadata-id-columns strain \
+            --date-column date \
             --keep-root \
             {params.topology} \
-            --timetree \
-            --use-fft \
-            --no-covariance \
             --clock-rate {params.clock_rate} \
             --clock-std-dev {params.clock_std_dev} \
             --coalescent {params.coalescent} \
-            --date-confidence \
-            --date-inference {params.date_inference} \
+            --confidence \
+            --clock-filter {params.clock_filter_iqd} \
+            --prune-filtered-tips \
+            --prune-undated-tips \
             --divergence-units {params.divergence_units} \
-            --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
+            --topology-order descendant-count \
+            --seed 1 \
+            --jobs {threads} \
+            --no-progress \
+            --output-tree-nwk {output.time_tree} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        python3 scripts/scale_time_tree.py \
+            --tree {output.time_tree} \
+            --node-data {output.node_data} \
+            --output {output.tree} 2>&1 | tee -a {log}
+        """
+
+# TreeTime reads the coding regions from CDS rows, the genemaps have gene rows
+rule annotation_with_cds:
+    input:
+        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+    output:
+        annotation = build_dir + "/{build_name}/{segment}/annotation_cds.gff",
+    shell:
+        """
+        python3 scripts/annotation_with_cds.py \
+            --annotation {input.annotation} \
+            --output {output.annotation}
         """
 
 rule ancestral:
-    message: "Reconstructing ancestral sequences and mutations"
+    message: "Reconstructing ancestral sequences and mutations with TreeTime"
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = aggregate_translations,
-        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+        annotation = build_dir + "/{build_name}/{segment}/annotation_cds.gff",
     output:
         node_data = build_dir + "/{build_name}/{segment}/muts.json",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
     params:
-        inference = "joint",
         genes = lambda w: GENES[w.segment],
         input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE.fasta",
         output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE_withInternalNodes.fasta",
+        treetime = TREETIME,
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/ancestral_{build_name}_{segment}.txt"
     log:
         "logs/ancestral_{build_name}_{segment}.txt"
+    threads: 2
     resources:
         mem_mb=2000
     shell:
+        # the translations of the tips come from the alignment by nextclade. Ambiguous tip
+        # states are resolved, which leaves changes to ambiguity codes out of the mutations,
+        # as augur ancestral does. The mutations of the root are relative to the inferred
+        # root sequence, which is the reference of the node data.
         """
-        augur ancestral \
+        {params.treetime} ancestral \
             --tree {input.tree} \
             --alignment {input.alignment} \
-            --root-sequence {input.reference} \
             --annotation {input.annotation} \
-            --genes {params.genes} \
+            --cds-selection {params.genes} \
             --translations "{params.input_translations}" \
+            --impute-missing-data \
+            --jobs {threads} \
+            --no-progress \
             --output-node-data {output.node_data} \
-            --output-translations "{params.output_translations}" \
-            --inference {params.inference} 2>&1 | tee {log} && touch {output.translations_done}
+            --output-translations "{params.output_translations}" 2>&1 | tee {log} && touch {output.translations_done}
         """
 
 rule traits:
