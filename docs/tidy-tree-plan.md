@@ -1,7 +1,8 @@
 # Tidy tree: status and plan
 
 Working notes for putting the lineage guided tree ("tidy tree") on a stable footing.
-Written 2026-11-24. Everything described here is on branches, nothing is pushed.
+Written 2026-11-24, updated 2026-11-25. The `founders` branches of the nomenclature
+repos are pushed; this repo's `WIP/tidy-tree` is not.
 
 Tidy tree builds a phylogeny by building a subtree per lineage of a hierarchical
 nomenclature and stitching the subtrees together along a guide tree, using the founder
@@ -17,7 +18,8 @@ to come from the tree structure rather than from signature SNPs in `clades.tsv`.
 | tidy tree script | `scripts/tidy_tree.py` (this repo, branch `WIP/tidy-tree`) |
 | phylo workflow rules | `workflow/snakemake_rules/core.smk` |
 | nextclade dataset workflow | `nextclade/Snakefile`, `nextclade/rules/common.smk` |
-| founders used today | `nextclade/config/{lineage}/{segment}/{ref}/founder_sequences.fasta` |
+| founders used by the phylo builds | `.auto-generated/founders.fasta` of the nomenclature repos, downloaded to `nomenclature/{lineage}/{segment}/founders.fasta` |
+| founders used by the nextclade datasets | `nextclade/config/{lineage}/{segment}/{ref}/founder_sequences*.fasta` |
 | nomenclature repos | `../clades/seasonal_*`, branch `founders` |
 | nomenclature scripts | `../clades/helper-scripts`, branch `founders` |
 | full sequence data used for testing | `../seasonal-flu-tidy-tree/nextclade/data` |
@@ -92,21 +94,46 @@ and 2 `tree` plus 2 `prune_reference` jobs.
 Also fixed: the stray `temp_tree.nwk` written into the working directory, and an
 unbound variable crash when a lineage ends up with no sequences.
 
+### This repo: tidy tree phase 1, phylo builds use the upstream founders
+
+The clades, subclades, guide tree and founders all come from one nomenclature repo per
+lineage and segment (`nomenclature_repo_by_lineage_and_segment` and `nomenclature_url`
+in the `Snakefile`), downloaded into `nomenclature/{lineage}/{segment}/`, which is not
+version controlled. Lineages without a repo (yam) copy their frozen definitions from
+`config/` into the same place, so all profiles point at `nomenclature/`. The branch is
+configurable via `nomenclature: {branch: ...}` and defaults to `founders` until that is
+merged, then it should become `main`. Snakemake records the download URL, so changing
+the branch re-downloads.
+`download_founders` strips the alignment gaps and `align` realigns the founders to the
+build reference with `--gap-alignment-side right`. `founder_refs` is gone. The download
+rules use `curl -fsSL`, so a missing file fails instead of writing a 404 page.
+
+`tidy_tree.py` now recognises founders against the full guide tree. A founder of a
+lineage outside the root lineage used to be counted as a sequence without a lineage
+call, i.e. dropped; it is now reported as unused.
+
+A root lineage without a founder, such as `unassigned`, is rooted on an outgroup:
+`--explicit-root` if given, otherwise the oldest exactly dated sequence of that lineage
+from `--metadata`. B/Vic HA 12y uses this, because `B` (V1B) is a sister of `A`; the
+reduced test build picks B/Netherlands/1000/1962 from the forced reference strains.
+
+Tested on the 12y `profiles/nextstrain` builds for h3n2, h1n1pdm and vic, HA and NA,
+subsampled to 300 sequences: all six run to auspice JSON, every sequence placed, every
+founder used. Subclade labels from `augur clades` on the tidy trees agree with
+nextclade for 99-100% of tips, except H3N2 NA (89%): 30 pre-nomenclature context
+sequences labelled `A` because the build is rooted at `A`, and 18 parent vs child calls
+(`B` vs `B.2`, `A.2.2` vs `A.2.2.1`), which phase 4 should remove.
+
 ## To do
 
-### Phase 1 — consume the upstream founders (next step)
+### Phase 1 leftovers
 
-Replace the per-reference founder copies in `nextclade/config/*/` with
-`.auto-generated/founders.fasta` fetched from the nomenclature repos, realigned to
-whichever reference the build uses (`nextclade run --gap-alignment-side right`, see the
-gotcha below). This retires `nextclade/update_founders.sh` and the hand renaming of
-`founder_sequences_new*.fasta`, and removes `founder_refs` from `core.smk` entirely
-rather than just relocating it. The `extract_clade_founders` rule should become a step
-that proposes an updated `founder` block upstream, ideally as a PR, instead of writing
-files that are moved by hand.
-
-Also still open from phase 0, and probably subsumed by this: move the `root_lineage`
-resolution table out of the top level `Snakefile` into config.
+- The nextclade dataset workflow still uses the per-reference copies in
+  `nextclade/config/*/`, including the per-CDS files it needs for `founderMuts`. Move it
+  to the upstream founders too, which retires `nextclade/update_founders.sh` and the
+  hand renaming of `founder_sequences_new*.fasta`. The `extract_clade_founders` rule
+  should become a step that proposes an updated `founder` block upstream, ideally as a
+  PR, instead of writing files that are moved by hand.
 
 ### Phase 2 — founder lifecycle
 
@@ -130,7 +157,7 @@ Split into a library and a CLI wrapper. Replace the recursion with loops so the
 and name escaping rather than the local `run_iqtree`. Build independent subtrees in
 parallel. Turn the pre-nomenclature context into an explicit `__context__` pseudo
 lineage above the guide tree root, built normally and rooted on the explicit outgroup,
-rather than the current `--explicit-root` special case. Choose the root lineage
+rather than the current `--explicit-root` and oldest sequence special cases. Choose the root lineage
 automatically as the MRCA of the lineages present in the sample, with a manual
 override, replacing the hard coded per-resolution table. Add small synthetic test cases.
 
@@ -153,8 +180,8 @@ Either `augur tree --method iqtree` with guide options (`--lineage-guide-tree`,
 
 ## Open decisions
 
-1. Will the nomenclature maintainers accept the `founder` block upstream, and should the
-   generated `founders.fasta` be committed or built in CI?
+1. Should the generated `founders.fasta` be committed or built in CI? (The `founder`
+   block itself will be accepted upstream.)
 2. Should founder tips stay in the nextclade reference trees? Useful as placement
    targets, noise in auspice.
 3. Should synthesised founders for brand new lineages be generated upstream at
