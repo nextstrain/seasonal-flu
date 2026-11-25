@@ -36,11 +36,6 @@
       "type": "continuous"
     },
     {
-      "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical"
-    },
-    {
       "key": "subclade",
       "title": "Subclade",
       "type": "categorical",
@@ -200,7 +195,6 @@
     "branch_label": "Subclade"
   },
   "filters": [
-    "clade_membership",
     "subclade",
     "region",
     "country",

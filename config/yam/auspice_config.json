@@ -23,11 +23,6 @@
       "type": "continuous"
     },
     {
-      "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical"
-    },
-    {
       "key": "cTiter",
       "title": "Antigenic advance (tree model)",
       "type": "continuous"
@@ -100,10 +95,9 @@
   ],
   "display_defaults": {
     "map_triplicate": true,
-    "color_by": "clade_membership"
+    "color_by": "region"
   },
   "filters": [
-    "clade_membership",
     "region",
     "country",
     "division",

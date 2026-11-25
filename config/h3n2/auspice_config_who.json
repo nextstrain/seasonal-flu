@@ -37,18 +37,6 @@
       "menuItem":"Host  vac. cov.",
       "type":"continuous"
     },
-    "clade_membership": {
-      "key": "clade_membership",
-      "legendTitle": "Clade",
-      "menuItem": "clade",
-      "type": "discrete"
-    },
-    "full_clade_membership": {
-      "key": "full_clade_membership",
-      "legendTitle": "Clade (long)",
-      "menuItem": "clade (long)",
-      "type": "discrete"
-    },
     "subclade": {
       "key": "subclade",
       "legendTitle": "Subclade",
@@ -118,14 +106,13 @@
   ],
   "defaults": {
     "mapTriplicate": true,
-    "colorBy": "clade_membership"
+    "colorBy": "region"
   },
   "maintainer": [
     "Jover Lee, Richard Neher, and Trevor Bedford",
     "http://bedford.io/"
   ],
   "filters": [
-    "clade_membership",
     "subclade",
     "region",
     "country",

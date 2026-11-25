@@ -25,12 +25,6 @@
       "menuItem":"country",
       "type":"discrete"
     },
-    "clade_membership": {
-      "key": "clade_membership",
-      "legendTitle": "Clade",
-      "menuItem": "clade",
-      "type": "discrete"
-    },
     "subclade": {
       "key": "subclade",
       "legendTitle": "Subclade",
@@ -88,14 +82,13 @@
   ],
   "defaults": {
     "mapTriplicate": true,
-    "colorBy": "clade_membership"
+    "colorBy": "region"
   },
   "maintainer": [
     "Jover Lee, Richard Neher, and Trevor Bedford",
     "http://bedford.io/"
   ],
   "filters": [
-    "clade_membership",
     "subclade",
     "region",
     "country",

@@ -482,28 +482,6 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
-# Determine clades with HA mutations.
-rule clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/ha/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
-    output:
-        node_data = build_dir + "/{build_name}/ha/clades.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/clades_{build_name}.txt"
-    log:
-        "logs/clades_{build_name}.txt"
-    shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
-
 # Determine subclades for na and ha, from their signature mutations.
 rule subclades_from_mutations:
     input:
@@ -531,20 +509,22 @@ rule subclades_from_mutations:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-# Determine subclades of a tidy tree from the lineages its tips were placed in. The
-# labels from signature mutations are computed alongside for comparison, which is
-# reported in the log.
+# Determine subclades of a tidy tree from the lineages its tips were placed in. With
+# tidy_tree.compare_subclades, the labels from signature mutations are computed alongside
+# and the disagreements reported in the log.
 rule subclades_from_tree:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
         guide_tree = get_guide_tree_name,
-        compare = build_dir + "/{build_name}/{segment}/subclades_mutations.json",
+        compare = lambda w: (build_dir + f"/{w.build_name}/{w.segment}/subclades_mutations.json"
+                             if config.get("tidy_tree", {}).get("compare_subclades", False) else []),
     output:
         node_data = build_dir + "/{build_name}/{segment}/subclades_tree.json",
     params:
         membership_name = "subclade",
         label_name = "Subclade",
+        compare = lambda w, input: f"--compare {input.compare}" if input.compare else "",
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/subclades_from_tree_{build_name}_{segment}.txt"
@@ -558,7 +538,7 @@ rule subclades_from_tree:
             --guide-tree {input.guide_tree} \
             --membership-name {params.membership_name} \
             --label-name {params.label_name} \
-            --compare {input.compare} \
+            {params.compare} \
             --output-node-data {output.node_data} 2>&1 | tee {log}
         """
 
@@ -574,32 +554,11 @@ rule subclades:
         cp {input.node_data} {output.node_data}
         """
 
-# Assign clade annotations to non-HA segments from HA.
-rule import_clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = build_dir + "/{build_name}/ha/clades.json",
-    output:
-        node_data = build_dir + "/{build_name}/{segment}/clades.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/import_clades_{build_name}_{segment}.txt"
-    log:
-        "logs/import_clades_{build_name}_{segment}.txt"
-    shell:
-        """
-        python3 scripts/import_tip_clades.py \
-            --tree {input.tree} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
-
 rule annotate_derived_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
         translations=build_dir + "/{build_name}/ha/translations.done",
-        clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json" if "subclades" in config["builds"][wildcards.build_name] else build_dir + "/{build_name}/ha/clades.json",
+        clades=build_dir + "/{build_name}/ha/subclades.json",
     output:
         haplotypes=build_dir + "/{build_name}/ha/derived_haplotypes.json",
     conda: "../envs/nextstrain.yaml"
@@ -610,8 +569,8 @@ rule annotate_derived_haplotypes:
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
         alignment=build_dir + "/{build_name}/ha/translations/HA1_withInternalNodes.fasta",
-        clade_label_attribute=lambda wildcards: "Subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade",
-        clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
+        clade_label_attribute="Subclade",
+        clade_node_attribute="subclade",
     shell:
         """
         python3 scripts/annotate_derived_haplotypes.py \

@@ -43,7 +43,6 @@ array-builds:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "nomenclature/{lineage}/ha/clades.tsv"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
