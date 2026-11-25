@@ -12,6 +12,7 @@ logs/
 figures/
 targets/
 benchmarks/
+__pycache__/
 nomenclature/
 nextclade_dataset/
 config/*/*/clades.tsv

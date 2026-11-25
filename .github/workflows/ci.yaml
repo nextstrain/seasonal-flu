@@ -12,3 +12,18 @@ jobs:
     uses: nextstrain/.github/.github/workflows/pathogen-repo-ci.yaml@v0
     with:
       build-args: --configfile profiles/ci/builds.yaml -p
+
+  test-tidy-tree:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: tidy-tree
+          create-args: >-
+            -c conda-forge -c bioconda
+            augur iqtree pytest
+      - run: python -m pytest tests/tidytree -v

@@ -2,41 +2,21 @@
 """
 Label the lineages of a tree from the lineages of its tips.
 
-Every tip carries its lineage as a node of the guide tree. A lineage comprises the tips
-of the lineage itself and of all lineages descending from it in the guide tree. Its
-label goes on the branch leading to the MRCA of these tips, and every node in the
-subtree below the MRCA is assigned to it. Lineages are processed from the root of the
-guide tree downwards, so a sublineage overwrites its parent within its own subtree.
-
-With --refine-calls, tips take a call from the current nomenclature where it is their
-lineage or a sublineage of it, which catches up calls made with an older nomenclature.
-
-Founder sequences kept as tips are named after their lineage and belong to it, but do
-not count as tips of their own. Three cases need care:
-
-- A lineage without tips of its own, only of sublineages, is not labelled. In tidy tree
-  it is represented only by its founder and has no node of its own.
-- A lineage whose stem has zero length was collapsed into a polytomy, which may also
-  hold subtrees made only of tips of ancestral lineages: they branch off at the founder.
-  The lineage is labelled on the polytomy all the same and those subtrees keep their own
-  label, unless an ancestral lineage is labelled on the same node, as it would then lose
-  its label.
-- If the subtree of the MRCA contains any other tips of other lineages, the lineage has
-  no node of its own. Then its largest subtrees that contain only its own tips are
-  labelled instead, so that it does not take over the rest of the subtree.
-
-Unlike labelling by signature mutations, this does not depend on the mutations
-reconstructed on the tree, only on the tips that are present, so it is robust to
-pruning tips and collapsing branches after the tree was built.
+The label of a lineage goes on the MRCA of its tips and those of its sublineages; see
+tidytree.labels for how lineages without a node of their own are handled. With
+--refine-calls, tips take a call from the current nomenclature where it is their lineage
+or a sublineage of it, which catches up calls made with an older nomenclature.
 
 The output has the format of augur clades.
 """
 import argparse
 import json
-from collections import Counter, defaultdict
 
 import pandas as pd
 from Bio import Phylo
+
+from tidytree.guide import GuideTree
+from tidytree.labels import compare, label_lineages, refine_calls
 
 
 def parse_arguments():
@@ -67,170 +47,37 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def guide_tree_ancestry(path):
-    """Parent of each lineage in the guide tree and the lineages in preorder."""
-    guide = Phylo.read(path, 'newick')
-    parent = {}
-    preorder = []
-    for clade in guide.find_clades(order='preorder'):
-        if clade.name:
-            preorder.append(clade.name)
-        for child in clade.clades:
-            if child.name:
-                parent[child.name] = clade.name
-    return parent, preorder
-
-
-def lineage_and_ancestors(lineage, parent):
-    while lineage is not None:
-        yield lineage
-        lineage = parent.get(lineage)
-
-
-def mrca(nodes, up, depth):
-    """Most recent common ancestor of nodes, given parent pointers and depths."""
-    nodes = iter(nodes)
-    ancestor = next(nodes)
-    for node in nodes:
-        while depth[node] > depth[ancestor]:
-            node = up[node]
-        while depth[ancestor] > depth[node]:
-            ancestor = up[ancestor]
-        while node is not ancestor:
-            node, ancestor = up[node], up[ancestor]
-    return ancestor
-
-
 def main():
     args = parse_arguments()
-
     tree = Phylo.read(args.tree, 'newick')
-    up, depth = {}, {tree.root: 0}
-    for node in tree.find_clades(order='preorder'):
-        for child in node.clades:
-            up[child] = node
-            depth[child] = depth[node] + 1
-
+    guide = GuideTree(args.guide_tree, args.default_lineage)
     placed = pd.read_csv(args.lineages, sep='\t', dtype=str)
     tip_lineage = dict(zip(placed['seq_id'], placed['lineage']))
-    parent, preorder = guide_tree_ancestry(args.guide_tree)
 
     if args.refine_calls:
-        calls = json.load(open(args.refine_calls))['nodes']
-        refined = Counter()
-        for name, lineage in tip_lineage.items():
-            call = calls.get(name, {}).get(args.refine_calls_membership)
-            if call and call != lineage and lineage in lineage_and_ancestors(parent.get(call), parent):
-                tip_lineage[name] = call
-                refined[(lineage, call)] += 1
+        calls = {name: data.get(args.refine_calls_membership)
+                 for name, data in json.load(open(args.refine_calls))['nodes'].items()}
+        refined = refine_calls(tip_lineage, calls, guide)
         print(f"Refined the lineage of {sum(refined.values())} tips with {args.refine_calls}:")
         for (lineage, call), n in refined.most_common():
             print(f"  {n} tips: {lineage} -> {call}")
 
-    tips = tree.get_terminals()
-    # founder sequences kept as tips are named after their lineage and belong to it
-    founders = {tip.name for tip in tips if tip.name not in tip_lineage and tip.name in set(preorder)}
-    tip_lineage.update({name: name for name in founders})
-    missing = [tip.name for tip in tips if tip.name not in tip_lineage]
-    if missing:
-        print(f"Warning: {len(missing)} tips have no lineage and count as {args.default_lineage} "
-              f"(e.g. {', '.join(missing[:5])})")
+    labelling = label_lineages(tree, tip_lineage, guide, args.default_lineage)
+    if labelling.missing:
+        print(f"Warning: {len(labelling.missing)} tips have no lineage and count as "
+              f"{args.default_lineage} (e.g. {', '.join(labelling.missing[:5])})")
+    labelling.print()
 
-    # the tips of each lineage, including those of its sublineages
-    members = defaultdict(list)
-    for tip in tips:
-        for lineage in lineage_and_ancestors(tip_lineage.get(tip.name), parent):
-            members[lineage].append(tip)
-
-    # number of tips below each node, for telling whether a subtree is pure
-    n_tips = {}
-    for node in tree.find_clades(order='postorder'):
-        n_tips[node] = 1 if node.is_terminal() else sum(n_tips[c] for c in node.clades)
-
-    membership = {node: args.default_lineage for node in tree.find_clades()}
-    labels = []   # (node, lineage), in the order lineages are assigned
-    split = {}    # lineage -> (tips of other lineages under its MRCA, number of subtrees)
-    basal = {}    # lineage -> tips of ancestral lineages branching off at its MRCA
-    labelled = set()
-    # lineages called for at least one tip; one represented only by its founder in tidy
-    # tree has no node of its own to label
-    called = {tip_lineage.get(tip.name, args.default_lineage) for tip in tips if tip.name not in founders}
-    for lineage in preorder:
-        if lineage == args.default_lineage or lineage not in called:
-            continue
-        own = members[lineage]
-        root = mrca(own, up, depth)
-        ancestors = set(lineage_and_ancestors(parent.get(lineage), parent))
-        # an ancestral lineage labelled on the same node would lose its label
-        at_founder = set() if root in labelled else {
-            child for child in root.clades
-            if all(tip_lineage.get(tip.name, args.default_lineage) in ancestors
-                   for tip in child.get_terminals())}
-        n_at_founder = sum(n_tips[child] for child in at_founder)
-        if n_tips[root] == len(own) + n_at_founder:
-            roots = [root]
-            if at_founder:
-                basal[lineage] = n_at_founder
-        else:
-            # count the tips of the lineage below each node of the MRCA subtree
-            n_own = Counter()
-            for tip in own:
-                node = tip
-                while True:
-                    n_own[node] += 1
-                    if node is root:
-                        break
-                    node = up[node]
-            roots, stack = [], [root]
-            while stack:
-                node = stack.pop()
-                if n_own[node] == n_tips[node]:
-                    roots.append(node)
-                elif n_own[node]:
-                    stack.extend(node.clades)
-            split[lineage] = (n_tips[root] - len(own), len(roots))
-        for subtree_root in roots:
-            labels.append((subtree_root, lineage))
-            labelled.add(subtree_root)
-            for child in subtree_root.clades:
-                if child not in at_founder:
-                    for node in child.find_clades():
-                        membership[node] = lineage
-            membership[subtree_root] = lineage
-
-    print("Lineages without a node of their own, labelled on their largest pure subtrees:")
-    for lineage, (n_other, n_subtrees) in split.items():
-        print(f"  {lineage}: {len(members[lineage])} tips in {n_subtrees} subtrees, "
-              f"{n_other} tips of other lineages under their MRCA")
-    if not split:
-        print("  none")
-
-    print("Lineages labelled on a polytomy that holds tips of ancestral lineages:")
-    for lineage, n in basal.items():
-        print(f"  {lineage}: {len(members[lineage])} tips, {n} tips of ancestral lineages")
-    if not basal:
-        print("  none")
-
-    # a branch keeps the label of the most specific lineage starting on it
-    branch_labels = {node.name: lineage for node, lineage in labels}
-    node_data = {
-        'nodes': {node.name: {args.membership_name: lineage} for node, lineage in membership.items()},
-        'branches': {name: {'labels': {args.label_name: lineage}} for name, lineage in branch_labels.items()},
-    }
+    node_data = labelling.node_data(args.membership_name, args.label_name)
     with open(args.output_node_data, 'w') as fh:
         json.dump(node_data, fh, indent=1)
 
     if args.compare:
-        other = json.load(open(args.compare))['nodes']
-        tip_names = {tip.name for tip in tips}
-        disagreements = Counter()
-        for name in tip_names:
-            ours = node_data['nodes'][name][args.membership_name]
-            theirs = other.get(name, {}).get(args.membership_name)
-            if ours != theirs:
-                disagreements[(ours, theirs)] += 1
-        n_agree = len(tip_names) - sum(disagreements.values())
-        print(f"\nTip labels agree with {args.compare} for {n_agree} of {len(tip_names)} tips")
+        tip_names = [tip.name for tip in tree.get_terminals()]
+        disagreements = compare(node_data, json.load(open(args.compare))['nodes'], tip_names,
+                                args.membership_name)
+        print(f"\nTip labels agree with {args.compare} for "
+              f"{len(tip_names) - sum(disagreements.values())} of {len(tip_names)} tips")
         for (ours, theirs), n in disagreements.most_common(20):
             print(f"  {n} tips: {ours} here, {theirs} there")
 

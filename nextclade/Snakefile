@@ -1,3 +1,5 @@
+import glob
+
 configfile: "config/config_dict.yaml"
 
 include: "rules/common.smk"
@@ -106,9 +108,13 @@ def get_explicit_root(w):
     else:
         return ""
 
+# the tidy tree scripts, so that editing them reruns the rules that use them
+TIDY_TREE_LIBRARY = sorted(glob.glob("../scripts/tidytree/*.py"))
+
 rule tidytree:
     message: "Building tree"
     input:
+        scripts = ["../scripts/tidy_tree.py", *TIDY_TREE_LIBRARY],
         alignment = rules.align.output.alignment,
         guide_tree = "data/{lineage}/{segment}/guide-tree_subclade.nwk",
         metadata = "data/{lineage}/{segment}/metadata.tsv",
@@ -241,6 +247,7 @@ rule subclades_from_tree:
     message:
         "Labelling {wildcards.clade} from the lineages of the tips"
     input:
+        scripts = ["../scripts/assign_subclades_from_tree.py", *TIDY_TREE_LIBRARY],
         tree=rules.refine.output.tree,
         lineages=rules.tidytree.output.lineages,
         guide_tree="data/{lineage}/{segment}/guide-tree_subclade.nwk",

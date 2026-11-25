@@ -16,6 +16,8 @@ output:
  - builds/{build_name}/{segment}/traits.json
 '''
 
+import glob
+
 build_dir = config.get("build_dir", "builds")
 
 GENES = {
@@ -228,9 +230,13 @@ def get_guide_tree_name(w):
     segment = w.segment
     return f"nomenclature/{lineage}/{segment}/subclade.nwk"
 
+# the tidy tree scripts, so that editing them reruns the rules that use them
+TIDY_TREE_LIBRARY = sorted(glob.glob("scripts/tidytree/*.py"))
+
 rule tidytree:
     message: "Building lineage guided tree"
     input:
+        scripts = ["scripts/tidy_tree.py", *TIDY_TREE_LIBRARY],
         alignment = rules.align.output.alignment,
         guide_tree = get_guide_tree_name,
         # the lineage of each sequence is the nextclade call that ingest adds to the metadata
@@ -249,7 +255,8 @@ rule tidytree:
         root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
         max_dropped_fraction = config.get("tidy_tree", {}).get("max_dropped_fraction", 0.05),
         unknown_lineage_policy = config.get("tidy_tree", {}).get("unknown_lineage_policy", "parent"),
-    threads: 1
+    # independent subtrees are built at the same time
+    threads: 4
     resources:
         mem_mb=2000,
         time="2:00:00",
@@ -514,6 +521,7 @@ rule subclades_from_mutations:
 # and the disagreements reported in the log.
 rule subclades_from_tree:
     input:
+        scripts = ["scripts/assign_subclades_from_tree.py", *TIDY_TREE_LIBRARY],
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
         guide_tree = get_guide_tree_name,
