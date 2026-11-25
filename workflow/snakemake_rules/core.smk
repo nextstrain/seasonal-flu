@@ -42,35 +42,20 @@ rule mask:
         """
 
 
-founder_refs = {
-    "h1n1pdm": {
-        "ha": "MW626062",
-        "na": "MW626056",
-    },
-    "h3n2": {
-        "ha": "EPI1857216",
-        "na": "EPI1857215",
-    },
-    "vic": {
-        "ha": "KX058884",
-        "na": "CY073894",
-    }
-}
-
 def uses_tidy_tree(build_name, segment):
     """
     Whether to build this segment with the lineage guided tidy tree.
 
-    Tidy tree needs a hierarchical lineage nomenclature, which exists for the HA and
-    NA segments of the lineages with a subclade guide tree. Everything else, in
-    particular the internal segments and the lineages without a nomenclature such as
-    yam, is built with augur tree.
+    Tidy tree needs a hierarchical lineage nomenclature with a guide tree and founder
+    sequences, which exists for the HA and NA segments of the lineages listed in
+    nomenclature_repo_by_lineage_and_segment. Everything else, in particular the
+    internal segments and the lineages without a nomenclature such as yam, is built
+    with augur tree.
     """
     if not config.get("tidy_tree", {}).get("enabled", True):
         return False
     lineage = config['builds'][build_name]['lineage']
-    return (segment in subclade_tree_url_by_lineage_and_segment.get(lineage, {})
-            and segment in founder_refs.get(lineage, {}))
+    return nomenclature_url(lineage, segment, "founders.fasta") is not None
 
 
 def get_founder_sequences(w):
@@ -78,7 +63,7 @@ def get_founder_sequences(w):
     segment = w.segment
     if not uses_tidy_tree(w.build_name, segment):
         return []
-    return f"nextclade/config/{lineage}/{segment}/{founder_refs[lineage][segment]}/founder_sequences.fasta"
+    return f"nomenclature/{lineage}/{segment}/founders.fasta"
 
 
 def get_raw_tree(w):
@@ -144,16 +129,40 @@ def aggregate_translations(wildcards):
                   segment=wildcards.segment,
                   gene=GENES[wildcards.segment])
 
-rule download_clade_tree:
+rule download_nomenclature:
     message:
-        "Downloading clade tree for {wildcards.lineage} from {params.source_nwk} -> {output}"
+        "Fetching {wildcards.file} of the {wildcards.lineage} {wildcards.segment} nomenclature -> {output}"
+    input:
+        # lineages without a nomenclature repository, such as yam, keep their frozen
+        # definitions in config
+        local = lambda w: [] if nomenclature_url(w.lineage, w.segment, w.file) else f"config/{w.lineage}/{w.segment}/{w.file}",
     output:
-        clade_nwk = "config/{lineage}/{segment}/subclades.nwk"
+        nomenclature_file = "nomenclature/{lineage}/{segment}/{file}"
+    wildcard_constraints:
+        file = r"clades\.tsv|subclades\.tsv|subclade\.nwk"
     params:
-        source_nwk=lambda wildcards: subclade_tree_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
+        url = lambda w: nomenclature_url(w.lineage, w.segment, w.file),
     shell:
         """
-        curl {params.source_nwk} > {output.clade_nwk}
+        if [ -n "{input.local}" ]; then
+            cp {input.local} {output.nomenclature_file}
+        else
+            curl -fsSL -o {output.nomenclature_file} "{params.url}"
+        fi
+        """
+
+rule download_founders:
+    message:
+        "Fetching lineage founders of the {wildcards.lineage} {wildcards.segment} nomenclature -> {output}"
+    output:
+        founders = "nomenclature/{lineage}/{segment}/founders.fasta"
+    params:
+        url = lambda w: nomenclature_url(w.lineage, w.segment, "founders.fasta"),
+    shell:
+        # The founders are aligned to the reference of the nomenclature. Remove the
+        # gaps so that align places them against the reference of the build.
+        """
+        curl -fsSL {params.url} | sed '/^>/!s/-//g' > {output.founders}
         """
 
 
@@ -212,7 +221,7 @@ def get_root_clade(w):
 def get_guide_tree_name(w):
     lineage = config['builds'][w.build_name]['lineage']
     segment = w.segment
-    return f"config/{lineage}/{segment}/subclades.nwk"
+    return f"nomenclature/{lineage}/{segment}/subclade.nwk"
 
 rule tidytree:
     message: "Building lineage guided tree"
@@ -448,17 +457,6 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
-rule download_clades:
-    output:
-        clades="config/{lineage}/{segment}/clades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: clade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.clades} "{params.url}"
-        """
-
 # Determine clades with HA mutations.
 rule clades:
     input:
@@ -479,17 +477,6 @@ rule clades:
             --mutations {input.muts} \
             --clades {input.clades} \
             --output {output.node_data} 2>&1 | tee {log}
-        """
-
-rule download_subclades:
-    output:
-        subclades="config/{lineage}/{segment}/subclades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.subclades} "{params.url}"
         """
 
 # Determine subclades for na and ha.

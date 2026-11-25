@@ -12,6 +12,7 @@ logs/
 figures/
 targets/
 benchmarks/
+nomenclature/
 
 # Sensitive environment variables
 environment*

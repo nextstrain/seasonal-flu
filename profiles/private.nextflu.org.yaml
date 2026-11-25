@@ -46,7 +46,7 @@ array-builds:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
+      clades: "nomenclature/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config_who.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true

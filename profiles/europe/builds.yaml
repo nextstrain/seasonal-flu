@@ -75,8 +75,8 @@ array-builds:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      clades: "nomenclature/{lineage}/ha/clades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -116,8 +116,8 @@ array-builds:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      clades: "nomenclature/{lineage}/ha/clades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -169,8 +169,8 @@ array-builds:
       reference: "config/{lineage}/{{segment}}/reference.fasta"
       annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      clades: "nomenclature/{lineage}/ha/clades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true

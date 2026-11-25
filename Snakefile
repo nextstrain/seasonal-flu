@@ -78,47 +78,32 @@ root_lineage = {
     },
 }
 
-clade_url_by_lineage_and_segment = {
+# Repositories of the hierarchical lineage nomenclature, which provide the clade and
+# subclade definitions, the subclade guide tree and the lineage founder sequences.
+nomenclature_repo_by_lineage_and_segment = {
     "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv",
+        "ha": "seasonal_A-H1N1pdm_HA",
+        "na": "seasonal_A-H1N1pdm_NA",
     },
     "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv",
+        "ha": "seasonal_A-H3N2_HA",
+        "na": "seasonal_A-H3N2_NA",
     },
     "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/clades.tsv",
+        "ha": "seasonal_B-Vic_HA",
+        "na": "seasonal_B-Vic_NA",
     }
 }
 
-subclade_url_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv",
-    },
-    "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv",
-    },
-    "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
-    }
-}
+# The founders are only on the `founders` branch until it is merged into main.
+nomenclature_branch = config.get("nomenclature", {}).get("branch", "founders")
 
-subclade_tree_url_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/subclade.nwk",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/main/.auto-generated/subclade.nwk",
-    },
-    "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/subclade.nwk",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/main/.auto-generated/subclade.nwk",
-    },
-    "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/subclade.nwk",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclade.nwk",
-    }
-}
+def nomenclature_url(lineage, segment, filename):
+    """URL of a generated file of the nomenclature, or None if the segment has none."""
+    repo = nomenclature_repo_by_lineage_and_segment.get(lineage, {}).get(segment)
+    if repo is None:
+        return None
+    return f"https://raw.githubusercontent.com/influenza-clade-nomenclature/{repo}/{nomenclature_branch}/.auto-generated/{filename}"
 
 include: "workflow/snakemake_rules/common.smk"
 
