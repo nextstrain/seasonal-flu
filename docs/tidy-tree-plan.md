@@ -2,7 +2,7 @@
 
 Working notes for putting the lineage guided tree ("tidy tree") on a stable footing.
 Written 2026-11-24, updated 2026-11-25. The `founders` branches of the nomenclature
-repos are pushed; this repo's `WIP/tidy-tree` is not.
+repos are pushed; this repo's `tidy-tree` is not.
 
 Tidy tree builds a phylogeny by building a subtree per lineage of a hierarchical
 nomenclature and stitching the subtrees together along a guide tree, using the founder
@@ -15,7 +15,7 @@ to come from the tree structure rather than from signature SNPs in `clades.tsv`.
 
 | what | where |
 |---|---|
-| tidy tree library | `scripts/tidytree/` (this repo, branch `WIP/tidy-tree`), tests in `tests/tidytree/` |
+| tidy tree library | `scripts/tidytree/` (this repo, branch `tidy-tree`), tests in `tests/tidytree/` |
 | command line wrappers | `scripts/tidy_tree.py`, `scripts/assign_subclades_from_tree.py` |
 | phylo workflow rules | `workflow/snakemake_rules/core.smk` |
 | nextclade dataset workflow | `nextclade/Snakefile`, `nextclade/rules/common.smk` |
@@ -66,7 +66,7 @@ Each repo has `.github/workflows/validate-founders.yml`: it checks out the siste
 
 ### This repo: tidy tree phase 0
 
-Two commits on `WIP/tidy-tree`:
+Two commits on `tidy-tree`:
 
 - `64191585` tidy-tree: account for every sequence instead of dropping some silently
 - `bdf51121` phylo: choose the tree method per build instead of always using tidy tree
@@ -220,7 +220,7 @@ the new `h1n1` lineage, like yam, has its definitions in `config/` and is copied
 
 ## Next steps (as of 2026-11-25)
 
-Everything up to here is committed on `WIP/tidy-tree`. The reduced 12y builds
+Everything up to here is committed on `tidy-tree`. The reduced 12y builds
 (300 sequences each) of `profiles/nextstrain` and the full 3y, 2y and 6m builds of
 `nextstrain-public` have been run before the merge of `master`, and every profile has
 been dry run after it. In order:
