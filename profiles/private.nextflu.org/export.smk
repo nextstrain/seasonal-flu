@@ -210,7 +210,7 @@ rule export_titers:
 rule export_entropy:
     input:
         aln = rules.align.output.alignment,
-        gene_map = lambda w: config['builds'][w.build_name]['annotation'],
+        gene_map = get_annotation,
     params:
         genes = lambda w: GENES[w.segment],
     output:

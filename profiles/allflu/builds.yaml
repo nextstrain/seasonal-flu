@@ -28,8 +28,6 @@ array-builds:
         - 60
     build_name: "{lineage}_{resolution}y"
     build_params:
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       auspice_config: "config/{lineage}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"

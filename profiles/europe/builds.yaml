@@ -32,8 +32,6 @@ array-builds:
       center: crick
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
@@ -72,8 +70,6 @@ array-builds:
       center: who
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
@@ -124,8 +120,6 @@ array-builds:
       center: who
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
       subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"

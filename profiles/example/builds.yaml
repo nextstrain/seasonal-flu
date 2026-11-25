@@ -22,8 +22,6 @@ recency:
 
 builds:
     "example_build":
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       lineage: "h3n2"
       auspice_config: "config/h3n2/{segment}/auspice_config.json"

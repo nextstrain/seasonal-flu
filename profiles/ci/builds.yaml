@@ -30,8 +30,6 @@ traits:
 builds:
     "ci_build":
       lineage: h3n2
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
       subclades: "nomenclature/h3n2/{segment}/subclades.tsv"
       min_date: "12Y"

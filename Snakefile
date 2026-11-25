@@ -49,6 +49,41 @@ def nomenclature_url(lineage, segment, filename):
         return None
     return f"https://raw.githubusercontent.com/influenza-clade-nomenclature/{repo}/{nomenclature_branch}/.auto-generated/{filename}"
 
+# Nextclade datasets that provide the reference sequence and genome annotation of the
+# builds. Where there are two datasets for a segment, the one whose reference has the
+# length of the reference of the nomenclature repository, so that positions match the
+# nomenclature: A/Wisconsin/67/2005 for H3N2 HA rather than A/Darwin/6/2021; for H1N1pdm
+# HA both have that length and A/California/7/2009 is the reference of the nomenclature.
+# A build can name another dataset with `nextclade_dataset`, or give a `reference` and
+# `annotation` for a segment without a dataset.
+INTERNAL_SEGMENTS = ["pb2", "pb1", "pa", "np", "mp", "ns"]
+nextclade_dataset_by_lineage_and_segment = {
+    "h3n2": {
+        "ha": "nextstrain/flu/h3n2/ha/CY163680",
+        "na": "nextstrain/flu/h3n2/na/EPI1857215",
+        **{segment: f"nextstrain/flu/h3n2/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    "h1n1pdm": {
+        "ha": "nextstrain/flu/h1n1pdm/ha/CY121680",
+        "na": "nextstrain/flu/h1n1pdm/na/MW626056",
+        **{segment: f"nextstrain/flu/h1n1pdm/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    "vic": {
+        "ha": "nextstrain/flu/vic/ha/KX058884",
+        "na": "nextstrain/flu/vic/na/CY073894",
+        **{segment: f"nextstrain/flu/vic/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    # the other segments of yam from the datasets of all influenza B
+    "yam": {
+        "ha": "nextstrain/flu/yam/ha/JN993010",
+        "na": "nextstrain/flu/b/na/CY073894",
+        **{segment: f"nextstrain/flu/b/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    "h1n1": {
+        segment: f"nextstrain/flu/h1n1/{segment}" for segment in ["ha", "na", *INTERNAL_SEGMENTS]
+    },
+}
+
 lcr_url_by_lineage_and_segment = {
     "h1n1pdm": {
         "ha": {

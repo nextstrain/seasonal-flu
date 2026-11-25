@@ -20,10 +20,61 @@ import glob
 
 build_dir = config.get("build_dir", "builds")
 
+# coding regions translated and reconstructed per segment. For the internal segments those
+# that the Nextclade datasets of all lineages have: PB1-F2 and PA-X are not in every one,
+# and the second protein of MP is M2 in influenza A but BM2 in the B/Vic dataset
 GENES = {
     'ha': ['SigPep', 'HA1', 'HA2'],
     'na': ['NA'],
+    'pb2': ['PB2'],
+    'pb1': ['PB1'],
+    'pa': ['PA'],
+    'np': ['NP'],
+    'mp': ['M1'],
+    'ns': ['NS1', 'NEP'],
 }
+
+def get_nextclade_dataset(w):
+    """Name of the Nextclade dataset of a build and segment, or None."""
+    build = config['builds'][w.build_name]
+    if build.get('nextclade_dataset'):
+        return build['nextclade_dataset'].format(segment=w.segment)
+    return nextclade_dataset_by_lineage_and_segment.get(build['lineage'], {}).get(w.segment)
+
+
+def _dataset_or_build_file(w, dataset_file, key):
+    dataset = get_nextclade_dataset(w)
+    if dataset:
+        return f"nextclade_datasets/{dataset}/{dataset_file}"
+    build = config['builds'][w.build_name]
+    if key not in build:
+        raise ValueError(f"Build {w.build_name} has no Nextclade dataset for {w.segment} and "
+                         f"no {key}: give one of nextclade_dataset or {key}")
+    return build[key].format(segment=w.segment)
+
+
+def get_reference(w):
+    """Reference sequence of a build and segment, from its Nextclade dataset."""
+    return _dataset_or_build_file(w, "reference.fasta", "reference")
+
+
+def get_annotation(w):
+    """Genome annotation of a build and segment, from its Nextclade dataset."""
+    return _dataset_or_build_file(w, "genome_annotation.gff3", "annotation")
+
+
+rule get_nextclade_dataset:
+    message:
+        "Downloading the Nextclade dataset {wildcards.dataset}"
+    output:
+        reference = "nextclade_datasets/{dataset}/reference.fasta",
+        annotation = "nextclade_datasets/{dataset}/genome_annotation.gff3",
+    wildcard_constraints:
+        dataset = r"nextstrain/flu/.+",
+    shell:
+        """
+        nextclade3 dataset get --name {wildcards.dataset} --output-dir nextclade_datasets/{wildcards.dataset}
+        """
 
 rule mask:
     input:
@@ -82,8 +133,8 @@ checkpoint align:
     input:
         sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
         founder_sequences= get_founder_sequences,
-        reference =  lambda w: config['builds'][w.build_name]['reference'],
-        annotation = lambda w: config['builds'][w.build_name]['annotation'],
+        reference = get_reference,
+        annotation = get_annotation,
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = directory(build_dir + "/{build_name}/{segment}/translations"),
@@ -201,7 +252,7 @@ rule tree:
 rule prune_reference:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk",
-        reference = lambda wildcards: config['builds'][wildcards.build_name]['reference'],
+        reference = get_reference,
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
     conda: "../envs/nextstrain.yaml"
@@ -442,10 +493,10 @@ rule refine:
             --output {output.tree} 2>&1 | tee -a {log}
         """
 
-# TreeTime reads the coding regions from CDS rows, the genemaps have gene rows
+# TreeTime reads the coding regions from CDS rows, the annotations have gene rows
 rule annotation_with_cds:
     input:
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+        annotation = get_annotation,
     output:
         annotation = build_dir + "/{build_name}/{segment}/annotation_cds.gff",
     shell:
