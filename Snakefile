@@ -65,7 +65,9 @@ root_lineage = {
             "2y": "C",
             "3y": "A.3",
             "6y": "A",
-            "12y": "A"
+            # B (V1B) is a sister of A, so the context above both is the root,
+            # rooted on its oldest sequence as it has no founder
+            "12y": "unassigned"
         },
         "na":{
             "6m": "B",

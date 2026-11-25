@@ -228,7 +228,8 @@ rule tidytree:
     input:
         alignment = rules.align.output.alignment,
         guide_tree = get_guide_tree_name,
-        metadata = lambda w:f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}/nextclade.tsv.xz"
+        metadata = lambda w:f"data/{config['builds'][w.build_name]['lineage']}/{w.segment}/nextclade.tsv.xz",
+        dates = build_dir + "/{build_name}/metadata.tsv",
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_tidy.nwk"
     conda: "../envs/nextstrain.yaml"
@@ -260,6 +261,7 @@ rule tidytree:
             --unknown-lineage-policy {params.unknown_lineage_policy} \
             --max-dropped-fraction {params.max_dropped_fraction} \
             {params.root_lineage} \
+            --metadata {input.dates} \
             --output-tree {output.tree} 2>&1 | tee {log}
         """
 

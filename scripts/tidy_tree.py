@@ -99,7 +99,17 @@ def parse_arguments():
         help='Keep founder sequences as leaves in the final tree'
     )
     parser.add_argument('--root-lineage', default=None, help='Root lineage for the tree')
-    parser.add_argument('--explicit-root', default=None, type=str, help='Sequence from the context on which to root the tree')
+    parser.add_argument('--explicit-root', default=None, type=str,
+                        help='Sequence on which to root the tree. If the root lineage has no founder '
+                             'and this is not given, the oldest sequence of the root lineage is used, '
+                             'which requires --metadata')
+    parser.add_argument('--metadata', default=None,
+                        help='Metadata with sampling dates, used to choose the oldest sequence of a '
+                             'root lineage without founder as outgroup')
+    parser.add_argument('--metadata-id-column', default='strain',
+                        help='Column of --metadata holding the sequence IDs (default: strain)')
+    parser.add_argument('--date-column', default='date',
+                        help='Column of --metadata holding the sampling dates (default: date)')
     parser.add_argument('--default-lineage', default='unassigned', help='Default lineage for sequences with lineage assigned that evaluates to false (emty string, None, 0, etc.)')
     parser.add_argument(
         '--ignore-missing-founders',
@@ -183,6 +193,36 @@ def parse_guide_tree(newick_path: str, root_lineage: str = None) -> LineageNode:
         return node
 
     return build_lineage_tree(tree.root, save_phylo_node=True)
+
+
+def oldest_sequence(
+    seq_ids: List[str],
+    metadata_path: str,
+    id_column: str = 'strain',
+    date_column: str = 'date',
+) -> Optional[str]:
+    """
+    The sequence with the earliest fully specified sampling date.
+
+    Used as outgroup for a root lineage without a founder, typically the context of
+    sequences that predate the nomenclature. Ambiguous dates such as 2015-XX-XX are
+    ignored, as they cannot be ordered reliably.
+    """
+    from augur.dates import get_numerical_date_from_value
+
+    df = pd.read_csv(metadata_path, sep='\t', usecols=[id_column, date_column], dtype=str)
+    dates = dict(zip(df[id_column], df[date_column]))
+    dated = []
+    for seq_id in seq_ids:
+        value = dates.get(seq_id)
+        if not isinstance(value, str):
+            continue
+        numdate = get_numerical_date_from_value(value, '%Y-%m-%d')
+        if isinstance(numdate, float):
+            dated.append((numdate, seq_id))
+    if not dated:
+        return None
+    return min(dated)[1]
 
 
 def enclosing_lineage(lineage: str, lineage_map: Dict[str, LineageNode]) -> Optional[str]:
@@ -596,11 +636,22 @@ def main():
         print(f"  Loaded {len(founders)} founder sequences")
     else:
         founders = {}
-        lineages_in_guide_tree = [clade.name for clade in lineage_root.tree.find_clades() if clade.name]
+        # recognise founders against the full guide tree, not just the part below the
+        # root lineage, so that founders of lineages outside it are not taken for
+        # sequences without a lineage assignment
+        all_lineages = {clade.name for clade in Phylo.read(args.guide_tree, 'newick').find_clades() if clade.name}
+        lineages_below_root = {clade.name for clade in lineage_root.tree.find_clades() if clade.name}
+        unused = []
         for seq_id, seq in sequences.items():
-            if seq_id in lineages_in_guide_tree:
+            if seq_id in lineages_below_root:
                 founders[seq_id] = seq
+            elif seq_id in all_lineages:
+                unused.append(seq_id)
         print(f"  gathered {len(founders)} founder sequences from alignment")
+        if unused:
+            print(f"  ignoring {len(unused)} founders of lineages outside the root lineage: "
+                  f"{', '.join(sorted(unused))}")
+        sequences = {seq_id: seq for seq_id, seq in sequences.items() if seq_id not in unused}
 
     print("Loading sequence-to-lineage assignments...")
     assignments = load_assignments(
@@ -620,6 +671,24 @@ def main():
         return 1
     assign_founders_to_lineages(lineage_root, founders, args.ignore_missing_founders)
 
+    # the subtree of each lineage is rooted on its founder; a root lineage without one,
+    # such as the context above the nomenclature, needs an outgroup instead
+    explicit_root = args.explicit_root
+    if lineage_root.founder_seq is None and explicit_root is None:
+        if not args.metadata:
+            print(f"Error: the root lineage '{lineage_root.name}' has no founder. Give an "
+                  f"outgroup with --explicit-root or dates with --metadata to use the "
+                  f"oldest sequence of the root lineage.")
+            return 1
+        explicit_root = oldest_sequence(lineage_root.sequences, args.metadata,
+                                        args.metadata_id_column, args.date_column)
+        if explicit_root is None:
+            print(f"Error: the root lineage '{lineage_root.name}' has no founder and none "
+                  f"of its sequences has a complete sampling date to root on.")
+            return 1
+        print(f"\nRoot lineage '{lineage_root.name}' has no founder, rooting on its oldest "
+              f"sequence {explicit_root}")
+
     # Build and stitch trees
     print("\nBuilding subtrees using IQ-TREE...")
     all_sequences = {**sequences, **founders}
@@ -631,7 +700,7 @@ def main():
         args.threads,
         args.iqtree_args,
         args.keep_founders,
-        args.explicit_root,
+        explicit_root,
         )
 
     if final_tree is None:
