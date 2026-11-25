@@ -227,16 +227,12 @@ been dry run after it. In order:
 1. **Review the NA founders** of H1N1pdm `C.5`/`C.5.3`/`C.3` and H3N2 `B.3`/`B.4` in the
    nomenclature repos (see above), and check the other NA repos for sibling founders
    that descend from one another.
-2. **Run a build with glycosylation, LBI, titer models and embeddings switched on.**
-   These read `tree.nwk`, which now keeps polytomies and IQ-TREE branch lengths for tidy
-   tree builds; LBI and the titer tree model are the most likely to react.
-3. **Finish phase 4.** Once the comparison logs look right, stop running
-   `subclades_from_mutations` for tidy tree builds. Consider deriving the HA clade labels
-   (`clades.json`) from the subclade labels via the `clade:` field of the subclade yamls
-   instead of `augur clades` with `clades.tsv`; check first that every subclade sets it.
-4. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
+2. **Run a build with embeddings switched on.** Glycosylation, LBI, the titer models,
+   MLR fitness and LCR sums ran on the 3y builds after the merge of `master`; embeddings
+   have not yet run on a tidy tree.
+3. **Merge `founders` into `main`** in the nomenclature repos, then change the default of
    `nomenclature_branch` in the `Snakefile` to `main`.
-5. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
+4. Phase 1 leftovers, phase 3, phase 2 below. For phase 3, also declare the scripts as
    inputs of their rules so that editing them reruns the rules, and turn the toy cases
    used so far (nested lineages, a single tip lineage, a misplaced tip, a collapsed stem)
    into tests of `assign_subclades_from_tree.py`.
@@ -289,7 +285,8 @@ What to look at:
   sequence assignment: `N of M sequences placed, 0 dropped, 0 excluded` is the expected
   outcome with the automatic root
 - `logs/subclades_from_tree_<build>_<segment>.txt`: lineages without a node of their own,
-  and tip labels that disagree with `augur clades`
+  and with `--config 'tidy_tree={"compare_subclades": true}'` the tip labels that
+  disagree with `augur clades`
 - the auspice JSONs: each lineage should carry its `Subclade` branch label once, except
   the lineages listed as without a node of their own
 
@@ -328,11 +325,34 @@ parallel. Add small synthetic test cases. (The pre-nomenclature context is now h
 by rooting at the guide tree root on its oldest sequence, which replaces the planned
 `__context__` pseudo lineage.)
 
-### Phase 4 — clade labels from the tree structure (done, in transition)
+### Phase 4 — clade labels from the tree structure (done)
 
-Remaining: drop `subclades_from_mutations` for tidy tree builds once the comparison has
-been watched for a while. HA clade labels (`clades.json`) still come from `augur clades`
-with `clades.tsv` and are copied to other segments by `import_clades`.
+Subclades of tidy tree builds come from the tree. `subclades_from_mutations` (`augur
+clades` with `subclades.tsv`) no longer runs for them; `tidy_tree.compare_subclades:
+true` brings it back and reports the disagreements in `logs/subclades_from_tree_*`.
+
+The older clades are no longer labelled, in any build: the `clades` and `import_clades`
+rules, `clades.json` and the `clades` build parameter are gone, as are the `Clade`
+colorings and filters of the auspice configs, which now default to the subclade (to the
+region where a build has no subclades). Recent clades correspond to subclades; the older
+ones are only defined by mutations. Derived haplotypes, which are relative to a lineage,
+are now computed only for builds with subclades.
+
+To bring the older clades back, colour the tips by a metadata column rather than label
+branches. Nextclade has them, but ingest does not pass them on yet: `short-clade`
+matches the former labels for all H3N2 and all but 7 old H1N1pdm tips of the 3y builds,
+`legacy-clade` for all B/Vic tips. The clade files in `config/yam`, `config/h1n1`,
+`config/h3n2/ha/emerging_clades.tsv` and `profiles/nextflu-private/vic/ha/clades.tsv`
+are unused now.
+
+### Nextclade dataset workflow
+
+Calls the same `tidy_tree.py`, so the collapsing of short branches, the branch lengths
+of small subtrees and the ladderizing apply there too, untested. Not adapted yet: it
+takes the founders from its per-reference copies (phase 1 leftovers), downloads its own
+guide tree, sets the root lineage in its config rather than choosing it automatically,
+keeps the founder tips (`--keep-founders`, open decision 2) and labels clades with
+`augur clades` rather than from the tree.
 
 ### Phase 5 — augur
 
