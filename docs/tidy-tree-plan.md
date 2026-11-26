@@ -280,6 +280,36 @@ seconds per tree; the titer models fit as before. Not yet run: builds without ti
 tree (yam, internal segments), which dry run. The nextclade dataset workflow still uses
 augur refine (divergence only) and augur ancestral.
 
+### All `nextstrain-public` builds on `tidy-tree-tt-rs` (2026-11-26)
+
+The 30 builds (H3N2, H1N1pdm, B/Vic; HA, NA; 6m to 12y), with all features but
+embeddings, run from subsampling to auspice JSON in 17.5 minutes on 16 cores; `refine`
+takes 7-28 seconds per tree, `tidytree` up to 4.5 minutes when all jobs compete. Every
+sequence is placed; lineages labelled in several pieces are the NA founder cases (H3N2
+`B.4`, H1N1pdm `C.5`) and the old reference strains of H1N1pdm NA `B.1` (90 tips in 44
+pieces in 12y).
+
+Two problems of the rooting showed up and are fixed:
+
+- A root lineage without a founder is rooted on the oldest dated sequence of the whole
+  tree. If that is a sequence of the root lineage itself, it is context from before the
+  nomenclature, as before (A/HongKong/1/1968, A/Perth/16/2009). Otherwise the sequences
+  of the root lineage are anomalies younger than the nomenclature, such as
+  A/SouthKorea/MDCK/2020 with an invalid date or A/SriLanka/220/2023 without a call, and
+  the tree is rooted on the founder of the child lineage that holds the oldest sequence.
+  This also covers a root lineage without sequences (B/Vic 12y HA: lineages `A` and `B`
+  below `unassigned`), whose subtree of two founders gets midpoint branch lengths.
+- The files of `--include` and `--exclude` in the filters are inputs of `subsample`, so
+  adding an outlier subsamples again; A/SouthKorea/MDCK/2020 is in `outliers.txt` since
+  August but stayed in older subsamples. `allflu` had its two include files in the
+  evaluated `subsampling_parameters`, which joined them into one path; they are build
+  parameters now.
+
+The phylo `Snakefile` has `clean` (outputs, logs, intermediate files) and `clean_all`
+(also the downloaded data, nomenclature, Nextclade datasets, LCR tables and Snakemake's
+records in `.snakemake/metadata` and `.snakemake/log`; the conda environments stay), as
+the nextclade Snakefiles have.
+
 ## Next steps (as of 2026-11-25)
 
 Everything up to here is committed on `tidy-tree`. The reduced 12y builds
