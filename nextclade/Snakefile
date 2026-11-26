@@ -391,6 +391,7 @@ rule make_dataset:
         """
 
 
+# Remove the outputs, logs and intermediate files of the workflow
 rule clean:
     shell:
         """
@@ -398,12 +399,12 @@ rule clean:
         """
 
 
+# Remove also the downloaded inputs, the released Nextclade datasets and Snakemake's
+# records of the removed files; the conda environments in .snakemake are kept.
 rule clean_all:
     shell:
         """
-        rm -rf build
-        rm -rf auspice
-        rm -rf datasets
-        rm -rf nextclade
-        rm -rf data/
+        rm -rf build auspice datasets
+        rm -rf data nextclade
+        rm -rf .snakemake/metadata .snakemake/log
         """

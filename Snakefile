@@ -165,3 +165,26 @@ if "custom_rules" in config:
 rule all:
     input:
         _get_build_outputs()
+
+
+# Remove the outputs, logs and intermediate files of the workflow. Snakemake's own state
+# in .snakemake stays: it holds the lock of the running Snakemake and the conda
+# environments.
+rule clean:
+    shell:
+        """
+        rm -rf builds results tables figures targets auspice auspice-who auspice_renamed logs benchmarks
+        """
+
+
+# Remove also the downloaded inputs: sequences, metadata and titers, the nomenclature, the
+# Nextclade datasets and the LCR tables, and Snakemake's records of the removed files. The
+# conda environments in .snakemake are kept, as they take long to rebuild.
+rule clean_all:
+    shell:
+        """
+        rm -rf builds results tables figures targets auspice auspice-who auspice_renamed logs benchmarks
+        rm -rf data nomenclature nextclade_datasets
+        rm -f config/*/*/lcr_weights.tsv config/*/*/lcr_windows.tsv
+        rm -rf .snakemake/metadata .snakemake/log
+        """
