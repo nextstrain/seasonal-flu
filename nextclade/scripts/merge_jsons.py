@@ -28,7 +28,68 @@ def get_clade_configs(name):
         "description": "Includes proposals of new subclades. These can change anytime.",
         "hideInWeb": True,
         "skipAsReference": True
+    },
+    "legacy-clade-yam": {
+        "name": "legacy-clade-yam",
+        "displayName": "Legacy B/Yam nomenclature",
+        "description": "Informal legacy nomenclature for B/Yamagata clades",
+        "hideInWeb": True,
+        "skipAsReference": True
+    },
+    "legacy-clade-vic": {
+        "name": "legacy-clade-vic",
+        "displayName": "Legacy B/Vic nomenclature",
+        "description": "Informal legacy nomenclature for B/Victoria clades",
+        "hideInWeb": True,
+        "skipAsReference": True
+    },
+    "lineage": {
+        "name": "lineage",
+        "displayName": "Influenza B lineage",
+        "description": "Classification of into B/Yamagata (now extinct), B/Victoria, or older strains.",
+        "hideInWeb": False,
+        "skipAsReference": True
     }}.get(name, {'name':name, "displayName":name, "description":""})
+
+default_CDS = {
+    "ha": "HA1",
+    "na": "NA",
+    "pb2": "PB2",
+    "pb1": "PB1",
+    "pa": "PA",
+    "np": "NP",
+    "mp": "M1",
+    "ns": "NS1"
+}
+
+def privateMutationQC(lineage, segment):
+    if lineage in ['h3n2', 'h1n1pdm'] and segment in ['ha', 'na']:
+        return {
+                 "enabled": True,
+                 "typical": 5,
+                 "cutoff": 15,
+                 "weightLabeledSubstitutions": 2,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
+    elif segment in ['pb1', 'pb2', 'pa']:
+        return {
+                 "enabled": True,
+                 "typical": 10,
+                 "cutoff": 50,
+                 "weightLabeledSubstitutions": 1,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
+    else:
+        return {
+                 "enabled": True,
+                 "typical": 10,
+                 "cutoff": 30,
+                 "weightLabeledSubstitutions": 1,
+                 "weightReversionSubstitutions": 1,
+                 "weightUnlabeledSubstitutions": 1
+                }
 
 
 if __name__=="__main__":
@@ -39,7 +100,7 @@ if __name__=="__main__":
     parser.add_argument("--reference-name", required=True, help="attribute info")
     parser.add_argument("--auspice-config", required=True, help="Auspice config JSON with coloring entry to have scale added to")
     parser.add_argument("--pathogen-jsons", nargs='+', required=True, help="name of the coloring field in the Auspice config JSON")
-    parser.add_argument("--clades", nargs="+", required=True, help="list of values to assign colors to")
+    parser.add_argument("--clades", nargs="+", required=False, help="list of values to assign colors to")
     parser.add_argument("--output-auspice", required=True, help="Auspice config JSON with scale added to the requested coloring")
     parser.add_argument("--output-pathogen", required=True, help="Auspice config JSON with scale added to the requested coloring")
     args = parser.parse_args()
@@ -52,8 +113,8 @@ if __name__=="__main__":
     with open(args.auspice_config) as fh:
         auspice_json = json.load(fh)
 
-    flu_type = {'h3n2':'A', 'h1n1pdm':'A', 'vic':'B', 'yam':'B'}[args.lineage]
-    lineage_name = {'h3n2':'H3N2', 'h1n1pdm':'H1N1pdm', 'vic':'Victoria', 'yam':'Yamagata'}[args.lineage]
+    flu_type = {'h3n2':'A', 'h1n1pdm':'A', 'vic':'B', 'yam':'B', 'b':'B', 'h1n1': 'A', 'h2n2': 'A'}[args.lineage]
+    lineage_name = {'h3n2':'H3N2', 'h1n1pdm':'H1N1pdm', 'vic':'Victoria', 'yam':'Yamagata', 'b':'(all)', 'h1n1': 'H1N1', 'h2n2': 'H2N2'}[args.lineage]
 
     pathogen_json['attributes'] = {"name": f"Influenza {flu_type} {lineage_name} {args.segment.upper()}",
                                    "segment": args.segment,
@@ -61,13 +122,25 @@ if __name__=="__main__":
                                    "reference name": args.reference_name}
 
     pathogen_json['cdsOrderPreference'] = {"ha": ["HA1", "HA2"], "na":["NA"]}.get(args.segment, [])
-    if args.segment in ['ha', 'na']:
-        pathogen_json['defaultCds'] = {"ha": "HA1", "na":"NA"}.get(args.segment)
+    pathogen_json['defaultCds'] = default_CDS[args.segment]
 
-    if len(args.clades):
+    if args.clades and len(args.clades)>0:
         auspice_json['extensions']['nextclade']["clade_node_attrs"] =  [
             get_clade_configs(c) for c in args.clades if c not in ['default']
         ]
+
+    pathogen_json['qc']['privateMutations'] = privateMutationQC(args.lineage, args.segment)
+
+    if args.segment in ['ha', 'na']:
+        auspice_json['display_defaults'] = {
+            "color_by": "clade_membership",
+            "branch_label": "clade"
+        }
+        auspice_json['filters'].extend(['clade_membership', 'subclade'])
+    else:
+        auspice_json['display_defaults'] = {
+            "color_by": "QC_status",
+        }
 
     with open(args.output_pathogen, 'w') as fh:
         json.dump(pathogen_json, fh, indent=2)

@@ -28,11 +28,8 @@ array-builds:
     build_params:
       lineage: "h3n2"
       auspice_name: "who-2023-09_2023-07-27_forecasts_h3n2_2y_ha_{replicate}"
-      reference: "config/h3n2/{{segment}}/reference.fasta"
-      annotation: "config/h3n2/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{{segment}}/exclude-sites.txt"
-      clades: "config/h3n2/ha/clades.tsv"
-      subclades: "config/h3n2/ha/subclades.tsv"
+      subclades: "nomenclature/h3n2/ha/subclades.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/ha/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_titer_models: true

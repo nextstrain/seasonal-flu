@@ -71,7 +71,7 @@ if __name__ == '__main__':
     }
 
     # Read collection.
-    collection_df = pd.read_csv(args.collection, sep="\t", usecols=args.groupings + ["reference_date", "clade_reference"])
+    collection_df = pd.read_csv(args.collection, sep="\t", usecols=args.groupings + ["reference_date"])
 
     # Map y-axis positions in the phylogeny to reference strains.
     collection_df["y_axis_position_in_phylogeny"] = collection_df["reference_strain"].map(y_axis_positions_per_tip_name)

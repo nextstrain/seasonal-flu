@@ -43,10 +43,7 @@ array-builds:
     build_name: "flu_{center}_{lineage}_{resolution}_{passage}_{assay}"
     build_params: &shared-build-params
       auspice_name: "flu_{center}_{lineage}_{{segment}}_{resolution}_{passage}_{assay}"
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
       auspice_config: "config/{lineage}/auspice_config_who.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true

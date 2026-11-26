@@ -1,0 +1,21 @@
+# Influenza B NS based on reference "B/Brisbane/60/2008"
+
+| Key                  | Value                |
+| -------------------- | -------------------- |
+| authors                | [Richard Neher](https://neherlab.org), [Nextstrain](https://nextstrain.org)                         |
+| name                 | Influenza B NS                   |
+| reference            | B/Brisbane/60/2008                      |
+| dataset path         | flu/b/ha/CY115155                     |
+| reference accession  | CY115155   |
+
+This dataset encompasses all Influenza B viruses in humans and is based on the B/Brisbane/60/2008 reference sequence.
+
+## Features
+This dataset supports
+
+ * Sequence QC
+ * Phylogenetic placement
+
+## What is Nextclade dataset
+
+Read more about Nextclade datasets in Nextclade documentation: https://docs.nextstrain.org/projects/nextclade/en/stable/user/datasets.html

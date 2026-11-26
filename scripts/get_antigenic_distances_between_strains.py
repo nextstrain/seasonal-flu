@@ -11,7 +11,6 @@ if __name__ == '__main__':
     parser.add_argument("--titer-model", required=True, help="titer model JSON with raw and normalized titers annotated in 'titers' key")
     parser.add_argument("--titers", required=True, help="raw titers table with information about the source of each titer")
     parser.add_argument("--tree", required=True, help="tree used to identify the given clades")
-    parser.add_argument("--clades", required=True, help="clade annotations in a node data JSON")
     parser.add_argument("--subclades", required=True, help="subclade annotations in a node data JSON")
     parser.add_argument("--emerging-haplotypes", required=True, help="emerging haplotype annotations in a node data JSON")
     parser.add_argument("--derived-haplotypes", required=True, help="derived haplotype annotations in a node data JSON")
@@ -115,21 +114,10 @@ if __name__ == '__main__':
 
     # Load node data (e.g., clade and haplotype).
     node_data = read_node_data([
-        args.clades,
         args.subclades,
         args.emerging_haplotypes,
         args.derived_haplotypes,
     ])
-
-    # Track all clade memberships in a new attribute to properly handle nested
-    # clades.
-    clades_by_name = defaultdict(set)
-    for node in tree.find_clades():
-        clades_by_name[node.name].add(node_data["nodes"][node.name]["clade_membership"])
-        if node.parent is not None:
-            clades_by_name[node.name].update(
-                clades_by_name[node.parent.name]
-            )
 
     # Calculate haplotype frequencies.
     frequency_by_haplotype = defaultdict(float)
@@ -141,7 +129,6 @@ if __name__ == '__main__':
     clade_table = pd.DataFrame([
         {
             "strain": strain,
-            "clade": strain_data.get("clade_membership", "unassigned"),
             "subclade": strain_data.get("subclade", "unassigned"),
             "emerging_haplotype": strain_data.get("emerging_haplotype", "other"),
             "derived_haplotype": strain_data.get("haplotype", "unassigned"),

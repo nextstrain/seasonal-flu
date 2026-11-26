@@ -1,0 +1,74 @@
+LOCUS       NC_007377               1027 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 7, complete
+            sequence.
+ACCESSION   NC_007377
+VERSION     NC_007377.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 1027)
+  AUTHORS   Ito,T., Gorman,O.T., Kawaoka,Y., Bean,W.J. and Webster,R.G.
+  TITLE     Evolutionary analysis of the influenza A virus M gene with
+            comparison of the M1 and M2 proteins
+  JOURNAL   J. Virol. 65 (10), 5491-5498 (1991)
+   PUBMED   1895397
+REFERENCE   2  (bases 1 to 1027)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from M63531.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..1027
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /db_xref="taxon:488241"
+                     /segment="7"
+                     /collection_date="1968"
+     CDS             join(26..51,740..1007)
+                     /ID="cds-YP_308853.1"
+                     /Dbxref="GenBank:YP_308853.1,GeneID:3655107"
+                     /Name="M2"
+                     /gbkey="CDS"
+                     /gene="M2"
+                     /locus_tag="M2"
+                     /product="membrane protein M2"
+                     /protein_id="YP_308853.1"
+     CDS             26..784
+                     /ID="cds-YP_308854.1"
+                     /Dbxref="GenBank:YP_308854.1,GeneID:3655108"
+                     /Name="M1"
+                     /gbkey="CDS"
+                     /gene="M1"
+                     /locus_tag="M1"
+                     /product="membrane protein M1"
+                     /protein_id="YP_308854.1"
+ORIGIN
+        1 agcaaaagca ggtagatatt gaaagatgag ccttctaacc gaggtcgaaa cgtacgttct
+       61 ctctatcgtc ccgtcaggcc ccctcaaagc cgagatcgca cagagacttg aagatgtctt
+      121 tgctgggaag aacacagatc ttgaggctct catggaatgg ctaaagacaa gaccaatcct
+      181 gtcacctctg actaagggga ttttgggatt tgtattcacg ctcaccgtgc caagtgagcg
+      241 aggactgcag cgtagacgct ttgtccaaaa tgccctcaat gggaatgggg atccaaataa
+      301 catggacaga gcagttaaac tgtatagaaa gcttaagagg gagataacat tccatggggc
+      361 caaagaagta gcgctcagtt attctgctgg tgcacttgcc agttgcatgg gcctcatata
+      421 caacaggatg ggggctgtga ccactgaagt ggcctttgcc gtggtatgtg caacctgtga
+      481 acagattgct gactcccagc ataggtctca caggcaaatg gtgacaacaa ccaatccact
+      541 aataagacat gagaacagaa tggttctggc cagcactaca gctaaggcta tggagcaaat
+      601 ggctggatcg agtgagcaag cagcagaggc catggaggtt gctagtcagg ccaggcaaat
+      661 ggtgcaggca atgagagcca ttgggactcc tcctagctcc agtgctggtc taaaagatga
+      721 tcttcttgaa aatttgcagg cctatcagaa acgaatgggg gtgcagatgc aacgattcaa
+      781 gtgaccccct tgttgttgct gcgagtatca ttgggatctt gcactttata ttgtggattc
+      841 ttgatcgtct ttttttcaaa tgcatttatc gcttctttaa acacggtctg aaaagagggc
+      901 cttctacgga aggagtacct gagtctatga gggaagaata tcgaaaggaa cagcagagtg
+      961 ctgtggatgc tgacgatagt cattttgtca gcatagagct ggagtaaaaa actaccttgt
+     1021 ttctact
+//

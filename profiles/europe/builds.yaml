@@ -32,11 +32,8 @@ array-builds:
       center: crick
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -65,6 +62,7 @@ array-builds:
         - h1n1pdm
         - vic
       resolution:
+        - 1
         - 2
         - 6
     build_name: "{lineage}_europe_{resolution}y"
@@ -72,11 +70,8 @@ array-builds:
       center: who
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -91,12 +86,12 @@ array-builds:
       exclude: "'config/{lineage}/outliers.txt'"
     subsamples:
       global:
-          filters: "--group-by region year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
+          filters: "--group-by region year month --subsample-max-sequences 2000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region=europe'"
           priorities: "titers"
       gishn:
-          filters: --group-by country year month --subsample-max-sequences 500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'gishn_sample=False'
+          filters: --group-by country year month --subsample-max-sequences 1000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'gishn_sample=False'
       country:
-          filters: "--group-by country year month --subsample-max-sequences 2500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
+          filters: "--group-by country year month --subsample-max-sequences 4500 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'region!=europe'"
           priorities: "titers"
   countries:
     patterns:
@@ -125,11 +120,8 @@ array-builds:
       center: who
       assay: hi
       passage: cell
-      reference: "config/{lineage}/{{segment}}/reference.fasta"
-      annotation: "config/{lineage}/{{segment}}/genemap.gff"
       tree_exclude_sites: "config/{lineage}/{{segment}}/exclude-sites.txt"
-      clades: "config/{lineage}/ha/clades.tsv"
-      subclades: "config/{lineage}/{{segment}}/subclades.tsv"
+      subclades: "nomenclature/{lineage}/{{segment}}/subclades.tsv"
       auspice_config: "config/{lineage}/{{segment}}/auspice_config.json"
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
@@ -154,7 +146,7 @@ array-builds:
           filters: "--group-by division year month --subsample-max-sequences 500 --min-date {min_date} --max-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
       country2:
-          filters: "--group-by division year month --subsample-max-sequences 1500 --min-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
+          filters: "--group-by division year month --subsample-max-sequences 3000 --min-date {recent_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True' 'country!={country}'"
           priorities: "titers"
 
 

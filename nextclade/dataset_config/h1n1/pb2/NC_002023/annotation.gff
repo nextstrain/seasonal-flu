@@ -1,0 +1,7 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_002023.1 1 2341
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=211044
+NC_002023.1	RefSeq	region	1	2341	.	+	.	ID=NC_002023.1:1..2341;Dbxref=taxon:211044;Name=1;collection-date=1934;country=Puerto Rico;gbkey=Src;genome=genomic;mol_type=viral cRNA;old-name=Influenza A virus (A/Puerto Rico/8/34(H1N1));segment=1;serotype=H1N1;strain=A/Puerto Rico/8/1934
+NC_002023.1	RefSeq	CDS	28	2307	.	+	0	Name=PB2;gbkey=CDS;gene=PB2;locus_tag=FLUAVs1gp1;protein_id=NP_040987.1;product=polymerase PB2;ID=cds-NP_040987.1;Dbxref=GOA:P03428,UniProtKB/Swiss-Prot:P03428,GenBank:NP_040987.1,GeneID:956536

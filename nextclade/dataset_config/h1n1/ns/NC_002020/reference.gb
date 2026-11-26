@@ -1,0 +1,92 @@
+LOCUS       NC_002020                890 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 8, complete
+            sequence.
+ACCESSION   NC_002020
+VERSION     NC_002020.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 247)
+  AUTHORS   Hall,R.M. and Air,G.M.
+  TITLE     Variation in nucleotide sequences coding for the N-terminal regions
+            of the matrix and nonstructural proteins of influenza A viruses
+  JOURNAL   J. Virol. 38 (1), 1-7 (1981)
+   PUBMED   7241645
+REFERENCE   2  (bases 1 to 890)
+  AUTHORS   Winter,G., Fields,S., Gait,M.J. and Brownlee,G.G.
+  TITLE     The use of synthetic oligodeoxynucleotide primers in cloning and
+            sequencing segment of 8 influenza virus (A/PR/8/34)
+  JOURNAL   Nucleic Acids Res. 9 (2), 237-245 (1981)
+   PUBMED   7208353
+REFERENCE   3  (bases 1 to 890)
+  AUTHORS   Baez,M., Taussig,R., Zazra,J.J., Young,J.F., Palese,P., Reisfeld,A.
+            and Skalka,A.M.
+  TITLE     Complete nucleotide sequence of the influenza A/PR/8/34 virus NS
+            gene and comparison with the NS genes of the A/Udorn/72 and
+            A/FPV/Rostock/34 strains
+  JOURNAL   Nucleic Acids Res. 8 (23), 5845-5858 (1980)
+   PUBMED   7465426
+REFERENCE   4  (bases 6 to 131)
+  AUTHORS   Air,G.M. and Hackett,J.A.
+  TITLE     Gene 8 of influenza virus: sequences of cDNA transcribed from the 3'
+            ends of viral RNA of influenza A and B strains
+  JOURNAL   Virology 103 (2), 291-298 (1980)
+   PUBMED   7385583
+REFERENCE   5  (bases 1 to 890)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from J02150.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..890
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934"
+                     /serotype="H1N1"
+                     /db_xref="taxon:211044"
+                     /segment="8"
+                     /geo_loc_name="Puerto Rico"
+                     /collection_date="1934"
+     CDS             join(27..56,529..864)
+                     /ID="cds-NP_040983.1"
+                     /Dbxref="GenBank:NP_040983.1,GeneID:956532"
+                     /Name="NEP"
+                     /gbkey="CDS"
+                     /gene="NEP"
+                     /locus_tag="NEP"
+                     /product="nonstructural protein 2"
+                     /protein_id="NP_040983.1"
+     CDS             27..719
+                     /ID="cds-NP_040984.1"
+                     /Dbxref="GenBank:NP_040984.1,GeneID:956533"
+                     /Name="NS1"
+                     /gbkey="CDS"
+                     /gene="NS1"
+                     /locus_tag="NS1"
+                     /product="nonstructural protein 1"
+                     /protein_id="NP_040984.1"
+ORIGIN
+        1 agcaaaagca gggtgacaaa gacataatgg atccaaacac tgtgtcaagc tttcaggtag
+       61 attgctttct ttggcatgtc cgcaaacgag ttgcagacca agaactaggt gatgccccat
+      121 tccttgatcg gcttcgccga gatcagaaat ccctaagagg aaggggcagc actcttggtc
+      181 tggacatcga gacagccaca cgtgctggaa agcagatagt ggagcggatt ctgaaagaag
+      241 aatccgatga ggcacttaaa atgaccatgg cctctgtacc tgcgtcgcgt tacctaaccg
+      301 acatgactct tgaggaaatg tcaagggaat ggtccatgct catacccaag cagaaagtgg
+      361 caggccctct ttgtatcaga atggaccagg cgatcatgga taaaaacatc atactgaaag
+      421 cgaacttcag tgtgattttt gaccggctgg agactctaat attgctaagg gctttcaccg
+      481 aagagggagc aattgttggc gaaatttcac cattgccttc tcttccagga catactgctg
+      541 aggatgtcaa aaatgcagtt ggagtcctca tcggaggact tgaatggaat gataacacag
+      601 ttcgagtctc tgaaactcta cagagattcg cttggagaag cagtaatgag aatgggagac
+      661 ctccactcac tccaaaacag aaacgagaaa tggcgggaac aattaggtca gaagtttgaa
+      721 gaaataagat ggttgattga agaagtgaga cacaaactga aggtaacaga gaatagtttt
+      781 gagcaaataa catttatgca agccttacat ctattgcttg aagtggagca agagataaga
+      841 actttctcat ttcagcttat ttaataataa aaaacaccct tgtttctact
+//

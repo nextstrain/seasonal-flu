@@ -32,6 +32,7 @@ B/NakhonPhanom/P3759/2022
 B/Netherlands/76/2014
 B/Netherlands/883/2016
 B/NewCaledonia/119/2015
+B/Norway/1007/2020
 B/Novosibirsk/RII-26903S/2020
 B/Philippines/28/2019
 B/RheinlandPfalz/43/2016

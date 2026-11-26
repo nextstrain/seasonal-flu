@@ -1,0 +1,99 @@
+LOCUS       CY115158                2358 bp    cRNA    linear   VRL 11-APR-2012
+DEFINITION  Influenza B virus (B/Brisbane/60/2008) polymerase PB2 (PB2) gene,
+            complete cds.
+ACCESSION   CY115158
+VERSION     CY115158.1
+KEYWORDS    STANDARD_DRAFT; VIRUS_AMBIGUITY.
+SOURCE      Influenza B virus (B/Brisbane/60/2008)
+  ORGANISM  Influenza B virus (B/Brisbane/60/2008)
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Betainfluenzavirus; Betainfluenzavirus influenzae.
+REFERENCE   1  (bases 1 to 2358)
+  AUTHORS   Wentworth,D.E., Dugan,V., Halpin,R., Lin,X., Bera,J., Ghedin,E.,
+            Fedorova,N., Overton,L., Tsitrin,T., Stockwell,T., Amedeo,P.,
+            Bishop,B., Chen,H., Edworthy,P., Gupta,N., Katzel,D., Li,K.,
+            Schobel,S., Shrivastava,S., Thovarai,V., Wang,S., Ramanunninair,M.,
+            Silverman,J., Devis,R., Phan,L., Le,J., Pokorny,B.A., Onodera,S.,
+            Fulvini,A.A., He,Y., Kilbourne,E.D., Bucher,D., Bao,Y., Sanders,R.,
+            Dernovoy,D., Kiryutin,B., Lipman,D.J. and Tatusova,T.
+  TITLE     The NIAID Influenza Genome Sequencing Project
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 2358)
+  CONSRTM   The NIAID Influenza Genome Sequencing Consortium
+  TITLE     Direct Submission
+  JOURNAL   Submitted (11-APR-2012) on behalf of JCVI/New York Medical
+            College/NCBI, National Center for Biotechnology Information, NIH,
+            Bethesda, MD 20894, USA
+COMMENT     This influenza isolate was sequenced as part of the NIAID Genome
+            Sequencing Center Influenza Genome Sequencing Project at the J.
+            Craig Venter Institute.  This sample is being submitted as a draft
+            sequence because after two rounds of targeted finishing some or all
+            segments do not meet either NCBI or J. Craig Venter Institute
+            standards of completeness due to low coverage, low quality,
+            ambiguities, frameshifts, gaps, or other problems.
+            This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+FEATURES             Location/Qualifiers
+     source          1..2358
+                     /organism="Influenza B virus (B/Brisbane/60/2008)"
+                     /mol_type="viral cRNA"
+                     /strain="B/Brisbane/60/2008"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:604436"
+                     /segment="2"
+                     /lab_host="Egg passage(s)"
+                     /geo_loc_name="Australia: Brisbane"
+                     /collection_date="2008"
+     CDS             4..2316
+                     /ID="cds-AFH57919.1"
+                     /Dbxref="NCBI_GP:AFH57919.1"
+                     /Name="PB2"
+                     /gbkey="CDS"
+                     /gene="PB2"
+                     /product="polymerase PB2"
+                     /protein_id="AFH57919.1"
+                     /locus_tag="PB2"
+ORIGIN
+        1 aagatgacat tggccaaaat tgaattgtta aaacaactgc taagggacaa tgaagccaaa
+       61 acagttttga agcaaacaac ggtagaccaa tataacataa taagaaaatt caatacatca
+      121 aggattgaaa agaatccttc actaaggatg aagtgggcca tgtgttctaa ttttcccttg
+      181 gctctaacca agggcgatat ggcaaacaga atccccttgg aatacaaagg gatacaactt
+      241 aaaacaaatg ctgaagacat aggaaccaaa ggccaaatgt gctcaatagc agcagttact
+      301 tggtggaata catatggacc aataggagat actgaaggtt tcgaaagggt ctacgaaagc
+      361 ttttttctca gaaaaatgag acttgacaac gccacttggg gccgaataac ttttggccca
+      421 gttgaaagag tgagaaaaag ggtactgcta aaccctctca ccaaggaaat gcctccggat
+      481 gaggcgagca atgtgataat ggaaatattg ttccctaaag aagcaggaat accaagagaa
+      541 tccacttgga tacataggga actgataaaa gaaaaaagag aaaaattgaa aggaacaatg
+      601 ataactccaa tcgtactggc atacatgctt gaaagagaac tggttgctcg aagaagattc
+      661 ttgccagtgg caggagcaac atcagctgag ttcatagaaa tgctacactg cttacaaggt
+      721 gaaaattgga gacaaatata tcacccagga gggaataaat taactgagtc caggtctcaa
+      781 tcaatgatag tagcttgtag aaaaataatc agaagatcaa tagtcgcttc aaacccactg
+      841 gagctagctg tagaaattgc aaacaagact gtgatagata ctgaaccttt aaagtcatgt
+      901 ctggcagcca trgacggagg tgatgtagct tgtgacataa taagagctgc attaggacta
+      961 aagatcagac aaagacaaag atttggacgg cttgagctaa aaagaatatc aggaagagga
+     1021 ttcaaaaatg atgaagaaat attaataggg aacggaacaa tacagaagat tggaatatgg
+     1081 gacggggaag aggagttcca tgtaagatgt ggtgaatgca ggggaatatt aaaaaagagt
+     1141 aaaatgaaac tggaaaaact actgataaat tcagccaaaa aggaggatat gagagattta
+     1201 ataatcttat gcatggtatt ttctcaagac actaggatgt tccaaggggt gagaggagaa
+     1261 ataaattttc ttaatcgagc aggccaactt ttatctccaa tgtaccaact ccaacgatat
+     1321 tttttgaata gaagcaacga cctttttgat caatgggggt atgaggaatc acccaaagca
+     1381 agtgaactac atgggataaa tgaatcaatg aatgcatctg actatacatt gaaagggatt
+     1441 gtagtgacaa gaaatgtaat tgacgacttt agctctattg aaacagaaaa agtatccata
+     1501 acaaaaaatc ttagtttaat aaaaaggact ggggaagtca taatgggagc taatgacgtg
+     1561 agtgaattag aatcacaagc acagctgatg ataacatatg atacacctaa aatgtgggaa
+     1621 atgggaacaa ccaaagaact ggtgcaaaac acttatcaat gggtgctaaa aaacttggtg
+     1681 acactgaagg ctcagtttct tctaggaaaa gaggacatgt tccaatggga tgcatttgaa
+     1741 gcatttgrga gcataattcc tcagaagatg gctggtcagt acagtggatt tgcaagagca
+     1801 gtgctcaaac aaatgagaga ccaggaggtt atgaaaactg accagttcat aaagttgttg
+     1861 cctttttgtt tctcaccacc aaaattaagg agcaatgggg agccttatca attcttaaaa
+     1921 cttgtgttga aaggaggagg ggaaaatttc atcgaagtaa ggaaagggtc ccctctattt
+     1981 tcctataatc cacaaacaga agtcctaact atatgcggca gaatgatgtc attaaaaggg
+     2041 aaaattgaag atgaagaaag gaatagatca atgggtaatg cagtattagc aggctttctc
+     2101 gttagtggca agtatgaccc agatcttgga gatttcaaaa ctattgaaga acttgaaaag
+     2161 ctgaaaccgg gggaaaaggc aaacatctta ctttatcaag gaaaaccagt taaagtagtt
+     2221 aaaaggaaaa ggtatagtgc tttgtccaat gacatttcac aaggaattaa gagacaaaga
+     2281 atgacagttg agtctatggg gtgggccttg agctaatata aatttatcca ttaattcaat
+     2341 gaacgcaatt gagtgaaa
+//

@@ -1,0 +1,7 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+##sequence-region NC_002019.1 1 1565
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=211044
+NC_002019.1	RefSeq	region	1	1565	.	+	.	ID=NC_002019.1:1..1565;Dbxref=taxon:211044;Name=5;gbkey=Src;genome=genomic;mol_type=viral cRNA;segment=5;strain=A/Puerto Rico/8/1934(H1N1)
+NC_002019.1	RefSeq	CDS	46	1542	.	+	0	Name=NP;gene=NP;gbkey=CDS;locus_tag=FLUAVs5gp1;protein_id=NP_040982.1;product=nucleoprotein;ID=cds-NP_040982.1;Dbxref=GenBank:NP_040982.1,GeneID:956531

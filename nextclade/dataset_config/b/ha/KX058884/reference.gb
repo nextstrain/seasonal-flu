@@ -1,0 +1,94 @@
+LOCUS       KX058884                1885 bp    cRNA    linear   VRL 08-MAY-2016
+DEFINITION  Influenza B virus (B/Brisbane/60/2008) segment 4 hemagglutinin (HA)
+            gene, complete cds.
+ACCESSION   KX058884
+VERSION     KX058884.1
+KEYWORDS    .
+SOURCE      Influenza B virus (B/Brisbane/60/2008)
+  ORGANISM  Influenza B virus (B/Brisbane/60/2008)
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Betainfluenzavirus; Betainfluenzavirus influenzae.
+REFERENCE   1  (bases 1 to 1885)
+  AUTHORS   Pirada,S., Lynne,W., Ivna,D.S., Rodney,D.S., Philip,D.R. and
+            Ethan,S.C.
+  TITLE     Antigenic Characterization of Influenza Viruses Produced Using
+            Synthetic DNA and Novel Backbones
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 1885)
+  AUTHORS   Suphaphiphat,P.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (11-APR-2016) Research, Seqirus Inc., 45 Sidney Street,
+            Cambridge, MA 02139, USA
+COMMENT     ##Assembly-Data-START##
+            Sequencing Technology :: Sanger dideoxy sequencing
+            ##Assembly-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..1885
+                     /organism="Influenza B virus (B/Brisbane/60/2008)"
+                     /mol_type="viral cRNA"
+                     /strain="B/Brisbane/60/2008"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:604436"
+                     /segment="4"
+                     /geo_loc_name="Australia"
+                     /collection_date="2008"
+     CDS             34..78
+                     /ID="cds-ANC28539.1"
+                     /Dbxref="NCBI_GP:ANC28539.1"
+                     /Name="SigPep"
+                     /gbkey="CDS"
+                     /gene="SigPep"
+                     /locus_tag="SigPep"
+     CDS             79..1119
+                     /ID="cds-ANC28539.1"
+                     /Dbxref="NCBI_GP:ANC28539.1"
+                     /Name="HA1"
+                     /gbkey="CDS"
+                     /gene="HA1"
+                     /product="hemagglutinin"
+                     /protein_id="ANC28539.1"
+                     /locus_tag="HA1"
+     CDS             1120..1791
+                     /ID="cds-ANC28539.1"
+                     /Dbxref="NCBI_GP:ANC28539.1"
+                     /Name="HA2"
+                     /gbkey="CDS"
+                     /gene="HA2"
+                     /product="hemagglutinin"
+                     /protein_id="ANC28539.1"
+                     /locus_tag="HA2"
+ORIGIN
+        1 agcagaagca gagcattttc taatatccac aaaatgaagg caataattgt actactcatg
+       61 gtagtaacat ccaatgcaga tcgaatctgc actgggataa catcgtcaaa ctcaccacat
+      121 gtcgtcaaaa ctgctactca aggggaggtc aatgtgactg gtgtaatacc actgacaaca
+      181 acacccacca aatctcattt tgcaaatctc aaaggaacag aaaccagggg gaaactatgc
+      241 ccaaaatgcc tcaactgcac agatctggac gtagccttgg gcagaccaaa atgcacgggg
+      301 aaaataccct cggcaagagt ttcaatactc catgaagtca gacctgttac atctgggtgc
+      361 tttcctataa tgcacgacag aacaaaaatt agacagctgc ctaaccttct ccgaggatac
+      421 gaacatatca ggttatcaac ccataacgtt atcaatgcag aaaatgcacc aggaggaccc
+      481 tacaaaattg gaacctcagg gtcttgccct aacattacca atggaaacgg atttttcgca
+      541 acaatggctt gggccgtccc aaaaaacgac aaaaacaaaa cagcaacaaa tccattaaca
+      601 atagaagtac catacatttg tacagaagga gaagaccaaa ttaccgtttg ggggttccac
+      661 tctgacaacg aggcccaaat ggcaaagctc tatggggact caaagcccca gaagttcacc
+      721 tcatctgcca acggagtgac cacacattac gtttcacaga ttggtggctt cccaaatcaa
+      781 acagaagacg gaggactacc acaaagtggt agaattgttg ttgattacat ggtgcaaaaa
+      841 tctgggaaaa caggaacaat tacctatcaa aggggtattt tattgcctca aaaggtgtgg
+      901 tgcgcaagtg gcaggagcaa ggtaataaaa ggatccttgc ctttaattgg agaagcagat
+      961 tgcctccacg aaaaatacgg tggattaaac aaaagcaagc cttactacac aggggaacat
+     1021 gcaaaggcca taggaaattg cccaatatgg gtgaaaacac ccttgaagct ggccaatgga
+     1081 accaaatata gacctcctgc aaaactatta aaggaaaggg gtttcttcgg agctattgct
+     1141 ggtttcttag aaggaggatg ggaaggaatg attgcaggtt ggcacggata cacatcccat
+     1201 ggggcacatg gagtagcggt ggcagcagac cttaagagca ctcaagaggc cataaacaag
+     1261 ataacaaaaa atctcaactc tttgagtgag ctggaagtaa agaatcttca aagactaagc
+     1321 ggtgccatgg atgaactcca caacgaaata ctagaactag atgagaaagt ggatgatctc
+     1381 agagctgata caataagctc acaaatagaa ctcgcagtcc tgctttccaa tgaaggaata
+     1441 ataaacagtg aagatgaaca tctcttggcg cttgaaagaa agctgaagaa aatgctgggc
+     1501 ccctctgctg tagagatagg gaatggatgc tttgaaacca aacacaagtg caaccagacc
+     1561 tgtctcgaca gaatagctgc tggtaccttt gatgcaggag aattttctct ccccaccttt
+     1621 gattcactga atattactgc tgcatcttta aatgacgatg gattggataa tcatactata
+     1681 ctgctttact actcaactgc tgcctccagt ttggctgtaa cactgatgat agctatcttt
+     1741 gttgtttata tggtctccag agacaatgtt tcttgctcca tctgtctata agggaagtta
+     1801 agccctgtat tttcctttat tgtagtgctt gtttacttgt tgtcattaca aagaaacgtt
+     1861 attgaaaaat gctcttgtta ctact
+//

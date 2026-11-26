@@ -36,11 +36,6 @@
       "type": "continuous"
     },
     {
-      "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical"
-    },
-    {
       "key": "subclade",
       "title": "Subclade",
       "type": "categorical",
@@ -260,7 +255,6 @@
     "tip_label": "gisaid_strain"
   },
   "filters": [
-    "clade_membership",
     "subclade",
     "region",
     "country",

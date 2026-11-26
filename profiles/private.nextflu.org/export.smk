@@ -210,7 +210,7 @@ rule export_titers:
 rule export_entropy:
     input:
         aln = rules.align.output.alignment,
-        gene_map = lambda w: config['builds'][w.build_name]['annotation'],
+        gene_map = get_annotation,
     params:
         genes = lambda w: GENES[w.segment],
     output:
@@ -252,7 +252,6 @@ def _get_node_data_for_report_export(wildcards):
         rules.annotate_epiweeks.output.node_data,
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.scores.output.node_data,
     ]

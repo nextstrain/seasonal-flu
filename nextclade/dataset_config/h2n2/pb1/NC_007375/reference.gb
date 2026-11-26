@@ -1,0 +1,97 @@
+LOCUS       NC_007375               2341 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Korea/426/1968(H2N2)) segment 2, complete
+            sequence.
+ACCESSION   NC_007375
+VERSION     NC_007375.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Korea/426/1968(H2N2))
+  ORGANISM  Influenza A virus (A/Korea/426/1968(H2N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2341)
+  AUTHORS   Kawaoka,Y., Krauss,S. and Webster,R.G.
+  TITLE     Avian-to-human transmission of the PB1 gene of influenza A viruses
+            in the 1957 and 1968 pandemics
+  JOURNAL   J. Virol. 63 (11), 4603-4608 (1989)
+   PUBMED   2795713
+REFERENCE   2  (bases 1 to 2341)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (30-AUG-2005) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from M25935.
+            Draft entry and computer readable sequence for [1] kindly submitted
+            by Y.Kawaoka, 06-JUL-1989 for release after publication.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2341
+                     /organism="Influenza A virus (A/Korea/426/1968(H2N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Korea/426/1968"
+                     /serotype="H2N2"
+                     /db_xref="taxon:488241"
+                     /segment="2"
+     CDS             25..2298
+                     /ID="cds-YP_308851.1"
+                     /Dbxref="GenBank:YP_308851.1,GeneID:3655105"
+                     /Name="PB1"
+                     /gbkey="CDS"
+                     /gene="PB1"
+                     /locus_tag="PB1"
+                     /product="PB1 polymerase subunit"
+                     /protein_id="YP_308851.1"
+     CDS             119..391
+                     /ID="cds-YP_308877.1"
+                     /Dbxref="GenBank:YP_308877.1,GeneID:3655104"
+                     /Name="PB1-F2"
+                     /gbkey="CDS"
+                     /gene="PB1-F2"
+                     /locus_tag="PB1-F2"
+                     /product="PB1-F2 protein"
+                     /protein_id="YP_308877.1"
+ORIGIN
+        1 agcaaaagca ggcaaaccat ttgaatggat gtcaatccga ccttactttt cttgaaagtt
+       61 ccagcgcaaa atgccataag tactacattc ccttatactg gagatcctcc atacagccat
+      121 gggacaggaa caggatacac catggacaca gtcaacagaa cacatcaata ttcagaaaag
+      181 gggaagtgga caacaaacac ggaaactgga gcgccccaac ttaacccaat tgatggacca
+      241 ctacctgagg acaatgaacc aagtggatat gcacaaacag actgcgtcct ggaagcaatg
+      301 gctttccttg aggaatcaca cccaggaatc tttgaaaatt cgtgtcttga aacgatggaa
+      361 gttattcaac aaacaagagt ggacaaactg acccaaggtc gtcagaccta tgactggaca
+      421 ttgaacagaa atcagccggc tgcaactgcg ctagccaaca ctatagaggt cttcagatcg
+      481 aatggactga cagctaatga gtcgggaagg ctaatagatt tcctcaagga tgtgatagaa
+      541 tcaatggata aagaggagat ggaaataaca acacacttcc aaagaaaaag aagagtaaga
+      601 gacaacatga ccaagaaaat ggtcacacaa cgaacaatag gaaagaagaa gcaaagattg
+      661 aacaagagaa gctatctgat aagagcactg acattgaaca caatgactaa agatgcagag
+      721 agaggtaaat taaaaagaag agcaattgca acacccggta tgcagatcag agggttcgtg
+      781 cactttgtcg aaacactagc gagaaatatt tgtgagaaac ttgaacagtc tgggcttccg
+      841 gttggaggta atgaaaagaa ggctaaacta gcaaatgttg ttagaaaaat gatgactaat
+      901 tcacaagaca cagagctctc tttcacaatt actggagaca acaccaaatg gaatgagaat
+      961 caaaatcctc gagtgtttct ggcgatgata acatacatca caagaaatca acctgaatgg
+     1021 tttagaaacg tcctgagcat tgcacccata atgttctcaa ataaaatggc tagactaggg
+     1081 aaaggttaca tgttcgaaag caagagcatg aagctccgaa cacaaatacc agcagaaatg
+     1141 ctagcaagta ttgacctgaa atactttaat gaatcaacca gaaagaaaat tgagaaaata
+     1201 aggcctctcc taatagatgg cacagtctca ttgagtcctg gaatgatgat gggcatgttc
+     1261 aacatgctaa gtacagtctt aggagtctca atcctgaatc tcgggcaaaa gaaatacacc
+     1321 aaaacnacat actggtggga cggactccaa tcctctgatg acttcgctct catagtgaat
+     1381 gcaccaaatc atgagggaat acaagcaggg gtgaatagat tctacagaac ctgcaagcta
+     1441 gtcggaatca atatgagcaa aaagaagtcc tacataaata ggacagggac atttgaattc
+     1501 acaagctttt tctatcgcta tggatttgta gccaatttta gcatggagct gcccagcttt
+     1561 ggagtgtctg gaattaatga atcggctgat atgagcattg gggtaacagt gataaagaac
+     1621 aatatgataa ataatgacct tgggccagca acagcccaaa tggctcttca actattcatc
+     1681 aaagactaca gatacacgta ccggtgccac agaggggaca cacaaattca gacaaggaga
+     1741 tcattcgagc taaagaagct gtgggagcaa acccgctcaa aggcaggact tttggtgtcg
+     1801 gatggaggat caaacttata caatatccgg aatctccaca ttccagaagt ctgcttgaaa
+     1861 tgggagctaa tggatgaaga ctatcagggg aggctttgta atcccctgaa tccatttgtc
+     1921 agtcataagg aaattgagtc tgtaaacaat gctgtggtaa tgccagctca cggtccagcc
+     1981 aagagcatgg aatatgatgc tgttgctact acacactcct ggacccctaa gaggaaccgc
+     2041 tccattctca acacaagcca aaggggaatt cttgaagatg aacagatgta tcagaagtgt
+     2101 tgcaatctat ttgagaaatt cttccctagc agttcgtaca ggagaccagt tggaatttcc
+     2161 agcatggtgg aggccatggt gtctagggct cggattgatg cacggattga cttcgagtct
+     2221 ggacggatta agaaagagga gttcgctgag atcatgaaga tctgttccac cattgaagag
+     2281 ctcagacggc aaaaatagtg aatttagctt gtccttcatg aaaaaatgcc ttgtttctac
+     2341 t
+//

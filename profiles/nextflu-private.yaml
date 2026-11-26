@@ -30,11 +30,8 @@ recency:
 builds:
   h1n1pdm_2y_titers:
     lineage: h1n1pdm
-    reference: "config/h1n1pdm/{segment}/reference.fasta"
-    annotation: "config/h1n1pdm/{segment}/genemap.gff"
     tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
-    clades: "config/h1n1pdm/ha/clades.tsv"
-    subclades: "config/h1n1pdm/{segment}/subclades.tsv"
+    subclades: "nomenclature/h1n1pdm/{segment}/subclades.tsv"
     auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "6Y"
@@ -84,11 +81,8 @@ builds:
           filters: --query "(is_titer_reference_strain == True)" --min-date {reference_min_date} --exclude {exclude}
   h3n2_2y_titers:
     lineage: "h3n2"
-    reference: "config/h3n2/{segment}/reference.fasta"
-    annotation: "config/h3n2/{segment}/genemap.gff"
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-    clades: "config/h3n2/ha/clades.tsv"
-    subclades: "config/h3n2/{segment}/subclades.tsv"
+    subclades: "nomenclature/h3n2/{segment}/subclades.tsv"
     auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
     vaccines: "config/h3n2/vaccine.json"
     enable_glycosylation: true
@@ -131,11 +125,8 @@ builds:
     subsamples: *titers-subsampling-scheme
   vic_2y_titers:
     lineage: vic
-    reference: "config/vic/{segment}/reference.fasta"
-    annotation: "config/vic/{segment}/genemap.gff"
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
-    clades: "profiles/nextflu-private/vic/ha/clades.tsv"
-    subclades: "config/vic/{segment}/subclades.tsv"
+    subclades: "nomenclature/vic/{segment}/subclades.tsv"
     auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "6Y"

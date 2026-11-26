@@ -1,152 +1,94 @@
+import glob
+
 configfile: "config/config_dict.yaml"
 
-import datetime
-
-
-wildcard_constraints:
-    flu_type="[A-Za-z0-9]+",
-    lineage=r"h3n2|h1n1pdm|vic|yam",
-    segment = r"pb2|pb1|pa|ha|np|na|mp|ns",
-    reference="[^_/]+",
-
-
-def genes(w):
-    return {
-        'ha': ["SigPep", "HA1", "HA2"],
-        'na': ["NA"]
-    }.get(w.segment, [])
+include: "rules/common.smk"
 
 def all_builds(w):
     builds = []
     for lineage in config["builds"]:
+        if getattr(w, "lineage", None) and lineage!=w.lineage:
+            continue
         for segment in config["builds"][lineage]:
             for ref in config["builds"][lineage][segment]["refs"]:
                 builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
-                builds.append(f"build/{lineage}/{segment}/{ref}/founder_sequences.translations.done")
     return builds
 
 rule all:
     input:
         all_builds
 
-
-rule download_sequences:
-    output:
-        sequences="data/{lineage}_{segment}.fasta",
-    params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/{segment}/sequences.fasta.xz",
-    shell:
-        """
-        aws s3 cp {params.s3_path} - | xz -c -d > {output.sequences}
-        """
-
-rule download_metadata:
-    output:
-        metadata="data/{lineage}_{segment}_metadata-raw.tsv",
-    params:
-        s3_path="s3://nextstrain-data-private/files/workflows/seasonal-flu/{lineage}/metadata.tsv.xz",
-    shell:
-        """
-        aws s3 cp {params.s3_path} - | xz -c -d > {output.metadata}
-        """
-
-rule get_nextclade_dataset:
-    output:
-        "nextclade/{lineage}_{segment}/reference.fasta",
-    threads: 1
-    shell:
-        """
-        nextclade3 dataset get -n flu_{wildcards.lineage}_{wildcards.segment} --output-dir nextclade/{wildcards.lineage}_{wildcards.segment}
-        """
-
-rule run_nextclade:
+rule all_lineage:
     input:
-        sequences="data/{lineage}_{segment}.fasta",
-        reference="nextclade/{lineage}_{segment}/reference.fasta",
+        all_builds
     output:
-        "data/{lineage}_{segment}_nextclade.tsv",
-    threads: 2
+        "build/{lineage}.done"
     shell:
         """
-        nextclade3 run -j {threads} -D nextclade/{wildcards.lineage}_{wildcards.segment} \
-                  {input.sequences} --quiet --output-tsv {output}
+        touch {output}
         """
 
-def get_clade_columns(w):
-    return ",".join(["seqName", "qc.overallStatus"] + {
-        'h3n2_ha':["clade", "subclade"],
-        'h1n1pdm_ha':["clade", "subclade"],
-        'vic_ha':["clade", "subclade"]
-    }.get(f"{w.lineage}_{w.segment}", ["clade"]))
 
-rule combined_with_metadata:
-    input:
-        nextclade="data/{lineage}_{segment}_nextclade.tsv",
-        metadata="data/{lineage}_{segment}_metadata-raw.tsv"
-    output:
-        metadata="data/{lineage}_{segment}_metadata.tsv"
-    params:
-        nextclade_columns=get_clade_columns
-    shell:
-        """
-        tsv-select -H -f {params.nextclade_columns} {input.nextclade} \
-            | csvtk join -t --fields "strain;seqName" {input.metadata} /dev/stdin > {output.metadata}
-        """
-
+def nomenclature_url(w, path):
+    """URL of a file of the nomenclature repository, on the configured branch."""
+    path = path.format(branch=config["nomenclature_branch"])
+    return path if w.lineage == 'yam' else config['clade_repo'] + path
 
 rule download_clades:
     message:
         "Downloading clade definitions for {wildcards.lineage} from {params.source_tsv} -> {output}"
     output:
-        clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}_raw.tsv"
+        clade_tsv = "data/{lineage}/{segment}/{reference}/raw_{clade}.tsv"
     params:
-        source_tsv=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url'],
+        source_tsv = lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['url']),
     shell:
         """
-        curl {params.source_tsv} > {output.clade_tsv}
+        curl -fsSL {params.source_tsv} > {output.clade_tsv}
         """
 
 rule download_clade_tree:
     message:
-        "Downloading clade tree for {wildcards.lineage} from {params.source_tsv} -> {output}"
+        "Downloading clade tree for {wildcards.lineage} from {params.source_nwk} -> {output}"
     output:
-        clade_tsv = "data/{clade}_{lineage}_{segment}_{reference}.nwk"
+        guide_tree = "data/{lineage}/{segment}/guide-tree_{clade}.nwk"
     params:
-        source_tsv=lambda w: (config['clade_repo'] if w.lineage!='yam' else '') + config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url'],
+        source_nwk=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["clade_systems"][w.clade]['tree-url']),
     shell:
         """
-        curl {params.source_tsv} > {output.clade_tsv}
+        curl -fsSL {params.source_nwk} > {output.guide_tree}
         """
 
 rule download_changelog_clades:
     message:
         "Downloading nomenclature changelog for {wildcards.lineage} from {params.source} -> {output}"
     output:
-        changelog = "data/{lineage}_{segment}_changelog.md"
+        changelog = "data/{lineage}/{segment}/changelog.md"
     params:
-        source=lambda w: config['clade_repo'] + config["builds"][w.lineage][w.segment]["changelog"],
+        source=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["changelog"]),
     shell:
         """
-        curl {params.source} > {output.changelog}
+        curl -fsSL {params.source} > {output.changelog}
         """
 
-rule download_changelog_dataset:
+rule download_founders:
     message:
-        "Downloading previous dataset changelog for {wildcards.lineage} from {params.source} -> {output}"
+        "Downloading lineage founders for {wildcards.lineage} {wildcards.segment} from {params.source} -> {output}"
     output:
-        changelog = "data/{lineage}_{segment}_{reference}_dataset-changelog.md"
+        founders = "data/{lineage}/{segment}/founders.fasta"
     params:
-        source=lambda w: f"{config['dataset_repo']}/{w.lineage}/{w.segment}/{w.reference}/CHANGELOG.md",
+        source=lambda w: nomenclature_url(w, config["builds"][w.lineage][w.segment]["founders"]),
     shell:
+        # The founders are aligned to the reference of the nomenclature. Remove the
+        # gaps so that align places them against the reference of the dataset.
         """
-        curl {params.source} > {output.changelog}
+        curl -fsSL {params.source} | sed '/^>/!s/-//g' > {output.founders}
         """
 
 rule offset_clades:
     input:
-        rules.download_clades.output,
+        "data/{lineage}/{segment}/{reference}/raw_{clade}.tsv"
     output:
-        "data/{clade}_{lineage}_{segment}_{reference}.tsv",
+        "data/{lineage}/{segment}/{reference}/shifted_{clade}.tsv",
     params:
         offset=lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference][
             "clade_offset"
@@ -160,150 +102,71 @@ rule offset_clades:
             >{output}
         """
 
-rule subsample:
-    input:
-        sequences="data/{lineage}_{segment}.fasta",
-        metadata="data/{lineage}_{segment}_metadata.tsv",
-        include_strains="../config/{lineage}/reference_strains.txt",
-        nextclade_include="dataset_config/{lineage}/includes.txt",
-        exclude="../config/{lineage}/outliers.txt",
-    output:
-        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample_tmp.fasta",
-        sampled_strains="build/{lineage}/{segment}/{reference}/subsample_tmp.txt",
-    params:
-        filter_arguments=lambda w: config["builds"][w.lineage][w.segment]["refs"][
-            w.reference
-        ]["filter"],
-        reference_EPI_ISL=lambda w: config["builds"][w.lineage][w.segment]["refs"][
-            w.reference
-        ]["reference_EPI_ISL"]
-    shell:
-        """
-        augur filter \
-            --sequences {input.sequences} \
-            --metadata {input.metadata} \
-            --exclude {input.exclude} \
-            --include {input.include_strains} {input.nextclade_include} \
-            --include-where gisaid_epi_isl={params.reference_EPI_ISL} \
-            --exclude-where qc.overallStatus='bad' \
-            {params.filter_arguments} \
-            --output-sequences {output.sampled_sequences} \
-            --output-strains {output.sampled_strains}
-        """
+def get_explicit_root(w):
+    if "root" in config["builds"][w.lineage][w.segment]:
+        return f" --explicit-root '{config['builds'][w.lineage][w.segment]['root']}'"
+    else:
+        return ""
 
-rule subsample_harddate:
-    input:
-        sequences=rules.subsample.output.sampled_sequences,
-        metadata="data/{lineage}_{segment}_metadata.tsv"
-    output:
-        sampled_sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
-        sampled_strains="build/{lineage}/{segment}/{reference}/subsample.txt",
-    params:
-        hardmin=lambda w: config["builds"][w.lineage][w.segment]["refs"][
-            w.reference
-        ]["hardmin_date"],
-    shell:
-        """
-        augur filter \
-            --sequences {input.sequences} \
-            --metadata {input.metadata} \
-            --min-date {params.hardmin} \
-            --output-sequences {output.sampled_sequences} \
-            --output-strains {output.sampled_strains}
-        """
+# the tidy tree scripts, so that editing them reruns the rules that use them
+TIDY_TREE_LIBRARY = sorted(glob.glob("../scripts/tidytree/*.py"))
 
-rule align:
+rule tidytree:
+    message: "Building tree"
     input:
-        sequences="build/{lineage}/{segment}/{reference}/subsample.fasta",
-        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
+        scripts = ["../scripts/tidy_tree.py", *TIDY_TREE_LIBRARY],
+        alignment = rules.align.output.alignment,
+        guide_tree = "data/{lineage}/{segment}/guide-tree_subclade.nwk",
+        metadata = "data/{lineage}/{segment}/metadata.tsv",
     output:
-        alignment="build/{lineage}/{segment}/{reference}/align.aligned.fasta"
-    params:
-        outdir=lambda w: f"build/{w.lineage}/{w.segment}/{w.reference}/aligned.gene.{{cds}}.fasta",
-        nextclade_bin = "nextclade3"
+        tree="build/{lineage}/{segment}/{reference}/tidytree.nwk",
+        lineages="build/{lineage}/{segment}/{reference}/tidy_lineages.tsv",
     threads: 2
+    params:
+        clade_name = lambda w: 'subclade' if w.segment=='ha' and w.lineage not in ['b', 'vic'] else 'clade',
+        explicit_root = get_explicit_root,
+    resources:
+        mem_mb=16000,
+        time="2:00:00",
     shell:
         """
-        {params.nextclade_bin} run \
-            --jobs={threads} \
-            --input-ref {input.reference} \
-            --input-annotation {input.annotation} \
-            --gap-alignment-side right \
-            --output-translations {params.outdir} \
-            --output-fasta {output.alignment} \
-            {input.sequences} \
-            2>&1
-        """
-
-
-rule tree:
-    input:
-        alignment=rules.align.output.alignment,
-    output:
-        tree="build/{lineage}/{segment}/{reference}/tree_raw.nwk",
-    threads: 2
-    shell:
-        """
-        augur tree \
+        python3 ../scripts/tidy_tree.py \
             --alignment {input.alignment} \
-            --output {output.tree} \
-            --nthreads {threads} \
-            --tree-builder-args '-ninit 10 -n 4 -czb' \
-            > /dev/null
+            --guide-tree {input.guide_tree} \
+            --lineage-assignments {input.metadata} \
+            --seq-id-column strain \
+            --lineage-column {params.clade_name} \
+            --threads {threads} \
+            --keep-founders \
+            --iqtree-args '-ninit 10 -n 4 -czb' \
+            --ignore-missing-founders \
+            {params.explicit_root} \
+            --metadata {input.metadata} \
+            --output-lineages {output.lineages} \
+            --output-tree {output.tree}
         """
 
-# root using dates in treetime, use 1500 as sequence length (good enough, doesn't matter)
-rule root:
+rule sanitize:
     input:
-        tree=rules.tree.output.tree,
-        metadata="data/{lineage}_{segment}_metadata.tsv",
+        tree=rules.tidytree.output.tree,
     output:
-        tree="build/{lineage}/{segment}/{reference}/tree_rooted.nwk",
+        tree="build/{lineage}/{segment}/{reference}/tree_clean.nwk",
     params:
-        outdir = "build/{lineage}/{segment}/{reference}/tt_out"
+        prune_length = 0.03
     shell:
         """
-        treetime clock \
-            --tree {input.tree} \
-            --sequence-length 1500 \
-            --dates {input.metadata} \
-            --clock-filter 3 \
-            --clock-filter-method local \
-            --outdir {params.outdir}
-        cp {params.outdir}/rerooted.newick {output.tree}
+        python scripts/root_and_sanitize.py \
+            --input-tree {input.tree} \
+            --prune-length {params.prune_length} \
+            --output-tree {output.tree}
         """
-
-rule prune_outliers:
-    input:
-        tree = rules.root.output.tree
-    output:
-        tree="build/{lineage}/{segment}/{reference}/tree_rooted_pruned.nwk"
-    params:
-        outliers = "build/{lineage}/{segment}/{reference}/tt_out/outliers.tsv"
-    run:
-        from pathlib import Path
-        import pandas as pd
-        from Bio import Phylo
-
-        T = Phylo.read(input.tree, 'newick')
-
-        if Path(params.outliers).exists():
-            outliers = pd.read_csv(params.outliers, sep='\t', index_col=0)
-
-            for n in outliers.index:
-                if outliers.loc[n,"given_date"]>2020 and ('-egg' not in n):
-                    print("prune", n)
-                    T.prune(n)
-
-        Phylo.write(T, output.tree, "newick")
 
 # refine while keeping the root
 rule refine:
     input:
-        tree=rules.prune_outliers.output.tree,
+        tree=rules.sanitize.output.tree,
         alignment=rules.align.output.alignment,
-        metadata="data/{lineage}_{segment}_metadata.tsv"
+        metadata="data/{lineage}/{segment}/metadata.tsv"
     output:
         tree="build/{lineage}/{segment}/{reference}/tree.nwk",
         node_data="build/{lineage}/{segment}/{reference}/branch_lengths.json",
@@ -319,7 +182,6 @@ rule refine:
             --keep-root \
             --divergence-unit mutations-per-site
         """
-
 
 rule ancestral:
     message:
@@ -352,6 +214,67 @@ rule ancestral:
             --output-node-data {output.node_data}
         """
 
+
+
+# Clade systems labelled from the lineages of the tips of the tidy tree rather than from
+# signature mutations. The others (legacy clades, short clades, proposals) are only
+# defined by mutations.
+SUBCLADE_SYSTEMS = ["subclade", "subclade_backcompat"]
+
+# The lineage calls of the metadata come from the released dataset and know nothing of
+# lineages designated or renamed since. Calls by signature mutations with the current
+# nomenclature refine them where they are a sublineage of the original call.
+rule subclades_from_mutations:
+    message:
+        "Calling subclades by their signature mutations"
+    input:
+        tree=rules.refine.output.tree,
+        muts=rules.ancestral.output.node_data,
+        clades="data/{lineage}/{segment}/{reference}/shifted_subclade.tsv",
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/subclades_mutations.json",
+    shell:
+        """
+        augur clades --tree {input.tree} \
+            --mutations {input.muts} \
+            --clades {input.clades} \
+            --membership-name subclade \
+            --label-name subclade \
+            --output-node-data {output.node_data}
+        """
+
+rule subclades_from_tree:
+    message:
+        "Labelling {wildcards.clade} from the lineages of the tips"
+    input:
+        scripts = ["../scripts/assign_subclades_from_tree.py", *TIDY_TREE_LIBRARY],
+        tree=rules.refine.output.tree,
+        lineages=rules.tidytree.output.lineages,
+        guide_tree="data/{lineage}/{segment}/guide-tree_subclade.nwk",
+        calls=rules.subclades_from_mutations.output.node_data,
+    output:
+        node_data="build/{lineage}/{segment}/{reference}/clade_{clade}.json",
+    log:
+        "build/{lineage}/{segment}/{reference}/clade_{clade}.log",
+    wildcard_constraints:
+        clade="|".join(SUBCLADE_SYSTEMS),
+    params:
+        membership_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade_membership'),
+        label_key= lambda w: config["builds"][w.lineage][w.segment]["clade_systems"][w.clade].get('key', 'clade')
+    shell:
+        """
+        python3 ../scripts/assign_subclades_from_tree.py \
+            --tree {input.tree} \
+            --lineages {input.lineages} \
+            --guide-tree {input.guide_tree} \
+            --membership-name {params.membership_key} \
+            --label-name {params.label_key} \
+            --refine-calls {input.calls} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
+ruleorder: subclades_from_tree > clades
+
 rule clades:
     message:
         "Adding internal clade labels"
@@ -374,35 +297,29 @@ rule clades:
             --output-node-data {output.node_data} \
         """
 
-rule virus_specific_jsons:
+rule adjust_branch_lengths:
+    message:
+        "Adjusting branch lengths for visualization"
     input:
-        auspice_config= "config/auspice_config.json",
-        pathogen = "config/pathogen.json",
-        additional_pathogen="dataset_config/{lineage}/{segment}/{reference}/pathogen.json",
+        branch_lengths=rules.refine.output.node_data,
+        clades="build/{lineage}/{segment}/{reference}/clade_subclade.json"
     output:
-        pathogen = "build/{lineage}/{segment}/{reference}/pathogen.json",
-        auspice = "build/{lineage}/{segment}/{reference}/auspice_config.json",
+        branch_lengths="build/{lineage}/{segment}/{reference}/branch_lengths_adjusted.json",
     params:
-        clades = lambda w: [config["builds"][w.lineage][w.segment]["clade_systems"][clade].get('key', 'default')
-                            for clade in config["builds"][w.lineage][w.segment]["clade_systems"]],
-        reference_name = lambda w: config["builds"][w.lineage][w.segment]['refs'][w.reference]['reference_strain']
+        max_length = lambda w: config["builds"][w.lineage][w.segment].get('max_branch_length', 0.0),
     shell:
         """
-        python3 scripts/merge_jsons.py --lineage {wildcards.lineage} \
-            --reference {wildcards.reference} \
-            --reference-name {params.reference_name} \
-            --segment {wildcards.segment} --clades {params.clades} \
-            --pathogen-jsons {input.pathogen} {input.additional_pathogen} \
-            --auspice-config {input.auspice_config} \
-            --output-pathogen {output.pathogen} \
-            --output-auspice {output.auspice}
+        python scripts/adjust_branch_lengths.py \
+            --branch-lengths {input.branch_lengths} \
+            --clade-json {input.clades} \
+            --max-branch-length {params.max_length} \
+            --output-node-data {output.branch_lengths}
         """
-
 
 
 def get_node_data(w):
     node_data = [
-        rules.refine.output.node_data,
+        rules.adjust_branch_lengths.output.branch_lengths,
         "build/{lineage}/{segment}/{reference}/muts.json".format(**w),
     ]
 
@@ -416,15 +333,15 @@ rule export:
     message:
         "Exporting data files for auspice"
     input:
-        tree=rules.refine.output.tree,
-        metadata="data/{lineage}_{segment}_metadata.tsv",
+        tree="build/{lineage}/{segment}/{reference}/tree.nwk",
+        metadata="data/{lineage}/{segment}/metadata.tsv",
         node_data = get_node_data,
         auspice_config= "build/{lineage}/{segment}/{reference}/auspice_config.json"
     output:
         auspice_json="build/{lineage}/{segment}/{reference}/auspice.json",
     params:
-        fields="strain region country date gisaid_epi_isl accession_{segment}",
-        select_fields = ','.join(["strain", "region", "country", "date", "gisaid_epi_isl", "accession_{segment}"]),
+        fields= lambda w: " " + " ".join(get_metadata_fields(w)),
+        select_fields = lambda w:','.join(get_metadata_fields(w)),
         date=datetime.datetime.utcnow().strftime("%Y-%m-%d"),
     shell:
         """
@@ -437,65 +354,9 @@ rule export:
             --color-by-metadata {params.fields} \
             --include-root-sequence-inline \
             --minify-json \
+            --skip-validation \
             --title "Nextclade reference tree for Influenza type:{wildcards.lineage} segment:{wildcards.segment} with root {wildcards.reference} built on {params.date}" \
             --output {output.auspice_json} 2>&1;
-        """
-
-
-rule generate_sample_sequences:
-    input:
-        sequences="data/{lineage}_{segment}.fasta",
-        metadata="data/{lineage}_{segment}_metadata.tsv"
-    output:
-        sequences="build/{lineage}/{segment}/{reference}/sample_sequences.fasta",
-    shell:
-        """
-        augur filter \
-            --sequences {input.sequences} \
-            --metadata {input.metadata} \
-            --min-date 2020 --group-by year --subsample-max-sequences 50  \
-            --exclude-ambiguous-dates-by year \
-            --exclude-where 'country!=Usa' 'submitting_lab!=Centers For Disease Control And Prevention' \
-            --probabilistic-sampling \
-            --output-sequences {output.sequences}
-        """
-
-rule extract_clade_founders:
-    input:
-        clades="build/{lineage}/{segment}/{reference}/clade_subclade.json",
-        ancestral = "build/{lineage}/{segment}/{reference}/muts.json",
-    output:
-        sequences="config/{lineage}/{segment}/{reference}/founder_sequences.fasta",
-    shell:
-        """
-        python3 scripts/extract_founder_sequences.py \
-            --clades-json {input.clades} \
-            --ancestral-json {input.ancestral} \
-            --output {output.sequences}
-        """
-
-rule translate_clade_founders:
-    input:
-        sequences=rules.extract_clade_founders.output.sequences,
-        annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
-        reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
-    output:
-        translations="build/{lineage}/{segment}/{reference}/founder_sequences.translations.done",
-    params:
-        outdir=lambda w: f"config/{w.lineage}/{w.segment}/{w.reference}/founder_sequences_{{cds}}.fasta",
-        nextclade_bin = "nextclade3"
-    threads: 2
-    shell:
-        """
-        {params.nextclade_bin} run \
-            --jobs={threads} \
-            --input-ref {input.reference} \
-            --input-annotation {input.annotation} \
-            --gap-alignment-side right \
-            --in-order \
-            --output-translations {params.outdir} \
-            {input.sequences}
-        touch {output.translations}
         """
 
 
@@ -506,8 +367,7 @@ rule make_dataset:
         annotation="dataset_config/{lineage}/{segment}/{reference}/annotation.gff",
         reference="dataset_config/{lineage}/{segment}/{reference}/reference.fasta",
         readme="dataset_config/{lineage}/{segment}/{reference}/README.md",
-        dataset_changelog="data/{lineage}_{segment}_{reference}_dataset-changelog.md",
-        changelog="data/{lineage}_{segment}_changelog.md",
+        dataset_changelog="data/{lineage}/{segment}/{reference}/dataset-changelog.md",
         pathogen_json="build/{lineage}/{segment}/{reference}/pathogen.json",
     output:
         sequences="datasets/{lineage}/{segment}/{reference}/sequences.fasta",
@@ -531,7 +391,7 @@ rule make_dataset:
         """
 
 
-
+# Remove the outputs, logs and intermediate files of the workflow
 rule clean:
     shell:
         """
@@ -539,11 +399,12 @@ rule clean:
         """
 
 
+# Remove also the downloaded inputs, the released Nextclade datasets and Snakemake's
+# records of the removed files; the conda environments in .snakemake are kept.
 rule clean_all:
     shell:
         """
-        rm -rf build
-        rm -rf auspice
-        rm -rf datasets
-        rm -rf data/
+        rm -rf build auspice datasets
+        rm -rf data nextclade
+        rm -rf .snakemake/metadata .snakemake/log
         """

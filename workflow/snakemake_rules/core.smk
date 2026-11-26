@@ -16,12 +16,65 @@ output:
  - builds/{build_name}/{segment}/traits.json
 '''
 
+import glob
+
 build_dir = config.get("build_dir", "builds")
 
+# coding regions translated and reconstructed per segment. For the internal segments those
+# that the Nextclade datasets of all lineages have: PB1-F2 and PA-X are not in every one,
+# and the second protein of MP is M2 in influenza A but BM2 in the B/Vic dataset
 GENES = {
     'ha': ['SigPep', 'HA1', 'HA2'],
     'na': ['NA'],
+    'pb2': ['PB2'],
+    'pb1': ['PB1'],
+    'pa': ['PA'],
+    'np': ['NP'],
+    'mp': ['M1'],
+    'ns': ['NS1', 'NEP'],
 }
+
+def get_nextclade_dataset(w):
+    """Name of the Nextclade dataset of a build and segment, or None."""
+    build = config['builds'][w.build_name]
+    if build.get('nextclade_dataset'):
+        return build['nextclade_dataset'].format(segment=w.segment)
+    return nextclade_dataset_by_lineage_and_segment.get(build['lineage'], {}).get(w.segment)
+
+
+def _dataset_or_build_file(w, dataset_file, key):
+    dataset = get_nextclade_dataset(w)
+    if dataset:
+        return f"nextclade_datasets/{dataset}/{dataset_file}"
+    build = config['builds'][w.build_name]
+    if key not in build:
+        raise ValueError(f"Build {w.build_name} has no Nextclade dataset for {w.segment} and "
+                         f"no {key}: give one of nextclade_dataset or {key}")
+    return build[key].format(segment=w.segment)
+
+
+def get_reference(w):
+    """Reference sequence of a build and segment, from its Nextclade dataset."""
+    return _dataset_or_build_file(w, "reference.fasta", "reference")
+
+
+def get_annotation(w):
+    """Genome annotation of a build and segment, from its Nextclade dataset."""
+    return _dataset_or_build_file(w, "genome_annotation.gff3", "annotation")
+
+
+rule get_nextclade_dataset:
+    message:
+        "Downloading the Nextclade dataset {wildcards.dataset}"
+    output:
+        reference = "nextclade_datasets/{dataset}/reference.fasta",
+        annotation = "nextclade_datasets/{dataset}/genome_annotation.gff3",
+    wildcard_constraints:
+        dataset = r"nextstrain/flu/.+",
+    shell:
+        """
+        nextclade3 dataset get --name {wildcards.dataset} --output-dir nextclade_datasets/{wildcards.dataset}
+        """
 
 rule mask:
     input:
@@ -41,6 +94,37 @@ rule mask:
             --output {output.sequences} 2>&1 | tee {log}
         """
 
+
+def uses_tidy_tree(build_name, segment):
+    """
+    Whether to build this segment with the lineage guided tidy tree.
+
+    Tidy tree needs a hierarchical lineage nomenclature with a guide tree and founder
+    sequences, which exists for the HA and NA segments of the lineages listed in
+    nomenclature_repo_by_lineage_and_segment. Everything else, in particular the
+    internal segments and the lineages without a nomenclature such as yam, is built
+    with augur tree.
+    """
+    if not config.get("tidy_tree", {}).get("enabled", True):
+        return False
+    lineage = config['builds'][build_name]['lineage']
+    return nomenclature_url(lineage, segment, "founders.fasta") is not None
+
+
+def get_founder_sequences(w):
+    lineage = config['builds'][w.build_name]['lineage']
+    segment = w.segment
+    if not uses_tidy_tree(w.build_name, segment):
+        return []
+    return f"nomenclature/{lineage}/{segment}/founders.fasta"
+
+
+def get_raw_tree(w):
+    """The tree to prune outliers from, built either by tidy tree or by augur tree."""
+    if uses_tidy_tree(w.build_name, w.segment):
+        return build_dir + f"/{w.build_name}/{w.segment}/tree_tidy.nwk"
+    return build_dir + f"/{w.build_name}/{w.segment}/tree_without_outgroup.nwk"
+
 checkpoint align:
     message:
         """
@@ -48,8 +132,9 @@ checkpoint align:
         """
     input:
         sequences = build_dir + "/{build_name}/{segment}/masked.fasta",
-        reference =  lambda w: config['builds'][w.build_name]['reference'],
-        annotation = lambda w: config['builds'][w.build_name]['annotation'],
+        founder_sequences= get_founder_sequences,
+        reference = get_reference,
+        annotation = get_annotation,
     output:
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = directory(build_dir + "/{build_name}/{segment}/translations"),
@@ -60,6 +145,9 @@ checkpoint align:
         "logs/align_{build_name}_{segment}.txt"
     params:
         genes = lambda w: ','.join(GENES[w.segment]),
+        # tidy tree needs the founders in the alignment; the other builds keep the
+        # reference instead, which prune_reference removes again after the tree is built
+        include_reference = lambda w: "" if uses_tidy_tree(w.build_name, w.segment) else "--include-reference",
     threads: 1
     resources:
         mem_mb=2000,
@@ -67,13 +155,13 @@ checkpoint align:
     shell:
         """
         nextclade3 run\
-            {input.sequences} \
+            {input.sequences} {input.founder_sequences} \
             -r {input.reference} \
             -m {input.annotation} \
             --gap-alignment-side right \
             --cds-selection {params.genes} \
             --jobs {threads} \
-            --include-reference \
+            {params.include_reference} \
             --output-fasta {output.alignment} \
             --output-translations "{output.translations}/{{cds}}.fasta" 2>&1 | tee {log}
         """
@@ -94,6 +182,43 @@ def aggregate_translations(wildcards):
                   segment=wildcards.segment,
                   gene=GENES[wildcards.segment])
 
+rule download_nomenclature:
+    message:
+        "Fetching {wildcards.file} of the {wildcards.lineage} {wildcards.segment} nomenclature -> {output}"
+    input:
+        # lineages without a nomenclature repository, such as yam, keep their frozen
+        # definitions in config
+        local = lambda w: [] if nomenclature_url(w.lineage, w.segment, w.file) else f"config/{w.lineage}/{w.segment}/{w.file}",
+    output:
+        nomenclature_file = "nomenclature/{lineage}/{segment}/{file}"
+    wildcard_constraints:
+        file = r"clades\.tsv|subclades\.tsv|subclade\.nwk"
+    params:
+        url = lambda w: nomenclature_url(w.lineage, w.segment, w.file),
+    shell:
+        """
+        if [ -n "{input.local}" ]; then
+            cp {input.local} {output.nomenclature_file}
+        else
+            curl -fsSL -o {output.nomenclature_file} "{params.url}"
+        fi
+        """
+
+rule download_founders:
+    message:
+        "Fetching lineage founders of the {wildcards.lineage} {wildcards.segment} nomenclature -> {output}"
+    output:
+        founders = "nomenclature/{lineage}/{segment}/founders.fasta"
+    params:
+        url = lambda w: nomenclature_url(w.lineage, w.segment, "founders.fasta"),
+    shell:
+        # The founders are aligned to the reference of the nomenclature. Remove the
+        # gaps so that align places them against the reference of the build.
+        """
+        curl -fsSL {params.url} | sed '/^>/!s/-//g' > {output.founders}
+        """
+
+
 rule tree:
     message: "Building tree"
     input:
@@ -109,7 +234,7 @@ rule tree:
         method = config.get("tree", {}).get("method", "iqtree"),
         tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
         override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
-    threads: 1
+    threads: 8
     resources:
         mem_mb=4000,
         time="2:00:00",
@@ -127,7 +252,7 @@ rule tree:
 rule prune_reference:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree_raw.nwk",
-        reference = lambda wildcards: config['builds'][wildcards.build_name]['reference'],
+        reference = get_reference,
     output:
         tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
     conda: "../envs/nextstrain.yaml"
@@ -139,17 +264,83 @@ rule prune_reference:
             --output {output.tree}
         """
 
+def get_root_clade(w):
+    """
+    Root lineage of the tidy tree. By default tidy tree chooses the most specific
+    lineage containing all sequences of the build; a lineage can be set instead with
+    tidy_tree.root_lineage.{lineage}.{segment}.{resolution}, e.g. 2y, in which case
+    sequences outside it are left out of the tree.
+    """
+    lineage = config['builds'][w.build_name]['lineage']
+    resolution = f"{config['builds'][w.build_name].get('resolution', '6')}y"
+    roots = config.get("tidy_tree", {}).get("root_lineage", {})
+    return roots.get(lineage, {}).get(w.segment, {}).get(resolution, "auto")
+
+def get_guide_tree_name(w):
+    lineage = config['builds'][w.build_name]['lineage']
+    segment = w.segment
+    return f"nomenclature/{lineage}/{segment}/subclade.nwk"
+
+# the tidy tree scripts, so that editing them reruns the rules that use them
+TIDY_TREE_LIBRARY = sorted(glob.glob("scripts/tidytree/*.py"))
+
+rule tidytree:
+    message: "Building lineage guided tree"
+    input:
+        scripts = ["scripts/tidy_tree.py", *TIDY_TREE_LIBRARY],
+        alignment = rules.align.output.alignment,
+        guide_tree = get_guide_tree_name,
+        # the lineage of each sequence is the nextclade call that ingest adds to the metadata
+        metadata = build_dir + "/{build_name}/metadata.tsv",
+    output:
+        tree = build_dir + "/{build_name}/{segment}/tree_tidy.nwk",
+        lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
+    conda: "../envs/nextstrain.yaml"
+    benchmark:
+        "benchmarks/tidytree_{build_name}_{segment}.txt"
+    log:
+        "logs/tidytree_{build_name}_{segment}.txt"
+    params:
+        tree_builder_args = lambda wildcards: f"--tree-builder-args={config['tree']['tree-builder-args']}" if config.get("tree", {}).get("tree-builder-args") else "",
+        override_default_args = lambda wildcards: "--override-default-args" if config.get("tree", {}).get("override_default_args", False) else "",
+        root_lineage = lambda wildcards: "--root-lineage " + get_root_clade(wildcards),
+        max_dropped_fraction = config.get("tidy_tree", {}).get("max_dropped_fraction", 0.05),
+        unknown_lineage_policy = config.get("tidy_tree", {}).get("unknown_lineage_policy", "parent"),
+    # independent subtrees are built at the same time
+    threads: 4
+    resources:
+        mem_mb=2000,
+        time="2:00:00",
+    shell:
+        """
+        python3 scripts/tidy_tree.py \
+            --alignment {input.alignment} \
+            --guide-tree {input.guide_tree} \
+            --lineage-assignments {input.metadata} \
+            --seq-id-column strain \
+            --lineage-column subclade_nextclade_{wildcards.segment} \
+            --threads {threads} \
+            --ignore-missing-founders \
+            --unknown-lineage-policy {params.unknown_lineage_policy} \
+            --max-dropped-fraction {params.max_dropped_fraction} \
+            {params.root_lineage} \
+            --metadata {input.metadata} \
+            --output-lineages {output.lineages} \
+            --output-tree {output.tree} 2>&1 | tee {log}
+        """
+
 rule prune_outliers:
     input:
-        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup.nwk",
+        tree = get_raw_tree,
         aln = build_dir+"/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
-        tree = build_dir + "/{build_name}/{segment}/tree_without_outgroup_clean.nwk",
+        tree = build_dir + "/{build_name}/{segment}/tree_without_outliers_clean.nwk",
         outliers = build_dir + "/{build_name}/{segment}/outliers.tsv"
     params:
         keep_strains_argument=lambda wildcards: "--keep-strains " + config["builds"][wildcards.build_name]["include"] if "include" in config["builds"][wildcards.build_name] else "",
         cutoff=config.get("prune_outliers_z_score_cutoff", 4.0),
+        keep_short_branches=lambda w: "--keep-short-branches" if uses_tidy_tree(w.build_name, w.segment) else "",
     resources:
         mem_mb=2000,
     shell:
@@ -159,13 +350,14 @@ rule prune_outliers:
             --aln {input.aln} \
             --dates {input.metadata} \
             --cutoff {params.cutoff} \
+            {params.keep_short_branches} \
             {params.keep_strains_argument} \
             --output-tree {output.tree:q} --output-outliers {output.outliers} 2>&1 | tee {log}
         """
 
 rule sanitize_trees:
     input:
-        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outgroup_clean.nwk",  segment=config['segments'], build_dir=[build_dir]),
+        trees = expand("{build_dir}/{{build_name}}/{segment}/tree_without_outliers_clean.nwk",  segment=config['segments'], build_dir=[build_dir]),
         alignments = expand("{build_dir}/{{build_name}}/{segment}/aligned.fasta",  segment=config['segments'], build_dir=[build_dir]),
     output:
         trees = expand("{build_dir}/{{build_name}}/{segment}/tree_common.nwk",  segment=config['segments'], build_dir=[build_dir]),
@@ -174,6 +366,12 @@ rule sanitize_trees:
         "benchmarks/sanitize_trees_{build_name}.txt"
     log:
         "logs/sanitize_trees_{build_name}.txt"
+    params:
+        # tidy tree collapses short branches itself, with the lineages in view
+        keep_short_branches = lambda w: [
+            f"{build_dir}/{w.build_name}/{segment}/tree_without_outliers_clean.nwk"
+            for segment in config['segments'] if uses_tidy_tree(w.build_name, segment)
+        ],
     resources:
         mem_mb=2000,
     shell:
@@ -181,6 +379,7 @@ rule sanitize_trees:
         python3 scripts/sanitize_trees.py \
             --trees {input.trees:q} \
             --alignments {input.alignments:q} \
+            --keep-short-branches {params.keep_short_branches:q} \
             --output {output.trees:q} 2>&1 | tee {log}
         """
 
@@ -218,94 +417,142 @@ def clock_rate(w):
 def clock_std_dev(w):
     return clock_rate(w)/5
 
+# TreeTime v1, the rewrite of TreeTime as a standalone executable, which the Nextstrain
+# Docker image installs as `treetime1`; `treetime` is TreeTime v0, which augur imports
+TREETIME = config.get("treetime", {}).get("executable", "treetime1")
+
+def clock_filter_iqd():
+    """Interquartile ranges beyond which the clock filter removes tips; 0 for no filter."""
+    return config.get("refine", {}).get("clock_filter_iqd", 5)
+
 rule refine:
     message:
         """
-        Refining tree
-          - estimate timetree
-          - use {params.coalescent} coalescent timescale
-          - estimate {params.date_inference} node dates
-          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
+        Inferring the time tree with TreeTime
+          - {params.coalescent} coalescent timescale
+          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation (0: no filter)
         """
     input:
         tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         metadata = build_dir + "/{build_name}/metadata.tsv"
     output:
+        # the time tree with branch lengths in years, and the same tree in substitutions
+        # per site (years times the clock rate), as augur refine writes it. TreeTime's
+        # ancestral normalizes its inferred model to a rate of 1 per unit branch length and
+        # cannot read the model of timetree, so it needs the rescaled tree; drop the
+        # rescaling once ancestral fits the rate or reads the timetree model
+        time_tree = build_dir + "/{build_name}/{segment}/tree_time.nwk",
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
-        coalescent = "const",
-        date_inference = "marginal",
-        clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
+        coalescent = "opt",
+        clock_filter_iqd = lambda wildcards: clock_filter_iqd(),
+        # 0 switches the filter off, which needs the flag: TreeTime filters at 4 IQDs by default
+        clock_filter = lambda wildcards: (f"--clock-filter {clock_filter_iqd()} --prune-filtered-tips"
+                                          if clock_filter_iqd() else "--clock-filter 0"),
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev,
+        # tidy tree has collapsed the short branches already. The polytomies are where tips
+        # branch off at a founder; resolving them would move such tips into the subtree of
+        # the lineage. Reoptimized branch lengths would let TreeTime collapse more branches.
+        # Other trees get their polytomies resolved by the node dates.
+        topology = lambda w: ("--no-collapse-short-branches"
+                              if uses_tidy_tree(w.build_name, w.segment) else ""),
         divergence_units = lambda wildcards: config.get("refine", {}).get("divergence_units", "mutations-per-site"),
+        treetime = TREETIME,
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/refine_{build_name}_{segment}.txt"
     log:
         "logs/refine_{build_name}_{segment}.txt"
+    threads: 2
     resources:
-        mem_mb=4000,
+        mem_mb=2000,
         time="2:00:00",
     shell:
+        # the clock filter removes the flagged and the undated tips, as augur refine does
         """
-        augur refine \
+        {params.treetime} timetree \
             --tree {input.tree} \
             --alignment {input.alignment} \
             --metadata {input.metadata} \
-            --output-tree {output.tree} \
-            --output-node-data {output.node_data} \
+            --metadata-id-columns strain \
+            --date-column date \
             --keep-root \
-            --stochastic-resolve \
-            --timetree \
-            --use-fft \
-            --no-covariance \
+            {params.topology} \
             --clock-rate {params.clock_rate} \
             --clock-std-dev {params.clock_std_dev} \
             --coalescent {params.coalescent} \
-            --date-confidence \
-            --date-inference {params.date_inference} \
+            --confidence \
+            {params.clock_filter} \
+            --prune-undated-tips \
             --divergence-units {params.divergence_units} \
-            --clock-filter-iqd {params.clock_filter_iqd} 2>&1 | tee {log}
+            --topology-order descendant-count \
+            --seed 1 \
+            --jobs {threads} \
+            --no-progress \
+            --output-tree-nwk {output.time_tree} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        python3 scripts/scale_time_tree.py \
+            --tree {output.time_tree} \
+            --node-data {output.node_data} \
+            --output {output.tree} 2>&1 | tee -a {log}
+        """
+
+# TreeTime reads the coding regions from CDS rows, the annotations have gene rows
+rule annotation_with_cds:
+    input:
+        annotation = get_annotation,
+    output:
+        annotation = build_dir + "/{build_name}/{segment}/annotation_cds.gff",
+    shell:
+        """
+        python3 scripts/annotation_with_cds.py \
+            --annotation {input.annotation} \
+            --output {output.annotation}
         """
 
 rule ancestral:
-    message: "Reconstructing ancestral sequences and mutations"
+    message: "Reconstructing ancestral sequences and mutations with TreeTime"
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         alignment = build_dir + "/{build_name}/{segment}/aligned.fasta",
         translations = aggregate_translations,
-        reference =  lambda w: f"{config['builds'][w.build_name]['reference']}",
-        annotation = lambda w: f"{config['builds'][w.build_name]['annotation']}",
+        annotation = build_dir + "/{build_name}/{segment}/annotation_cds.gff",
     output:
         node_data = build_dir + "/{build_name}/{segment}/muts.json",
         translations_done = build_dir + "/{build_name}/{segment}/translations.done",
     params:
-        inference = "joint",
         genes = lambda w: GENES[w.segment],
         input_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE.fasta",
         output_translations = lambda w: build_dir + f"/{w.build_name}/{w.segment}/translations/%GENE_withInternalNodes.fasta",
+        treetime = TREETIME,
     conda: "../envs/nextstrain.yaml"
     benchmark:
         "benchmarks/ancestral_{build_name}_{segment}.txt"
     log:
         "logs/ancestral_{build_name}_{segment}.txt"
+    threads: 2
     resources:
         mem_mb=2000
     shell:
+        # the translations of the tips come from the alignment by nextclade. Ambiguous tip
+        # states are resolved, which leaves changes to ambiguity codes out of the mutations,
+        # as augur ancestral does. The mutations of the root are relative to the inferred
+        # root sequence, which is the reference of the node data.
         """
-        augur ancestral \
+        {params.treetime} ancestral \
             --tree {input.tree} \
             --alignment {input.alignment} \
-            --root-sequence {input.reference} \
             --annotation {input.annotation} \
-            --genes {params.genes} \
+            --cds-selection {params.genes} \
             --translations "{params.input_translations}" \
+            --impute-missing-data \
+            --jobs {threads} \
+            --no-progress \
             --output-node-data {output.node_data} \
-            --output-translations "{params.output_translations}" \
-            --inference {params.inference} 2>&1 | tee {log} && touch {output.translations_done}
+            --output-translations "{params.output_translations}" 2>&1 | tee {log} && touch {output.translations_done}
         """
 
 rule traits:
@@ -335,66 +582,22 @@ rule traits:
             --confidence 2>&1 | tee {log}
         """
 
-rule download_clades:
-    output:
-        clades="config/{lineage}/{segment}/clades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: clade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.clades} "{params.url}"
-        """
-
-# Determine clades with HA mutations.
-rule clades:
-    input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/ha/muts.json",
-        clades = lambda wildcards: config["builds"][wildcards.build_name]["clades"],
-    output:
-        node_data = build_dir + "/{build_name}/ha/clades.json",
-    conda: "../envs/nextstrain.yaml"
-    benchmark:
-        "benchmarks/clades_{build_name}.txt"
-    log:
-        "logs/clades_{build_name}.txt"
-    shell:
-        """
-        augur clades \
-            --tree {input.tree} \
-            --mutations {input.muts} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
-        """
-
-rule download_subclades:
-    output:
-        subclades="config/{lineage}/{segment}/subclades.tsv",
-    conda: "../envs/nextstrain.yaml"
-    params:
-        url=lambda wildcards: subclade_url_by_lineage_and_segment.get(wildcards.lineage, {}).get(wildcards.segment),
-    shell:
-        """
-        curl -o {output.subclades} "{params.url}"
-        """
-
-# Determine subclades for na and ha.
-rule subclades:
+# Determine subclades for na and ha, from their signature mutations.
+rule subclades_from_mutations:
     input:
         tree = build_dir + "/{build_name}/{segment}/tree.nwk",
         muts = build_dir + "/{build_name}/{segment}/muts.json",
         clades = lambda wildcards: config["builds"][wildcards.build_name].get("subclades"),
     output:
-        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+        node_data = build_dir + "/{build_name}/{segment}/subclades_mutations.json",
     params:
         membership_name = "subclade",
         label_name = "Subclade",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/subclades_{build_name}_{segment}.txt"
+        "benchmarks/subclades_from_mutations_{build_name}_{segment}.txt"
     log:
-        "logs/subclades_{build_name}_{segment}.txt"
+        "logs/subclades_from_mutations_{build_name}_{segment}.txt"
     shell:
         """
         augur clades \
@@ -406,32 +609,57 @@ rule subclades:
             --output {output.node_data} 2>&1 | tee {log}
         """
 
-# Assign clade annotations to non-HA segments from HA.
-rule import_clades:
+# Determine subclades of a tidy tree from the lineages its tips were placed in. With
+# tidy_tree.compare_subclades, the labels from signature mutations are computed alongside
+# and the disagreements reported in the log.
+rule subclades_from_tree:
     input:
-        tree = build_dir + "/{build_name}/ha/tree.nwk",
-        muts = build_dir + "/{build_name}/{segment}/muts.json",
-        clades = build_dir + "/{build_name}/ha/clades.json",
+        scripts = ["scripts/assign_subclades_from_tree.py", *TIDY_TREE_LIBRARY],
+        tree = build_dir + "/{build_name}/{segment}/tree.nwk",
+        lineages = build_dir + "/{build_name}/{segment}/tidy_lineages.tsv",
+        guide_tree = get_guide_tree_name,
+        compare = lambda w: (build_dir + f"/{w.build_name}/{w.segment}/subclades_mutations.json"
+                             if config.get("tidy_tree", {}).get("compare_subclades", False) else []),
     output:
-        node_data = build_dir + "/{build_name}/{segment}/clades.json",
+        node_data = build_dir + "/{build_name}/{segment}/subclades_tree.json",
+    params:
+        membership_name = "subclade",
+        label_name = "Subclade",
+        compare = lambda w, input: f"--compare {input.compare}" if input.compare else "",
     conda: "../envs/nextstrain.yaml"
     benchmark:
-        "benchmarks/import_clades_{build_name}_{segment}.txt"
+        "benchmarks/subclades_from_tree_{build_name}_{segment}.txt"
     log:
-        "logs/import_clades_{build_name}_{segment}.txt"
+        "logs/subclades_from_tree_{build_name}_{segment}.txt"
     shell:
         """
-        python3 scripts/import_tip_clades.py \
+        python3 scripts/assign_subclades_from_tree.py \
             --tree {input.tree} \
-            --clades {input.clades} \
-            --output {output.node_data} 2>&1 | tee {log}
+            --lineages {input.lineages} \
+            --guide-tree {input.guide_tree} \
+            --membership-name {params.membership_name} \
+            --label-name {params.label_name} \
+            {params.compare} \
+            --output-node-data {output.node_data} 2>&1 | tee {log}
+        """
+
+rule subclades:
+    input:
+        node_data = lambda w: build_dir + (f"/{w.build_name}/{w.segment}/subclades_tree.json"
+                                           if uses_tidy_tree(w.build_name, w.segment)
+                                           else f"/{w.build_name}/{w.segment}/subclades_mutations.json"),
+    output:
+        node_data = build_dir + "/{build_name}/{segment}/subclades.json",
+    shell:
+        """
+        cp {input.node_data} {output.node_data}
         """
 
 rule annotate_derived_haplotypes:
     input:
         tree=build_dir + "/{build_name}/ha/tree.nwk",
         translations=build_dir + "/{build_name}/ha/translations.done",
-        clades=lambda wildcards: build_dir + "/{build_name}/ha/subclades.json" if "subclades" in config["builds"][wildcards.build_name] else build_dir + "/{build_name}/ha/clades.json",
+        clades=build_dir + "/{build_name}/ha/subclades.json",
     output:
         haplotypes=build_dir + "/{build_name}/ha/derived_haplotypes.json",
     conda: "../envs/nextstrain.yaml"
@@ -442,8 +670,8 @@ rule annotate_derived_haplotypes:
     params:
         min_tips=config.get("haplotypes", {}).get("min_tips", 5),
         alignment=build_dir + "/{build_name}/ha/translations/HA1_withInternalNodes.fasta",
-        clade_label_attribute=lambda wildcards: "Subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade",
-        clade_node_attribute=lambda wildcards: "subclade" if "subclades" in config["builds"][wildcards.build_name] else "clade_membership"
+        clade_label_attribute="Subclade",
+        clade_node_attribute="subclade",
     shell:
         """
         python3 scripts/annotate_derived_haplotypes.py \

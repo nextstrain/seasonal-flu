@@ -12,7 +12,10 @@ logs/
 figures/
 targets/
 benchmarks/
+__pycache__/
+nomenclature/
 nextclade_dataset/
+nextclade_datasets/
 config/*/*/clades.tsv
 config/*/*/subclades.tsv
 config/*/*/lcr_weights.tsv

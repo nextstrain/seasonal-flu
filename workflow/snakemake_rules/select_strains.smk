@@ -124,8 +124,26 @@ def get_metadata_input(wildcards):
     else:
         return f"data/{config['builds'][wildcards.build_name]['lineage']}/metadata.tsv"
 
+def get_filter_files(filters):
+    """
+    The files of strain names given to --include and --exclude in augur filter arguments,
+    so that editing them, for example adding an outlier, subsamples again.
+    """
+    import shlex
+    files, collecting = [], False
+    for arg in shlex.split(filters):
+        if arg.startswith('-'):
+            collecting = arg in ('--include', '--exclude')
+        elif collecting:
+            files.append(arg)
+    return files
+
+
 def get_subsample_input(w):
-    files = {"metadata": get_metadata_input(w)}
+    files = {
+        "metadata": get_metadata_input(w),
+        "filter_files": get_filter_files(config['builds'][w.build_name]['subsamples'][w.subsample]["filters"]),
+    }
     if config['builds'][w.build_name]['subsamples'][w.subsample].get('priorities', '')=='titers':
         files['titers']=build_dir + f"/{w.build_name}/titer_priorities.tsv"
     return files

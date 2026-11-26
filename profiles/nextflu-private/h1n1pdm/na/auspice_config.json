@@ -36,33 +36,6 @@
       "type": "continuous"
     },
     {
-      "key": "clade_membership",
-      "title": "Clade",
-      "type": "categorical",
-      "scale": [
-        [
-          "6B.1A.5a",
-          "#57a5d7"
-        ],
-        [
-          "5a.1",
-          "#3e59cf"
-        ],
-        [
-          "5a.2",
-          "#705c94"
-        ],
-        [
-          "5a.2a",
-          "#e39b39"
-        ],
-        [
-          "5a.2a.1",
-          "#dfd24e"
-        ]
-      ]
-    },
-    {
       "key": "subclade",
       "title": "Subclade",
       "type": "categorical",
@@ -179,7 +152,6 @@
     "branch_label": "Subclade"
   },
   "filters": [
-    "clade_membership",
     "subclade",
     "region",
     "country",

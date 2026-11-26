@@ -38,10 +38,7 @@ builds:
   h1n1pdm_2y:
     lineage: h1n1pdm
     prioritized_seqs_file: "config/h1n1pdm/{segment}/prioritized_seqs_file.tsv"
-    reference: "config/h1n1pdm/{segment}/reference.fasta"
-    annotation: "config/h1n1pdm/{segment}/genemap.gff"
     tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
-    clades: "config/h1n1pdm/ha/clades.tsv"
     auspice_config: "config/h1n1pdm/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"
@@ -87,10 +84,7 @@ builds:
   h3n2_2y:
     lineage: "h3n2"
     prioritized_seqs_file: "config/h3n2/{segment}/prioritized_seqs_file.tsv"
-    reference: "config/h3n2/{segment}/reference.fasta"
-    annotation: "config/h3n2/{segment}/genemap.gff"
     tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-    clades: "config/h3n2/ha/emerging_clades.tsv"
     auspice_config: "config/h3n2/auspice_config_fitness.json"
     vaccines: "config/h3n2/vaccine.json"
     min_date: "2Y"
@@ -146,10 +140,7 @@ builds:
   vic_2y:
     lineage: vic
     prioritized_seqs_file: "config/vic/{segment}/prioritized_seqs_file.tsv"
-    reference: "config/vic/{segment}/reference.fasta"
-    annotation: "config/vic/{segment}/genemap.gff"
     tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
-    clades: "config/vic/ha/clades.tsv"
     auspice_config: "config/vic/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"
@@ -182,10 +173,7 @@ builds:
     subsamples: *representative-subsampling-scheme
   yam_2y:
     lineage: yam
-    reference: "config/yam/{segment}/reference.fasta"
-    annotation: "config/yam/{segment}/genemap.gff"
     tree_exclude_sites: "config/yam/{segment}/exclude-sites.txt"
-    clades: "config/yam/ha/clades.tsv"
     auspice_config: "config/yam/auspice_config.json"
     min_date: "2Y"
     reference_min_date: "8Y"

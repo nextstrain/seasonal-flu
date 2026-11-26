@@ -22,37 +22,66 @@ lineage_name_by_abbreviation = {
     "yam": "Yam",
 }
 
-clade_url_by_lineage_and_segment = {
+# Repositories of the hierarchical lineage nomenclature, which provide the clade and
+# subclade definitions, the subclade guide tree and the lineage founder sequences.
+nomenclature_repo_by_lineage_and_segment = {
     "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/clades.tsv",
+        "ha": "seasonal_A-H1N1pdm_HA",
+        "na": "seasonal_A-H1N1pdm_NA",
     },
     "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/clades.tsv",
+        "ha": "seasonal_A-H3N2_HA",
+        "na": "seasonal_A-H3N2_NA",
     },
     "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/clades.tsv",
-    },
-    "h1n1": {
-        "ha": "https://raw.githubusercontent.com/nextstrain/seasonal-flu/refs/heads/master/config/h1n1/ha/clades.tsv",
+        "ha": "seasonal_B-Vic_HA",
+        "na": "seasonal_B-Vic_NA",
     }
 }
 
-subclade_url_by_lineage_and_segment = {
-    "h1n1pdm": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H1N1pdm_NA/main/.auto-generated/subclades.tsv",
-    },
+# The founders are only on the `founders` branch until it is merged into main.
+nomenclature_branch = config.get("nomenclature", {}).get("branch", "founders")
+
+def nomenclature_url(lineage, segment, filename):
+    """URL of a generated file of the nomenclature, or None if the segment has none."""
+    repo = nomenclature_repo_by_lineage_and_segment.get(lineage, {}).get(segment)
+    if repo is None:
+        return None
+    return f"https://raw.githubusercontent.com/influenza-clade-nomenclature/{repo}/{nomenclature_branch}/.auto-generated/{filename}"
+
+# Nextclade datasets that provide the reference sequence and genome annotation of the
+# builds. Where there are two datasets for a segment, the one whose reference has the
+# length of the reference of the nomenclature repository, so that positions match the
+# nomenclature: A/Wisconsin/67/2005 for H3N2 HA rather than A/Darwin/6/2021; for H1N1pdm
+# HA both have that length and A/California/7/2009 is the reference of the nomenclature.
+# A build can name another dataset with `nextclade_dataset`, or give a `reference` and
+# `annotation` for a segment without a dataset.
+INTERNAL_SEGMENTS = ["pb2", "pb1", "pa", "np", "mp", "ns"]
+nextclade_dataset_by_lineage_and_segment = {
     "h3n2": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_A-H3N2_NA/main/.auto-generated/subclades.tsv",
+        "ha": "nextstrain/flu/h3n2/ha/CY163680",
+        "na": "nextstrain/flu/h3n2/na/EPI1857215",
+        **{segment: f"nextstrain/flu/h3n2/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    "h1n1pdm": {
+        "ha": "nextstrain/flu/h1n1pdm/ha/CY121680",
+        "na": "nextstrain/flu/h1n1pdm/na/MW626056",
+        **{segment: f"nextstrain/flu/h1n1pdm/{segment}" for segment in INTERNAL_SEGMENTS},
     },
     "vic": {
-        "ha": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_HA/main/.auto-generated/subclades.tsv",
-        "na": "https://raw.githubusercontent.com/influenza-clade-nomenclature/seasonal_B-Vic_NA/main/.auto-generated/subclades.tsv",
+        "ha": "nextstrain/flu/vic/ha/KX058884",
+        "na": "nextstrain/flu/vic/na/CY073894",
+        **{segment: f"nextstrain/flu/vic/{segment}" for segment in INTERNAL_SEGMENTS},
+    },
+    # the other segments of yam from the datasets of all influenza B
+    "yam": {
+        "ha": "nextstrain/flu/yam/ha/JN993010",
+        "na": "nextstrain/flu/b/na/CY073894",
+        **{segment: f"nextstrain/flu/b/{segment}" for segment in INTERNAL_SEGMENTS},
     },
     "h1n1": {
-        "ha": "https://raw.githubusercontent.com/nextstrain/seasonal-flu/refs/heads/master/config/h1n1/ha/subclades.tsv",
-    }
+        segment: f"nextstrain/flu/h1n1/{segment}" for segment in ["ha", "na", *INTERNAL_SEGMENTS]
+    },
 }
 
 lcr_url_by_lineage_and_segment = {
@@ -136,3 +165,26 @@ if "custom_rules" in config:
 rule all:
     input:
         _get_build_outputs()
+
+
+# Remove the outputs, logs and intermediate files of the workflow. Snakemake's own state
+# in .snakemake stays: it holds the lock of the running Snakemake and the conda
+# environments.
+rule clean:
+    shell:
+        """
+        rm -rf builds results tables figures targets auspice auspice-who auspice_renamed logs benchmarks
+        """
+
+
+# Remove also the downloaded inputs: sequences, metadata and titers, the nomenclature, the
+# Nextclade datasets and the LCR tables, and Snakemake's records of the removed files. The
+# conda environments in .snakemake are kept, as they take long to rebuild.
+rule clean_all:
+    shell:
+        """
+        rm -rf builds results tables figures targets auspice auspice-who auspice_renamed logs benchmarks
+        rm -rf data nomenclature nextclade_datasets
+        rm -f config/*/*/lcr_weights.tsv config/*/*/lcr_windows.tsv
+        rm -rf .snakemake/metadata .snakemake/log
+        """

@@ -1,0 +1,97 @@
+LOCUS       NC_002022               2233 bp    cRNA    linear   VRL 13-AUG-2018
+DEFINITION  Influenza A virus (A/Puerto Rico/8/1934(H1N1)) segment 3, complete
+            sequence.
+ACCESSION   NC_002022
+VERSION     NC_002022.1
+DBLINK      BioProject: PRJNA485481
+KEYWORDS    RefSeq.
+SOURCE      Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+  ORGANISM  Influenza A virus (A/Puerto Rico/8/1934(H1N1))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2233)
+  AUTHORS   Fields,S. and Winter,G.
+  TITLE     Nucleotide sequences of influenza virus segments 1 and 3 reveal
+            mosaic structure of a small viral RNA segment
+  JOURNAL   Cell 28 (2), 303-313 (1982)
+   PUBMED   7060132
+REFERENCE   2  (bases 1 to 2233)
+  CONSRTM   NCBI Genome Project
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-JUN-2000) National Center for Biotechnology
+            Information, NIH, Bethesda, MD 20894, USA
+COMMENT     REVIEWED REFSEQ: This record has been curated by NCBI staff. The
+            reference sequence was derived from V01106.
+            COMPLETENESS: full length.
+FEATURES             Location/Qualifiers
+     source          1..2233
+                     /organism="Influenza A virus (A/Puerto Rico/8/1934(H1N1))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Puerto Rico/8/1934"
+                     /serotype="H1N1"
+                     /db_xref="taxon:211044"
+                     /segment="3"
+                     /geo_loc_name="Puerto Rico"
+                     /collection_date="1934"
+     CDS             25..2175
+                     /ID="cds-NP_040986.1"
+                     /Dbxref="GOA:P03433,UniProtKB/Swiss-Prot:P03433,GenBank:NP_
+                     040986.1,GeneID:956535"
+                     /Name="PA"
+                     /gbkey="CDS"
+                     /gene="PA"
+                     /locus_tag="PA"
+                     /product="polymerase PA"
+                     /protein_id="NP_040986.1"
+     CDS             join(25..597,599..784)
+                     /ID="cds-YP_006495785.1"
+                     /Dbxref="GenBank:YP_006495785.1,GeneID:13229134"
+                     /Name="PA-X"
+                     /exception="ribosomal slippage"
+                     /gbkey="CDS"
+                     /gene="PA-X"
+                     /locus_tag="PA-X"
+                     /product="PA-X protein"
+                     /protein_id="YP_006495785.1"
+ORIGIN
+        1 agcgaaagca ggtactgatc caaaatggaa gattttgtgc gacaatgctt caatccgatg
+       61 attgtcgagc ttgcggaaaa aacaatgaaa gagtatgggg aggacctgaa aatcgaaaca
+      121 aacaaatttg cagcaatatg cactcacttg gaagtatgct tcatgtattc agatttccac
+      181 ttcatcaatg agcaaggcga gtcaataatc gtagaacttg gtgatcctaa tgcacttttg
+      241 aagcacagat ttgaaataat cgagggaaga gatcgcacaa tggcctggac agtagtaaac
+      301 agtatttgca acactacagg ggctgagaaa ccaaagtttc taccagattt gtatgattac
+      361 aaggaaaata gattcatcga aattggagta acaaggagag aagttcacat atactatctg
+      421 gaaaaggcca ataaaattaa atctgagaaa acacacatcc acattttctc gttcactggg
+      481 gaagaaatgg ccacaaaggc cgactacact ctcgatgaag aaagcagggc taggatcaaa
+      541 accaggctat tcaccataag acaagaaatg gccagcagag gcctctggga ttcctttcgt
+      601 cagtccgaga gaggagaaga gacaattgaa gaaaggtttg aaatcacagg aacaatgcgc
+      661 aagcttgccg accaaagtct cccgccgaac ttctccagcc ttgaaaattt tagagcctat
+      721 gtggatggat tcgaaccgaa cggctacatt gagggcaagc tgtctcaaat gtccaaagaa
+      781 gtaaatgcta gaattgaacc ttttttgaaa acaacaccac gaccacttag acttccgaat
+      841 gggcctccct gttctcagcg gtccaaattc ctgctgatgg atgccttaaa attaagcatt
+      901 gaggacccaa gtcatgaagg agagggaata ccgctatatg atgcaatcaa atgcatgaga
+      961 acattctttg gatggaagga acccaatgtt gttaaaccac acgaaaaggg aataaatcca
+     1021 aattatcttc tgtcatggaa gcaagtactg gcagaactgc aggacattga gaatgaggag
+     1081 aaaattccaa agactaaaaa tatgaaaaaa acaagtcagc taaagtgggc acttggtgag
+     1141 aacatggcac cagaaaaggt agactttgac gactgtaaag atgtaggtga tttgaagcaa
+     1201 tatgatagtg atgaaccaga attgaggtcg cttgcaagtt ggattcagaa tgagttcaac
+     1261 aaggcatgcg aactgacaga ttcaagctgg atagagcttg atgagattgg agaagatgtg
+     1321 gctccaattg aacacattgc aagcatgaga aggaattatt tcacatcaga ggtgtctcac
+     1381 tgcagagcca cagaatacat aatgaagggg gtgtacatca atactgcctt acttaatgca
+     1441 tcttgtgcag caatggatga tttccaatta attccaatga taagcaagtg tagaactaag
+     1501 gagggaaggc gaaagaccaa cttgtatggt ttcatcataa aaggaagatc ccacttaagg
+     1561 aatgacaccg acgtggtaaa ctttgtgagc atggagtttt ctctcactga cccaagactt
+     1621 gaaccacaca aatgggagaa gtactgtgtt cttgagatag gagatatgct tctaagaagt
+     1681 gccataggcc aggtttcaag gcccatgttc ttgtatgtga ggacaaatgg aacctcaaaa
+     1741 attaaaatga aatggggaat ggagatgagg cgttgtctcc tccagtcact tcaacaaatt
+     1801 gagagtatga ttgaagctga gtcctctgtc aaagagaaag acatgaccaa agagttcttt
+     1861 gagaacaaat cagaaacatg gcccattgga gagtctccca aaggagtgga ggaaagttcc
+     1921 attgggaagg tctgcaggac tttattagca aagtcggtat ttaacagctt gtatgcatct
+     1981 ccacaactag aaggattttc agctgaatca agaaaactgc ttcttatcgt tcaggctctt
+     2041 agggacaatc tggaacctgg gacctttgat cttggggggc tatatgaagc aattgaggag
+     2101 tgcctaatta atgatccctg ggttttgctt aatgcttctt ggttcaactc cttccttaca
+     2161 catgcattga gttagttgtg gcagtgctac tatttgctat ccatactgtc caaaaaagta
+     2221 ccttgtttct act
+//

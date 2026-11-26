@@ -132,7 +132,6 @@ rule convert_emerging_haplotypes_to_json:
 rule antigenic_distances_between_strains:
     input:
         tree="builds/{build_name}/{segment}/tree.nwk",
-        clades="builds/{build_name}/{segment}/clades.json",
         subclades="builds/{build_name}/{segment}/subclades.json",
         emerging_haplotypes="builds/{build_name}/{segment}/emerging_haplotypes.json",
         derived_haplotypes="builds/{build_name}/{segment}/derived_haplotypes.json",
@@ -153,7 +152,6 @@ rule antigenic_distances_between_strains:
         """
         python3 scripts/get_antigenic_distances_between_strains.py \
             --tree {input.tree} \
-            --clades {input.clades} \
             --subclades {input.subclades} \
             --emerging-haplotypes {input.emerging_haplotypes} \
             --derived-haplotypes {input.derived_haplotypes} \

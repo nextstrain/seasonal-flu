@@ -38,11 +38,8 @@ recency:
 builds:
     full-h3n2:
       lineage: h3n2
-      reference: "config/h3n2/{segment}/reference.fasta"
-      annotation: "config/h3n2/{segment}/genemap.gff"
       tree_exclude_sites: "config/h3n2/{segment}/exclude-sites.txt"
-      clades: "config/h3n2/ha/clades.tsv"
-      subclades: "config/h3n2/{segment}/subclades.tsv"
+      subclades: "nomenclature/h3n2/{segment}/subclades.tsv"
       auspice_config: "profiles/nextflu-private/h3n2/{segment}/auspice_config.json"
       vaccines: "config/h3n2/vaccine.json"
       enable_glycosylation: true
@@ -91,11 +88,8 @@ builds:
         pivot_interval_units: weeks
     full-h1n1pdm:
       lineage: h1n1pdm
-      reference: "config/h1n1pdm/{segment}/reference.fasta"
-      annotation: "config/h1n1pdm/{segment}/genemap.gff"
       tree_exclude_sites: "config/h1n1pdm/{segment}/exclude-sites.txt"
-      clades: "config/h1n1pdm/ha/clades.tsv"
-      subclades: "config/h1n1pdm/{segment}/subclades.tsv"
+      subclades: "nomenclature/h1n1pdm/{segment}/subclades.tsv"
       auspice_config: "profiles/nextflu-private/h1n1pdm/{segment}/auspice_config.json"
       vaccines: "config/h1n1pdm/vaccine.json"
       enable_glycosylation: true
@@ -129,11 +123,8 @@ builds:
       frequencies: *frequencies
     full-vic:
       lineage: vic
-      reference: "config/vic/{segment}/reference.fasta"
-      annotation: "config/vic/{segment}/genemap.gff"
       tree_exclude_sites: "config/vic/{segment}/exclude-sites.txt"
-      clades: "config/vic/ha/clades.tsv"
-      subclades: "config/vic/{segment}/subclades.tsv"
+      subclades: "nomenclature/vic/{segment}/subclades.tsv"
       auspice_config: "profiles/nextflu-private/vic/{segment}/auspice_config.json"
       vaccines: "config/vic/vaccine.json"
       enable_glycosylation: true

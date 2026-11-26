@@ -8,7 +8,6 @@ def _get_node_data_by_wildcards(wildcards):
     inputs = [
         rules.refine.output.node_data,
         rules.ancestral.output.node_data,
-        rules.clades.output.node_data,
         rules.traits.output.node_data,
         rules.annotate_epiweeks.output.node_data,
     ]
@@ -56,7 +55,7 @@ def _get_node_data_by_wildcards(wildcards):
     if config["builds"][wildcards.build_name].get('enable_mlr_fitness', False) and wildcards.segment == "ha":
         inputs.append(rules.annotate_mlr_fitness.output.node_data)
 
-    if wildcards.segment == "ha":
+    if wildcards.segment == "ha" and config["builds"][wildcards.build_name].get('subclades', False):
         inputs.append(rules.annotate_derived_haplotypes.output.haplotypes)
 
     # Convert input files from wildcard strings to real file names.
