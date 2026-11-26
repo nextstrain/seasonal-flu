@@ -33,10 +33,12 @@ array-builds:
       vaccines: "config/{lineage}/vaccine.json"
       enable_glycosylation: true
       enable_lbi: true
-    subsampling_parameters:
-      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
       include: "'config/{lineage}/reference_strains.txt' 'profiles/allflu/{lineage}_include.txt'"
       exclude: "'config/{lineage}/outliers.txt'"
+    # evaluated as Python expressions, so file lists cannot go here: adjacent strings
+    # would be joined into one path
+    subsampling_parameters:
+      min_date: '(datetime.datetime.today() - datetime.timedelta(days={resolution}*365)).strftime("%Y-%m-%d")'
     subsamples:
       global:
           filters: "--group-by region year --subsample-max-sequences 4000 --min-date {min_date} --include {include} --exclude {exclude} --exclude-where 'ha!=True' 'na!=True'"
