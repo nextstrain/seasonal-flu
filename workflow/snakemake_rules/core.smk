@@ -450,7 +450,7 @@ rule refine:
         # branch off at a founder; resolving them would move such tips into the subtree of
         # the lineage. Reoptimized branch lengths would let TreeTime collapse more branches.
         # Other trees get their polytomies resolved by the node dates.
-        topology = lambda w: ("--keep-polytomies --branch-length-mode input --no-collapse-short-branches"
+        topology = lambda w: ("--no-collapse-short-branches"
                               if uses_tidy_tree(w.build_name, w.segment) else ""),
         divergence_units = lambda wildcards: config.get("refine", {}).get("divergence_units", "mutations-per-site"),
         treetime = TREETIME,
