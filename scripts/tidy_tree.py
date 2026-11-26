@@ -152,14 +152,28 @@ def main():
                   f"outgroup with --explicit-root or dates with --metadata to use the "
                   f"oldest sequence of the root lineage.")
             return 1
-        explicit_root = oldest_sequence(lineage_root.sequences, args.metadata,
-                                        args.metadata_id_column, args.date_column)
-        if explicit_root is None:
-            print(f"Error: the root lineage '{lineage_root.name}' has no founder and none "
-                  f"of its sequences has a complete sampling date to root on.")
+        # the oldest sequence of the tree: in the root lineage itself, it is context from
+        # before the nomenclature and roots the tree. Otherwise the sequences of the root
+        # lineage are younger than the nomenclature, typically sequences without a usable
+        # lineage call, and the tree is rooted on the founder of the child lineage that
+        # holds the oldest sequence
+        child_of = {seq_id: child for child in lineage_root.children
+                    for node in child.preorder() for seq_id in node.sequences}
+        oldest = oldest_sequence([*lineage_root.sequences, *child_of], args.metadata,
+                                 args.metadata_id_column, args.date_column)
+        if oldest is None or (oldest in child_of and child_of[oldest].founder_seq is None):
+            print(f"Error: the root lineage '{lineage_root.name}' has no founder and no "
+                  f"sequence of the tree has a complete sampling date to root on.")
             return 1
-        print(f"\nRoot lineage '{lineage_root.name}' has no founder, rooting on its oldest "
-              f"sequence {explicit_root}")
+        if oldest in child_of:
+            explicit_root = child_of[oldest].founder_seq.id
+            print(f"\nRoot lineage '{lineage_root.name}' has no founder and no sequences older "
+                  f"than those of its sublineages, rooting on the founder of "
+                  f"{child_of[oldest].name}, the lineage of the oldest sequence {oldest}")
+        else:
+            explicit_root = oldest
+            print(f"\nRoot lineage '{lineage_root.name}' has no founder, rooting on its oldest "
+                  f"sequence {explicit_root}")
     elif explicit_root is not None:
         print(f"\nRooting the root lineage '{lineage_root.name}' on {explicit_root}")
 

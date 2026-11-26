@@ -117,3 +117,49 @@ def test_tidy_tree_end_to_end(synthetic, threads):
         ['A', 'A.1', 'A.1.1', 'A.2', 'B']
     assert node_data['nodes']['A.1.1/seq0']['subclade'] == 'A.1.1'
     assert node_data['nodes']['old/1968']['subclade'] == 'unassigned'
+
+
+@needs_iqtree
+def test_root_lineage_without_sequences_roots_on_a_child_founder(synthetic):
+    # without the old sequence, the root lineage holds only the founders of A and B
+    from Bio import SeqIO
+    records = [r for r in SeqIO.parse(synthetic / 'alignment.fasta', 'fasta') if r.id != 'old/1968']
+    SeqIO.write(records, synthetic / 'alignment.fasta', 'fasta')
+    out = synthetic / 'tree.nwk'
+    result = subprocess.run([
+        sys.executable, str(SCRIPTS / 'tidy_tree.py'),
+        '--alignment', str(synthetic / 'alignment.fasta'),
+        '--guide-tree', str(synthetic / 'guide.nwk'),
+        '--lineage-assignments', str(synthetic / 'lineages.tsv'),
+        '--seq-id-column', 'strain', '--lineage-column', 'clade',
+        '--metadata', str(synthetic / 'metadata.tsv'),
+        '--iqtree-args=-n 2 -czb -seed 1', '--output-tree', str(out),
+    ], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    # A holds the oldest sequences of the synthetic data
+    assert "no sequences older than those of its sublineages, rooting on the founder of A" in result.stdout
+    t = Phylo.read(out, 'newick')
+    assert len(t.get_terminals()) == 20
+    # the two halves of the root are A and B, with lengths on both
+    sides = [{tip.name.split('/')[0][0] for tip in c.get_terminals()} for c in t.root.clades]
+    assert sorted(map(sorted, sides)) == [['A'], ['B']]
+    assert all(c.branch_length for c in t.root.clades)
+
+
+@needs_iqtree
+def test_young_sequence_of_the_root_lineage_does_not_root_the_tree(synthetic):
+    # the only sequence without a lineage call is younger than those of the lineages,
+    # as an anomalous sequence would be: the tree is rooted on a founder instead
+    meta = (synthetic / 'metadata.tsv').read_text().replace('old/1968\t1968-06-01', 'old/1968\t2030-06-01')
+    (synthetic / 'metadata.tsv').write_text(meta)
+    result = subprocess.run([
+        sys.executable, str(SCRIPTS / 'tidy_tree.py'),
+        '--alignment', str(synthetic / 'alignment.fasta'),
+        '--guide-tree', str(synthetic / 'guide.nwk'),
+        '--lineage-assignments', str(synthetic / 'lineages.tsv'),
+        '--seq-id-column', 'strain', '--lineage-column', 'clade',
+        '--metadata', str(synthetic / 'metadata.tsv'),
+        '--iqtree-args=-n 2 -czb -seed 1', '--output-tree', str(synthetic / 'tree.nwk'),
+    ], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "rooting on the founder of A, the lineage of the oldest sequence A/seq0" in result.stdout

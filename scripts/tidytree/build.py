@@ -73,10 +73,13 @@ def build_subtree(node: LineageNode, sequences: Dict[str, SeqRecord], model: str
         other = next(seq for seq in seqs if seq.id != node.founder_seq.id)
         newick = (f"({node.founder_seq.id}:0,{other.id}:{p_distance(node.founder_seq, other)})"
                   f"{node.name};")
-    elif node.name.startswith('internal_'):
-        newick = f"({','.join(seq.id for seq in seqs)});"
     else:
-        newick = f"({','.join(seq.id for seq in seqs)}){node.name};"
+        # two sequences without the founder of the lineage, such as the founders of the
+        # two children of a root lineage without sequences: rooted at the midpoint
+        a, b = seqs
+        half = p_distance(a, b) / 2
+        label = '' if node.name.startswith('internal_') else node.name
+        newick = f"({a.id}:{half},{b.id}:{half}){label};"
     return Phylo.read(io.StringIO(newick), 'newick')
 
 
