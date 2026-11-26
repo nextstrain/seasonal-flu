@@ -421,12 +421,16 @@ def clock_std_dev(w):
 # Docker image installs as `treetime1`; `treetime` is TreeTime v0, which augur imports
 TREETIME = config.get("treetime", {}).get("executable", "treetime1")
 
+def clock_filter_iqd():
+    """Interquartile ranges beyond which the clock filter removes tips; 0 for no filter."""
+    return config.get("refine", {}).get("clock_filter_iqd", 5)
+
 rule refine:
     message:
         """
         Inferring the time tree with TreeTime
           - {params.coalescent} coalescent timescale
-          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation
+          - filter tips more than {params.clock_filter_iqd} IQDs from clock expectation (0: no filter)
         """
     input:
         tree = build_dir + "/{build_name}/{segment}/tree_common.nwk",
@@ -443,7 +447,10 @@ rule refine:
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
         coalescent = "opt",
-        clock_filter = lambda wildcards: "--prune-filtered-tips --clock-filter " + str(config.get("refine", {}).get("clock_filter_iqd", 5)) if config.get("refine", {}).get("clock_filter_iqd", 5) else "" ,
+        clock_filter_iqd = lambda wildcards: clock_filter_iqd(),
+        # 0 switches the filter off, which needs the flag: TreeTime filters at 4 IQDs by default
+        clock_filter = lambda wildcards: (f"--clock-filter {clock_filter_iqd()} --prune-filtered-tips"
+                                          if clock_filter_iqd() else "--clock-filter 0"),
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev,
         # tidy tree has collapsed the short branches already. The polytomies are where tips
