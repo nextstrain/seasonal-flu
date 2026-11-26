@@ -417,8 +417,9 @@ def clock_rate(w):
 def clock_std_dev(w):
     return clock_rate(w)/5
 
-# TreeTime 1.0 (Rust); not on PATH as `treetime`, which is TreeTime 0.x of augur
-TREETIME = config.get("treetime", {}).get("executable", "treetime-rs")
+# TreeTime v1, the rewrite of TreeTime as a standalone executable, which the Nextstrain
+# Docker image installs as `treetime1`; `treetime` is TreeTime v0, which augur imports
+TREETIME = config.get("treetime", {}).get("executable", "treetime1")
 
 rule refine:
     message:

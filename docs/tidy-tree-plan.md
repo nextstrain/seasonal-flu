@@ -223,8 +223,9 @@ the new `h1n1` lineage, like yam, has its definitions in `config/` and is copied
 On this branch the phylo workflow runs the Rust implementation of TreeTime (nightly
 `1.0.0-nightly.20261123T125651Z+ffc39fb`, from github.com/neherlab/treetime-nightly) in
 place of `augur refine` and `augur ancestral`. The executable is
-`config.treetime.executable`, by default `treetime-rs` on the PATH (`treetime` would be
-TreeTime 0.x of augur).
+`config.treetime.executable`, by default `treetime1` on the PATH, the name under which
+the Nextstrain Docker image installs the latest nightly (`treetime` is TreeTime v0, which
+augur imports).
 
 - `refine` runs `timetree` with the settings of the former `augur refine`: kept root,
   fixed clock rate and its standard deviation, a fitted constant coalescent (`opt`, which
