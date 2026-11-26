@@ -154,15 +154,26 @@ rule download_changelog_dataset:
         cat {output.changelog}.orig >> {output.changelog}
         """
 
+def strain_lists(name):
+    """
+    The strain lists of the phylogenetic workflow for a lineage, such as its outliers. The
+    datasets of all influenza B (b) take those of B/Vic and B/Yam together.
+    """
+    def lists(w):
+        lineages = ['vic', 'yam'] if w.lineage == 'b' else [w.lineage]
+        return [f"../config/{lineage}/{name}" for lineage in lineages]
+    return lists
+
+
 rule sample_reference_strains:
     input:
         sequences="data/{lineage}/{segment}/sequences.fasta",
-        include_strains="../config/{lineage}/reference_strains.txt",
+        include_strains=strain_lists("reference_strains.txt"),
     output:
         sampled_sequences="build/{lineage}/{segment}/reference_strains.fasta",
     shell:
         """
-        seqkit grep -f {input.include_strains} {input.sequences} > {output.sampled_sequences}
+        cat {input.include_strains} | seqkit grep -f - {input.sequences} > {output.sampled_sequences}
         """
 
 
@@ -170,9 +181,9 @@ rule subsample:
     input:
         sequences="data/{lineage}/{segment}/sequences.fasta",
         metadata="data/{lineage}/{segment}/metadata.tsv",
-        include_strains="../config/{lineage}/reference_strains.txt",
+        include_strains=strain_lists("reference_strains.txt"),
         nextclade_include="dataset_config/{lineage}/includes.txt",
-        exclude="../config/{lineage}/outliers.txt",
+        exclude=strain_lists("outliers.txt"),
     output:
         sampled_sequences="build/{lineage}/{segment}/{reference}/subsample_tmp.fasta",
         sampled_strains="build/{lineage}/{segment}/{reference}/subsample_tmp.txt",

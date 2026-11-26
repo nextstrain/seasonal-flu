@@ -14,6 +14,10 @@ def all_builds(w):
                 builds.append(f"datasets/{lineage}/{segment}/{ref}/tree.json")
     return builds
 
+rule all:
+    input:
+        all_builds
+
 rule all_lineage:
     input:
         all_builds
@@ -23,10 +27,6 @@ rule all_lineage:
         """
         touch {output}
         """
-
-rule all:
-    input:
-        all_builds
 
 
 def nomenclature_url(w, path):

@@ -472,8 +472,9 @@ sublineages). The decisions are logged in `build/*/*/*/clade_subclade.log`.
 Compared with the released datasets (April 2026) on 4000-6000 sequences per dataset,
 the subclade calls differ only by nomenclature updates (renames, new designations such
 as `J.2.4.2`, `K.1`, `D.1.2`) and a few old strains; legacy clades agree for all H1N1pdm
-and all but 13 old H3N2 sequences, QC is unchanged. The `b` datasets lack
-`config/b/{outliers,reference_strains}.txt` and could not be built.
+and all but 13 old H3N2 sequences, QC is unchanged. The `b` datasets (all
+influenza B) take the outliers and reference strains of B/Vic and B/Yam together; there
+were never `config/b/` lists on this line of history, only on the `treeknit` branch.
 
 ### Phase 5 — augur
 
