@@ -443,7 +443,7 @@ rule refine:
         node_data = build_dir + "/{build_name}/{segment}/branch-lengths.json"
     params:
         coalescent = "opt",
-        clock_filter_iqd = lambda wildcards: config.get("refine", {}).get("clock_filter_iqd", 4),
+        clock_filter = lambda wildcards: "--prune-filtered-tips --clock-filter " + str(config.get("refine", {}).get("clock_filter_iqd", 5)) if config.get("refine", {}).get("clock_filter_iqd", 5) else "" ,
         clock_rate = clock_rate,
         clock_std_dev = clock_std_dev,
         # tidy tree has collapsed the short branches already. The polytomies are where tips
@@ -478,8 +478,7 @@ rule refine:
             --clock-std-dev {params.clock_std_dev} \
             --coalescent {params.coalescent} \
             --confidence \
-            --clock-filter {params.clock_filter_iqd} \
-            --prune-filtered-tips \
+            {params.clock_filter} \
             --prune-undated-tips \
             --divergence-units {params.divergence_units} \
             --topology-order descendant-count \
